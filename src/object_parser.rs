@@ -16,10 +16,7 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
     ];
 
     if obj.opaque_type{
-
-        for api in &obj.apis {
-        
-        }
+        lines.push("\tptr: *mut ()".into());
     }
     else{
         if obj.r#type == "class"{
@@ -30,12 +27,17 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
                 lines.push(format!("\tpub {}: {},", property.name, property.r#type));
             }
         }
-        //
-        if obj.apis.len() > 0{
-            panic!("struct api unsupported yet")
-        }
     }
     lines.push("}".into());
+    if obj.apis.len() > 0{
+        lines.push(format!("impl {}{{", obj_name));
+    }
+    for api in &obj.apis {
+        lines.push(format!("\t pub fn {}(){{}}", api.name));
+    }
+    if obj.apis.len() > 0{
+        lines.push("}".into());
+    }
     rust_binders.insert(obj_name.to_lowercase(), lines);
     Ok(())
 }

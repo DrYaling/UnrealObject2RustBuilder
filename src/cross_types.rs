@@ -56,3 +56,5 @@ pub type uint16 = u16;
 pub type uint8 = u8;
 pub type int32 = i32;
 pub type uint32 = u32;
+pub type f32_ = f32;
+pub type f64_ = f64;

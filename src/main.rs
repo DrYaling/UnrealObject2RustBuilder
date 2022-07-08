@@ -68,7 +68,7 @@ fn load_binders(path: &str) -> anyhow::Result<Vec<UnrealObject>>{
 fn main() -> anyhow::Result<()> {
     let objects = load_binders("Binders")?;
 
-    println!("Hello, world! {:?}", objects);
+    // println!("Hello, world! {:?}", objects);
     parser::parse(objects)?;
     Ok(())
 }

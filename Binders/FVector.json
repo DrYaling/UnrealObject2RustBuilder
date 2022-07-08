@@ -1,0 +1,8 @@
+{
+    "unreal_type": "FVector",
+    "type": "struct",
+    "alias": "Vector",
+    "opaque_type": false,
+    "properties": [],
+    "apis": []
+}

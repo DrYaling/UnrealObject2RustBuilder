@@ -1,0 +1,16 @@
+[package]
+name = "cpp_builder"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "1.0"
+serde = {version="1.0",features = ["derive"]}
+anyhow = { version ="1.0.43", features = ["backtrace"]}
+once_cell = "*"
+
+
+[build-dependencies]
+bindgen = "0.60"

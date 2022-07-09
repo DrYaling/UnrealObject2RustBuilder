@@ -1,6 +1,6 @@
-use std::{collections::HashMap, fmt::format};
+use std::{collections::HashMap};
 
-use crate::{object::UnrealObject, parser::CppBinderApi, api::Parameter};
+use crate::{object::UnrealObject, parser::CppBinderApi};
 static mut OPAQUE_OBJECTS: Vec<String> = Vec::new(); 
 fn add_opaque(tp: &str){
     unsafe{

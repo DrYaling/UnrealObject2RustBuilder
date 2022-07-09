@@ -3,6 +3,8 @@ use super::api::Api;
 use serde::{Deserialize};
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct UnrealObject{
+    #[serde(default)]
+    pub namespace: Option<String>,
     pub unreal_type: String,
     pub r#type: String,
     #[serde(default)]

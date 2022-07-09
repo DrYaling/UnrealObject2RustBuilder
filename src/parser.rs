@@ -47,14 +47,19 @@ fn generate_rust(rust_binders: HashMap<String, Vec<String>>) -> anyhow::Result<(
     let cross_types = env::current_dir()?.join("src/cross_types.rs").as_path().display().to_string();
     mod_file.push(std::fs::read_to_string(&cross_types)?);
     mod_file.push("pub type string = &'static str;".to_string());
-    for (object_type, mut content) in rust_binders  {
-        mod_file.push(format!("pub use {}::*;", object_type));
-        mod_file.push(format!("///{}  binder impl", object_type));        
-        mod_file.push(format!("mod {}{{", object_type));
-        mod_file.push(format!("\tuse super::*;"));    
-        content.iter_mut().for_each(|c| c.insert(0, '\t'));
-        mod_file.append(&mut content);        
-        mod_file.push(format!("}}//end of {}", object_type));
+    for (namespace, mut content) in rust_binders  {
+        if namespace.len() > 0{
+            mod_file.push(format!("pub use {}::*;", namespace));
+            mod_file.push(format!("///{}  binder impl", namespace));        
+            mod_file.push(format!("mod {}{{", namespace));
+            mod_file.push(format!("\tuse super::*;")); 
+            content.iter_mut().for_each(|c| c.insert(0, '\t'));  
+            mod_file.append(&mut content);        
+            mod_file.push(format!("}}//end of {}", namespace));
+        } 
+        else{ 
+            mod_file.append(&mut content);        
+        }
     }
     std::fs::write(rs_path + "/mod.rs", mod_file.join("\r\n"))?;
     Ok(())
@@ -89,7 +94,7 @@ fn generate_cpp(cpp_binders: HashMap<String, Vec<CppBinderApi>>) -> anyhow::Resu
         cpp_file.push(format!("\t//binder {} end", &binder_type));
     }
     cpp_file.push("}}".into());
-    std::fs::write(cpp_path.clone() + "/RustBinders.cpp", cpp_file.join("\r\n"))?;
-    std::fs::write(cpp_path + "/RustBinders.h", header.join("\r\n"))?;
+    // std::fs::write(cpp_path.clone() + "/RustBinders.cpp", cpp_file.join("\r\n"))?;
+    // std::fs::write(cpp_path + "/RustBinders.h", header.join("\r\n"))?;
     Ok(())
 }

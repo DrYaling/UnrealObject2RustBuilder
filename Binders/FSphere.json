@@ -1,4 +1,5 @@
 {
+    "namespace": "unreal",
     "unreal_type": "FSphere",
     "type": "class",
     "alias": "Sphere",

@@ -3,6 +3,7 @@ use std::{env, path::PathBuf};
 
 pub const CORE_HEADER: &'static str = "def.h";
 fn main(){
+    return;
     let workspace = PathBuf::from(env::current_dir().unwrap()).join("BaseTypes/").as_path().display().to_string().replace("\\", "/");
     let export_header = format!("{}{}", workspace, CORE_HEADER);
     println!("cargo:rerun-if-changed={}",export_header);

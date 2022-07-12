@@ -1,10 +1,30 @@
-use std::{collections::HashMap};
+use std::{collections::{HashMap, BTreeMap}, sync::Mutex};
 
-use crate::{object::UnrealObject, parser::CppBinderApi};
+use once_cell::sync::Lazy;
+
+use crate::{object::UnrealObject, parser::CppBinderApi, C_PRIMARY_TYPE};
+static ALIASES: Lazy<Mutex<BTreeMap<String, String>>> = Lazy::new(|| Mutex::new(BTreeMap::new())); 
+fn add_alias(alias: &str, obj_type: &str){
+    ALIASES.lock().unwrap().insert(alias.to_string(), obj_type.to_string());
+}
+fn get_origin_name(name: &str) -> String {
+    ALIASES.lock().unwrap().get(name).cloned().unwrap_or(name.to_string())
+}
 static mut OPAQUE_OBJECTS: Vec<String> = Vec::new(); 
 fn add_opaque(tp: &str){
     unsafe{
         OPAQUE_OBJECTS.push(tp.to_string());
+    }
+}
+fn is_opaque_type(tp: &str)-> bool {
+    if unsafe{ OPAQUE_OBJECTS.contains(&tp.replace("&", "")) }{
+        true
+    }
+    else if unsafe{ OPAQUE_OBJECTS.contains(&tp.replace("&mut", "")) }{
+        true
+    }
+    else{
+        false
     }
 }
 fn get_obj_type(tp: String) -> String{
@@ -30,13 +50,15 @@ fn get_obj_name(name: String, obj_type:&str) -> String{
     }
 }
 ///parse enum value
-pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<String>>, _cpp_binders: &mut HashMap<String, Vec<CppBinderApi>>) -> anyhow::Result<()>{
+pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<String>>, cpp_binders: &mut HashMap<String, Vec<CppBinderApi>>) -> anyhow::Result<()>{
     let obj_name = if obj.alias.is_empty(){
         obj.unreal_type.as_str()
     }
     else{
+        add_alias(&obj.alias, &obj.unreal_type);
         obj.alias.as_str()
     };
+    let mut cpp_bindings = Vec::new();
     let mut lines = vec![
         format!("///rust api for unreal type {}", obj.unreal_type),
         format!("pub struct {}{{", obj_name),        
@@ -70,6 +92,7 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
         let mut callback_parameters: Vec<(String, String)> = vec![
             //("*mut std::ffi::c_void".into(), "this".into())
         ];
+        let mut c_api = CppBinderApi::default();
         for param in &api.parameters {
             callback_parameters.push((
                 param.r#type.clone(), param.name.clone()
@@ -84,16 +107,55 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
         let func_type = format!("{}FPtr", callback_name);
         let cb_params = if callback_parameters.len() > 0{
             format!("this: *mut std::ffi::c_void, {}", 
-            callback_parameters.iter().map(|t| format!("{}: {}", t.1, get_obj_type(t.0.clone()))).collect::<Vec<_>>().join(","))
+            callback_parameters.iter().map(|t| format!("{}: {}", t.1, get_obj_type(t.0.clone()))).collect::<Vec<_>>().join(", "))
         }
         else{
             "this: *mut std::ffi::c_void".into()
+        };
+        let cfp_params = if api.parameters.len() > 0{
+            format!("{}* ptr, {}", obj.unreal_type,
+            api.parameters.iter().map(|t| {
+                match C_PRIMARY_TYPE.get(&t.r#type){
+                    Some(ct) => format!("{} {}", ct, t.name),
+                    None => {
+                        let ref_type = t.r#type.contains("&");
+                        let alias = t.r#type.replace("&", "");
+                        let unreal_type = get_origin_name(&alias);
+                        if is_opaque_type(&unreal_type){
+                            format!("{}* {}", unreal_type, t.name)
+                        }
+                        else if ref_type{
+                            format!("{}& {}", unreal_type, t.name)
+                        }
+                        else{
+                            format!("{} {}", unreal_type, t.name)
+                        }
+                    },
+                }
+            }).collect::<Vec<_>>().join(", "))
+        }
+        else{
+            format!("{}* ptr", obj.unreal_type)
         };
         lines.push(
             format!("pub type {} = unsafe extern \"C\" fn ({}){};", 
             func_type, cb_params, result
         ));
+        c_api.fptr= Some(
+            format!("typedef {}(*{})({});", api.ret_type, func_type, cfp_params)
+        );
+        //cpp binder
+        {
+            let cb_body = if api.ret_type.len() > 0{
+                format!("return ptr->{}({});", api.name, api.parameters.iter().map(|param| param.name.clone()).collect::<Vec<_>>().join(", "))
+            }
+            else{
+                format!("ptr->{}({});", api.name, api.parameters.iter().map(|param| param.name.clone()).collect::<Vec<_>>().join(", "))
+            };
+            c_api.rust_api = format!("Register{}([]({}){{{}}});", callback_name, cfp_params, cb_body);
+        }
         lines.push(format!("static mut {}Callback: Option<{}> = None;", callback_name, func_type));
+        lines.push("/// not to lua".to_string());
         lines.push("#[no_mangle]".to_string());
         lines.push(format!("unsafe extern \"C\" fn Register{}(fun: {}){{", callback_name, func_type));
         lines.push(format!("\t{}Callback = Some(fun);", callback_name));
@@ -119,6 +181,7 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
             callback_name, obj.unreal_type, api.name, parameter_names
         ));
         impl_funs.push("\t}".into());
+        cpp_bindings.push(c_api);
     }
     impl_funs.push("}".into());
     lines.append(&mut impl_funs);
@@ -136,5 +199,6 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
             rust_binders.insert(ns.into(), lines);
         },
     }
+    cpp_binders.insert(obj.unreal_type.clone(), cpp_bindings);
     Ok(())
 }

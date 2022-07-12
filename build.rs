@@ -2,6 +2,7 @@ use std::{env, path::PathBuf};
 
 
 pub const CORE_HEADER: &'static str = "def.h";
+#[allow(unreachable_code)]
 fn main(){
     return;
     let workspace = PathBuf::from(env::current_dir().unwrap()).join("BaseTypes/").as_path().display().to_string().replace("\\", "/");

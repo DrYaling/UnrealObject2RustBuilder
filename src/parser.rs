@@ -1,12 +1,15 @@
 use std::{collections::HashMap, env};
 
 use crate::{object::UnrealObject, api::Parameter};
+#[derive(Debug, Clone, Default)]
 //TODO
 pub struct CppBinderApi{
     ///cpp绑定接口的rust接口
     pub rust_api: String,
     ///rust接口的参数列表
     pub parameters: Vec<Parameter>,
+    ///回调函数定义
+    pub fptr: Option<String>,
     ///绑定返回值,一般情况是void
     pub result: String,
 }
@@ -73,28 +76,26 @@ fn generate_cpp(cpp_binders: HashMap<String, Vec<CppBinderApi>>) -> anyhow::Resu
         "#include \"RustBinders.h\"".into(),
         "#include \"core_api.h\"".into(),
     ];
-    let header: Vec<String> = vec![
+    let mut header: Vec<String> = vec![
         "//auto generated binding file for UnrealRustApi by UnrealObject2RustBuilder".into(),
         "#pragma once".to_string(),
         "void InitBindings();".into()
     ];
-    if cpp_binders.len() == 0{
-        cpp_file.push("void InitBindings(){}".into());
-    }
-    cpp_file.push("void InitBindings(){{".into());
+    
+    cpp_file.push("void InitBindings(){".into());
     for (binder_type, content) in cpp_binders  {
         cpp_file.push(format!("\t//binder {} begin", &binder_type));
         for api in content {
-            let mut variables = Vec::new();
-            for param in &api.parameters {
-                variables.push(param.name.clone());
+            cpp_file.push(format!("\t{}", api.rust_api));
+            if let Some(fptr) = api.fptr{
+                header.push(fptr);
             }
-            cpp_file.push(format!("\t{}({});", api.rust_api, variables.join(", ")));
         }
         cpp_file.push(format!("\t//binder {} end", &binder_type));
     }
-    cpp_file.push("}}".into());
-    // std::fs::write(cpp_path.clone() + "/RustBinders.cpp", cpp_file.join("\r\n"))?;
-    // std::fs::write(cpp_path + "/RustBinders.h", header.join("\r\n"))?;
+    cpp_file.push("}".into());
+
+    std::fs::write(cpp_path.clone() + "/RustBinders.cpp", cpp_file.join("\r\n"))?;
+    std::fs::write(cpp_path + "/RustBinders.h", header.join("\r\n"))?;
     Ok(())
 }

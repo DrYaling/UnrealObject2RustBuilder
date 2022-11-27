@@ -3,7 +3,7 @@ name = "cpp_builder"
 version = "0.1.0"
 edition = "2021"
 # open this if llvm installed
-# build = "build.rs"
+build = "binders/build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -14,4 +14,8 @@ once_cell = "*"
 
 
 [build-dependencies]
+once_cell = "*"
 bindgen = "0.59.2"
+serde_json = "1.0"
+serde = {version="1.0",features = ["derive"]}
+anyhow = { version ="1.0.43", features = ["backtrace"]}

@@ -8,6 +8,7 @@ mod parser;
 mod const_parser;
 mod enum_parser;
 mod object_parser;
+mod engine_parser;
 use std::collections::BTreeMap;
 
 use object::UnrealObject;
@@ -66,9 +67,17 @@ fn load_binders(path: &str) -> anyhow::Result<Vec<UnrealObject>>{
     Ok(output)
 }
 fn main() -> anyhow::Result<()> {
-    let objects = load_binders("Binders")?;
+    
+    engine_parser::class_parser::parse(
+        serde_json::from_reader(
+            std::fs::File::open("configs/CustomSettings.json").unwrap()
+        ).unwrap()
+    ).map_err(|e| {println!("{:?}", e); e}).unwrap();
+    // let objects = load_binders("binders")?;
 
-    // println!("Hello, world! {:?}", objects);
-    parser::parse(objects)?;
+    // // println!("Hello, world! {:?}", objects);
+    // parser::parse(objects)?;
+    // let mut str_buf: String = String::new();
+    // std::io::stdin().read_line(&mut str_buf)?;
     Ok(())
 }

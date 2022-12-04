@@ -1,7 +1,23 @@
 {
     "EngineRoot": "E:/ue/UnrealEngine-5.0.0-early-access-2/Engine",
     "ExportClasses":[
+        "UObject",
+        "AActor",
+        "UActorComponent",
+        "FVector",
+        "FVector4",
+        "FVector2D",
+        "FRotator",
+        "FQuat",
+        "FIntPoint",
+        "FIntVector",
+        "FColor",
+        "FLinearColor",
+        "FMatrix",
+        "FTransform",
+        "FRandomStream"
 
+        
     ],
     "ExportApis":[
         
@@ -11,5 +27,29 @@
     ],
     "ExportConsts":[
 
+    ],
+    "IgnoreFiles":[
+        "Android*",
+        "AnimNode_SaveCachedPose",
+        "AIPerception*",
+        "*Allocator",
+        "Apple*",
+        "AR*",
+        "VR*",
+        "Linux*",
+        "Archive*",
+        "MacPlatform*",
+        "AssetDataTagMapSerializationDetails",
+        "Assertion*",
+        "Ascii*",
+        "Base64*",
+        "IHead*",
+        "GenericPlatform*",
+        "IOS*",
+        "*Test",
+        "Test*",
+        "AudioStreamingCache",
+        "Blake3",
+        "BlendProfile*"
     ]
 }

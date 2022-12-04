@@ -1,37 +1,69 @@
 #[allow(unused)]
 #[macro_use] 
 extern crate serde_json;
-mod api;
-mod object;
-mod property;
-mod parser;
-mod const_parser;
-mod enum_parser;
-mod object_parser;
+// mod api;
+// mod object;
+// mod property;
+// mod parser;
+// mod const_parser;
+// mod enum_parser;
+// mod object_parser;
 mod engine_parser;
 use std::collections::BTreeMap;
 
-use object::UnrealObject;
+use engine_parser::ValueType;
+// use object::UnrealObject;
 use once_cell::sync::Lazy;
-
-pub static C_PRIMARY_TYPE: Lazy<BTreeMap<String, String>> = Lazy::new(||{
-    let map = 
+fn load_primaries() -> Vec<(String, String)>{
     vec![
-        ("i32".into(),"int32_t".into()), 
-        ("u32".into(), "uint32_t".into()), 
-        ("u64".into(), "uint64_t".into()),
-        ("i64".into(), "int64_t".into()), 
+        ("i32".into(),"int32".into()), 
+        ("i64".into(), "int64".into()), 
+        ("u32".into(), "uint32".into()), 
+        ("u64".into(), "uint64".into()),
+        ("i64".into(), "int64".into()),
         ("usize".into(), "size_t".into()), 
         ("f32".into(), "float".into()),
         ("f64".into(), "double".into()), 
-        ("i16".into(),"int16_t".into()), 
-        ("u16".into(),"uint16_t".into()), 
-        ("u8".into(), "unsigned char".into()), 
-        ("i8".into(), "char".into()),
-        ("bool".into(), "bool".into())
-    ].into_iter().collect();
+        ("i16".into(),"int16".into()), 
+        ("u16".into(),"uint16".into()), 
+        ("u8".into(), "uint8".into()), 
+        ("i8".into(), "int8".into()),
+        ("bool".into(), "bool".into()),
+        ("()".into(), "void".into())
+    ]
+}
+pub static RUST_TO_C_TYPES: Lazy<BTreeMap<String, (String, engine_parser::ValueType)>> = Lazy::new(||{
+    let map = 
+    load_primaries()
+    .into_iter()
+    .enumerate()
+    .map(|(index, (a, b))|{
+        (a, (b, ValueType::from(index as i32)))
+    })
+    .collect();
     map
 });
+
+static CPP_TO_RUST_TYPES: Lazy<BTreeMap<String, (String, engine_parser::ValueType)>> = Lazy::new(||{
+    let map = 
+    load_primaries()
+    .into_iter()
+    .map(|(a,b)| (b, a))    
+    .enumerate()
+    .map(|(index, (a, b))|{
+        (a, (b, ValueType::from(index as i32)))
+    })
+    .collect();
+    map
+});
+pub fn get_c2r_types(key: &str) -> Option<(String, ValueType)>{
+    CPP_TO_RUST_TYPES.get(key).cloned()
+    .or(CPP_TO_RUST_TYPES.get(&format!("{key}_t")).cloned())
+}
+pub fn is_primary(type_str: &str) -> bool{    
+    CPP_TO_RUST_TYPES.get(type_str)
+    .or(CPP_TO_RUST_TYPES.get(&format!("{type_str}_t"))).is_some()
+}
 fn read_files(path: &str, pattern: &str) -> anyhow::Result<Vec<String>> {
     let files = std::fs::read_dir(path)?;    //读出目录
     let mut output = Vec::new();
@@ -55,19 +87,21 @@ fn read_files(path: &str, pattern: &str) -> anyhow::Result<Vec<String>> {
             output.push(path);
         }
     }
-    Ok(output)
-}
-fn load_binders(path: &str) -> anyhow::Result<Vec<UnrealObject>>{
-    let files = read_files(path, "json")?;
-    let mut output = Vec::new();
-    for file in files {
-        let json = std::fs::read_to_string(file)?;
-        output.push(serde_json::from_str(&json)?);
-    }
-    Ok(output)
-}
-fn main() -> anyhow::Result<()> {
     
+    Ok(output)
+}
+// fn load_binders(path: &str) -> anyhow::Result<Vec<UnrealObject>>{
+//     let files = read_files(path, "json")?;
+//     let mut output = Vec::new();
+//     for file in files {
+//         let json = std::fs::read_to_string(file)?;
+//         output.push(serde_json::from_str(&json)?);
+//     }
+//     Ok(output)
+// }
+fn main() -> anyhow::Result<()> {
+    // crate::ast::run()?;
+    // return Ok(());
     engine_parser::class_parser::parse(
         serde_json::from_reader(
             std::fs::File::open("configs/CustomSettings.json").unwrap()

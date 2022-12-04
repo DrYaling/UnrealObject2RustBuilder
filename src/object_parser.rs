@@ -2,7 +2,7 @@ use std::{collections::{HashMap, BTreeMap}, sync::Mutex};
 
 use once_cell::sync::Lazy;
 
-use crate::{object::UnrealObject, parser::CppBinderApi, C_PRIMARY_TYPE};
+use crate::{object::UnrealObject, parser::CppBinderApi, RUST_TO_C_TYPES};
 static ALIASES: Lazy<Mutex<BTreeMap<String, String>>> = Lazy::new(|| Mutex::new(BTreeMap::new())); 
 fn add_alias(alias: &str, obj_type: &str){
     ALIASES.lock().unwrap().insert(alias.to_string(), obj_type.to_string());
@@ -115,8 +115,8 @@ pub fn parse_obj(obj: &UnrealObject, rust_binders: &mut HashMap<String, Vec<Stri
         let cfp_params = if api.parameters.len() > 0{
             format!("{}* ptr, {}", obj.unreal_type,
             api.parameters.iter().map(|t| {
-                match C_PRIMARY_TYPE.get(&t.r#type){
-                    Some(ct) => format!("{} {}", ct, t.name),
+                match RUST_TO_C_TYPES.get(&t.r#type){
+                    Some(ct) => format!("{} {}", ct.0, t.name),
                     None => {
                         let ref_type = t.r#type.contains("&");
                         let alias = t.r#type.replace("&", "");

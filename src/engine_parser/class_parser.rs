@@ -71,14 +71,7 @@ pub fn  parse(settings: CustomSettings) -> anyhow::Result<ExportDetails>{
             if ignore(&file){
                 continue;
             }
-            match std::fs::read_to_string(&file) {
-                Ok(fc) => {
-                    parse_header(&mut engine, file, fc)?;
-                }
-                Err(e) => {
-                        println!("file  {file} read fail {:?}", e);
-                    }
-            }
+            parse_header(&mut engine, file)?;
         }
         // println!(
         //     "class {:?}", 
@@ -95,19 +88,21 @@ pub fn  parse(settings: CustomSettings) -> anyhow::Result<ExportDetails>{
 }
 static FAIL_COUNT: AtomicUsize = AtomicUsize::new(0);
 ///parse header struct
-fn parse_header(engine: &mut Engine, file: String, content: String) -> anyhow::Result<()>{
+fn parse_header(engine: &mut Engine, file: String) -> anyhow::Result<()>{
     let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap();
     // std::fs::write(format!("engine_source/{}", file_name), &content)?;
     // if file_name != "Actor.h" {
     //     return Ok(());
     // }
     // println!("parse file {}", file_name);
-    let mut lines = content.replace("\r", "").split("\n").map(|s| s.to_owned()).collect::<Vec<_>>();
-    if let Ok(content) = std::fs::read_to_string(format!("engine_code/{}", file_name)){
+    let cache_path = format!("engine_code/{}", file.replace(&runtime_root(), ""));
+    let mut lines;
+    if let Ok(content) = std::fs::read_to_string(&cache_path){
        lines = content.split("\r\n").map(|s| s.to_owned()).collect::<Vec<_>>();
     }
     else 
     {
+        lines = std::fs::read_to_string(&file)?.replace("\r", "").split("\n").map(|s| s.to_owned()).collect::<Vec<_>>();
         let inner_lines = std::mem::take(&mut lines);
         match std::panic::catch_unwind(||{
                     let mut inner_lines = inner_lines;

@@ -106,8 +106,33 @@ impl Default for CodeGenerator{
             "#![allow(non_camel_case_types)]".to_string(),
             "#![allow(dead_code)]".to_string(),
             "#![allow(unused_imports)]".to_string(),
-            "use std::{ffi::c_void, os::raw::c_char};".to_string(),
+            "use std::{ffi::c_void, os::raw::c_char, ops::{Deref, DerefMut}};".to_string(),
             "use ffis::*;".to_string(),
+            r#"pub struct RefResult<T: Sized>{
+    t: T,
+}
+impl<T: Sized> RefResult<T>{
+    fn new(t: T) -> Self{
+        Self { t }
+    }
+    pub fn get(&self)-> &T{
+        &self.t
+    }
+    pub fn get_mut(&mut self)-> &mut T{
+        &mut self.t
+    }
+}
+impl<T: Sized> Deref for RefResult<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.t
+    }
+}
+impl<T: Sized> DerefMut for RefResult<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.t
+    }
+}"#.to_string(),
         ];
         CodeGenerator{
             include: vec![
@@ -290,9 +315,9 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     let mut api_map: BTreeMap<String, i32> = BTreeMap::default();
     'api: for api in &class.public_apis {        
         let parameters = api.parameters.clone();
-        if api.name == "CallRemoteFunction"{
-            print!("pause");
-        }
+        // if api.name == "GetActorUpVector1"{
+        //     print!("pause");
+        // }
         //api with opaque(and not exported) none ptr parameter  will not export
         for param in &api.parameters {
             if is_opaque(&param.type_str, engine, settings) && !param.ptr_param{
@@ -307,8 +332,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             continue;
         }
         let opaque_ret = is_opaque(&api.rc_type, engine, settings);
-        //opaque is ptr, else not export
-        if opaque_ret && !api.ptr_ret{
+        //opaque is ptr or ref, else not export
+        if opaque_ret && !api.ptr_ret&& !api.ref_ret{
             continue;
         }
         //opaque but didn't export
@@ -323,21 +348,41 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         else{
             api_map.insert(designed_api_name.clone(), 1);
         }
-        let (cpp_ret, rs_ret) = match opaque_ret {
+        //function result with liftime
+        let mut lifetime_ret = false;
+        //make ref result to ptr between ffi api
+        let mut ref_to_ptr = false;
+        let rs_ret_type = generator.insert_rs_type(&api.r_type, engine, settings);
+        let (cpp_ret, rs_ret_liftime, rs_ret_origin) = match opaque_ret {
             true => {
-                let tp = generator.insert_type(&api.r_type, engine, settings);
-                ("void*".to_string(), format!(" -> *mut {}", tp.alis))
+                //ref
+                if api.ref_ret{
+                    lifetime_ret = true;
+                    ref_to_ptr = true;
+                    // ("void*".to_string(), format!(" -> RefResult<*mut {}>", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                    ("void*".to_string(), format!(" -> &'a {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                }
+                //ptr 
+                else{
+                    ("void*".to_string(), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                }
             },
             false => {
-                if api.ptr_ret{
-                    (format!("{}*", api.rc_type), format!(" -> *mut {}", api.r_type))
+                if api.rc_type == "void"{
+                    (api.rc_type.to_string(), format!(""), format!(""))
                 }
                 else{
-                    if api.rc_type == "void"{
-                        (api.rc_type.to_string(), format!(""))
+                    if api.ptr_ret{
+                        (format!("{}*", api.rc_type), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                    }
+                    else if api.ref_ret{
+                        lifetime_ret = true;                        
+                        ref_to_ptr = true;
+                        //ref in ffi is not supported, so translate to ptr
+                        (format!("{}*", api.rc_type), format!(" ->&'a {}", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.name))
                     }
                     else{
-                        (api.rc_type.to_string(), format!(" -> {}", api.r_type))
+                        (api.rc_type.to_string(), format!(" -> {}", rs_ret_type.name), format!(" -> {}", rs_ret_type.name))
                     }
                 }
             }
@@ -406,25 +451,42 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         }
         //others
         else{
+            //cpp ret result caster
+            let ref_ret_caster = if ref_to_ptr {"(void*)&"}else{""};
             let api_name = format!("uapi_{}_{}", class_name, designed_api_name);
             let return_flag = if cpp_ret == "void"{""}else{"return "};
             let content = if api.is_static{
                 format!(r#"   {} {}({}){{
-        {} (({}*)target)->{}({});
+        {} {}(({}*)target)->{}({});
     }}"#, cpp_ret, designed_api_name, full_proper.join(", "), return_flag,
-                class_name, api.name, parameter_name_list)
+    ref_ret_caster, class_name, api.name, parameter_name_list)
             }
             else{
                 format!(r#"   {} {}({}){{
-        {} (({}*)target)->{}({});
+        {} {}(({}*)target)->{}({});
     }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
-                class_name, api.name, parameter_name_list)
+    ref_ret_caster, class_name, api.name, parameter_name_list)
             };
             generator.header.push(content);
             api_name
         };
         //rust ffi api
-        
+        //api with liftime
+        let lifetime_tag = if lifetime_ret{"<'a>"}else{""}; 
+        //if result is ref, add & tag before function call
+        let mut ref_flag_tail = "";
+        let ref_flag = if lifetime_ret {
+            //opaque is ptr
+            if opaque_ret{
+                ref_flag_tail  = "";
+                // "RefResult::new("
+                "&*"
+            }
+            //else is ref
+            else{
+                "&*"
+            }
+        }else{""}; 
         //rust getter ffi api
         let callback_name = format!("{}_{}Invoker", class_name, designed_api_name);
         let callback_handler = format!("{callback_name}Handler");
@@ -435,7 +497,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     #[no_mangle]
     extern "C" fn {ffi_api_name}(handler: {callback_name}){{
         unsafe{{ {callback_handler} = Some(handler) }};
-    }}"#, rs_ffi_parameters.join(", "), rs_ret);
+    }}"#, rs_ffi_parameters.join(", "), rs_ret_origin);
         //get handler
         generator.rs_ffis.push(handler_code);
 
@@ -447,15 +509,16 @@ using {cpp_api_name}Fn = {}(*)({});"#, api.rc_type, full_proper.join(",")));
     auto const api{cpp_api_name} = ({cpp_api_name}Fn)plugin->GetDllExport(TEXT("{ffi_api_name}\0"));
     if(api{cpp_api_name}){{
         api{cpp_api_name}(&{cpp_api_name});
-    }}"#));
-
+    }}"#));  
         //rust member function
         let rs_block = format!(r#"
     #[inline]
-    pub fn {}({}){}{{
-        unsafe{{ {callback_handler}.as_ref().unwrap()({}) }}
+    pub fn {}{}({}){}{{
+        unsafe{{ {}{callback_handler}.as_ref().unwrap()({}){} }}
     }}"#,
-        designed_api_name, rs_fn_parameters.join(", "), rs_ret, rs_parameters.join(", "));
+        designed_api_name, lifetime_tag, 
+        rs_fn_parameters.join(", "), rs_ret_liftime, 
+        ref_flag, rs_parameters.join(", "), ref_flag_tail);
         generator.rs_source.push(rs_block);
     }
     Ok(())

@@ -1,13 +1,14 @@
 #[allow(unused)]
 #[macro_use] 
 extern crate serde_json;
+// include!("../Binders/rs/binders.rs");
 // mod api;
 // mod object;
 // mod property;
 // mod parser;
 // mod const_parser;
 // mod enum_parser;
-// mod object_parser;
+// mod binders;
 mod engine_parser;
 use std::collections::BTreeMap;
 
@@ -60,6 +61,9 @@ pub fn get_c2r_types(key: &str) -> Option<(String, ValueType)>{
     CPP_TO_RUST_TYPES.get(key).cloned()
     .or(CPP_TO_RUST_TYPES.get(&format!("{key}_t")).cloned())
 }
+pub fn is_rs_primary(type_str: &str) -> bool{    
+    RUST_TO_C_TYPES.get(type_str).is_some()
+}
 pub fn is_primary(type_str: &str) -> bool{    
     CPP_TO_RUST_TYPES.get(type_str)
     .or(CPP_TO_RUST_TYPES.get(&format!("{type_str}_t"))).is_some()
@@ -102,11 +106,13 @@ fn read_files(path: &str, pattern: &str) -> anyhow::Result<Vec<String>> {
 fn main() -> anyhow::Result<()> {
     // crate::ast::run()?;
     // return Ok(());
+    let ins = std::time::Instant::now();
     engine_parser::class_parser::parse(
         serde_json::from_reader(
-            std::fs::File::open("configs/CustomSettings.json").unwrap()
-        ).unwrap()
-    ).map_err(|e| {println!("{:?}", e); e}).unwrap();
+            std::fs::File::open("configs/CustomSettings.json")?
+        )?
+    ).map_err(|e| {println!("{:?}", e); e})?;
+    println!("run finish cost {}", ins.elapsed().as_secs_f64());
     // let objects = load_binders("binders")?;
 
     // // println!("Hello, world! {:?}", objects);

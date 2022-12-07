@@ -6,61 +6,90 @@ use std::{path::Path, sync::atomic::{AtomicUsize, Ordering}};
 const fn split_space(c: char) -> bool{
     c == ' ' || c == '\t'
 }
+static mut RUNTIME_ROOT: String = String::new();
+#[inline]
+pub fn runtime_root() -> String{
+    unsafe{
+        RUNTIME_ROOT.replace("\\", "/")
+    }
+}
 ///parse classes
 pub fn  parse(settings: CustomSettings) -> anyhow::Result<ExportDetails>{
     let engine_root = Path::new(&settings.EngineRoot);
     let runtime_root = engine_root.join("Source/Runtime/");
+    unsafe{ 
+        RUNTIME_ROOT = runtime_root.display().to_string();
+    }
+    let engine_json_path = "configs/engine.json";
     let engine_code = crate::read_files(&runtime_root.display().to_string(), ".h")?;
-    let mut engine = Engine::default();
-    std::fs::create_dir("engine_code").ok();
-    let ignores = settings.IgnoreFiles.clone();
-    let ignore = |file: &str| -> bool{
-        let file_name = Path::new(file)
-        .file_name()
-        .expect(&format!("{file} is not a file"))
-        .to_str().unwrap()
-        .split(".")
-        .next()
-        .unwrap()
-        .to_string();
-
-        for ignore in &ignores {
-            if ignore.starts_with("*"){
-                let ignore = &ignore[1..];
-                if file_name.ends_with(ignore){
-                    return true;
-                }
-            }
-            else if ignore.ends_with("*"){
-                let ignore = &ignore[0..ignore.len() - 1];
-                if file_name.starts_with(ignore){
-                    return true;
-                }
-            }
-            else if &file_name == ignore{
+    let engine = if let Ok(engine_json) = std::fs::read_to_string(engine_json_path){
+        serde_json::from_str(&engine_json)?
+    }
+    else{
+        let mut engine = Engine::default();
+        std::fs::create_dir("engine_code").ok();
+        let ignores = settings.IgnoreFiles.clone();
+        let ignore = |file: &str| -> bool{
+            //path in export config
+            if settings.ExportPathRoot.iter().find(|root| file.contains(root.as_str())).is_none(){
                 return true;
             }
-        }
-        false
-    };
-    for file in engine_code{
-        if ignore(&file){
-            continue;
-        }
-        match std::fs::read_to_string(&file) {
-            Ok(fc) => {
-                parse_header(&mut engine, file, fc)?;
-            }
-            Err(e) => {
-                    println!("file  {file} read fail {:?}", e);
+            let file_name = Path::new(file)
+            .file_name()
+            .expect(&format!("{file} is not a file"))
+            .to_str().unwrap()
+            .split(".")
+            .next()
+            .unwrap()
+            .to_string();
+    
+            for ignore in &ignores {
+                if ignore.starts_with("*") && ignore.ends_with("*"){
+                    if file_name.contains(ignore){
+                        return true;
+                    }
                 }
+                else if ignore.starts_with("*"){
+                    let ignore = &ignore[1..];
+                    if file_name.ends_with(ignore){
+                        return true;
+                    }
+                }
+                else if ignore.ends_with("*"){
+                    let ignore = &ignore[0..ignore.len() - 1];
+                    if file_name.starts_with(ignore){
+                        return true;
+                    }
+                }
+                else if &file_name == ignore{
+                    return true;
+                }
+            }
+            false
+        };
+        for file in engine_code{
+            if ignore(&file){
+                continue;
+            }
+            match std::fs::read_to_string(&file) {
+                Ok(fc) => {
+                    parse_header(&mut engine, file, fc)?;
+                }
+                Err(e) => {
+                        println!("file  {file} read fail {:?}", e);
+                    }
+            }
         }
-    }
-    println!(
-        "class {:?}", 
-        engine.classes.first().map(|class| (class.public_apis.last(), class.properties.last()))
-    );
-    super::ast::run(&mut engine)?;
+        // println!(
+        //     "class {:?}", 
+        //     engine.classes.first().map(|class| (class.public_apis.last(), class.properties.last()))
+        // );
+        super::ast::run(&mut engine)?;
+        //TODO
+        // let engine_str = serde_json::to_string(&engine)?;
+        // std::fs::write(engine_json_path, engine_str)?;
+        engine
+    };
     super::bindgen::generate(&engine, &settings)?;
     Ok(Default::default())
 }
@@ -69,15 +98,15 @@ static FAIL_COUNT: AtomicUsize = AtomicUsize::new(0);
 fn parse_header(engine: &mut Engine, file: String, content: String) -> anyhow::Result<()>{
     let file_name = Path::new(&file).file_name().unwrap().to_str().unwrap();
     // std::fs::write(format!("engine_source/{}", file_name), &content)?;
-    if file_name != "Actor.h" {
-        return Ok(());
-    }
+    // if file_name != "Actor.h" {
+    //     return Ok(());
+    // }
     // println!("parse file {}", file_name);
     let mut lines = content.replace("\r", "").split("\n").map(|s| s.to_owned()).collect::<Vec<_>>();
-    // if let Ok(content) = std::fs::read_to_string(format!("engine_code/{}", file_name)){
-    //    lines = content.split("\r\n").map(|s| s.to_owned()).collect::<Vec<_>>();
-    // }
-    // else 
+    if let Ok(content) = std::fs::read_to_string(format!("engine_code/{}", file_name)){
+       lines = content.split("\r\n").map(|s| s.to_owned()).collect::<Vec<_>>();
+    }
+    else 
     {
         let inner_lines = std::mem::take(&mut lines);
         match std::panic::catch_unwind(||{
@@ -112,8 +141,8 @@ fn parse_header(engine: &mut Engine, file: String, content: String) -> anyhow::R
     }
     let catch_lines = std::mem::take(&mut lines);
     match std::panic::catch_unwind(||{
-            let mut catch_lines = catch_lines;
-            let mut engine = Engine::default();
+            let catch_lines = catch_lines;
+            let engine = Engine::default();
             // load_public_exports(&mut catch_lines, &mut engine, &file);
             (catch_lines, engine)
         }) {
@@ -124,7 +153,11 @@ fn parse_header(engine: &mut Engine, file: String, content: String) -> anyhow::R
             engine.value_types.append(&mut cengine.value_types);
             engine.files.push(file.clone());
             lines = clines;
-            std::fs::write(format!("engine_code/{}", file_name), lines.join("\r\n"))?;
+            let root = runtime_root();
+            engine.file_paths.insert(file_name.to_string(), file.replace(&root, ""));
+            let file_path = format!("engine_code/{}", file.replace(&root, ""));
+            std::fs::create_dir_all(&Path::new(&file_path).parent().unwrap()).ok();
+            std::fs::write(&file_path, lines.join("\r\n"))?;
             return Ok(());
         }
         Err(_e) => {
@@ -328,6 +361,8 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
         for key in sps {
             if key.contains("_API") ||
                 key.contains("STD_") ||
+                key.contains("MS_ALIGN") ||
+                key.contains("GCC_ALIGN") ||
                 key.contains("STDCAll") ||
                 key.to_lowercase().contains("inline"){
                 lines[read_line] = lines[read_line].replace(&key, "");
@@ -510,14 +545,10 @@ fn remove_defines(lines: &mut Vec<String>){
         let line = lines[read_line].trim().to_owned();
         if line.starts_with("#define"){
             let mut _remove_line;
-            let mut cur_line: &str;
             while read_line < lines.len() {
                 _remove_line = lines.remove(read_line).trim().to_string();
-                if read_line < lines.len(){
-                    cur_line = lines[read_line].trim();
-                    if !cur_line.ends_with("\\"){
-                        break;
-                    }
+                if !_remove_line.ends_with("\\"){
+                    break;
                 }
             }
             continue;
@@ -525,6 +556,7 @@ fn remove_defines(lines: &mut Vec<String>){
         read_line += 1;
     }
 }
+#[allow(unused)]
 ///解析class的公共接口
 fn load_public_exports(lines: &mut Vec<String>, engine: &mut Engine, file_path: &str){
     enum ClassFieldState{
@@ -568,7 +600,7 @@ fn load_public_exports(lines: &mut Vec<String>, engine: &mut Engine, file_path: 
                     iter.next();
                     class_info.name = iter.next().map(|s| s.to_string()).expect("class or struct name expected").trim().replace(":", "");
                     class_info.is_struct = is_struct;
-                    class_info.path = file_path.to_string();
+                    // class_info.path = file_path.to_string();
                     //class_info.
                     //class start
                     if line.ends_with("{"){                        
@@ -723,7 +755,7 @@ fn remove_fn_block(lines: &mut Vec<String>, read_line: &mut usize) -> Option<Str
     let line = lines[*read_line].trim();
     //find if first line contains { }
     let start = line.find("{");
-    let end = line.find("}");
+    let end = line.rfind("}");
     let mut contents = vec![];
     match (start, end) {
         (Some(start), Some(end)) => {
@@ -853,9 +885,6 @@ fn parse_brace_line(lines: &mut Vec<String>, read_line: &mut usize) -> Option<Br
 ///解析函数
 fn parse_function(lines: &mut Vec<String>, read_line: &mut usize, class_name: Option<&String>) -> Option<CppApi>{    
     let mut line = lines[*read_line].trim().to_string();
-    if line.contains("SetUseCustomMouseButton"){
-        println!("pause");
-    }
     let start = line.find("(");
     let end = line.rfind(")");
     let equal = line.find("=");
@@ -928,6 +957,7 @@ fn parse_function(lines: &mut Vec<String>, read_line: &mut usize, class_name: Op
         _ => None,
     }
 }
+#[allow(unused)]
 fn normalize_all(lines: &mut Vec<String>){
     let mut read_line = 0;
     while read_line < lines.len() {

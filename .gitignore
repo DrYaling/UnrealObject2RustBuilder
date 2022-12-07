@@ -13,4 +13,12 @@ Cargo.lock
 # Added by cargo
 
 /target
-/engine_code
+/engine_code/*
+/unreal_ast/*
+src/binders.rs
+/Binders/cpp/*
+Binders/rs/*
+Binders/cpp/Binder.h
+Binders/cpp/Registers.h
+Binders/cpp/FFI.h
+Binders/rs/binders.rs

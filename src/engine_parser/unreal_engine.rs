@@ -1,20 +1,26 @@
 use std::collections::BTreeMap;
+use serde::{Serialize, Deserialize};
+
 use super::config::*;
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnrealClass{    
     pub name: String,
     pub inherit: String,
     pub path: String,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_struct: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub opaque: bool,
-    pub constructors: Vec<Parameters>,
     pub properties: Vec<CppProperty>,
+    pub none_public_properties: Vec<CppProperty>,
     pub public_apis: Vec<CppApi>,
 }
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Engine{
+    #[serde(skip_serializing, default)]
     pub files: Vec<String>,
-    pub file_caches: BTreeMap<String, String>,
+    #[serde(skip_serializing, default)]
+    pub file_paths: BTreeMap<String, String>,
     pub static_apis: Vec<CppApi>,
     pub classes: Vec<UnrealClass>,
     pub enums: Vec<CppEnum>,

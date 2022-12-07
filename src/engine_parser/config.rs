@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
-use serde::Deserialize;
+#![allow(non_upper_case_globals)]
+use serde::{Deserialize, Serialize};
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ValueType {
@@ -58,12 +59,18 @@ impl PartialEq<ValueType> for i32{
         ValueType::from(*self) == *other
     }
 }
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Parameter{
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub const_param: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub ref_param: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub move_param: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub ptr_param: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub is_generic: bool,
     pub param_type: i32,
     pub name: String,
     ///c type name
@@ -72,17 +79,31 @@ pub struct Parameter{
     pub r_type: String,
     pub default_value: Option<String>,
 }
-#[derive(Debug, Clone, Default, Deserialize)]
-pub struct CppApi{
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CppApi{    
     pub return_type: i32,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_static: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_const: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_virtual: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_override: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_construstor: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_destructor: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub is_generic: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub ptr_ret: bool,
-    pub ret_is_const: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub const_ret: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub ref_ret: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub invalid: bool,
     pub class_name: String,
     pub name: String,
     pub parameters: Vec<Parameter>,
@@ -92,31 +113,42 @@ pub struct CppApi{
     pub r_type: String,
     pub function_block: Option<String>,
 }
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Parameters{
     pub parameters: Vec<Parameter>,
 }
 ///all unreal classes are opaque type
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppClass{
     pub name: String,
-    pub inherit: String,
-    pub path: String,
-    pub is_struct: bool,
-    pub constructors: Vec<Parameters>,
 }
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppEnum{
+    pub name: String,
+    pub constants: Vec<CppEnumConstant>,
+    pub enum_class: bool,
+}
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CppEnumConstant{    
     pub name: String,
     pub value: i32,
 }
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppProperty{
     pub value_type: i32,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_static: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_const: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_ptr: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub is_generic: bool,
+    ///bit value supporte only for opaque
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub bit_value: bool,
     ///not supported yet
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub unsupported: bool,
     pub name: String,
     ///c type name
@@ -125,7 +157,7 @@ pub struct CppProperty{
     pub r_type: String,    
     pub value: Option<String>,
 }
-#[derive(Debug, Clone, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExportDetails{
     pub ExportClasses: Vec<CppClass>,
     pub ExportApis: Vec<Parameters>,
@@ -135,8 +167,16 @@ pub struct ExportDetails{
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct CustomSettings{
     pub EngineRoot: String,
+    ///导出对象列表
     pub ExportClasses: Vec<String>,
+    ///强制性导出不透明对象
+    pub ForceOpaque: Vec<String>,
+    ///黑名单类型
+    pub BlackList: Vec<String>,
     pub ExportApis: Vec<String>,
     pub ExportEnums: Vec<String>,
+    ///忽略文件列表
     pub IgnoreFiles: Vec<String>,
+    ///支持的导出目录
+    pub ExportPathRoot: Vec<String>,
 }

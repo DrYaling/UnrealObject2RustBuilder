@@ -4,12 +4,15 @@ use self::config::{Parameter, CppApi};
 mod unreal_engine;
 pub mod class_parser;
 mod config;
-mod r#enum;
+// mod r#enum;
 mod bindgen;
 mod binder_rs;
 mod ast;
 pub use config::ValueType;
+#[allow(unused, dead_code)]
+///string not supported yet
 fn get_engine_str(type_str: &str) -> Option<(String, ValueType)>{
+    return None;
     match type_str {
         "FName" => Some(("crate::wrapper::FName".to_string(), ValueType::FName)),
         "FString" => Some(("crate::wrapper::FString".to_string(), ValueType::FString)),
@@ -19,7 +22,7 @@ fn get_engine_str(type_str: &str) -> Option<(String, ValueType)>{
     }
 }
 fn get_object_type(type_str: &str) -> (String, ValueType){    
-    (format!("{}Opaque", type_str), ValueType::Object)
+    (format!("{}", type_str), ValueType::Object)
 }
 fn parse_c_type(type_str: &str) -> (String, ValueType){
     crate::get_c2r_types(type_str).unwrap_or_else(||{
@@ -158,4 +161,8 @@ fn parse_function(api: &mut CppApi, fn_impl: &Vec<String>){
     let (type_str, vt) = parse_c_type(&api.rc_type);
     api.r_type = type_str;
     api.return_type = vt as i32;
+}
+#[inline]
+pub fn is_false(val: &bool) -> bool{
+    !*val
 }

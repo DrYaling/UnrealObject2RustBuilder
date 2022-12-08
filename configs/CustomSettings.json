@@ -22,6 +22,10 @@
         "FPlane",
         "FLargeWorldCoordinatesReal"
     ],
+    "TypeWrapper":[
+        ["FColor", "UColor"],
+        ["FIntPoint", "UIntPoint"]
+    ],
     "ForceOpaque": [
         "UObject"
     ],

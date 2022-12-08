@@ -83,7 +83,7 @@ impl Default for CodeGenerator{
         let header: Vec<String> = vec![
             "#pragma once".into(),
             "".into(),
-            "extern \"C\"{".into(),
+            "//extern \"C\"{".into(),
 
         ];
         let source: Vec<String> = vec![
@@ -198,7 +198,7 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
     generator.rs_ffis.push("}".to_string());
     //ffi apis
     generator.rs_source.append(&mut generator.rs_ffis);
-    generator.header.push("}".into());
+    generator.header.push("//}".into());
     generator.header.insert(1, generator.include.join("\r\n"));
     let api_defines = generator.api_defines.join("\r\n");
     let api_registers = format!(r#"

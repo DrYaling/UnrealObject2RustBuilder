@@ -146,7 +146,9 @@ impl<T: Sized> DerefMut for RefResult<T> {
             default_rs_header: rs_source.len(),
             rs_source,
             registers: vec![],
-            api_defines: vec![],
+            api_defines: vec![
+                "#include \"Binder.h\"".to_string(),
+            ],
             type_impl: vec![],
             rs_ffis: vec![
                 "\tmod ffis{".to_string(),
@@ -205,8 +207,8 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
 #include "Binder.h"
 class Plugin{{
     public:
-    void* GetDllExport(FString apiName);
-}}
+    virtual void* GetDllExport(FString apiName) = 0;
+}};
 void register_all(Plugin* plugin){{
     {}
 }}"#, generator.registers.join("\r\n"));
@@ -280,7 +282,9 @@ fn gen_opaque(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerato
     generator.rs_source.push(format!(r#"pub struct {}{{
     inner: *mut {}
 }}
-impl {}{{"#, class.name, ts.alis, class.name));
+impl {}{{
+    #[inline]
+    pub fn inner(&self) -> *mut {} {{ self.inner }}"#, class.name, ts.alis, class.name, ts.alis));
     parse_properties(engine, class, generator, true, settings)?;
     parse_functions(engine, class, generator, true, settings)?;
     Ok(())
@@ -315,9 +319,9 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     let mut api_map: BTreeMap<String, i32> = BTreeMap::default();
     'api: for api in &class.public_apis {        
         let parameters = api.parameters.clone();
-        // if api.name == "GetActorUpVector1"{
-        //     print!("pause");
-        // }
+        if api.name == "AdditionalStatObject"{
+            print!("pause");
+        }
         //api with opaque(and not exported) none ptr parameter  will not export
         for param in &api.parameters {
             if is_opaque(&param.type_str, engine, settings) && !param.ptr_param{
@@ -452,20 +456,29 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         //others
         else{
             //cpp ret result caster
-            let ref_ret_caster = if ref_to_ptr {"(void*)&"}else{""};
+            let result_caster = if ref_to_ptr {
+                format!("({})&", cpp_ret)
+            }else{
+                if api.ptr_ret{
+                    format!("({})", cpp_ret)
+                }
+                else{
+                    "".to_string()
+                }
+            };
             let api_name = format!("uapi_{}_{}", class_name, designed_api_name);
             let return_flag = if cpp_ret == "void"{""}else{"return "};
             let content = if api.is_static{
                 format!(r#"   {} {}({}){{
-        {} {}(({}*)target)->{}({});
-    }}"#, cpp_ret, designed_api_name, full_proper.join(", "), return_flag,
-    ref_ret_caster, class_name, api.name, parameter_name_list)
+        {} {}{}::{}({});
+    }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
+    result_caster, class_name, api.name, parameter_name_list)
             }
             else{
                 format!(r#"   {} {}({}){{
         {} {}(({}*)target)->{}({});
     }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
-    ref_ret_caster, class_name, api.name, parameter_name_list)
+    result_caster, class_name, api.name, parameter_name_list)
             };
             generator.header.push(content);
             api_name
@@ -503,7 +516,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
 
         // cpp register         
         generator.api_defines.push(format!(r#"
-using {cpp_api_name}Fn = {}(*)({});"#, api.rc_type, full_proper.join(",")));
+using {cpp_api_name}Fn = void(*)({}(*)({}));"#, cpp_ret, full_proper.join(",")));
 
         generator.registers.push(format!(r#"
     auto const api{cpp_api_name} = ({cpp_api_name}Fn)plugin->GetDllExport(TEXT("{ffi_api_name}\0"));
@@ -541,7 +554,7 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
         //cpp getter api
         let get_cpp_name = format!("get_{class_name}_{}", property.name);
         let content = format!(r#"
-    {} {get_cpp_name}(const {cpp_class_atlas}* target) const{{ return (({class_name}*)target) -> {};}};"#,
+    {} {get_cpp_name}({cpp_class_atlas}* target) {{ return (({class_name}*)target) -> {};}};"#,
     property.type_str, property.name);
     
         generator.header.push(content);
@@ -573,7 +586,7 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
         //get cpp register
         //using EntryUnrealBindingsFn = uint32_t(*)(UnrealBindings bindings, RustBindings *rust_bindings);
         generator.api_defines.push(format!(r#"
-using {api_name}Fn = {}(*)(const {cpp_class_atlas}* target);"#, property.type_str));
+using {api_name}Fn = void(*)({}(*)({cpp_class_atlas}* target));"#, property.type_str));
 
     generator.registers.push(format!(r#"
     auto const api{api_name} = ({api_name}Fn)plugin->GetDllExport(TEXT("{api_name}\0"));
@@ -596,7 +609,7 @@ using {api_name}Fn = {}(*)(const {cpp_class_atlas}* target);"#, property.type_st
         generator.rs_ffis.push(handler_code);
         //cpp setter ffi api
         generator.api_defines.push(format!(r#"
-using {api_name}Fn = void(*)(const {cpp_class_atlas}* target, {} value);"#, property.type_str));
+using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, property.type_str));
         generator.registers.push(format!(r#"    auto const api{api_name} = ({api_name}Fn)plugin->GetDllExport(TEXT("{api_name}\0"));
     if(api{api_name}){{
         api{api_name}(&{set_cpp_name});

@@ -307,6 +307,7 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             line.contains("UCLASS") ||
             line.contains("UPROPERTY") ||
             line.contains("DEPRECATED_") ||
+            line.contains("_DEPRECATED") ||
             line.contains("UINTERFACE") ||
             line.contains("DEFINE_ACTORDESC_TYPE") ||
             line.contains("DECLARE_") ||
@@ -371,7 +372,8 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
                 lines[read_line] = lines[read_line].replace(umeta_info, "");
             }
         }
-        if line.starts_with("#if UE_EDITOR") || line.starts_with("#if WITH_EDITOR"){
+        //remove #if block
+        if line.starts_with("#if UE_EDITOR"){
             lines[read_line].clear();
             read_line += 1;
             let mut endif = 0;

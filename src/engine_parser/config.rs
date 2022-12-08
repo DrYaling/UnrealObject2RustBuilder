@@ -171,7 +171,7 @@ pub struct CustomSettings{
     pub ExportClasses: Vec<String>,
     ///强制性导出不透明对象
     pub ForceOpaque: Vec<String>,
-    ///黑名单类型
+    ///黑名单类型(接口)
     pub BlackList: Vec<String>,
     pub ExportApis: Vec<String>,
     pub ExportEnums: Vec<String>,

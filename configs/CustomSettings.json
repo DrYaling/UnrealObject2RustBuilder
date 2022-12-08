@@ -1,5 +1,5 @@
 {
-    "EngineRoot": "F:/UE5/UnrealEngine-5.0.0-early-access-2/Engine",
+    "EngineRoot": "F:/UE5/Epic Games/UE_5.0/Engine",
     "ExportClasses":[
         "UObject",
         "AActor",
@@ -19,13 +19,15 @@
         "FMatrix",
         "FTransform",
         "FRandomStream",
-        "FPlane" 
+        "FPlane",
+        "FLargeWorldCoordinatesReal"
     ],
     "ForceOpaque": [
         "UObject"
     ],
     "BlackList": [
-
+        "AActor.GetDataLayerObjects",
+        "FIntPoint.ComponentMax"
     ],
     "ExportApis":[
         
@@ -39,21 +41,11 @@
     "ExportPathRoot": [
         "Runtime/AIModule/Public",
         "Runtime/BlueprintRuntime/Public",
-        "Runtime/CinematicCamera/Public",
         "Runtime/Core/",
-        "Runtime/UnrealAudio/Public",
         "Runtime/TimeManagement/Public",
-        "Runtime/Renderer/Public",
-        "Runtime/RenderCore/Public",
-        "Runtime/PhysicsCore/Public",
         "Runtime/Navmesh/Public",
-        "Runtime/InputCore/Public",
         "Runtime/Engine/",
-        "Runtime/CoreUObject/Public",
-        "Runtime/Experimental/",
-        "Runtime/Landscape/Public",
-        "Runtime/RuntimeAssetCache/Public",
-        "Runtime/UnrealAudio/Public"
+        "Runtime/CoreUObject/Public"
     ],
     "IgnoreFiles":[
         "Android*",

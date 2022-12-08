@@ -140,6 +140,8 @@ impl<T: Sized> DerefMut for RefResult<T> {
                 "#include <cstdint>".into(),
                 "#include <cstdlib>".into(),
                 "#include <ostream>".into(),
+                "#include \"CoreTypes.h\"".into(),
+                "#include \"Math/Color.h\"".into(),
             ],
             source,
             header,
@@ -199,6 +201,7 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
     //ffi apis
     generator.rs_source.append(&mut generator.rs_ffis);
     generator.header.push("//}".into());
+    insert_cpp_wrappers(&mut generator)?;
     generator.header.insert(1, generator.include.join("\r\n"));
     let api_defines = generator.api_defines.join("\r\n");
     let api_registers = format!(r#"
@@ -212,6 +215,7 @@ class Plugin{{
 void register_all(Plugin* plugin){{
     {}
 }}"#, generator.registers.join("\r\n"));
+    insert_rs_wrappers(&mut generator)?;
     generator.rs_source.insert(
         generator.default_rs_header, 
         generator.type_impl
@@ -226,7 +230,24 @@ void register_all(Plugin* plugin){{
     std::fs::write("binders/rs/binders.rs", generator.rs_source.join("\r\n"))?;
     Ok(())
 }
+///insert wrapped types into rust code
+fn insert_rs_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
+    if let Ok(wrapper) = std::fs::read_to_string("Binders/wrapper.rs"){
+        generator.rs_source.insert(generator.default_rs_header, wrapper);
+    }
+    Ok(())
+}
+///insert wrapped types into binder code
+fn insert_cpp_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
+    if let Ok(wrapper) = std::fs::read_to_string("Binders/wrapper.h"){
+        generator.header.insert(1, wrapper);
+    }
+    Ok(())
+}
 fn is_opaque(type_str: &str, engine: &Engine, settings: &CustomSettings) -> bool{
+    if is_wrapper_type(type_str, settings){
+        return false;
+    }
     if settings.ForceOpaque.iter().find(|fo| fo.as_str() == type_str).is_some(){
         return true;
     }
@@ -292,23 +313,54 @@ impl {}{{
 ///生成透明对象的绑定信息
 fn gen_none_opaque(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator, settings: &CustomSettings) -> anyhow::Result<()>{
     let object_name = format!("{}", class.name);
-    //rust type impl
-    generator.rs_source.push(format!(r#"#[repr(C)]
+    //包装类型不定义类型
+    if !is_wrapper_type(&class.name, settings){
+        //rust type impl
+        generator.rs_source.push(format!(r#"#[repr(C)]
 pub struct {}{{
 {}
 }}
 impl {}{{"#, 
-    object_name, 
-    class.properties.iter().map(|field|{
-        format!("\tpub {}: {}", field.name, field.r_type)
-    }).collect::<Vec<_>>().join(",\r\n"),
-    object_name));
+        object_name, 
+        class.properties.iter().map(|field|{
+            format!("\tpub {}: {}", field.name, field.r_type)
+        }).collect::<Vec<_>>().join(",\r\n"),
+        object_name));
+    }
+    else{
+        generator.rs_source.push(format!("impl {} {{", object_name));
+    }
     // parse_properties(engine, class, generator, &mut rs_handlers)?;
     parse_functions(engine, class, generator, false, settings)?;
     Ok(())
 }
 fn export_type(type_str: &str, settings: &CustomSettings) -> bool{
     is_primary(type_str) || settings.ExportClasses.iter().find(|x| x.as_str() == type_str).is_some()
+}
+///api is in black list
+fn black_api(api: &CppApi, settings: &CustomSettings) -> bool{
+    if api.class_name.is_empty(){
+        settings.BlackList.iter().find(|bl| *bl == &api.name).is_some()
+    }
+    else{
+        let api_name = format!("{}.{}", api.class_name, api.name);
+        settings.BlackList.iter().find(|bl| *bl == &api_name).is_some()
+    }
+}
+///field is in black list
+fn black_field(field: &CppProperty, settings: &CustomSettings) -> bool{
+    settings.BlackList.iter().find(|bl| *bl == &field.name).is_some()
+}
+fn get_wrapper_type(cpp_type: &str, settings: &CustomSettings) -> String{
+    if let Some(tp) = settings.TypeWrapper.iter().find(|x| x[0].as_str() == cpp_type){
+        tp[1].clone()
+    }
+    else{
+        cpp_type.to_string()
+    }
+}
+fn is_wrapper_type(cpp_type: &str, settings: &CustomSettings) -> bool{
+    settings.TypeWrapper.iter().find(|x| x[0].as_str() == cpp_type).is_some()
 }
 ///生成函数
 fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator, opaque: bool, settings: &CustomSettings) -> anyhow::Result<()>{    
@@ -317,11 +369,14 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     // let rs_class_atlas = if opaque {class_name.clone() + "Opaque"}else{class_name.clone()};
     //api map key is api name, value is api with overload count
     let mut api_map: BTreeMap<String, i32> = BTreeMap::default();
-    'api: for api in &class.public_apis {        
-        let parameters = api.parameters.clone();
-        if api.name == "AdditionalStatObject"{
-            print!("pause");
+    'api: for api in &class.public_apis {   
+        if black_api(api, settings){
+            continue;
         }
+        let parameters = api.parameters.clone();
+        // if api.name == "AdditionalStatObject"{
+        //     print!("pause");
+        // }
         //api with opaque(and not exported) none ptr parameter  will not export
         for param in &api.parameters {
             if is_opaque(&param.type_str, engine, settings) && !param.ptr_param{
@@ -357,6 +412,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         //make ref result to ptr between ffi api
         let mut ref_to_ptr = false;
         let rs_ret_type = generator.insert_rs_type(&api.r_type, engine, settings);
+        let wrapper_class = is_wrapper_type(&api.class_name, settings);
+        //api result type
         let (cpp_ret, rs_ret_liftime, rs_ret_origin) = match opaque_ret {
             true => {
                 //ref
@@ -372,8 +429,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 }
             },
             false => {
-                if api.rc_type == "void"{
-                    (api.rc_type.to_string(), format!(""), format!(""))
+                if api.rc_type == "void" || api.rc_type.is_empty(){
+                    ("void".to_string(), format!(""), format!(""))
                 }
                 else{
                     if api.ptr_ret{
@@ -386,7 +443,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                         (format!("{}*", api.rc_type), format!(" ->&'a {}", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.name))
                     }
                     else{
-                        (api.rc_type.to_string(), format!(" -> {}", rs_ret_type.name), format!(" -> {}", rs_ret_type.name))
+                        (get_wrapper_type(&api.rc_type, settings), format!(" -> {}", rs_ret_type.name), format!(" -> {}", rs_ret_type.name))
                     }
                 }
             }
@@ -413,7 +470,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             rs_ffi_parameters.push(format!("{}{}", rs_tag, ts.alis));
             rs_parameters.push(format!("{}", prop.name));
             rs_fn_parameters.push(format!("{}: {}{}", prop.name,  rs_tag, ts.alis));
-            format!("{}{tag} {}", prop.type_str, prop.name)
+            format!("{}{tag} {}", get_wrapper_type(&prop.type_str, settings), prop.name)
         }).collect::<Vec<_>>();
         let mut full_proper = pstr.clone();
         if !api.is_construstor && !api.is_static{
@@ -440,7 +497,21 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         }
         let parameter_name_list = api.parameters
         .iter()
-        .map(|p| p.name.clone())
+        .map(|p| {      
+            //wrapper types      
+            if is_wrapper_type(&p.type_str, settings){
+                let type_str = get_wrapper_type(&p.type_str, settings);
+                if p.ptr_param{
+                    format!("{type_str}2{}(*{})", p.type_str, p.name)
+                }
+                else{
+                    format!("{type_str}2{}({})", p.type_str, p.name)
+                }
+            }
+            else{
+                p.name.clone()
+            }
+        })
         .collect::<Vec<_>>()
         .join(", ");
         //constructor
@@ -475,10 +546,27 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     result_caster, class_name, api.name, parameter_name_list)
             }
             else{
-                format!(r#"   {} {}({}){{
-        {} {}(({}*)target)->{}({});
-    }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
-    result_caster, class_name, api.name, parameter_name_list)
+                let wrapper_name = get_wrapper_type(&class_name, settings);
+                let (wrapper_result_start, wrapper_result_end) = if is_wrapper_type(&api.rc_type, settings){
+                    let ret_name = get_wrapper_type(&api.rc_type, settings);
+                    (format!("{}2{ret_name}(", api.rc_type), format!(")"))
+                }
+                else{
+                    (format!(""), format!(""))
+                };
+                //包装类型
+                if wrapper_class{
+                    format!(r#"   {} {}({}){{
+            {} {wrapper_result_start}{}({wrapper_name}2{class_name}(*({wrapper_name}*)target)).{}({}){wrapper_result_end};
+        }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
+        result_caster, api.name, parameter_name_list)
+                }
+                else{
+                    format!(r#"   {} {}({}){{
+            {} {wrapper_result_start}{}(({}*)target)->{}({}){wrapper_result_end};
+        }}"#, cpp_ret, api_name, full_proper.join(", "), return_flag,
+        result_caster, class_name, api.name, parameter_name_list)
+                }
             };
             generator.header.push(content);
             api_name
@@ -544,6 +632,9 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
     let cpp_class_atlas = "void";
     let rs_class_alas = if opaque {class.name.clone() + "Opaque"} else{ class.name.clone()};
     for property in &class.properties {
+        if black_field(property, settings){
+            continue;
+        }
         if property.is_const || property.is_static || !should_export_property(engine, property){
             continue;
         }

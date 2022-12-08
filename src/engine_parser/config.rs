@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 #[repr(C)]
@@ -182,5 +181,5 @@ pub struct CustomSettings{
     ///支持的导出目录
     pub ExportPathRoot: Vec<String>,
     ///cpp style type wrapper, key is unreal type, value is the wrapped type(witch should be defined by user)
-    pub TypeWrapper: BTreeMap<String, String>,
+    pub TypeWrapper: Vec<[String;2]>,
 }

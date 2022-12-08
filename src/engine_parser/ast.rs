@@ -314,10 +314,33 @@ fn parse_class(node: &Node, state: &mut ParseState) -> anyhow::Result<Option<Unr
                     class.none_public_properties.push(field);
                 }
             },
+            clang_ast::Kind::CXXRecordDecl => {
+                if kind.tagUsed == "union"{
+                    parse_union(node, &mut class, state)?;
+                }
+            }
             _ => (),
         }
     }
     Ok(Some(class))
+}
+//parse union to property at this moment
+fn parse_union(node: &Node, class: &mut UnrealClass, state: &mut ParseState) -> anyhow::Result<()>{
+    //only struct is supported
+    if !class.is_struct{
+        return Ok(());
+    }
+    //parse first stuct
+    for child in &node.inner {
+        if child.kind.kind == clang_ast::Kind::CXXRecordDecl && child.kind.tagUsed == "struct"{
+            if let Some(mut structure) = parse_class(child, state)?{
+                class.properties.append(&mut structure.properties);
+                class.none_public_properties.append(&mut structure.none_public_properties);
+                break;
+            }
+        }
+    }
+    Ok(())
 }
 ///parse api
 fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{

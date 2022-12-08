@@ -24,6 +24,8 @@
     ],
     "TypeWrapper":[
         ["FColor", "UColor"],
+        ["FLinearColor", "ULinearColor"],
+        ["FIntVector", "UIntVector"],
         ["FIntPoint", "UIntPoint"]
     ],
     "ForceOpaque": [
@@ -31,7 +33,8 @@
     ],
     "BlackList": [
         "AActor.GetDataLayerObjects",
-        "FIntPoint.ComponentMax"
+        "FIntPoint.ComponentMax",
+        "FColor.DWColor"
     ],
     "ExportApis":[
         

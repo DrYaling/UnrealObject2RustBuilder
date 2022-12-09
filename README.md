@@ -12,5 +12,8 @@ simple unreal object builder from c/cpp to rust
  
     llvm(15.*) and clang.exe be set to system env "Path"
 #known unsupported features
+
     PLATFORM_LITTLE_ENDIAN defined structures
+    
+    generic types/apis and fields
     

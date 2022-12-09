@@ -95,7 +95,6 @@ void register_all(Plugin* plugin);"#),
         let source: Vec<String> = vec![
             "#include \"Binder.h\"".into(),
             "extern \"C\"{".into(),
-            "\tvoid FFIFreeString(char* ptr) { free(ptr); }".into(),
         ];
         
         let rs_source = vec![
@@ -141,8 +140,8 @@ impl<T: Sized> DerefMut for RefResult<T> {
             default_rs_header: rs_source.len(),
             rs_source,
             registers: vec![
-                "auto const ffi_string_free_handler = (void(*)(void(*)(char* target)))plugin->GetDllExport(TEXT(\"set_FFIFreeString_handler\\0\"));".to_string(),
-                "\tif(ffi_string_free_handler){ ffi_string_free_handler(&FFIFreeString); }".to_string()
+                "auto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT(\"create_native_string\\0\"));".to_string(),
+                "\tif(api_create_native_string){ create_native_string = api_create_native_string; }".to_string()
             ],
             api_defines: vec![
             ],
@@ -481,7 +480,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             let is_string_ret = is_string_type(&prop.type_str);
             if is_string_ret{
                 rs_ffi_parameters.push(format!("*const std::os::raw::c_char"));
-                rs_string_translations.push(format!("string_2_char_str!({}, {});", prop.name, prop.name));
+                rs_string_translations.push(format!("string_2_cstr!({}, {});", prop.name, prop.name));
                 rs_parameters.push(format!("{}", prop.name));
                 rs_fn_parameters.push(format!("{}: String", prop.name));
                 format!("char* {}", prop.name)
@@ -806,9 +805,12 @@ using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, t
         api{api_name}(&{set_cpp_name});
     }}"#));
         //if is string, should be convert to String
+        //not supported yet
         let (getter_caster, setter_caster, get_caster_end, set_caster_end) = if is_string_type{
+            panic!("not supported field string yet");
+            #[allow(unreachable_code)]
             (
-                "char_str_2_string(".to_string(), "string_2_char_str(".to_string(), 
+                "error!!!!(".to_string(), "error!!!!(".to_string(), 
                 " as *const std::os::raw::c_char)".to_string(), ")".to_string()
             )
         }

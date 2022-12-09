@@ -85,12 +85,17 @@ FIntPoint UIntPoint2FIntPoint(const UIntPoint& input) {
 FString Utf82FString(const char* utfstr){
     return FString(utfstr);
 }
+using create_native_string_handler = char* (*)(const char* c_str, uint32);
+create_native_string_handler create_native_string = nullptr;
 const char* FString2Utf8(FString fstr) {
+    if (create_native_string == nullptr) {
+        return nullptr;
+    }
     TCHAR* pSendData = fstr.GetCharArray().GetData();
     const char* dst = (const char*)TCHAR_TO_UTF8(pSendData);
     auto const dataSize = strlen(dst);
-    char* buffer = (char*)malloc(dataSize);
-    memcpy(buffer, dst, dataSize);
+    char* buffer = create_native_string(dst, dataSize);
+    // UE_LOG(LogTemp, Display, TEXT("FString2Utf8 %s,ptr %p, size %d"), *fstr, buffer, dataSize);
     return buffer;
 }
 FName Utf82FName(const char* utfstr){

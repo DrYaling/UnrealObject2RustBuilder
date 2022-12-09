@@ -9,15 +9,14 @@ mod bindgen;
 mod binder_rs;
 mod ast;
 pub use config::ValueType;
-#[allow(unused, dead_code)]
 ///string not supported yet
 fn get_engine_str(type_str: &str) -> Option<(String, ValueType)>{
-    return None;
     match type_str {
-        "FName" => Some(("crate::wrapper::FName".to_string(), ValueType::FName)),
-        "FString" => Some(("crate::wrapper::FString".to_string(), ValueType::FString)),
-        "char*" => Some(("*mut std::os::raw::c_char".to_string(), ValueType::CStr)),
-        "const char*" => Some(("*const std::os::raw::c_char".to_string(), ValueType::CStr)),
+        "FName" => Some(("String".to_string(), ValueType::FName)),
+        "FText" => Some(("String".to_string(), ValueType::FText)),
+        "FString" => Some(("String".to_string(), ValueType::FString)),
+        "char*" => Some(("String".to_string(), ValueType::CStr)),
+        "const char*" => Some(("String".to_string(), ValueType::CStr)),
         _ => None
     }
 }

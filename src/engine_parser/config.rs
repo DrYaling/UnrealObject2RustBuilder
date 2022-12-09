@@ -23,6 +23,7 @@ pub enum ValueType {
     FName = 15,
     FString = 16,
     Object = 17,
+    FText = 18,
     Undefined = 25,
 }
 impl From<i32> for ValueType{
@@ -46,6 +47,7 @@ impl From<i32> for ValueType{
             15 => Self::FName,
             16 => Self::FString,
             17 => Self::Object,
+            18 => Self::FText,
             _ => Self::Undefined,
         }
     }

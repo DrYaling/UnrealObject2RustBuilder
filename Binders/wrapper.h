@@ -82,3 +82,31 @@ FIntPoint UIntPoint2FIntPoint(const UIntPoint& input) {
     ret.Y = input.Y;
     return ret;
 }
+FString Utf82FString(const char* utfstr){
+    return FString(utfstr);
+}
+const char* FString2Utf8(FString fstr) {
+    TCHAR* pSendData = fstr.GetCharArray().GetData();
+    const char* dst = (const char*)TCHAR_TO_UTF8(pSendData);
+    auto const dataSize = strlen(dst);
+    char* buffer = (char*)malloc(dataSize);
+    memcpy(buffer, dst, dataSize);
+    return buffer;
+}
+FName Utf82FName(const char* utfstr){
+    auto fstr = FString(utfstr);
+    return FName(*fstr);
+}
+
+const char* FName2Utf8(FName fname){
+    auto fstr = fname.ToString();
+    return FString2Utf8(fstr);
+}
+FText Utf82FText(const char* utfstr){
+    auto fstr = FString(utfstr);
+    return FText::FromString(fstr);
+}
+const char* FText2Utf8(FText text){
+    auto fstr = text.ToString();
+    return FString2Utf8(fstr);
+}

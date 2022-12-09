@@ -20,7 +20,11 @@
         "FTransform",
         "FRandomStream",
         "FPlane",
-        "FLargeWorldCoordinatesReal"
+        "FLargeWorldCoordinatesReal",
+        "FString",
+        "FText",
+        "FName",
+        "UGameplayStatics"
     ],
     "TypeWrapper":[
         ["FColor", "UColor"],
@@ -34,7 +38,10 @@
     "BlackList": [
         "AActor.GetDataLayerObjects",
         "FIntPoint.ComponentMax",
-        "FColor.DWColor"
+        "FColor.DWColor",
+        "FName.IsValidXName",
+        "FName.DebugDump",
+        "UObject.SourceFileTagName"
     ],
     "ExportApis":[
         

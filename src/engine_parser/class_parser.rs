@@ -303,6 +303,11 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             read_line += 1;
             continue;
         }
+        if line == "GENERATED_UCLASS_BODY()"{
+            lines[read_line] = "public:".to_string();
+            read_line += 1;
+            continue;
+        }
         if line.contains("UENUM") ||
             line.contains("UCLASS") ||
             line.contains("UPROPERTY") ||
@@ -344,7 +349,6 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             line.contains("UFUNCTION") ||
             line.contains("EFFECT_PRESET_METHODS") ||
             line.contains("DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL") ||
-            line.contains("GENERATED_") ||
             line.contains("DECLARE_DYNAMIC_MULTICAST_DELEGATE") ||
             line.contains("DECLARE_LOG_CATEGORY_EXTERN") ||
             line.contains("GENERATED_USTRUCT_BODY") ||

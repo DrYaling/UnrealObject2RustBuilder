@@ -89,7 +89,8 @@ class Plugin{{
     public:
     virtual void* GetDllExport(FString apiName) = 0;
 }};
-void register_all(Plugin* plugin);"#),
+void register_all(Plugin* plugin);
+#define RSTR_TO_TCHAR(str, len) (TCHAR*)FUTF8ToTCHAR((const ANSICHAR*)str,(int32)len).Get()"#),
 
         ];
         let source: Vec<String> = vec![
@@ -140,8 +141,10 @@ impl<T: Sized> DerefMut for RefResult<T> {
             default_rs_header: rs_source.len(),
             rs_source,
             registers: vec![
-                "auto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT(\"create_native_string\\0\"));".to_string(),
-                "\tif(api_create_native_string){ create_native_string = api_create_native_string; }".to_string()
+                "\r\n\tauto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT(\"create_native_string\\0\"));".to_string(),
+                "\tif(api_create_native_string){ create_native_string = api_create_native_string; }".to_string(),
+                "\t\n\tauto const api_reset_rust_string = (reset_rust_string_handler)plugin->GetDllExport(TEXT(\"reset_rust_string\\0\"));".to_string(),
+                "\tif(api_reset_rust_string){ reset_rust_string = api_reset_rust_string; }".to_string(),                
             ],
             api_defines: vec![
             ],
@@ -329,6 +332,9 @@ impl {}{{"#,
     parse_functions(engine, class, generator, false, settings)?;
     Ok(())
 }
+fn is_void(type_str: &str) -> bool{
+    type_str == "void" || type_str == ""
+}
 fn export_type(type_str: &str, settings: &CustomSettings) -> bool{
     is_primary(type_str) || settings.ExportClasses.iter().find(|x| x.as_str() == type_str).is_some()
 }
@@ -477,22 +483,59 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         let mut rs_string_translations = vec![];
         let pstr = parameters.into_iter().map(|prop|{
             //ffi value should be transform as ptr or value
-            let is_string_ret = is_string_type(&prop.type_str);
-            if is_string_ret{
-                rs_ffi_parameters.push(format!("*const std::os::raw::c_char"));
-                rs_string_translations.push(format!("string_2_cstr!({}, {});", prop.name, prop.name));
-                rs_parameters.push(format!("{}", prop.name));
-                rs_fn_parameters.push(format!("{}: String", prop.name));
-                format!("char* {}", prop.name)
+            let is_string_param = is_string_type(&prop.type_str);
+            if is_string_param{
+                //can modify
+                if !prop.const_param && prop.ref_param{
+                    rs_string_translations.push(format!("string_2_rstr!({}, {});", prop.name, prop.name));
+                    rs_ffi_parameters.push(format!("RefString"));
+                    rs_parameters.push(format!("{}", prop.name));
+                    rs_fn_parameters.push(format!("{}: &mut String", prop.name));
+                    format!("RefString {}", prop.name)
+                }
+                else{
+                    rs_string_translations.push(format!("string_2_cstr!({}, {});", prop.name, prop.name));
+                    rs_ffi_parameters.push(format!("NativeString"));
+                    rs_parameters.push(format!("{}", prop.name));
+                    rs_fn_parameters.push(format!("{}: &str", prop.name));
+                    format!("NativeString {}", prop.name)
+                }
             }
             else{
                 let rs_tag;
-                let tag = if prop.ptr_param{
+                let mut ffi_tag: &str = "";
+                //export type use rust wrapper
+                let exported_type =  export_type(&prop.type_str, settings);
+                let void_ptr = is_void(&prop.type_str) && prop.ptr_param;
+                let tag = 
+                if void_ptr{
                     rs_tag = "*mut ";
+                    ffi_tag = "*mut ";
+                    "*"
+                }
+                else if prop.ptr_param{
+                    if exported_type{ 
+                        if prop.const_param{
+                            rs_tag = "&";
+                        }
+                        else{
+                            rs_tag = "&mut ";
+                        }
+                    }
+                    else { rs_tag = "*mut ";}
+                    ffi_tag = "*mut ";            
                     "*"
                 }
                 else if prop.ref_param{
-                    rs_tag = "&";
+                    //none exported type will use ptr(nor will not export)
+                    if prop.const_param{
+                        rs_tag = "&";
+                        ffi_tag = "&";
+                    }
+                    else{
+                        rs_tag = "&mut ";
+                        ffi_tag = "&mut ";
+                    }
                     "&"
                 }
                 else{
@@ -500,9 +543,21 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                     ""
                 };
                 let ts = generator.insert_rs_type(&prop.r_type, engine, settings);
-                rs_ffi_parameters.push(format!("{}{}", rs_tag, ts.alis));
-                rs_parameters.push(format!("{}", prop.name));
-                rs_fn_parameters.push(format!("{}: {}{}", prop.name,  rs_tag, ts.alis));
+                //ptr param with export use rust wrapper
+                let rs_param_type_name = if void_ptr{"c_void"}else if exported_type{ts.name.as_str()} else {ts.alis.as_str()};
+                rs_ffi_parameters.push(format!("{}{}", ffi_tag, ts.alis));
+                if exported_type && prop.ptr_param{
+                    if is_primary(&prop.type_str){
+                        rs_parameters.push(format!("{} as *mut _", prop.name));
+                    }
+                    else{
+                        rs_parameters.push(format!("{}.inner()", prop.name));
+                    }
+                }
+                else{                    
+                    rs_parameters.push(format!("{}", prop.name));
+                }
+                rs_fn_parameters.push(format!("{}: {}{}", prop.name,  rs_tag, rs_param_type_name));
                 format!("{}{tag} {}", get_wrapper_type(&prop.type_str, settings), prop.name)
             }
         }).collect::<Vec<_>>();
@@ -530,16 +585,35 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
         }
         let mut c_api_local_parameters = vec![];
+        let mut c_api_modifiers = vec![];
         let parameter_name_list = api.parameters
         .iter().enumerate()
         .map(|(idx, p)| { 
             if is_string_type(&p.type_str){
                 let ref_tag = if p.ptr_param{"&"}else{""};
                 let param_name = format!{"fstr{idx}"};
-                let local_var = match p.type_str.as_str() {
-                    "FName"     => format!("auto {param_name} = Utf82FName({});", p.name),
-                    "FString"   => format!("auto {param_name} = Utf82FString({});", p.name),
-                    _/*"FText"*/=> format!("auto {param_name} = Utf82FText({});", p.name),
+                //none const ref string param will modify native string buffer
+                let local_var = match (p.const_param, p.ref_param) {
+                    (false, true) => {
+                        match p.type_str.as_str() {
+                            "FString"   => {
+                                c_api_modifiers.push(format!("ResetFStringBuffer({param_name}, {});", p.name));
+                                format!("auto {param_name} = Utf8Ref2FString({});", p.name)
+                            },
+                            "FText"     => {
+                                c_api_modifiers.push(format!("ResetFTextBuffer({param_name}, {});", p.name));
+                                format!("auto {param_name} = Utf8Ref2FText({});", p.name)
+                            },
+                            _/*FName*/  => panic!("FName can not be modified"),
+                        }
+                    }
+                    _ => {
+                        match p.type_str.as_str() {
+                            "FName"     => format!("auto {param_name} = Utf82FName({});", p.name),
+                            "FString"   => format!("auto {param_name} = Utf82FString({});", p.name),
+                            _/*"FText"*/=> format!("auto {param_name} = Utf82FText({});", p.name),
+                        }
+                    },
                 };
                 c_api_local_parameters.push(local_var);
                 format!("{ref_tag}{param_name}")
@@ -562,22 +636,22 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         })
         .collect::<Vec<_>>()
         .join(", ");
-        let mut c_api_local_parameters = c_api_local_parameters.join("\r\n");
-        if c_api_local_parameters.len() > 0{
-            c_api_local_parameters.push_str("\r\n\t\t");
-        }
-        let mut rs_string_translations = rs_string_translations.join("\r\n");
-        if rs_string_translations.len() > 0 {
-            rs_string_translations.push_str("\r\n\t\t");
-        }
+        //cpp function callback
+        let mut func_block: Vec<String> = vec![];
+
         //constructor
         let cpp_api_name = if api.is_construstor{
-            let api_name = format!("uapi_{}_New{}", class_name, api.parameters.len());
-            let content = format!(r#"       {} {}({}){{
-        {c_api_local_parameters}return new {}({});
-    }}"#, cpp_ret, api_name, full_proper.join(", "),
-            class_name, parameter_name_list);
-            generator.source.push(content);
+            let api_name = format!("\tuapi_{}_New{}", class_name, api.parameters.len());
+            func_block.push(format!("\t{cpp_ret} {api_name}({}){{", full_proper.join(", ")));
+            if !c_api_local_parameters.is_empty(){
+                c_api_local_parameters.iter().for_each(|lp| func_block.push(format!("\t\t{lp}")));
+            }
+            func_block.push(format!("\t\tauto _this = new {class_name}({parameter_name_list});"));
+            if c_api_modifiers.len() > 0{
+                c_api_modifiers.iter().for_each(|lp| func_block.push(format!("\t\t{lp}")));
+            }
+            func_block.push("\t\treturn _this;\r\n\t}".to_string());
+            generator.source.push(func_block.join("\r\n"));
             api_name
         }
         //others
@@ -614,26 +688,40 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                     (format!(""), format!(""))
                 }
             };
-            let content = if api.is_static{
-                format!(r#"     {cpp_ret} {api_name}({}){{
-       {c_api_local_parameters}{return_flag}{wrapper_result_start}{result_caster}({class_name}::{}({parameter_name_list})){wrapper_result_end};
-    }}"#, full_proper.join(", "), api.name)
+            let result_local = if cpp_ret == "void"{""}else{"auto result = "};
+            let return_result = if cpp_ret == "void"{""}else{"result;"};
+            //function 
+            func_block.push(format!("\t{cpp_ret} {api_name}({}){{", full_proper.join(", ")));
+            //local parameters
+            if c_api_local_parameters.len() > 0{
+                c_api_local_parameters.iter().for_each(|lp| func_block.push(format!("\t\t{lp}")));
+            }
+            //static api
+            if api.is_static{
+                //calling
+                func_block.push(format!("\t\t{result_local}{wrapper_result_start}{result_caster}({class_name}::{}({parameter_name_list})){wrapper_result_end};", api.name));                
             }
             else{
                 let wrapper_name = get_wrapper_type(&class_name, settings);
                 //包装类型
                 if wrapper_class{
-                    format!(r#"    {cpp_ret} {api_name}({}){{
-       {c_api_local_parameters}{return_flag}{wrapper_result_start}{result_caster}({wrapper_name}2{class_name}(*({wrapper_name}*)target)).{}({parameter_name_list}){wrapper_result_end};
-    }}"#, full_proper.join(", "), api.name)
+                    //calling
+                    func_block.push(format!("\t\t{result_local}{wrapper_result_start}{result_caster}({wrapper_name}2{class_name}(*({wrapper_name}*)target)).{}({parameter_name_list}){wrapper_result_end};", api.name));                    
                 }
                 else{
-                    format!(r#"    {cpp_ret} {api_name}({}){{
-        {c_api_local_parameters}{return_flag}{wrapper_result_start}{result_caster}(({class_name}*)target)->{}({parameter_name_list}){wrapper_result_end};
-    }}"#, full_proper.join(", "), api.name)
+                    //calling
+                    func_block.push(format!("\t\t{result_local}{wrapper_result_start}{result_caster}(({class_name}*)target)->{}({parameter_name_list}){wrapper_result_end};", api.name));                    
                 }
-            };
-            generator.source.push(content);
+            }
+            if c_api_modifiers.len() > 0{
+                c_api_modifiers.iter().for_each(|lp| func_block.push(format!("\t\t{lp}")));
+            }
+            //return flags
+            if !return_flag.is_empty(){
+                func_block.push(format!("\t\t{return_flag}{return_result}"));
+            }
+            func_block.push("\t}".to_string());
+            generator.source.push(func_block.join("\t\n"));
             api_name
         };
         //rust ffi api
@@ -685,14 +773,14 @@ using {cpp_api_name}Fn = void(*)({cpp_ret}(*)({}));"#, full_proper.join(",")));
         api{cpp_api_name}(&{cpp_api_name});
     }}"#));  
         //rust member function
-        let rs_block = format!(r#"
-    #[inline]
-    pub fn {designed_api_name}{lifetime_tag}({}){rs_ret_liftime}{{
-        {rs_string_translations}unsafe{{ {ref_flag}{callback_handler}.as_ref().unwrap()({}){ref_flag_tail} }}
-    }}"#,
-        rs_fn_parameters.join(", "),
-        rs_parameters.join(", "));
-        generator.rs_source.push(rs_block);
+        let mut rs_block: Vec<String> = vec!["\t#[inline]".to_string()];
+        rs_block.push(format!("\tpub fn {designed_api_name}{lifetime_tag}({}){rs_ret_liftime}{{", rs_fn_parameters.join(", ")));
+        if rs_string_translations.len() > 0{
+            rs_string_translations.iter().for_each(|trans| rs_block.push(format!("\t\t{trans}")));
+        }
+        rs_block.push(format!("\t\tunsafe{{ {ref_flag}{callback_handler}.as_ref().unwrap()({}){ref_flag_tail} }}", rs_parameters.join(", ")));
+        rs_block.push("\t}".to_string());
+        generator.rs_source.push(rs_block.join("\r\n"));
     }
     Ok(())
 }

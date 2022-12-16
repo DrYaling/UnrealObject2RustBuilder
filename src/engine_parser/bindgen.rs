@@ -167,7 +167,7 @@ pub fn should_export_property(engine: &Engine, property: &CppProperty) -> bool{
         engine.enums.iter().find(|eu| eu.name == property.type_str).is_some()
     )
 }
-
+#[allow(unused)]
 ///api can be export to ffi binder
 pub fn should_export_api(engine: &Engine, api: &CppApi) -> bool{
     //api return type or parameters not generic
@@ -268,6 +268,9 @@ fn gen_class(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator
     if let Some(old) = EXPORTED.lock().unwrap().iter().find(|c| c.name == class.name){
         println!("try to export class {} at path {}, but class already exported at path {}", class.name, class.path, old.alis);
         return Ok(());
+    }    
+    if class.name == "UGameplayStatics"{
+        println!("UGameplayStatics::BeginSpawningActorFromBlueprint\t\n{:?}", class.public_apis.iter().find(|api| api.name == "BeginSpawningActorFromBlueprint"));
     }
     //是否不透明对象
     //需要满足4点条件
@@ -373,16 +376,22 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     // let rs_class_atlas = if opaque {class_name.clone() + "Opaque"}else{class_name.clone()};
     //api map key is api name, value is api with overload count
     let mut api_map: BTreeMap<String, i32> = BTreeMap::default();
-    'api: for api in &class.public_apis {   
+    'api: for api in &class.public_apis {
         if black_api(api, settings){
             continue;
         }
-        let parameters = api.parameters.clone();
-        // if api.name == "AdditionalStatObject"{
-        //     print!("pause");
+        // if api.name == "BeginSpawningActorFromBlueprint"{
+        //     println!("BeginSpawningActorFromBlueprint {:?}", api);
         // }
+        if let Some(_) = api.rc_type.find("<"){
+            continue;
+        }
+        let parameters = api.parameters.clone();
         //api with opaque(and not exported) none ptr parameter  will not export
         for param in &api.parameters {
+            if param.is_generic || param.type_str.contains("<"){
+                continue 'api;
+            }
             let is_string_ret = is_string_type(&param.type_str) && !param.ref_param && !param.ptr_param;
             //none const ref string not supported
             if is_string_ret && param.ref_param && !param.const_param{
@@ -400,9 +409,9 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
         }
         //generic do not export
-        if !should_export_api(engine, api){
-            continue;
-        }
+        // if !should_export_api(engine, api){
+        //     continue;
+        // }
         //string type do not support ptr or ref
         let is_string_ret = is_string_type(&api.rc_type) && !api.ptr_ret;
         //ref string result type not support

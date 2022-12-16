@@ -383,7 +383,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         // if api.name == "BeginSpawningActorFromBlueprint"{
         //     println!("BeginSpawningActorFromBlueprint {:?}", api);
         // }
-        if let Some(_) = api.rc_type.find("<"){
+        
+        if api.is_generic || api.rc_type.find("<").is_some(){
             continue;
         }
         let parameters = api.parameters.clone();

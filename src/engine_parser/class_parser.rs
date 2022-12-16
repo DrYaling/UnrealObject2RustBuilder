@@ -303,7 +303,8 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             read_line += 1;
             continue;
         }
-        if line == "GENERATED_UCLASS_BODY()"{
+        //GENERATED_BODY
+        if line == "GENERATED_UCLASS_BODY()" || line == "GENERATED_BODY()"{
             lines[read_line] = "public:".to_string();
             read_line += 1;
             continue;

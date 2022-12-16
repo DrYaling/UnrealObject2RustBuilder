@@ -121,3 +121,21 @@ fn main() -> anyhow::Result<()> {
     // std::io::stdin().read_line(&mut str_buf)?;
     Ok(())
 }
+// #[cfg(test)]
+// #[test]
+// fn clang_rs(){
+//     {
+//         let libclang = clang::Clang::new().unwrap();
+//         let indexer = clang::Index::new(&libclang, false, false);
+//         let path = "engin_code/Core/Public/Core.h";
+//         let parser = indexer.parser(path);
+//         match parser.parse() {
+//             Ok(_result) => {
+//                 println!("ok");
+//             },
+//             Err(error) => {
+//                 println!("error {:?}", error);
+//             },
+//         };
+//     }
+// }

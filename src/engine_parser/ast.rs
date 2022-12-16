@@ -45,7 +45,9 @@ pub fn run(engine: &mut Engine) -> anyhow::Result<()>{
     let files = crate::read_files("engine_code\\", "*.h")?;
     let target_dir = current_dir.join("unreal_ast").display().to_string().replace("/", "\\");
     std::fs::create_dir(&target_dir).ok();
-    let thread_count = num_cpus::get();
+    let thread_count = 
+    // 1;
+    num_cpus::get();
     let step = files.len() / thread_count;
     let mut threads = vec![];
     let mut engines = vec![];
@@ -55,7 +57,7 @@ pub fn run(engine: &mut Engine) -> anyhow::Result<()>{
             if i < files.len(){
                 local_files.push(files[i].clone());
             }
-        }
+        }  
         let shared_engine = Arc::new(Mutex::new(Engine::default()));
         engines.push(shared_engine.clone());
         let target_dir = target_dir.clone();
@@ -63,36 +65,34 @@ pub fn run(engine: &mut Engine) -> anyhow::Result<()>{
         threads.push(std::thread::spawn(move ||{
             let block = || -> anyhow::Result<()>{
                 for file in &local_files {
+                    // if !file.ends_with("GameplayStatics.h"){
+                    //     continue;
+                    // }
                     // let file_name = Path::new(&file).file_stem().unwrap().to_str().unwrap();
                     let file_path = current_dir.join(&file).display().to_string().replace("/", "\\");
                     let target_file_path = file.replace("\\", "/").replace("engine_code/", "");
                     let target_path = format!("{}\\{}.json", &target_dir, target_file_path);
                     let out_file =if let Ok(c)= std::fs::read_to_string(&target_path){
+                        // println!("parse ast file {target_path}");
                         c
                     }
                     else{
-                        // -encoding utf8
                         let cmd = format!(
                             "clang -Xclang -ast-dump=json -fsyntax-only -x c++ {}",
                             file_path//, target_path
                         );
-                        println!("thread {index} cmd {}", cmd);
+                        // println!("thread {index} cmd {}", cmd);
                         let output = std::process::Command::new("powershell")
-                            // .arg("chcp 65001\r\n")
                         .arg("/c")
                         .arg(&cmd)
-                        // .arg(format!("\r\n out-file {} -encoding utf8", target_path))
                         .output()?;
-                        // let result = unsafe{ String::from_utf8_unchecked(command
-                        // .arg(format!("out-file {} -encoding utf8", target_path))
-                        // .output()?.stderr)};
-                        // println!("out file {}", result);
-                        if !output.status.success(){
-                            // println!("file {} cmd {} result {:?}", file_name, output.status, unsafe{ String::from_utf8_unchecked(output.stderr)});
-                        }
                         let out_file = unsafe{ String::from_utf8_unchecked(output.stdout)};
+                        if !output.status.success() && out_file.is_empty(){
+                            println!("file {} cmd {} result {:?}", file_path, output.status, unsafe{ String::from_utf8_unchecked(output.stderr)});
+                            continue;
+                        }
                         out_file
-                    };
+                    };                    
                     let ast: Node = serde_json::from_str(&out_file)?;
                     std::fs::create_dir_all(Path::new(&target_path).parent().unwrap()).ok();
                     std::fs::write(target_path, out_file)?;
@@ -152,7 +152,9 @@ fn parse_file(ast: &Node, file_path: &str, engine: &mut Engine) -> anyhow::Resul
         return Ok(());
     }
     // let file_name = std::path::Path::new(file_path).file_name().unwrap().to_str().unwrap().to_string();
-
+    if file_path.ends_with("GameplayStatics.h"){
+        println!("pause");
+    }
     state.file_path = get_file_path(file_path);
     parse_node(ast, engine, &mut state)?;
     Ok(())
@@ -353,9 +355,9 @@ fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{
         is_construstor: kind.kind == clang_ast::Kind::CXXConstructorDecl,
         ..Default::default()
     };
-    // if state.file_path.contains("Object.h") && api.name == "IsBasedOnArchetype"{
-    //     println!("pause");
-    // }
+    if api.name == "DeprojectScreenToWorld"{
+        println!("pause");
+    }
     parse_parm_decl(&node.inner, &mut api, state)?;
     if let Some(sc)= &kind.storageClass{
         if sc == "static"{
@@ -373,6 +375,16 @@ fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{
         //api invalid
         println!("invalid api return type {}", api.name);
         return Ok(None);
+    }
+    if api.rc_type.contains("static ") || api.rc_type.contains("static\t"){
+        api.rc_type = api.rc_type.replace("static", "").trim().to_string();
+        api.is_static = true;
+    }
+    if api.rc_type.contains("class ") || api.rc_type.contains("class\t"){
+        api.rc_type = api.rc_type.replace("class", "").trim().to_string();
+    }
+    if api.rc_type.contains("struct ") || api.rc_type.contains("struct\t"){
+        api.rc_type = api.rc_type.replace("struct", "").trim().to_string();
     }
     //const api
     if let Some(QualType { qualType: Some(qt) }) = &kind.r#type {
@@ -508,6 +520,26 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                             }
                         }
                     }
+                }
+                if param.type_str.ends_with("const*"){
+                    if let Some(index) = param.type_str.rfind("const*"){                        
+                        param.type_str = param.type_str[0..index].trim().to_string();
+                        param.const_param = true;
+                        param.ptr_param = true;
+                    }
+                }
+                if param.type_str.ends_with("const&"){
+                    if let Some(index) = param.type_str.rfind("const&"){                    
+                        param.type_str = param.type_str[0..index].trim().to_string();
+                        param.const_param = true;
+                        param.ref_param = true;
+                    }
+                }
+                if param.type_str.contains("class ") || param.type_str.contains("class\t"){
+                    param.type_str = param.type_str.replace("class", "").trim().to_string();
+                }
+                if param.type_str.contains("struct ") || param.type_str.contains("struct\t"){
+                    param.type_str = param.type_str.replace("struct", "").trim().to_string();
                 }
                 if let Some(index) = param.type_str.find("&&"){
                     param.type_str = param.type_str[..index].trim().to_string();

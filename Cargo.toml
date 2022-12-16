@@ -12,10 +12,13 @@ serde = {version="1.0",features = ["derive"]}
 anyhow = { version ="1.0.43", features = ["backtrace"]}
 once_cell = "*"
 clang-ast = "0.1"
+#clang = {version = "2.0.0", features = ["clang_10_0"]}
 num_cpus = "1.13.0"
+#clang-sys = "*"
+
 [build-dependencies]
 once_cell = "*"
-bindgen = "0.59.2"
+bindgen = "0.60.1"
 serde_json = "1.0"
 serde = {version="1.0",features = ["derive"]}
 anyhow = { version ="1.0.43", features = ["backtrace"]}

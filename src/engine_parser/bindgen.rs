@@ -393,20 +393,21 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             if param.is_generic || param.type_str.contains("<"){
                 continue 'api;
             }
-            let is_string_ret = is_string_type(&param.type_str) && !param.ref_param && !param.ptr_param;
-            //none const ref string not supported
-            if is_string_ret && param.ref_param && !param.const_param{
-                continue 'api;
+            if is_string_type(&param.type_str) && !param.ref_param && !param.ptr_param{
+                //ptr string not supported
+                if param.ptr_param{
+                    continue 'api;
+                }
             }
-            //ptr string not supported
-            if is_string_ret && param.ptr_param && !param.const_param{
-                continue 'api;
-            }
-            if !is_string_ret && is_opaque(&param.type_str, engine, settings) && !param.ptr_param{
-                continue 'api;
-            }
-            if !is_string_ret && !param.ptr_param && !export_type(&param.type_str, settings){
-                continue 'api;
+            else{
+                //opaque ref and ref 
+                if is_opaque(&param.type_str, engine, settings) && !(param.ptr_param || param.ref_param){
+                    continue 'api;
+                }
+                //ptr without exported
+                if !param.ptr_param && !export_type(&param.type_str, settings){
+                    continue 'api;
+                }
             }
         }
         //generic do not export

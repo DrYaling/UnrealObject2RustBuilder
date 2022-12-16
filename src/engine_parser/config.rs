@@ -86,6 +86,8 @@ pub struct Parameter{
 pub struct CppApi{    
     pub return_type: i32,
     #[serde(skip_serializing_if = "super::is_false", default)]
+    pub is_public: bool,
+    #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_static: bool,
     #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_const: bool,
@@ -139,6 +141,8 @@ pub struct CppEnumConstant{
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppProperty{
     pub value_type: i32,
+    #[serde(skip_serializing_if = "super::is_false", default)]
+    pub is_public: bool,
     #[serde(skip_serializing_if = "super::is_false", default)]
     pub is_static: bool,
     #[serde(skip_serializing_if = "super::is_false", default)]

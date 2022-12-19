@@ -117,7 +117,7 @@ pub(super) static mut RUST_NATIVE_DESTROYER_HANDLER: Option<RUST_NATIVE_DESTROYE
 static DESTROYER_LOCK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 pub fn set_destroy_callback(callback: RUST_NATIVE_DESTROYER){
     //set fail while is destroying
-    if let Ok(true) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
+    if let Ok(false) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
         unsafe{
             RUST_NATIVE_DESTROYER_HANDLER = Some(callback);
         }
@@ -126,7 +126,7 @@ pub fn set_destroy_callback(callback: RUST_NATIVE_DESTROYER){
 }
 #[no_mangle]
 extern fn on_dll_destroy(){
-    if let Ok(true) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
+    if let Ok(false) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
         unsafe{
             RUST_NATIVE_DESTROYER_HANDLER.as_ref().map(|handler| handler());
         }

@@ -152,9 +152,9 @@ fn parse_file(ast: &Node, file_path: &str, engine: &mut Engine) -> anyhow::Resul
         return Ok(());
     }
     // let file_name = std::path::Path::new(file_path).file_name().unwrap().to_str().unwrap().to_string();
-    if file_path.ends_with("GameplayStatics.h"){
-        println!("pause");
-    }
+    // if file_path.ends_with("GameplayStatics.h"){
+    //     println!("pause");
+    // }
     state.file_path = get_file_path(file_path);
     parse_node(ast, engine, &mut state)?;
     Ok(())
@@ -355,9 +355,9 @@ fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{
         is_construstor: kind.kind == clang_ast::Kind::CXXConstructorDecl,
         ..Default::default()
     };
-    if api.name == "DeprojectScreenToWorld"{
-        println!("pause");
-    }
+    // if api.name == "DeprojectScreenToWorld"{
+    //     println!("pause");
+    // }
     parse_parm_decl(&node.inner, &mut api, state)?;
     if let Some(sc)= &kind.storageClass{
         if sc == "static"{

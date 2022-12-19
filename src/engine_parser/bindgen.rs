@@ -194,6 +194,15 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
         if let Some(engine_class) = engine.classes.iter().find(|cls| &cls.name == class){
             gen_class(engine, engine_class, &mut generator, settings)?;
         }
+        else{
+            //create new opaque class
+            let engine_class = UnrealClass { 
+                name: class.clone(), 
+                is_struct: false, opaque: true,
+                ..Default::default()
+            };
+            gen_class(engine, &engine_class, &mut generator, settings)?;
+        }
     }
     generator.rs_ffis.push("}".to_string());
     //ffi apis
@@ -269,9 +278,6 @@ fn gen_class(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator
         println!("try to export class {} at path {}, but class already exported at path {}", class.name, class.path, old.alis);
         return Ok(());
     }    
-    if class.name == "UGameplayStatics"{
-        println!("UGameplayStatics::BeginSpawningActorFromBlueprint\t\n{:?}", class.public_apis.iter().find(|api| api.name == "BeginSpawningActorFromBlueprint"));
-    }
     //是否不透明对象
     //需要满足4点条件
     //1.所有成员变量是public
@@ -281,9 +287,11 @@ fn gen_class(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator
     let is_opaque = is_opaque(&class.name, engine, settings);
     EXPORTED.lock().unwrap().push(TypeImpl{name: class.name.clone(), alis: class.path.clone(), is_opaque});
     //header
-    let include = format!("#include \"{}\"", class.path);
-    if !generator.include.contains(&include){
-        generator.include.push(include);
+    if !class.path.is_empty(){
+        let include = format!("#include \"{}\"", class.path);
+        if !generator.include.contains(&include){
+            generator.include.push(include);
+        }
     }
     if is_opaque{
         gen_opaque(engine, class, generator, settings)?;
@@ -460,7 +468,12 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 }
                 //ptr 
                 else{
-                    ("void*".to_string(), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                    if export_type(&api.rc_type, settings){
+                        ("void*".to_string(), format!(" -> {}", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.alis))
+                    }
+                    else{
+                        ("void*".to_string(), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
+                    }
                 }
             },
             false => {
@@ -518,6 +531,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 //export type use rust wrapper
                 let exported_type =  export_type(&prop.type_str, settings);
                 let void_ptr = is_void(&prop.type_str) && prop.ptr_param;
+                let opaque = is_opaque(&prop.type_str, engine, settings);
                 let tag = 
                 if void_ptr{
                     rs_tag = "*mut ";
@@ -539,15 +553,23 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 }
                 else if prop.ref_param{
                     //none exported type will use ptr(nor will not export)
-                    if prop.const_param{
-                        rs_tag = "&";
-                        ffi_tag = "&";
+                    //if opaque
+                    if opaque{
+                        rs_tag = "&mut ";
+                        ffi_tag = "*mut ";
+                        "*"
                     }
                     else{
-                        rs_tag = "&mut ";
-                        ffi_tag = "&mut ";
+                        if prop.const_param{
+                            rs_tag = "&";
+                            ffi_tag = "&";
+                        }
+                        else{
+                            rs_tag = "&mut ";
+                            ffi_tag = "&mut ";
+                        }
+                        "&"
                     }
-                    "&"
                 }
                 else{
                     rs_tag = "";
@@ -557,16 +579,21 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 //ptr param with export use rust wrapper
                 let rs_param_type_name = if void_ptr{"c_void"}else if exported_type{ts.name.as_str()} else {ts.alis.as_str()};
                 rs_ffi_parameters.push(format!("{}{}", ffi_tag, ts.alis));
-                if exported_type && prop.ptr_param{
-                    if is_primary(&prop.type_str){
-                        rs_parameters.push(format!("{} as *mut _", prop.name));
-                    }
-                    else{
-                        rs_parameters.push(format!("{}.inner()", prop.name));
-                    }
-                }
-                else{                    
+                if is_primary(&prop.type_str) || is_wrapper_type(&prop.type_str, settings){
                     rs_parameters.push(format!("{}", prop.name));
+                }
+                else{
+                    match (exported_type, prop.ptr_param | prop.ref_param, opaque) {
+                        (true, true, false) => {
+                            rs_parameters.push(format!("{} as *mut _", prop.name));
+                        }
+                        (true, true, true) => {
+                            rs_parameters.push(format!("{}.inner()", prop.name));
+                        }
+                        _ => {
+                            rs_parameters.push(format!("{}", prop.name));
+                        }
+                    }
                 }
                 rs_fn_parameters.push(format!("{}: {}{}", prop.name,  rs_tag, rs_param_type_name));
                 format!("{}{tag} {}", get_wrapper_type(&prop.type_str, settings), prop.name)
@@ -641,7 +668,12 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                     }
                 }
                 else{
-                    p.name.clone()
+                    if p.ref_param && is_opaque(&p.type_str, engine, settings){
+                        format!("*{}", p.name)
+                    }
+                    else{
+                        p.name.clone()
+                    }
                 }
             }  
         })
@@ -745,19 +777,25 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             if opaque_ret{
                 ref_flag_tail  = "";
                 // "RefResult::new("
-                "&*"
+                "&*".to_string()
             }
             //else is ref
             else{
-                "&*"
+                "&*".to_string()
             }
         }else{
             if is_string_ret{
                 ref_flag_tail = ")";
-                "char_str_2_string("
+                "char_str_2_string(".to_string()
             }
             else{
-                ""
+                if opaque_ret && export_type(&api.rc_type, settings){
+                    ref_flag_tail = "}";
+                    format!("{}{{inner: ", api.r_type)
+                }
+                else{
+                    "".to_string()
+                }
             }
         }; 
         //rust getter ffi api
@@ -812,7 +850,7 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
 
         let is_string_type = is_string_type(&property.type_str);
         //ptr string has lifetime problem
-        if is_string_type && property.is_ptr{
+        if is_string_type {// && property.is_ptr{
             continue;
         }
         //opaque type will not export
@@ -907,6 +945,17 @@ using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, t
         //not supported yet
         let (getter_caster, setter_caster, get_caster_end, set_caster_end) = if is_string_type{
             panic!("not supported field string yet");
+            // match property.type_str.as_str() {
+            //     "FString" => {
+                    
+            //     },
+            //     "FText" => {
+
+            //     },
+            //     _/*"FName"*/ => {
+
+            //     },
+            // }
             #[allow(unreachable_code)]
             (
                 "error!!!!(".to_string(), "error!!!!(".to_string(), 

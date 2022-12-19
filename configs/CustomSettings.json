@@ -59,7 +59,8 @@
         "Runtime/TimeManagement/Public",
         "Runtime/Navmesh/Public",
         "Runtime/Engine/",
-        "Runtime/CoreUObject/Public"
+        "Runtime/CoreUObject/Public",
+        "Experimental/"
     ],
     "IgnoreFiles":[
         "Android*",
@@ -119,6 +120,7 @@
         "BoundShaderStateCache",
         "RHI*",
         "StaticMeshAttributes",
-        "NoExportTypes"
+        "NoExportTypes",
+        "PBD*"
     ]
 }

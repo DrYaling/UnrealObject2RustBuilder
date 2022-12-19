@@ -111,3 +111,25 @@ unsafe extern fn reset_rust_string(rstr: RefString, c_str: *const c_char, size: 
         std::intrinsics::copy(c_str as *const u8, r_str.as_mut_vec().as_mut_ptr(), size as usize);
     }
 }
+
+type RUST_NATIVE_DESTROYER = fn();
+pub(super) static mut RUST_NATIVE_DESTROYER_HANDLER: Option<RUST_NATIVE_DESTROYER> = None;
+static DESTROYER_LOCK: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+pub fn set_destroy_callback(callback: RUST_NATIVE_DESTROYER){
+    //set fail while is destroying
+    if let Ok(true) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
+        unsafe{
+            RUST_NATIVE_DESTROYER_HANDLER = Some(callback);
+        }
+        DESTROYER_LOCK.store(false, std::sync::atomic::Ordering::Release);
+    }
+}
+#[no_mangle]
+extern fn on_dll_destroy(){
+    if let Ok(true) = DESTROYER_LOCK.compare_exchange(false, true, std::sync::atomic::Ordering::Relaxed, std::sync::atomic::Ordering::Relaxed){
+        unsafe{
+            RUST_NATIVE_DESTROYER_HANDLER.as_ref().map(|handler| handler());
+        }
+        DESTROYER_LOCK.store(false, std::sync::atomic::Ordering::Release);
+    }
+}

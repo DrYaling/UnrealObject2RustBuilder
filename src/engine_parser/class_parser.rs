@@ -333,6 +333,7 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             line.contains("UE_LOG") ||
             line.contains("VARARGS") ||
             line.contains("DEFINE_") ||
+            line.contains("UDELEGATE") ||
             line.contains("SEQUENCER_INSTANCE_PLAYER_TYPE") ||
             line.contains("DECLARE_EVENT_TwoParams") ||
             line.contains("DECLARE_DELEGATE_RetVal_ThreeParams") ||
@@ -435,6 +436,9 @@ fn remove_all_fn_block(lines: &mut Vec<String>){
                 remove_fn_block(lines, &mut read_line);
             }
             _ => (),
+        }
+        if read_line >= lines.len(){
+            break;
         }
         //remove fn define and operator
         if lines[read_line].contains("::") || 

@@ -12,6 +12,8 @@ simple unreal object builder from c/cpp to rust
     for more examples: https://github.com/DrYaling/unreal-rust.git
  #dependency
  
+    rustup >= 1.65.0
+ 
     llvm(15.*) and clang.exe be set to system env "Path"
 #known unsupported features
 
@@ -21,3 +23,4 @@ simple unreal object builder from c/cpp to rust
     
     unions
     
+  

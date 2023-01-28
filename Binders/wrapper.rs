@@ -1,4 +1,13 @@
 
+///imply that this is a unreal object
+pub trait IPtr{
+    fn inner(&self) -> *mut c_void;
+    fn from_ptr(ptr: *mut c_void) -> Self;
+}
+///cast V into R, this casting is unsafe, user should ensure the safety
+pub unsafe fn cast_to<V: IPtr, R: IPtr>(from: V) -> R{
+    R::from_ptr(from.inner())
+}
 #[derive(Debug, Clone, Copy, Default)]
 #[repr(C)]
 pub struct FColor{

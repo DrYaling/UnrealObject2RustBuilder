@@ -1,6 +1,8 @@
 #[allow(unused)]
 #[macro_use] 
 extern crate serde_json;
+#[macro_use] 
+extern crate anyhow;
 // include!("../Binders/rs/binders.rs");
 // mod api;
 // mod object;

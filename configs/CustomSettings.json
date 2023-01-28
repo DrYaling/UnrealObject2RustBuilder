@@ -24,7 +24,8 @@
         "FString",
         "FText",
         "FName",
-        "UGameplayStatics"
+        "UGameplayStatics",
+        "ACharacter"
     ],
     "TypeWrapper":[
         ["FColor", "UColor"],

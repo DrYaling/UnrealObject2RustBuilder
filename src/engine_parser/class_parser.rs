@@ -407,9 +407,6 @@ fn remove_all_fn_block(lines: &mut Vec<String>){
     let mut read_line = 0usize;
     while read_line < lines.len() {
         let check_line = lines[read_line].trim();
-        if check_line.contains("CopyTexture(FTexture2DRHIRef"){
-            println!("{}", check_line);
-        }
         if check_line.starts_with("virtual") && (
             check_line.ends_with("=0;") ||
             check_line.ends_with("= 0;") ||
@@ -765,7 +762,7 @@ fn remove_fn_block(lines: &mut Vec<String>, read_line: &mut usize) -> Option<Str
     let mut contents = vec![];
     match (start, end) {
         (Some(start), Some(end)) => {
-            assert!(start < end, "invalid cuntion block");
+            assert!(start < end, "invalid cuntion block at line {line}");
             let content = line[start + 1..end].trim().to_string();
             lines[*read_line] = line[0..start].to_string() + ";";
             return Some(content);

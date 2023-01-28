@@ -22,3 +22,4 @@ Binders/cpp/Binder.h
 Binders/cpp/Registers.h
 Binders/cpp/FFI.h
 Binders/rs/binders.rs
+out.log

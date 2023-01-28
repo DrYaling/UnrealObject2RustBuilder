@@ -227,6 +227,8 @@ void register_all(Plugin* plugin){{
     generator.source.append(&mut generator.api_defines);
     //last insert register files
     generator.source.push(api_registers);
+    std::fs::create_dir_all("binders/cpp/").ok();
+    std::fs::create_dir_all("binders/rs/").ok();
     std::fs::write("binders/cpp/Binder.h", generator.header.join("\r\n"))?;
     std::fs::write("binders/cpp/Binder.cpp", generator.source.join("\r\n"))?;
     // std::fs::write("binders/cpp/FFI.h", api_defines)?;
@@ -309,12 +311,20 @@ fn gen_opaque(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerato
     // generator.header.push(format!("\tusing {} = void;", object_name));
     //rust type impl
     // generator.rs_source.push(format!("pub type {} = c_void;", object_name));
-    generator.rs_source.push(format!(r#"pub struct {}{{
+    let name = class.name.as_str();
+    generator.rs_source.push(format!(r#"pub struct {name}{{
     inner: *mut {}
 }}
-impl {}{{
+impl IPtr for {name}{{
     #[inline]
-    pub fn inner(&self) -> *mut {} {{ self.inner }}"#, class.name, ts.alis, class.name, ts.alis));
+    fn inner(&self) -> *mut {} {{ self.inner }}
+    #[inline]
+    fn from_ptr(ptr: *mut c_void) -> Self{{
+        Self{{inner: ptr}}
+    }}
+}}
+impl {name}{{
+    "#, ts.alis, ts.alis));
     parse_properties(engine, class, generator, true, settings)?;
     parse_functions(engine, class, generator, true, settings)?;
     Ok(())

@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-use std::{path::Path, sync::{Mutex, Arc}};
+use std::{path::Path, sync::{Mutex, Arc}, fmt::{Debug}};
 use serde::Deserialize;
 
 use super::{unreal_engine::{Engine, UnrealClass}, config::{CppEnum, CppApi, Parameter, CppProperty, CppEnumConstant}};
@@ -27,6 +27,19 @@ pub struct Clang {
     #[serde(default)]
     pub explicitlyDeleted: bool,
 
+}
+impl Debug for Clang{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Clang")
+        .field("kind", &self.kind)
+        .field("loc", &self.loc).field("range", &self.range)
+        .field("name", &self.name).field("isInvalid", &self.isInvalid)
+        .field("storageClass", &self.storageClass)
+        // .field("r#type", &self.r#type)
+        .field("access", &self.access).field("tagUsed", &self.tagUsed)
+        .field("value", &self.value).field("scopedEnumTag", &self.scopedEnumTag)
+        .field("explicitlyDeleted", &self.explicitlyDeleted).finish()
+    }
 }
 #[derive(Deserialize)]
 pub struct QualType {
@@ -78,7 +91,7 @@ pub fn run(engine: &mut Engine) -> anyhow::Result<()>{
                     }
                     else{
                         let cmd = format!(
-                            "clang -Xclang -ast-dump=json -fsyntax-only -x c++ {}",
+                            "clang -Xclang -ast-dump=json -fsyntax-only -x c++ -std=c++17 {}",
                             file_path//, target_path
                         );
                         // println!("thread {index} cmd {}", cmd);
@@ -97,7 +110,9 @@ pub fn run(engine: &mut Engine) -> anyhow::Result<()>{
                     std::fs::create_dir_all(Path::new(&target_path).parent().unwrap()).ok();
                     std::fs::write(target_path, out_file)?;
                     // println!("cmd ast {}", ast.id.to_string());
-                    parse_file(&ast, &file_path, &mut shared_engine.lock().unwrap())?; 
+                    if let Err(e) = parse_file(&ast, &file_path, &mut shared_engine.lock().unwrap()){
+                        println!("parse file {file_path} ast fail {:?}", e);
+                    } 
                     // break;
                 }
                 Ok(())
@@ -497,6 +512,9 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                     ))
                 )
             ){
+                if start.offset >= end.offset{
+                    return Err(anyhow!("api {:?} unrecongnized with offset incorrect {:?}", api, kind));
+                }
                 param.type_str = state.content[start.offset..end.offset].trim().to_string();
                 //remove const(at most 2?)
                 if param.type_str.starts_with("const"){

@@ -80,19 +80,7 @@ impl CodeGenerator{
     }
 }
 impl Default for CodeGenerator{
-    fn default() -> Self {            
-        let header: Vec<String> = vec![
-            "#pragma once".into(),
-            "".into(),
-            format!(r#"#include "CoreMinimal.h"
-class Plugin{{
-    public:
-    virtual void* GetDllExport(FString apiName) = 0;
-}};
-void register_all(Plugin* plugin);
-#define RSTR_TO_TCHAR(str, len) (TCHAR*)FUTF8ToTCHAR((const ANSICHAR*)str,(int32)len).Get()"#),
-
-        ];
+    fn default() -> Self {    
         let source: Vec<String> = vec![
             "#include \"Binder.h\"".into(),
             "extern \"C\"{".into(),
@@ -137,7 +125,7 @@ impl<T: Sized> DerefMut for RefResult<T> {
             ],
             default_source_header: 1,
             source,
-            header,
+            header: vec![],
             default_rs_header: rs_source.len(),
             rs_source,
             registers: vec![
@@ -190,6 +178,7 @@ pub fn should_export_api(engine: &Engine, api: &CppApi) -> bool{
 }
 pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()>{
     let mut generator = CodeGenerator::default();
+    let default_header = std::fs::read_to_string("Binders/header.h")?;
     for class in &settings.ExportClasses{
         if let Some(engine_class) = engine.classes.iter().find(|cls| cls.name == class.class_name){
             gen_class(engine, engine_class, &mut generator, settings)?;
@@ -223,6 +212,7 @@ void register_all(Plugin* plugin){{
     generator.rs_source.insert(
         generator.default_rs_header, 
         format!(r#"mod opaque_types{{
+    use std::ffi::c_void;
 {opaque_type_defines}            
 }}
 pub use opaque_types::*;
@@ -234,7 +224,7 @@ pub use opaque_types::*;
     generator.source.push(api_registers);
     std::fs::create_dir_all("binders/cpp/").ok();
     std::fs::create_dir_all("binders/rs/").ok();
-    std::fs::write("binders/cpp/Binder.h", generator.header.join("\r\n"))?;
+    std::fs::write("binders/cpp/Binder.h", default_header + "\r\n" + &generator.header.join("\r\n"))?;
     std::fs::write("binders/cpp/Binder.cpp", generator.source.join("\r\n"))?;
     // std::fs::write("binders/cpp/FFI.h", api_defines)?;
     // std::fs::write("binders/cpp/Registers.h", api_registers)?;
@@ -250,7 +240,7 @@ fn insert_rs_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
 }
 ///insert wrapped types into binder code
 fn insert_cpp_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
-    if let Ok(wrapper) = std::fs::read_to_string("Binders/wrapper.h"){
+    if let Ok(wrapper) = std::fs::read_to_string("Binders/binder.cpp"){
         generator.source.insert(1, wrapper);
     }
     Ok(())

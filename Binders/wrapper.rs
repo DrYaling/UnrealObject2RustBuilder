@@ -1,6 +1,6 @@
 
 ///imply that this is a unreal object
-pub trait IPtr{
+pub trait IPtr: Sized{
     fn inner(&self) -> *mut c_void;
     fn from_ptr(ptr: *mut c_void) -> Option<Self>;
 }

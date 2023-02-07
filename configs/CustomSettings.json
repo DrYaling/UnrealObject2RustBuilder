@@ -83,6 +83,9 @@
         },
         {
             "class_name": "USceneComponent"
+        },
+        {
+            "class_name": "UActorComponent"
         }
     ],
     "TypeWrapper":[

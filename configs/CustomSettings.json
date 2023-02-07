@@ -2,24 +2,49 @@
     "EngineRoot": "F:/Unreal/UE_5.1/Engine",
     "ExportClasses":[
         {
-            "class_name": "UObject"
+            "class_name": "UObject",
+            "ignore_functions":[
+                "CookAdditionalFiles",
+                "PostCDOCompiled",
+                "PostSaveRoot",
+                "PreSave",
+                "PreSaveRoot",
+                "UpdateDefaultConfigFile"
+            ]
         },
         {
             "class_name": "AActor",
-            "ignore_functions": ["BeginDestroy"],
+            "ignore_functions": [
+                "BeginDestroy", 
+                "GetDataLayerPropertyName", 
+                "GetDebugName",
+                "GetDataLayerInstances",
+                "GetDataLayerInstancesForLevel",
+                "EndReplication", 
+                "BeginReplication",
+                "GetActorDataLayers",
+                "PostSaveRoot",
+                "PreSave",
+                "PreSaveRoot",
+                "GetActorDataLayers",
+                "HasValidDataLayers"
+            ],
             "ignore_fields": ["bNetTemporary"]
         },
         {
             "class_name": "ASpawn"
         },
         {
-            "class_name": "AController"
+            "class_name": "AController",
+            "ignore_functions": [
+                "UpdateNavigationComponents"
+            ]
         },
         {
-            "class_name": "UActorComponent"
-        },
-        {
-            "class_name": "APlayerController"
+            "class_name": "APlayerController",
+            "ignore_fields": [
+                "StreamingSourceDebugColor"
+            ]
         },
         {
             "class_name": "FVector"
@@ -70,9 +95,6 @@
             "class_name": "FText"
         },
         {
-            "class_name": "FName"
-        },
-        {
             "class_name": "UGameplayStatics"
         },
         {
@@ -85,7 +107,14 @@
             "class_name": "USceneComponent"
         },
         {
-            "class_name": "UActorComponent"
+            "class_name": "UActorComponent",
+            "ignore_functions": [
+                "EndReplication", 
+                "BeginReplication"
+            ]
+        },
+        {
+            "class_name": "UWorld"
         }
     ],
     "TypeWrapper":[

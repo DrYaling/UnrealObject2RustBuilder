@@ -1,31 +1,89 @@
 {
-    "EngineRoot": "F:/UE5/Epic Games/UE_5.0/Engine",
+    "EngineRoot": "F:/Unreal/UE_5.1/Engine",
     "ExportClasses":[
-        "UObject",
-        "AActor",
-        "ASpawn",
-        "AController",
-        "UActorComponent",
-        "APlayerController",
-        "FVector",
-        "FVector4",
-        "FVector2D",
-        "FRotator",
-        "FQuat",
-        "FIntPoint",
-        "FIntVector",
-        "FColor",
-        "FLinearColor",
-        "FMatrix",
-        "FTransform",
-        "FRandomStream",
-        "FPlane",
-        "FLargeWorldCoordinatesReal",
-        "FString",
-        "FText",
-        "FName",
-        "UGameplayStatics",
-        "ACharacter"
+        {
+            "class_name": "UObject"
+        },
+        {
+            "class_name": "AActor",
+            "ignore_functions": ["BeginDestroy"],
+            "ignore_fields": ["bNetTemporary"]
+        },
+        {
+            "class_name": "ASpawn"
+        },
+        {
+            "class_name": "AController"
+        },
+        {
+            "class_name": "UActorComponent"
+        },
+        {
+            "class_name": "APlayerController"
+        },
+        {
+            "class_name": "FVector"
+        },
+        {
+            "class_name": "FVector4"
+        },
+        {
+            "class_name": "FVector2D"
+        },
+        {
+            "class_name": "FRotator"
+        },
+        {
+            "class_name": "FQuat"
+        },
+        {
+            "class_name": "FIntPoint"
+        },
+        {
+            "class_name": "FIntVector"
+        },
+        {
+            "class_name": "FColor"
+        },
+        {
+            "class_name": "FLinearColor"
+        },
+        {
+            "class_name": "FMatrix"
+        },
+        {
+            "class_name": "FTransform"
+        },
+        {
+            "class_name": "FRandomStream"
+        },
+        {
+            "class_name": "FPlane"
+        },
+        {
+            "class_name": "FLargeWorldCoordinatesReal"
+        },
+        {
+            "class_name": "FString"
+        },
+        {
+            "class_name": "FText"
+        },
+        {
+            "class_name": "FName"
+        },
+        {
+            "class_name": "UGameplayStatics"
+        },
+        {
+            "class_name": "ACharacter"
+        },
+        {
+            "class_name": "AGameModeBase"
+        },
+        {
+            "class_name": "USceneComponent"
+        }
     ],
     "TypeWrapper":[
         ["FColor", "UColor"],

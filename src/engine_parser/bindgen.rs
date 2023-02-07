@@ -191,13 +191,13 @@ pub fn should_export_api(engine: &Engine, api: &CppApi) -> bool{
 pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()>{
     let mut generator = CodeGenerator::default();
     for class in &settings.ExportClasses{
-        if let Some(engine_class) = engine.classes.iter().find(|cls| &cls.name == class){
+        if let Some(engine_class) = engine.classes.iter().find(|cls| cls.name == class.class_name){
             gen_class(engine, engine_class, &mut generator, settings)?;
         }
         else{
             //create new opaque class
             let engine_class = UnrealClass { 
-                name: class.clone(), 
+                name: class.class_name.clone(), 
                 is_struct: false, opaque: true,
                 ..Default::default()
             };
@@ -216,12 +216,17 @@ void register_all(Plugin* plugin){{
     {}
 }}"#, generator.registers.join("\r\n"));
     insert_rs_wrappers(&mut generator)?;
+    let opaque_type_defines = generator.type_impl
+    .iter()
+    .map(|t| format!("\tpub type {} = c_void;//cpp type {}", t.alis, t.name))
+    .collect::<Vec<_>>().join("\r\n");
     generator.rs_source.insert(
         generator.default_rs_header, 
-        generator.type_impl
-        .iter()
-        .map(|t| format!("pub type {} = c_void;//cpp type {}", t.alis, t.name))
-        .collect::<Vec<_>>().join("\r\n")
+        format!(r#"mod opaque_types{{
+{opaque_type_defines}            
+}}
+pub use opaque_types::*;
+"#)
     );
     //fist insert ffi apis
     generator.source.append(&mut generator.api_defines);
@@ -319,8 +324,12 @@ impl IPtr for {name}{{
     #[inline]
     fn inner(&self) -> *mut {} {{ self.inner }}
     #[inline]
-    fn from_ptr(ptr: *mut c_void) -> Self{{
-        Self{{inner: ptr}}
+    fn from_ptr(ptr: *mut c_void) -> Option<Self>{{
+        if_else!(
+            ptr.is_null(),
+            None,
+            Some(Self{{inner: ptr}})
+        )        
     }}
 }}
 impl {name}{{
@@ -357,7 +366,7 @@ fn is_void(type_str: &str) -> bool{
     type_str == "void" || type_str == ""
 }
 fn export_type(type_str: &str, settings: &CustomSettings) -> bool{
-    is_primary(type_str) || settings.ExportClasses.iter().find(|x| x.as_str() == type_str).is_some()
+    is_primary(type_str) || settings.ExportClasses.iter().find(|x| x.class_name.as_str() == type_str).is_some()
 }
 ///api is in black list
 fn black_api(api: &CppApi, settings: &CustomSettings) -> bool{
@@ -394,6 +403,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
     // let rs_class_atlas = if opaque {class_name.clone() + "Opaque"}else{class_name.clone()};
     //api map key is api name, value is api with overload count
     let mut api_map: BTreeMap<String, i32> = BTreeMap::default();
+    let class_to_export = settings.ExportClasses.iter().find(|c| c.class_name == class_name).unwrap();
     'api: for api in &class.public_apis {
         if black_api(api, settings){
             continue;
@@ -401,7 +411,14 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         // if api.name == "BeginSpawningActorFromBlueprint"{
         //     println!("BeginSpawningActorFromBlueprint {:?}", api);
         // }
-        
+        //not in white list
+        if class_to_export.functions.len() > 0 && class_to_export.functions.iter().find(|f| f.as_str() == api.name.as_str()).is_none(){
+            continue;
+        }
+        //in ignore list
+        if class_to_export.functions.len() == 0 && class_to_export.ignore_functions.iter().find(|f| f.as_str() == api.name.as_str()).is_some(){
+            continue;
+        }
         if api.is_generic || api.rc_type.find("<").is_some(){
             continue;
         }
@@ -479,7 +496,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 //ptr 
                 else{
                     if export_type(&api.rc_type, settings){
-                        ("void*".to_string(), format!(" -> {}", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.alis))
+                        //ptr maybe nullptr
+                        ("void*".to_string(), format!(" -> Option<{}>", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.alis))
                     }
                     else{
                         ("void*".to_string(), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
@@ -800,8 +818,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
             else{
                 if opaque_ret && export_type(&api.rc_type, settings){
-                    ref_flag_tail = "}";
-                    format!("{}{{inner: ", api.r_type)
+                    ref_flag_tail = ")";
+                    format!("{}::from_ptr(", api.r_type)
                 }
                 else{
                     "".to_string()
@@ -850,8 +868,17 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
     let class_name = class.name.clone();
     let cpp_class_atlas = "void";
     let rs_class_alas = if opaque {class.name.clone() + "Opaque"} else{ class.name.clone()};
+    let class_to_export = settings.ExportClasses.iter().find(|c| c.class_name == class_name).unwrap();
     for property in &class.properties {
         if black_field(property, settings){
+            continue;
+        }
+        //not in white list
+        if class_to_export.fields.len() > 0 && class_to_export.fields.iter().find(|f| f.as_str() == property.name.as_str()).is_none(){
+            continue;
+        }
+        //in ignore list
+        if class_to_export.fields.len() == 0 && class_to_export.ignore_fields.iter().find(|f| f.as_str() == property.name.as_str()).is_some(){
             continue;
         }
         if property.is_const || property.is_static || !should_export_property(engine, property){

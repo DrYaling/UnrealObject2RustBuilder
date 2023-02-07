@@ -172,10 +172,26 @@ pub struct ExportDetails{
     pub ExportConsts: Vec<CppProperty>,
 }
 #[derive(Debug, Clone, Default, Deserialize)]
+pub struct ExportClassSetting{
+    pub class_name: String,
+    ///fields whill export, if this field was set,other field will not export
+    #[serde(default)]
+    pub fields: Vec<String>,
+    ///fields whill not export, if fields field was set,this field will not take affect
+    #[serde(default)]
+    pub ignore_fields: Vec<String>,
+    ///functions whill export, if this field was set,other functions will not export
+    #[serde(default)]
+    pub functions: Vec<String>,
+    ///functions whill not export, if functions field was set,this field will not take affect
+    #[serde(default)]
+    pub ignore_functions: Vec<String>,
+}
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct CustomSettings{
     pub EngineRoot: String,
     ///导出对象列表
-    pub ExportClasses: Vec<String>,
+    pub ExportClasses: Vec<ExportClassSetting>,
     ///强制性导出不透明对象
     pub ForceOpaque: Vec<String>,
     ///黑名单类型(接口)

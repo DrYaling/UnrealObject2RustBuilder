@@ -54,7 +54,7 @@ impl CodeGenerator{
     ///insert opaque type
     pub fn insert_type(&mut self, type_str: &str, engine: &Engine, settings: &CustomSettings) -> TypeImpl{
         //if type is not opaque and exported, use no alis
-        if export_type(type_str, settings) && !is_opaque(type_str, engine, settings){
+        if (export_type(type_str, settings) && !is_opaque(type_str, engine, settings)) || is_wrapper_type(type_str, settings){
             return  TypeImpl{
                 name: type_str.to_string(),
                 alis: type_str.to_string(),
@@ -429,8 +429,15 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 if is_opaque(&param.type_str, engine, settings) && !(param.ptr_param || param.ref_param){
                     continue 'api;
                 }
+                let wrapper_type = is_wrapper_type(&param.type_str, settings);
                 //ptr without exported
-                if !param.ptr_param && !export_type(&param.type_str, settings){
+                if !param.ptr_param && 
+                    !export_type(&param.type_str, settings) && 
+                    !wrapper_type{
+                    continue 'api;
+                }
+                //ref mut wrapper type not supported yet(2 type converter)
+                if wrapper_type && param.ref_param{
                     continue 'api;
                 }
             }
@@ -452,7 +459,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 continue;
             }
             //opaque but didn't export
-            else if !opaque_ret && !export_type(&api.rc_type, settings){
+            else if !opaque_ret && !export_type(&api.rc_type, settings) && !is_wrapper_type(&api.rc_type, settings){
                 continue;
             }
         }
@@ -677,12 +684,12 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             else{
                 //wrapper types      
                 if is_wrapper_type(&p.type_str, settings){
-                    let type_str = get_wrapper_type(&p.type_str, settings);
+                    // let type_str = get_wrapper_type(&p.type_str, settings);
                     if p.ptr_param{
-                        format!("{type_str}2{}(*{})", p.type_str, p.name)
+                        format!("To{}(*{})", p.type_str, p.name)
                     }
                     else{
-                        format!("{type_str}2{}({})", p.type_str, p.name)
+                        format!("To{}({})", p.type_str, p.name)
                     }
                 }
                 else{
@@ -732,7 +739,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             let return_flag = if cpp_ret == "void"{""}else{"return "};
             let (wrapper_result_start, wrapper_result_end) = if !is_string_ret && is_wrapper_type(&api.rc_type, settings){
                 let ret_name = get_wrapper_type(&api.rc_type, settings);
-                (format!("{}2{ret_name}(", api.rc_type), format!(")"))
+                (format!("To{ret_name}("), format!(")"))
             }
             else{
                 if is_string_ret{
@@ -767,7 +774,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 //包装类型
                 if wrapper_class{
                     //calling
-                    func_block.push(format!("\t\t{result_local}{wrapper_result_start}{result_caster}({wrapper_name}2{class_name}(*({wrapper_name}*)target)).{}({parameter_name_list}){wrapper_result_end};", api.name));                    
+                    func_block.push(format!("\t\t{result_local}{wrapper_result_start}{result_caster}(To{class_name}(*({wrapper_name}*)target)).{}({parameter_name_list}){wrapper_result_end};", api.name));                    
                 }
                 else{
                     //calling
@@ -871,7 +878,7 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
         if class_to_export.fields.len() == 0 && class_to_export.ignore_fields.iter().find(|f| f.as_str() == property.name.as_str()).is_some(){
             continue;
         }
-        if property.is_const || property.is_static || !should_export_property(engine, property){
+        if property.is_const || property.is_static || (!should_export_property(engine, property) && !is_wrapper_type(&property.type_str, settings)){
             continue;
         }
 

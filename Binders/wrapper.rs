@@ -8,36 +8,6 @@ pub trait IPtr: Sized{
 pub unsafe fn cast_to<V: IPtr, R: IPtr>(from: V) -> Option<R>{
     R::from_ptr(from.inner())
 }
-#[derive(Debug, Clone, Copy, Default)]
-#[repr(C)]
-pub struct FColor{
-    pub B: u8,
-    pub G: u8,
-    pub R: u8,
-    pub A: u8,
-}
-
-#[derive(Debug, Clone, Copy, Default)]
-#[repr(C)]
-pub struct FLinearColor{
-	pub R: f32,
-	pub G: f32,
-	pub B: f32,
-	pub A: f32
-}
-#[derive(Debug, Clone, Copy, Default)]
-#[repr(C)]
-pub struct FIntVector{
-	pub X: i32,
-	pub Y: i32,
-	pub Z: i32
-}
-#[derive(Debug, Clone, Copy, Default)]
-#[repr(C)]
-pub struct FIntPoint{
-	pub X: i32,
-	pub Y: i32
-}
 pub fn char_str_2_string(cstr: *const std::os::raw::c_char) -> String{
     if cstr.is_null(){
         error!("translate string by null ptr");

@@ -47,52 +47,10 @@
             ]
         },
         {
-            "class_name": "FVector"
-        },
-        {
-            "class_name": "FVector4"
-        },
-        {
-            "class_name": "FVector2D"
-        },
-        {
-            "class_name": "FRotator"
-        },
-        {
-            "class_name": "FQuat"
-        },
-        {
-            "class_name": "FIntPoint"
-        },
-        {
-            "class_name": "FIntVector"
-        },
-        {
-            "class_name": "FColor"
-        },
-        {
-            "class_name": "FLinearColor"
-        },
-        {
-            "class_name": "FMatrix"
-        },
-        {
-            "class_name": "FTransform"
-        },
-        {
             "class_name": "FRandomStream"
         },
         {
-            "class_name": "FPlane"
-        },
-        {
             "class_name": "FLargeWorldCoordinatesReal"
-        },
-        {
-            "class_name": "FString"
-        },
-        {
-            "class_name": "FText"
         },
         {
             "class_name": "UGameplayStatics"
@@ -118,10 +76,16 @@
         }
     ],
     "TypeWrapper":[
-        ["FColor", "UColor"],
-        ["FLinearColor", "ULinearColor"],
-        ["FIntVector", "UIntVector"],
-        ["FIntPoint", "UIntPoint"]
+        ["FColor", "Color"],
+        ["FVector", "Vector3"],
+        ["FVector2D", "Vector2"],
+        ["FVector4", "Vector4"],
+        ["FCollisionShape", "CollisionShape"],
+        ["FGuid", "Uuid"],
+        ["FIntPoint", "IntPoint"],
+        ["FRotator", "Rotator"],
+        ["FTransform", "Transform"],
+        ["FQuat", "Quaternion"]
     ],
     "ForceOpaque": [
         "UObject"

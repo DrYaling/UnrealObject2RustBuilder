@@ -460,6 +460,9 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         if is_string_ret && api.ref_ret{
             continue;
         }
+        if api.ref_ret{
+            continue;
+        }
         let opaque_ret = !is_string_ret && is_opaque(&api.rc_type, engine, settings);
         //opaque is ptr or ref, else not export
         if !is_string_ret{
@@ -528,7 +531,8 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                             ("const char*".to_string(), format!(" -> String"), format!(" -> *const std::os::raw::c_char"))
                         }
                         else{
-                            (get_wrapper_type(&api.rc_type, settings), format!(" -> {}", rs_ret_type.name), format!(" -> {}", rs_ret_type.name))
+                            let rs_type = if is_wrapper_type(&api.rc_type, settings){ get_wrapper_type(&api.rc_type, settings)}else{rs_ret_type.name};
+                            (get_wrapper_type(&api.rc_type, settings), format!(" -> {}",rs_type), format!(" -> {}", rs_type))
                         }
                     }
                 }

@@ -1,4 +1,202 @@
 
+use glam::{Quat, Vec3};
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct Vector3 {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct Quaternion {
+    x: f32,
+    y: f32,
+    z: f32,
+    w: f32,
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, Eq, PartialEq)]
+pub struct Entity {
+    pub id: u64,
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, Eq, PartialEq)]
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
+}
+
+/// cbindgen:ignore
+impl Color {
+    pub const RED: Self = Self {
+        r: 255,
+        g: 0,
+        b: 0,
+        a: 255,
+    };
+    pub const GREEN: Self = Self {
+        r: 0,
+        g: 255,
+        b: 0,
+        a: 255,
+    };
+    pub const BLUE: Self = Self {
+        r: 0,
+        g: 0,
+        b: 255,
+        a: 255,
+    };
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, Eq, PartialEq)]
+pub struct Uuid {
+    pub a: u32,
+    pub b: u32,
+    pub c: u32,
+    pub d: u32,
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct Vector2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+pub type Vector4 = Quaternion;
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct HitResult {
+    pub actor: *mut c_void,
+    pub primtive: *mut c_void,
+    pub distance: f32,
+    pub normal: Vector3,
+    pub location: Vector3,
+    pub impact_normal: Vector3,
+    pub impact_location: Vector3,
+    pub pentration_depth: f32,
+    pub start_penetrating: u32
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct CollisionBox {
+    pub half_extent_x: f32,
+    pub half_extent_y: f32,
+    pub half_extent_z: f32,
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct CollisionSphere {
+    pub radius: f32
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct CollisionCapsule {
+    pub radius: f32,
+    pub half_height: f32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub union CollisionShapeUnion {
+    pub collision_box: CollisionBox,
+    pub sphere: CollisionSphere,
+    pub capsule: CollisionCapsule,
+}
+#[repr(u32)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub enum CollisionShapeType{
+    Box,
+    Capsule,
+    Sphere,
+}
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct CollisionShape {
+    pub data: CollisionShapeUnion,
+    pub ty: CollisionShapeType,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct OverlapResult {
+    pub actor: *mut c_void,
+    pub primtive: *mut c_void,
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct SoundSettings {
+    pub volume: f32,
+    pub pitch: f32,
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct Rotator {
+    /** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
+    pub pitch: f32,
+
+    /** Rotation around the up axis (around Z axis), Turning around (0=Forward, +Right, -Left)*/
+    pub yaw: f32,
+
+    /** Rotation around the forward axis (around X axis), Tilting your head, (0=Straight, +Clockwise, -CCW) */
+    pub roll: f32,
+}
+
+#[repr(C)]
+#[derive(Default, Clone, Copy, Eq, PartialEq)]
+pub struct IntPoint
+{
+    pub x: i32,
+    pub y: i32,
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy, PartialEq)]
+pub struct Transform
+{
+    pub rotation: Quaternion,
+    pub location: Vector3,
+    pub scale: Vector3
+}
+
+impl From<Quaternion> for Quat {
+    fn from(val: Quaternion) -> Self {
+        Quat::from_xyzw(val.x, val.y, val.z, val.w)
+    }
+}
+
+impl From<Vector3> for Vec3 {
+    fn from(val: Vector3) -> Self {
+        Vec3::new(val.x, val.y, val.z)
+    }
+}
+
+impl From<Vec3> for Vector3 {
+    fn from(v: Vec3) -> Self {
+        Vector3 {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+        }
+    }
+}
+impl From<Quat> for Quaternion {
+    fn from(v: Quat) -> Self {
+        Quaternion {
+            x: v.x,
+            y: v.y,
+            z: v.z,
+            w: v.w,
+        }
+    }
+}
 ///imply that this is a unreal object
 pub trait IPtr: Sized{
     fn inner(&self) -> *mut c_void;

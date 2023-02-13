@@ -1,14 +1,14 @@
 
 use glam::{Quat, Vec3};
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct Vector3 {
     pub x: f32,
     pub y: f32,
     pub z: f32,
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct Quaternion {
     x: f32,
     y: f32,
@@ -16,12 +16,12 @@ pub struct Quaternion {
     w: f32,
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, Eq, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Entity {
     pub id: u64,
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, Eq, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -51,7 +51,7 @@ impl Color {
     };
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, Eq, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Uuid {
     pub a: u32,
     pub b: u32,
@@ -60,7 +60,7 @@ pub struct Uuid {
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct Vector2 {
     pub x: f32,
     pub y: f32,
@@ -83,7 +83,7 @@ pub struct HitResult {
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct CollisionBox {
     pub half_extent_x: f32,
     pub half_extent_y: f32,
@@ -91,34 +91,34 @@ pub struct CollisionBox {
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct CollisionSphere {
     pub radius: f32
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct CollisionCapsule {
     pub radius: f32,
     pub half_height: f32,
 }
 
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub union CollisionShapeUnion {
     pub collision_box: CollisionBox,
     pub sphere: CollisionSphere,
     pub capsule: CollisionCapsule,
 }
 #[repr(u32)]
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CollisionShapeType{
     Box,
     Capsule,
     Sphere,
 }
 #[repr(C)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct CollisionShape {
     pub data: CollisionShapeUnion,
     pub ty: CollisionShapeType,
@@ -132,13 +132,13 @@ pub struct OverlapResult {
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct SoundSettings {
     pub volume: f32,
     pub pitch: f32,
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct Rotator {
     /** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
     pub pitch: f32,
@@ -151,14 +151,14 @@ pub struct Rotator {
 }
 
 #[repr(C)]
-#[derive(Default, Clone, Copy, Eq, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, Eq, PartialEq)]
 pub struct IntPoint
 {
     pub x: i32,
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Default, Clone, Copy, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq)]
 pub struct Transform
 {
     pub rotation: Quaternion,

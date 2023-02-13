@@ -54,10 +54,18 @@ impl CodeGenerator{
     ///insert opaque type
     pub fn insert_type(&mut self, type_str: &str, engine: &Engine, settings: &CustomSettings) -> TypeImpl{
         //if type is not opaque and exported, use no alis
-        if (export_type(type_str, settings) && !is_opaque(type_str, engine, settings)) || is_wrapper_type(type_str, settings){
+        if export_type(type_str, settings) && !is_opaque(type_str, engine, settings){
             return  TypeImpl{
                 name: type_str.to_string(),
                 alis: type_str.to_string(),
+                ..Default::default()
+            };
+        }
+        if is_wrapper_type(type_str, settings){
+            let wrapper_type = get_wrapper_type(type_str, settings);
+            return  TypeImpl{
+                name: type_str.to_string(),
+                alis: wrapper_type,
                 ..Default::default()
             };
         }
@@ -910,13 +918,31 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
             )
         }
         else{
-            ("".to_string(), "".to_string(), "".to_string())
+            if is_wrapper_type(&property.type_str, settings){
+                (
+                    format!("To{}(", get_wrapper_type(&property.type_str, settings)),
+                    format!("To{}(", property.type_str),
+                    ")".to_string()
+                )
+            }
+            else{
+                ("".to_string(), "".to_string(), "".to_string())
+            }
+        };
+        let rs_type;
+        let ret_type = if is_wrapper_type(&type_str, settings){
+            rs_type = get_wrapper_type(&type_str, settings);
+            rs_type.clone()
+        }
+        else{
+            rs_type = property.r_type.clone();
+            type_str
         };
         //cpp getter api
         let get_cpp_name = format!("get_{class_name}_{}", property.name);
         let content = format!(r#"
     {} {get_cpp_name}({cpp_class_atlas}* target) {{ return {string_get_caster_begin}(({class_name}*)target) -> {}{string_caster_end};}};"#,
-    type_str, property.name);
+    ret_type, property.name);
     
         generator.source.push(content);
         //
@@ -924,7 +950,7 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
         let set_cpp_name = format!("set_{class_name}_{}", property.name);
         let content = format!(r#"
     void {set_cpp_name}({cpp_class_atlas}* target, {} value){{ (({class_name}*)target) -> {} = {string_set_caster_begin}value{string_caster_end};}};"#,
-    type_str, property.name);
+    ret_type, property.name);
     
         generator.source.push(content);
 
@@ -941,13 +967,13 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
     #[no_mangle]
     extern "C" fn {api_name}(handler: {callback_name}){{
         unsafe{{ {callback_handler_get} = Some(handler) }};
-    }}"#, property.r_type);
+    }}"#, rs_type);
         //get handler
         generator.rs_ffis.push(handler_code);
         //get cpp register
         //using EntryUnrealBindingsFn = uint32_t(*)(UnrealBindings bindings, RustBindings *rust_bindings);
         generator.api_defines.push(format!(r#"
-using {api_name}Fn = void(*)({}(*)({cpp_class_atlas}* target));"#, type_str));
+using {api_name}Fn = void(*)({}(*)({cpp_class_atlas}* target));"#, ret_type));
 
     generator.registers.push(format!(r#"
     auto const api{api_name} = ({api_name}Fn)plugin->GetDllExport(TEXT("{api_name}\0"));
@@ -965,12 +991,12 @@ using {api_name}Fn = void(*)({}(*)({cpp_class_atlas}* target));"#, type_str));
     #[no_mangle]
     extern "C" fn {api_name}(handler: {callback_name}){{
         unsafe {{{callback_handler_set} = Some(handler) }};
-    }}"#, property.r_type);
+    }}"#, rs_type);
         //setter
         generator.rs_ffis.push(handler_code);
         //cpp setter ffi api
         generator.api_defines.push(format!(r#"
-using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, type_str));
+using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, ret_type));
         generator.registers.push(format!(r#"    auto const api{api_name} = ({api_name}Fn)plugin->GetDllExport(TEXT("{api_name}\0"));
     if(api{api_name}){{
         api{api_name}(&{set_cpp_name});
@@ -1004,12 +1030,12 @@ using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, t
     #[inline]
     pub fn get_{}(&self) -> {}{{
         unsafe{{ {getter_caster}{callback_handler_get}.as_ref().unwrap()(self.inner){get_caster_end} }}
-    }}"#, property.name, property.r_type));
+    }}"#, property.name, rs_type));
         generator.rs_source.push(format!(r#"
     #[inline]
     pub fn set_{}(&mut self, value: {}){{
         unsafe{{ {callback_handler_set}.as_ref().unwrap()(self.inner, {setter_caster}value{set_caster_end}) }}
-    }}"#, property.name, property.r_type));
+    }}"#, property.name, rs_type));
     }
     Ok(())
 }

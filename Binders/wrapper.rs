@@ -104,7 +104,7 @@ pub struct CollisionCapsule {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub union CollisionShapeUnion {
     pub collision_box: CollisionBox,
     pub sphere: CollisionSphere,
@@ -118,7 +118,7 @@ pub enum CollisionShapeType{
     Sphere,
 }
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct CollisionShape {
     pub data: CollisionShapeUnion,
     pub ty: CollisionShapeType,

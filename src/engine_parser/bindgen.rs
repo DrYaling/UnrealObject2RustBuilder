@@ -460,17 +460,16 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         if is_string_ret && api.ref_ret{
             continue;
         }
-        if api.ref_ret{
-            continue;
-        }
         let opaque_ret = !is_string_ret && is_opaque(&api.rc_type, engine, settings);
         //opaque is ptr or ref, else not export
+        //for ref wrapped type, here we export a clone of rust version
+        let wrapped_ret = is_wrapper_type(&api.rc_type, settings);
         if !is_string_ret{
-            if opaque_ret && !api.ptr_ret&& !api.ref_ret{
+            if opaque_ret && !api.ptr_ret && !wrapped_ret{
                 continue;
             }
             //opaque but didn't export
-            else if !opaque_ret && !export_type(&api.rc_type, settings) && !is_wrapper_type(&api.rc_type, settings){
+            else if !opaque_ret && !export_type(&api.rc_type, settings) && !wrapped_ret{
                 continue;
             }
         }
@@ -521,10 +520,17 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                         (format!("{}*", api.rc_type), format!(" -> *mut {}", rs_ret_type.alis), format!(" -> *mut {}", rs_ret_type.alis))
                     }
                     else if api.ref_ret{
-                        lifetime_ret = true;                        
-                        ref_to_ptr = true;
-                        //ref in ffi is not supported, so translate to ptr
-                        (format!("{}*", api.rc_type), format!(" ->&'a {}", rs_ret_type.name), format!(" -> *mut {}", rs_ret_type.name))
+                        if wrapped_ret{
+                            lifetime_ret = false;                        
+                            ref_to_ptr = false;
+                            //ref in ffi is not supported, so translate to ptr
+                            let rs_type = get_wrapper_type(&api.rc_type, settings);
+                            (get_wrapper_type(&api.rc_type, settings), format!(" -> {}",rs_type), format!(" -> {}", rs_type))
+                        }
+                        else{
+                            println!("ref ret without wrapped will not export");
+                            std::process::exit(-1);
+                        }
                     }
                     else{
                         if is_string_ret{

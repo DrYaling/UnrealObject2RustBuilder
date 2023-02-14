@@ -252,6 +252,7 @@ struct RefString{
 ///     rstr
 /// }
 /// ```
+#[allow(unused)]
 macro_rules! string_2_cstr{
     ($rstr: expr, $name:ident) => {
         let size = $rstr.len() as u32;
@@ -266,6 +267,7 @@ macro_rules! string_2_cstr{
 ///     rstr
 /// }
 /// ```
+#[allow(unused)]
 macro_rules! string_2_rstr{
     ($rstr: expr, $name:ident) => {
         let str_ref = $rstr as *mut String;

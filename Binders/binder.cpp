@@ -1,15 +1,4 @@
 
-//thread unsafe
-struct NativeString {
-    char* utfStr;
-    uint32 size;
-};
-//thread unsafe
-struct RefString {
-    char* utfStr;
-    void* str_ref;
-    uint32 size;
-};
 using reset_rust_string_handler = void (*)(RefString utfstr, const char* c_str, uint32 size);
 reset_rust_string_handler reset_rust_string = nullptr;
 //thread unsafe

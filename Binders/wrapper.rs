@@ -233,14 +233,14 @@ unsafe extern fn create_native_string(ptr: *const c_char, size: u32) -> *mut c_c
 ///thread unsafe
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
-struct NativeString{
+pub struct NativeString{
     utf_str: *const c_char,
     size: u32,
 }
 ///thread unsafe
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
-struct RefString{
+pub struct RefString{
     utf_str: *const c_char,
     str_ref: *mut String,
     size: u32,
@@ -253,6 +253,7 @@ struct RefString{
 /// }
 /// ```
 #[allow(unused)]
+#[macro_export]
 macro_rules! string_2_cstr{
     ($rstr: expr, $name:ident) => {
         let size = $rstr.len() as u32;
@@ -268,6 +269,7 @@ macro_rules! string_2_cstr{
 /// }
 /// ```
 #[allow(unused)]
+#[macro_export]
 macro_rules! string_2_rstr{
     ($rstr: expr, $name:ident) => {
         let str_ref = $rstr as *mut String;

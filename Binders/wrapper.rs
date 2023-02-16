@@ -234,16 +234,16 @@ unsafe extern fn create_native_string(ptr: *const c_char, size: u32) -> *mut c_c
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct NativeString{
-    utf_str: *const c_char,
-    size: u32,
+    pub utf_str: *const c_char,
+    pub size: u32,
 }
 ///thread unsafe
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct RefString{
-    utf_str: *const c_char,
-    str_ref: *mut String,
-    size: u32,
+    pub utf_str: *const c_char,
+    pub str_ref: *mut String,
+    pub size: u32,
 }
 /// rust string to c const string(as parameter)
 /// ```

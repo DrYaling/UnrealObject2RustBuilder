@@ -32,7 +32,7 @@
             "ignore_fields": ["bNetTemporary"]
         },
         {
-            "class_name": "ASpawn"
+            "class_name": "APawn"
         },
         {
             "class_name": "AController",

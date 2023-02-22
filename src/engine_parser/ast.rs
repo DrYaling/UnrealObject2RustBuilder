@@ -516,6 +516,14 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                     return Err(anyhow!("api {:?} unrecongnized with offset incorrect {:?}", api, kind));
                 }
                 param.type_str = state.content[start.offset..end.offset].trim().to_string();
+                //remove =
+                if param.name.contains("="){
+                    param.name = param.name[0..param.name.find("=").unwrap()].trim().to_string();
+                }
+                //remove =
+                if let Some(index) = param.type_str.find("="){
+                    param.type_str = param.type_str[0..index].trim().to_string();
+                }
                 //remove const(at most 2?)
                 if param.type_str.starts_with("const"){
                     if let Some(index) = param.type_str.find("const"){
@@ -573,6 +581,12 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                 }
                 if let (Some(_), Some(_)) = (param.type_str.find("<"), param.type_str.find(">")){
                     param.is_generic = true;
+                }
+                //some api can not split type and name
+                let mut types = param.type_str.split(|c| c == ' ' || c == '\t').map(|s| s.to_string()).collect::<Vec<_>>();
+                if types.len() > 1{
+                    param.name = types.remove(types.len() - 1).trim().to_string();
+                    param.type_str = types.join(" ").trim().to_string();
                 }
                 let (r_s, vt) = super::parse_c_type(&param.type_str);
                 param.r_type = r_s;

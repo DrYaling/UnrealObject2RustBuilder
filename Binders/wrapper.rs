@@ -267,7 +267,7 @@ pub struct RefString{
 macro_rules! string_2_cstr{
     ($rstr: expr, $name:ident) => {
         let size = $rstr.len() as u32;
-        let utf_str = $rstr.as_ptr() as *const c_char;
+        let utf_str = $rstr.as_ptr() as *const std::ffi::c_char;
         let $name = NativeString{utf_str, size};
     };
 }
@@ -284,7 +284,7 @@ macro_rules! string_2_rstr{
     ($rstr: expr, $name:ident) => {
         let str_ref = $rstr as *mut String;
         let size = $rstr.len() as u32;
-        let utf_str = $rstr.as_str().as_ptr() as *const c_char;
+        let utf_str = $rstr.as_str().as_ptr() as *const std::ffi::c_char;
         let $name = RefString{utf_str, size, str_ref};
     };
 }

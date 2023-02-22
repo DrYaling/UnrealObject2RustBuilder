@@ -585,8 +585,11 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                 //some api can not split type and name
                 let mut types = param.type_str.split(|c| c == ' ' || c == '\t').map(|s| s.to_string()).collect::<Vec<_>>();
                 if types.len() > 1{
-                    param.name = types.remove(types.len() - 1).trim().to_string();
-                    param.type_str = types.join(" ").trim().to_string();
+                    let name = types.remove(types.len() - 1).trim().to_string();
+                    //name in type_str 
+                    if param.name == name || param.name.is_empty(){
+                        param.type_str = types.join(" ").trim().to_string();
+                    }
                 }
                 let (r_s, vt) = super::parse_c_type(&param.type_str);
                 param.r_type = r_s;

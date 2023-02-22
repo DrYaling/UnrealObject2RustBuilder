@@ -9,7 +9,8 @@
                 "PostSaveRoot",
                 "PreSave",
                 "PreSaveRoot",
-                "UpdateDefaultConfigFile"
+                "UpdateDefaultConfigFile",
+                "AssetVersePathTagName"
             ]
         },
         {
@@ -84,10 +85,17 @@
             "class_name": "UAnimInstance",
             "ignore_fields":[
                 "PostCompileValidationClassName"
+            ],
+            "ignore_functions":[
+                "GetStateMachineIndexAndDescription"
             ]
         },
         {
-            "class_name": "UKismetSystemLibrary"
+            "class_name": "UKismetSystemLibrary",
+            "ignore_functions":[
+                "IsValidClass",
+                "StackTrace"
+            ]
         },
         {
             "class_name": "UAnimMontage",

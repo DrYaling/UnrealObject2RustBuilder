@@ -12,7 +12,6 @@ pub use config::ValueType;
 ///string not supported yet
 fn get_engine_str(type_str: &str) -> Option<(String, ValueType)>{
     match type_str {
-        "FName" => Some(("String".to_string(), ValueType::FName)),
         "FText" => Some(("String".to_string(), ValueType::FText)),
         "FString" => Some(("String".to_string(), ValueType::FString)),
         "char*" => Some(("String".to_string(), ValueType::CStr)),

@@ -90,6 +90,7 @@ impl CodeGenerator{
 impl Default for CodeGenerator{
     fn default() -> Self {    
         let source: Vec<String> = vec![
+            "#pragma warning( disable : 4883 )".into(),
             "#include \"Binder.h\"".into(),
             "extern \"C\"{".into(),
         ];

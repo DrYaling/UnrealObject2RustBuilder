@@ -392,7 +392,7 @@ fn is_wrapper_type(cpp_type: &str, settings: &CustomSettings) -> bool{
     settings.TypeWrapper.iter().find(|x| x[0].as_str() == cpp_type).is_some()
 }
 fn is_string_type(cpp_type: &str) -> bool{
-    cpp_type == "FString" || cpp_type == "FText" || cpp_type == "FName"
+    cpp_type == "FString" || cpp_type == "FText"
 }
 ///生成函数
 fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGenerator, opaque: bool, settings: &CustomSettings) -> anyhow::Result<()>{    
@@ -406,9 +406,6 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         if black_api(api, settings){
             continue;
         }
-        // if api.name == "BeginSpawningActorFromBlueprint"{
-        //     println!("BeginSpawningActorFromBlueprint {:?}", api);
-        // }
         //not in white list
         if class_to_export.functions.len() > 0 && class_to_export.functions.iter().find(|f| f.as_str() == api.name.as_str()).is_none(){
             continue;
@@ -919,7 +916,6 @@ fn parse_properties(engine: &Engine, class: &UnrealClass, generator: &mut CodeGe
         //cast unreal string to utf8 string
         let (string_get_caster_begin, string_set_caster_begin, string_caster_end) = if is_string_type{
             let (get,set) = match property.type_str.as_str() {
-                "FName"     => ("FName2Utf8(".to_string(), "Utf82FName(".to_string()),
                 "FString"   => ("FString2Utf8(".to_string(), "Utf82FString(".to_string()),
                 _/*"FText"*/=> ("FText2Utf8(".to_string(), "Utf82FText(".to_string()),
             };
@@ -1020,9 +1016,6 @@ using {api_name}Fn = void(*)(void(*)({cpp_class_atlas}* target, {} value));"#, r
                     
             //     },
             //     "FText" => {
-
-            //     },
-            //     _/*"FName"*/ => {
 
             //     },
             // }

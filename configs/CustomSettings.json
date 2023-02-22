@@ -88,6 +88,11 @@
         },
         {
             "class_name": "UKismetSystemLibrary"
+        },
+        {
+            "class_name": "UAnimMontage",
+            "fields": ["*"],
+            "functions": ["GetNumSections", "IsValidSlot"]
         }
     ],
     "TypeWrapper":[
@@ -100,7 +105,8 @@
         ["FIntPoint", "IntPoint"],
         ["FRotator", "Rotator"],
         ["FTransform", "Transform"],
-        ["FQuat", "Quaternion"]
+        ["FQuat", "Quaternion"],
+        ["FName", "UName"]
     ],
     "ForceOpaque": [
         "UObject"

@@ -310,6 +310,8 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             continue;
         }
         if line.contains("UENUM") ||
+            line.contains("meta") ||
+            line.contains("AutoCreateRefTerm") ||
             line.contains("UCLASS") ||
             line.contains("UPROPERTY") ||
             line.contains("DEPRECATED_") ||

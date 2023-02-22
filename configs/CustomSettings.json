@@ -73,6 +73,21 @@
         },
         {
             "class_name": "UWorld"
+        },
+        {
+            "class_name": "UPrimitiveComponent",
+            "ignore_fields":[
+                "bEnableAutoLODGeneration"
+            ]
+        },
+        {
+            "class_name": "UAnimInstance",
+            "ignore_fields":[
+                "PostCompileValidationClassName"
+            ]
+        },
+        {
+            "class_name": "UKismetSystemLibrary"
         }
     ],
     "TypeWrapper":[

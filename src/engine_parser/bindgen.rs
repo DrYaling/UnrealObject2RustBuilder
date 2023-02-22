@@ -1,7 +1,5 @@
 use std::{vec, collections::BTreeMap, sync::Mutex};
 
-use crate::{is_primary, is_rs_primary};
-
 use super::{
     unreal_engine::{
         Engine, 
@@ -10,9 +8,15 @@ use super::{
     config::{
         CustomSettings, 
         CppProperty, 
-        CppApi
+        CppApi, CppEnum
     }
 };
+fn is_rs_primary(rs_type: &str, settings: &CustomSettings) -> bool{
+    crate::is_rs_primary(rs_type) || settings.ExportEnums.iter().find(|e| e.as_str() == rs_type).is_some()
+}
+fn is_primary(type_str: &str, settings: &CustomSettings) -> bool{
+    crate::is_primary(type_str) || settings.ExportEnums.iter().find(|e| e.as_str() == type_str).is_some()
+}
 static EXPORTED: Mutex<Vec<TypeImpl>> = Mutex::new(Vec::new());
 #[derive(Clone, Debug, Default)]
 struct TypeImpl{
@@ -28,6 +32,7 @@ struct CodeGenerator{
     registers: Vec<String>,
     api_defines: Vec<String>,
     rs_source: Vec<String>,
+    rs_enums: Vec<String>,
     rs_ffis: Vec<String>,
     type_impl: Vec<TypeImpl>,
     default_rs_header: usize,
@@ -42,7 +47,7 @@ impl CodeGenerator{
                 ..Default::default()
             };
         }
-        if type_str == "String" || is_rs_primary(type_str){
+        if type_str == "String" || is_rs_primary(type_str, settings){
             return  TypeImpl{
                 name: type_str.to_string(),
                 alis: type_str.to_string(),
@@ -101,6 +106,7 @@ impl Default for CodeGenerator{
             "#![allow(non_camel_case_types)]".to_string(),
             "#![allow(dead_code)]".to_string(),
             "#![allow(unused_imports)]".to_string(),
+            "use super::*;".into(),
             "use std::{ffi::{c_void, CString}, os::raw::c_char, ops::{Deref, DerefMut}};".to_string(),
             "use ffis::*;".to_string(),
             r#"pub struct RefResult<T: Sized>{
@@ -132,11 +138,12 @@ impl<T: Sized> DerefMut for RefResult<T> {
         CodeGenerator{
             include: vec![
             ],
-            default_source_header: 1,
+            default_source_header: 2,
             source,
             header: vec![],
             default_rs_header: rs_source.len(),
             rs_source,
+            rs_enums: vec![],
             registers: vec![
                 "\r\n\tauto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT(\"create_native_string\\0\"));".to_string(),
                 "\tif(api_create_native_string){ create_native_string = api_create_native_string; }".to_string(),
@@ -202,6 +209,14 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
             gen_class(engine, &engine_class, &mut generator, settings)?;
         }
     }
+    for enum_def in &settings.ExportEnums{
+        if let Some(uenum) = engine.enums.iter().find(|e| e.name.as_str() == enum_def.as_str()){
+            export_enums(&mut generator, uenum)?;
+        }
+        else{
+            println!("fail to find enum {}", enum_def);
+        }
+    }
     generator.rs_ffis.push("}".to_string());
     //ffi apis
     generator.rs_source.append(&mut generator.rs_ffis);
@@ -238,6 +253,20 @@ pub use opaque_types::*;
     // std::fs::write("binders/cpp/FFI.h", api_defines)?;
     // std::fs::write("binders/cpp/Registers.h", api_registers)?;
     std::fs::write("binders/rs/binders.rs", generator.rs_source.join("\r\n"))?;
+    std::fs::write("binders/rs/enums.rs", generator.rs_enums.join("\r\n"))?;
+    Ok(())
+}
+fn export_enums(generator: &mut CodeGenerator, uenum: &CppEnum) -> anyhow::Result<()>{
+    let mut enum_content = vec![
+        "#[repr(u8)]".to_string(),
+        "#[derive(Debug, Copy, Clone, PartialEq, Eq)]".to_string(),
+        format!("pub enum {}{{", uenum.name)
+    ];
+    for constant in &uenum.constants {
+        enum_content.push(format!("\t{} = {},", constant.name, constant.value));
+    }
+    enum_content.push("}".to_string());
+    generator.rs_enums.append(&mut enum_content);
     Ok(())
 }
 ///insert wrapped types into rust code
@@ -250,7 +279,7 @@ fn insert_rs_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
 ///insert wrapped types into binder code
 fn insert_cpp_wrappers(generator: &mut CodeGenerator) -> anyhow::Result<()>{
     if let Ok(wrapper) = std::fs::read_to_string("Binders/binder.cpp"){
-        generator.source.insert(1, wrapper);
+        generator.source.insert(generator.default_source_header, wrapper);
     }
     Ok(())
 }
@@ -261,7 +290,7 @@ fn is_opaque(type_str: &str, engine: &Engine, settings: &CustomSettings) -> bool
     if settings.ForceOpaque.iter().find(|fo| fo.as_str() == type_str).is_some(){
         return true;
     }
-    if is_primary(type_str){
+    if is_primary(type_str, settings){
         return  false;
     }
     if is_string_type(type_str){
@@ -365,7 +394,7 @@ fn is_void(type_str: &str) -> bool{
     type_str == "void" || type_str == ""
 }
 fn export_type(type_str: &str, settings: &CustomSettings) -> bool{
-    is_primary(type_str) || settings.ExportClasses.iter().find(|x| x.class_name.as_str() == type_str).is_some()
+    is_primary(type_str, settings) || settings.ExportClasses.iter().find(|x| x.class_name.as_str() == type_str).is_some()
 }
 ///api is in black list
 fn black_api(api: &CppApi, settings: &CustomSettings) -> bool{
@@ -620,7 +649,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 //ptr param with export use rust wrapper
                 let rs_param_type_name = if void_ptr{"c_void"}else if exported_type{ts.name.as_str()} else {ts.alis.as_str()};
                 rs_ffi_parameters.push(format!("{}{}", ffi_tag, ts.alis));
-                if is_primary(&prop.type_str) || is_wrapper_type(&prop.type_str, settings){
+                if is_primary(&prop.type_str, settings) || is_wrapper_type(&prop.type_str, settings){
                     rs_parameters.push(format!("{}", prop.name));
                 }
                 else{
@@ -688,7 +717,6 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                     }
                     _ => {
                         match p.type_str.as_str() {
-                            "FName"     => format!("auto {param_name} = Utf82FName({});", p.name),
                             "FString"   => format!("auto {param_name} = Utf82FString({});", p.name),
                             _/*"FText"*/=> format!("auto {param_name} = Utf82FText({});", p.name),
                         }
@@ -761,7 +789,6 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
                 if is_string_ret{
                     (
                         match api.rc_type.as_str() {
-                            "FName"     => format!("FName2Utf8("),
                             "FString"   => format!("FString2Utf8("),
                             _/*"FText"*/=> format!("FText2Utf8("),
                         }, 

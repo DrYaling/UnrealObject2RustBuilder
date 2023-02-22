@@ -440,7 +440,7 @@ fn remove_all_fn_block(lines: &mut Vec<String>){
             break;
         }
         //remove fn define and operator
-        if lines[read_line].contains("::") || 
+        if //lines[read_line].contains("::") || 
             lines[read_line].contains("operator") ||
             lines[read_line].starts_with("extern "){
             lines.remove(read_line);

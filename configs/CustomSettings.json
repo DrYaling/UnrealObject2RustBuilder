@@ -11,7 +11,8 @@
                 "PreSaveRoot",
                 "UpdateDefaultConfigFile",
                 "AssetVersePathTagName"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "AActor",
@@ -30,47 +31,58 @@
                 "GetActorDataLayers",
                 "HasValidDataLayers"
             ],
-            "ignore_fields": ["bNetTemporary"]
+            "ignore_fields": ["bNetTemporary"],
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "APawn"
+            "class_name": "APawn",
+            "fields": ["Ignore"]
         },
         {
             "class_name": "AController",
             "ignore_functions": [
                 "UpdateNavigationComponents"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "APlayerController",
             "ignore_fields": [
                 "StreamingSourceDebugColor"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "FRandomStream"
+            "class_name": "FRandomStream",
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "FLargeWorldCoordinatesReal"
+            "class_name": "FLargeWorldCoordinatesReal",
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "UGameplayStatics"
+            "class_name": "UGameplayStatics",
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "ACharacter"
+            "class_name": "ACharacter",
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "AGameModeBase"
+            "class_name": "AGameModeBase",
+            "fields": ["Ignore"]
         },
         {
-            "class_name": "USceneComponent"
+            "class_name": "USceneComponent",
+            "fields": ["Ignore"]
         },
         {
             "class_name": "UActorComponent",
             "ignore_functions": [
                 "EndReplication", 
                 "BeginReplication"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "UWorld"
@@ -79,7 +91,8 @@
             "class_name": "UPrimitiveComponent",
             "ignore_fields":[
                 "bEnableAutoLODGeneration"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "UAnimInstance",
@@ -88,19 +101,37 @@
             ],
             "ignore_functions":[
                 "GetStateMachineIndexAndDescription"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "UKismetSystemLibrary",
             "ignore_functions":[
                 "IsValidClass",
                 "StackTrace"
-            ]
+            ],
+            "fields": ["Ignore"]
         },
         {
             "class_name": "UAnimMontage",
-            "fields": ["*"],
+            "fields": ["Ignore"],
             "functions": ["GetNumSections", "IsValidSlot"]
+        },
+        {
+            "class_name": "USkeletalMeshComponent",
+            "ignore_fields":[
+                "AnimCurves",
+                "ClothTickFunction"
+            ],
+            "fields": ["Ignore"]
+        },
+        {
+            "class_name": "UCapsuleComponent",
+            "fields": ["Ignore"]
+        },
+        {
+            "class_name": "UCharacterMovementComponent",
+            "fields": ["Ignore"]
         }
     ],
     "TypeWrapper":[

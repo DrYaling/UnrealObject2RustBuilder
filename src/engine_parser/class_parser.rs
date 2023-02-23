@@ -175,7 +175,7 @@ fn remove_comment_and_mic(lines: &mut Vec<String>){
         (
             line.starts_with("typedef ") ||
             line.starts_with("struct ") ||
-            line.starts_with("class ") ||
+            (line.starts_with("class ") && !(line.contains("(") && line.contains(")"))) ||
             line.starts_with("friend class ")
         )
         && line.contains(";")
@@ -1155,6 +1155,9 @@ fn ignore_class_or_struct(lines: &mut Vec<String>, read_line: &mut usize) -> boo
     }
     let l = lines[*read_line].trim();
     if l.starts_with("class") || l.starts_with("struct"){
+        if l.contains("(") && l.contains(")"){
+            return false;
+        }
         let mut brace = 0;
         while *read_line < lines.len() {
             let line = lines.remove(*read_line).trim().to_string();

@@ -201,7 +201,7 @@ impl From<Quat> for Quaternion {
 unreal FName
  */
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 pub struct UName{
 	pub entry: u32,
 	pub number: u32,

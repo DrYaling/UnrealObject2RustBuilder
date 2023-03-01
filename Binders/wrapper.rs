@@ -205,7 +205,6 @@ unreal FName
 pub struct UName{
 	pub entry: u32,
 	pub number: u32,
-	other: [u8; 0]
 }
 ///imply that this is a unreal object
 pub trait IPtr: Sized{

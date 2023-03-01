@@ -114,8 +114,7 @@
         },
         {
             "class_name": "UAnimMontage",
-            "fields": ["Ignore"],
-            "functions": ["GetNumSections", "IsValidSlot"]
+            "fields": ["Ignore"]
         },
         {
             "class_name": "USkeletalMeshComponent",

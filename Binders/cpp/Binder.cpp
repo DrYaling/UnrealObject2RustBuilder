@@ -1,9 +1,11 @@
 #pragma warning( disable : 4883 )
+#include "Binder.h"
 #include "CoreUObject/Public/UObject/Object.h"
 #include "Engine/Classes/GameFramework/Actor.h"
 #include "Engine/Classes/GameFramework/Pawn.h"
 #include "Engine/Classes/GameFramework/Controller.h"
 #include "Engine/Classes/GameFramework/PlayerController.h"
+#include "Core/Public/Math/RandomStream.h"
 #include "Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/Classes/GameFramework/Character.h"
 #include "Engine/Classes/GameFramework/GameModeBase.h"
@@ -14,8 +16,8 @@
 #include "Engine/Classes/Kismet/KismetSystemLibrary.h"
 #include "Engine/Classes/Animation/AnimMontage.h"
 #include "Engine/Classes/Components/SkeletalMeshComponent.h"
-#include "Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "Engine/Classes/Components/CapsuleComponent.h"
+#include "Engine/Classes/GameFramework/CharacterMovementComponent.h"
 
 using reset_rust_string_handler = void (*)(RefString utfstr, const char* c_str, uint32 size);
 reset_rust_string_handler reset_rust_string = nullptr;
@@ -82,7 +84,6 @@ const char* FText2Utf8(FText text) {
     auto fstr = text.ToString();
     return FString2Utf8(fstr);
 }
-#include "Binder.h"
 extern "C"{
 	void uapi_UObject_AbortInsideMemberFunction(void* target){	
 		((UObject*)target)->AbortInsideMemberFunction();	
@@ -276,6 +277,9 @@ extern "C"{
 		auto result = ((UObject*)target)->IsSupportedForNetworking();	
 		return result;	
 	}
+	void uapi_UObject_LoadConfig(void* target, UClass* ConfigClass, TCHAR* Filename, uint32 PropagationFlags, FProperty* PropertyToLoad){	
+		((UObject*)target)->LoadConfig(ConfigClass, Filename, PropagationFlags, PropertyToLoad);	
+	}
 	void uapi_UObject_MarkAsEditorOnlySubobject(void* target){	
 		((UObject*)target)->MarkAsEditorOnlySubobject();	
 	}
@@ -368,6 +372,9 @@ extern "C"{
 	}
 	void uapi_UObject_ReinitializeProperties(void* target, UObject* SourceObject, FObjectInstancingGraph* InstanceGraph){	
 		((UObject*)target)->ReinitializeProperties(SourceObject, InstanceGraph);	
+	}
+	void uapi_UObject_ReloadConfig(void* target, UClass* ConfigClass, TCHAR* Filename, uint32 PropagationFlags, FProperty* PropertyToLoad){	
+		((UObject*)target)->ReloadConfig(ConfigClass, Filename, PropagationFlags, PropertyToLoad);	
 	}
 	void uapi_UObject_SaveConfig(void* target, uint64 Flags, TCHAR* Filename, FConfigCacheIni* Config, bool bAllowCopyToDefaultObject){	
 		((UObject*)target)->SaveConfig(Flags, Filename, Config, bAllowCopyToDefaultObject);	
@@ -1217,6 +1224,9 @@ extern "C"{
 	void uapi_AActor_LifeSpanExpired(void* target){	
 		((AActor*)target)->LifeSpanExpired();	
 	}
+	void uapi_AActor_MakeNoise(void* target, float Loudness, APawn* NoiseInstigator, Vector3 NoiseLocation, float MaxRange, UName Tag){	
+		((AActor*)target)->MakeNoise(Loudness, NoiseInstigator, ToFVector(NoiseLocation), MaxRange, ToFName(Tag));	
+	}
 	void uapi_AActor_MarkComponentsAsPendingKill(void* target){	
 		((AActor*)target)->MarkComponentsAsPendingKill();	
 	}
@@ -1623,6 +1633,10 @@ extern "C"{
 	}
 	bool uapi_AActor_WasRecentlyRendered(void* target, float Tolerance){	
 		auto result = ((AActor*)target)->WasRecentlyRendered(Tolerance);	
+		return result;	
+	}
+	void* uapi_APawn_GetController(void* target){	
+		auto result = (void*)((APawn*)target)->GetController();	
 		return result;	
 	}
 	void* uapi_APawn_GetLocalViewingPlayerController(void* target){	
@@ -2405,6 +2419,55 @@ extern "C"{
 	void uapi_APlayerController_ViewAPlayer(void* target, int32 dir){	
 		((APlayerController*)target)->ViewAPlayer(dir);	
 	}
+	float uapi_FRandomStream_FRand(void* target){	
+		auto result = ((FRandomStream*)target)->FRand();	
+		return result;	
+	}
+	void uapi_FRandomStream_GenerateNewSeed(void* target){	
+		((FRandomStream*)target)->GenerateNewSeed();	
+	}
+	int32 uapi_FRandomStream_GetCurrentSeed(void* target){	
+		auto result = ((FRandomStream*)target)->GetCurrentSeed();	
+		return result;	
+	}
+	float uapi_FRandomStream_GetFraction(void* target){	
+		auto result = ((FRandomStream*)target)->GetFraction();	
+		return result;	
+	}
+	int32 uapi_FRandomStream_GetInitialSeed(void* target){	
+		auto result = ((FRandomStream*)target)->GetInitialSeed();	
+		return result;	
+	}
+	Vector3 uapi_FRandomStream_GetUnitVector(void* target){	
+		auto result = ToVector3(((FRandomStream*)target)->GetUnitVector());	
+		return result;	
+	}
+	uint32 uapi_FRandomStream_GetUnsignedInt(void* target){	
+		auto result = ((FRandomStream*)target)->GetUnsignedInt();	
+		return result;	
+	}
+	void uapi_FRandomStream_Initialize(void* target, int32 InSeed){	
+		((FRandomStream*)target)->Initialize(InSeed);	
+	}
+	int32 uapi_FRandomStream_RandHelper(void* target, int32 A){	
+		auto result = ((FRandomStream*)target)->RandHelper(A);	
+		return result;	
+	}
+	int32 uapi_FRandomStream_RandRange(void* target, int32 Min, int32 Max){	
+		auto result = ((FRandomStream*)target)->RandRange(Min, Max);	
+		return result;	
+	}
+	void uapi_FRandomStream_Reset(void* target){	
+		((FRandomStream*)target)->Reset();	
+	}
+	const char* uapi_FRandomStream_ToString(void* target){	
+		auto result = FString2Utf8(((FRandomStream*)target)->ToString());	
+		return result;	
+	}
+	Vector3 uapi_FRandomStream_VRand(void* target){	
+		auto result = ToVector3(((FRandomStream*)target)->VRand());	
+		return result;	
+	}
 	void uapi_UGameplayStatics_ActivateReverbEffect(UObject* WorldContextObject, UReverbEffect* ReverbEffect, UName TagName, float Priority, float Volume, float FadeTime){	
 		(UGameplayStatics::ActivateReverbEffect(WorldContextObject, ReverbEffect, ToFName(TagName), Priority, Volume, FadeTime));	
 	}
@@ -2642,8 +2705,16 @@ extern "C"{
 		auto result = (void*)(UGameplayStatics::SpawnDecalAtLocation(WorldContextObject, DecalMaterial, ToFVector(DecalSize), ToFVector(Location), ToFRotator(Rotation), LifeSpan));	
 		return result;	
 	}
+	void* uapi_UGameplayStatics_SpawnForceFeedbackAtLocation(UObject* WorldContextObject, UForceFeedbackEffect* ForceFeedbackEffect, Vector3 Location, Rotator Rotation, bool bLooping, float IntensityMultiplier, float StartTime, UForceFeedbackAttenuation* AttenuationSettings, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::SpawnForceFeedbackAtLocation(WorldContextObject, ForceFeedbackEffect, ToFVector(Location), ToFRotator(Rotation), bLooping, IntensityMultiplier, StartTime, AttenuationSettings, bAutoDestroy));	
+		return result;	
+	}
 	void* uapi_UGameplayStatics_SpawnSound2D(UObject* WorldContextObject, USoundBase* Sound, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundConcurrency* ConcurrencySettings, bool bPersistAcrossLevelTransition, bool bAutoDestroy){	
 		auto result = (void*)(UGameplayStatics::SpawnSound2D(WorldContextObject, Sound, VolumeMultiplier, PitchMultiplier, StartTime, ConcurrencySettings, bPersistAcrossLevelTransition, bAutoDestroy));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_SpawnSoundAtLocation(UObject* WorldContextObject, USoundBase* Sound, Vector3 Location, Rotator Rotation, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundAttenuation* AttenuationSettings, USoundConcurrency* ConcurrencySettings, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::SpawnSoundAtLocation(WorldContextObject, Sound, ToFVector(Location), ToFRotator(Rotation), VolumeMultiplier, PitchMultiplier, StartTime, AttenuationSettings, ConcurrencySettings, bAutoDestroy));	
 		return result;	
 	}
 	void uapi_UGameplayStatics_UnRetainAllSoundsInSoundClass(USoundClass* InSoundClass){	
@@ -4344,6 +4415,10 @@ extern "C"{
 	void uapi_UAnimInstance_Montage_Pause(void* target, UAnimMontage* Montage){	
 		((UAnimInstance*)target)->Montage_Pause(Montage);	
 	}
+	float uapi_UAnimInstance_Montage_Play(void* target, UAnimMontage* MontageToPlay, float InPlayRate, EMontagePlayReturnType ReturnValueType, float InTimeToStartMontageAt, bool bStopAllMontages){	
+		auto result = ((UAnimInstance*)target)->Montage_Play(MontageToPlay, InPlayRate, ReturnValueType, InTimeToStartMontageAt, bStopAllMontages);	
+		return result;	
+	}
 	void uapi_UAnimInstance_Montage_Resume(void* target, UAnimMontage* Montage){	
 		((UAnimInstance*)target)->Montage_Resume(Montage);	
 	}
@@ -4875,13 +4950,135 @@ extern "C"{
 	void uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(){	
 		(UKismetSystemLibrary::UnregisterForRemoteNotifications());	
 	}
+	int32 uapi_UAnimMontage_AddAnimCompositeSection(void* target, UName InSectionName, float StartPos){	
+		auto result = ((UAnimMontage*)target)->AddAnimCompositeSection(ToFName(InSectionName), StartPos);	
+		return result;	
+	}
+	float uapi_UAnimMontage_CalculateSequenceLength(void* target){	
+		auto result = ((UAnimMontage*)target)->CalculateSequenceLength();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_CanBeUsedInComposition(void* target){	
+		auto result = ((UAnimMontage*)target)->CanBeUsedInComposition();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_CanUseMarkerSync(void* target){	
+		auto result = ((UAnimMontage*)target)->CanUseMarkerSync();	
+		return result;	
+	}
+	void uapi_UAnimMontage_CollectMarkers(void* target){	
+		((UAnimMontage*)target)->CollectMarkers();	
+	}
+	void* uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(UAnimSequenceBase* Asset, UName SlotNodeName, float BlendInTime, float BlendOutTime, float InPlayRate, int32 LoopCount, float BlendOutTriggerTime, float InTimeToStartMontageAt){	
+		auto result = (void*)(UAnimMontage::CreateSlotAnimationAsDynamicMontage(Asset, ToFName(SlotNodeName), BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt));	
+		return result;	
+	}
+	bool uapi_UAnimMontage_DeleteAnimCompositeSection(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->DeleteAnimCompositeSection(SectionIndex);	
+		return result;	
+	}
+	Transform uapi_UAnimMontage_ExtractRootMotionFromTrackRange(void* target, float StartTrackPosition, float EndTrackPosition){	
+		auto result = ToTransform(((UAnimMontage*)target)->ExtractRootMotionFromTrackRange(StartTrackPosition, EndTrackPosition));	
+		return result;	
+	}
+	void* uapi_UAnimMontage_FindFirstBranchingPointMarker(void* target, float StartTrackPos, float EndTrackPos){	
+		auto result = (void*)((UAnimMontage*)target)->FindFirstBranchingPointMarker(StartTrackPos, EndTrackPos);	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(void* target, float CurrentTime, float& PosWithinCompositeSection){	
+		auto result = ((UAnimMontage*)target)->GetAnimCompositeSectionIndexFromPos(CurrentTime, PosWithinCompositeSection);	
+		return result;	
+	}
+	void* uapi_UAnimMontage_GetAnimationData(void* target, UName SlotName){	
+		auto result = (void*)((UAnimMontage*)target)->GetAnimationData(ToFName(SlotName));	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetDefaultBlendInTime(void* target){	
+		auto result = ((UAnimMontage*)target)->GetDefaultBlendInTime();	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetDefaultBlendOutTime(void* target){	
+		auto result = ((UAnimMontage*)target)->GetDefaultBlendOutTime();	
+		return result;	
+	}
+	UName uapi_UAnimMontage_GetGroupName(void* target){	
+		auto result = ToUName(((UAnimMontage*)target)->GetGroupName());	
+		return result;	
+	}
 	int32 uapi_UAnimMontage_GetNumSections(void* target){	
 		auto result = ((UAnimMontage*)target)->GetNumSections();	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetSectionIndex(void* target, UName InSectionName){	
+		auto result = ((UAnimMontage*)target)->GetSectionIndex(ToFName(InSectionName));	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetSectionIndexFromPosition(void* target, float Position){	
+		auto result = ((UAnimMontage*)target)->GetSectionIndexFromPosition(Position);	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetSectionLength(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->GetSectionLength(SectionIndex);	
+		return result;	
+	}
+	UName uapi_UAnimMontage_GetSectionName(void* target, int32 SectionIndex){	
+		auto result = ToUName(((UAnimMontage*)target)->GetSectionName(SectionIndex));	
+		return result;	
+	}
+	void uapi_UAnimMontage_GetSectionStartAndEndTime(void* target, int32 SectionIndex, float& OutStartTime, float& OutEndTime){	
+		((UAnimMontage*)target)->GetSectionStartAndEndTime(SectionIndex, OutStartTime, OutEndTime);	
+	}
+	float uapi_UAnimMontage_GetSectionTimeLeftFromPos(void* target, float Position){	
+		auto result = ((UAnimMontage*)target)->GetSectionTimeLeftFromPos(Position);	
+		return result;	
+	}
+	bool uapi_UAnimMontage_HasRootMotion(void* target){	
+		auto result = ((UAnimMontage*)target)->HasRootMotion();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_HasValidSlotSetup(void* target){	
+		auto result = ((UAnimMontage*)target)->HasValidSlotSetup();	
+		return result;	
+	}
+	void uapi_UAnimMontage_InvalidateRecursiveAsset(void* target){	
+		((UAnimMontage*)target)->InvalidateRecursiveAsset();	
+	}
+	bool uapi_UAnimMontage_IsValidAdditive(void* target){	
+		auto result = ((UAnimMontage*)target)->IsValidAdditive();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_IsValidSectionIndex(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->IsValidSectionIndex(SectionIndex);	
+		return result;	
+	}
+	bool uapi_UAnimMontage_IsValidSectionName(void* target, UName InSectionName){	
+		auto result = ((UAnimMontage*)target)->IsValidSectionName(ToFName(InSectionName));	
 		return result;	
 	}
 	bool uapi_UAnimMontage_IsValidSlot(void* target, UName InSlotName){	
 		auto result = ((UAnimMontage*)target)->IsValidSlot(ToFName(InSlotName));	
 		return result;	
+	}
+	void uapi_UAnimMontage_PostLoad(void* target){	
+		((UAnimMontage*)target)->PostLoad();	
+	}
+	void uapi_UAnimMontage_PreSave(void* target, ITargetPlatform* TargetPlatform){	
+		((UAnimMontage*)target)->PreSave(TargetPlatform);	
+	}
+	void uapi_UAnimMontage_RefreshCacheData(void* target){	
+		((UAnimMontage*)target)->RefreshCacheData();	
+	}
+	void uapi_UAnimMontage_SetCompositeLength(void* target, float InLength){	
+		((UAnimMontage*)target)->SetCompositeLength(InLength);	
+	}
+	void uapi_UAnimMontage_UnregisterOnMontageChanged(void* target, void* Unregister){	
+		((UAnimMontage*)target)->UnregisterOnMontageChanged(Unregister);	
+	}
+	void uapi_UAnimMontage_UpdateLinkableElements(void* target){	
+		((UAnimMontage*)target)->UpdateLinkableElements();	
+	}
+	void uapi_UAnimMontage_UpdateLinkableElements2(void* target, int32 SlotIdx, int32 SegmentIdx){	
+		((UAnimMontage*)target)->UpdateLinkableElements(SlotIdx, SegmentIdx);	
 	}
 	void uapi_USkeletalMeshComponent_AddClothCollisionSource(void* target, USkeletalMeshComponent* InSourceComponent, UPhysicsAsset* InSourcePhysicsAsset){	
 		((USkeletalMeshComponent*)target)->AddClothCollisionSource(InSourceComponent, InSourcePhysicsAsset);	
@@ -5536,6 +5733,79 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_WakeAllRigidBodies(void* target){	
 		((USkeletalMeshComponent*)target)->WakeAllRigidBodies();	
 	}
+	void uapi_UCapsuleComponent_CalcBoundingCylinder(void* target, float& CylinderRadius, float& CylinderHalfHeight){	
+		((UCapsuleComponent*)target)->CalcBoundingCylinder(CylinderRadius, CylinderHalfHeight);	
+	}
+	void* uapi_UCapsuleComponent_CreateSceneProxy(void* target){	
+		auto result = (void*)((UCapsuleComponent*)target)->CreateSceneProxy();	
+		return result;	
+	}
+	CollisionShape uapi_UCapsuleComponent_GetCollisionShape(void* target, float Inflation){	
+		auto result = ToCollisionShape(((UCapsuleComponent*)target)->GetCollisionShape(Inflation));	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleHalfHeight();	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleHalfHeight_WithoutHemisphere();	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetScaledCapsuleRadius(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleRadius();	
+		return result;	
+	}
+	void uapi_UCapsuleComponent_GetScaledCapsuleSize(void* target, float& OutRadius, float& OutHalfHeight){	
+		((UCapsuleComponent*)target)->GetScaledCapsuleSize(OutRadius, OutHalfHeight);	
+	}
+	void uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere(void* target, float& OutRadius, float& OutHalfHeightWithoutHemisphere){	
+		((UCapsuleComponent*)target)->GetScaledCapsuleSize_WithoutHemisphere(OutRadius, OutHalfHeightWithoutHemisphere);	
+	}
+	float uapi_UCapsuleComponent_GetShapeScale(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetShapeScale();	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleHalfHeight();	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleHalfHeight_WithoutHemisphere();	
+		return result;	
+	}
+	float uapi_UCapsuleComponent_GetUnscaledCapsuleRadius(void* target){	
+		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleRadius();	
+		return result;	
+	}
+	void uapi_UCapsuleComponent_GetUnscaledCapsuleSize(void* target, float& OutRadius, float& OutHalfHeight){	
+		((UCapsuleComponent*)target)->GetUnscaledCapsuleSize(OutRadius, OutHalfHeight);	
+	}
+	void uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere(void* target, float& OutRadius, float& OutHalfHeightWithoutHemisphere){	
+		((UCapsuleComponent*)target)->GetUnscaledCapsuleSize_WithoutHemisphere(OutRadius, OutHalfHeightWithoutHemisphere);	
+	}
+	void uapi_UCapsuleComponent_InitCapsuleSize(void* target, float InRadius, float InHalfHeight){	
+		((UCapsuleComponent*)target)->InitCapsuleSize(InRadius, InHalfHeight);	
+	}
+	bool uapi_UCapsuleComponent_IsZeroExtent(void* target){	
+		auto result = ((UCapsuleComponent*)target)->IsZeroExtent();	
+		return result;	
+	}
+	void uapi_UCapsuleComponent_PostLoad(void* target){	
+		((UCapsuleComponent*)target)->PostLoad();	
+	}
+	void uapi_UCapsuleComponent_SetCapsuleHalfHeight(void* target, float HalfHeight, bool bUpdateOverlaps){	
+		((UCapsuleComponent*)target)->SetCapsuleHalfHeight(HalfHeight, bUpdateOverlaps);	
+	}
+	void uapi_UCapsuleComponent_SetCapsuleRadius(void* target, float Radius, bool bUpdateOverlaps){	
+		((UCapsuleComponent*)target)->SetCapsuleRadius(Radius, bUpdateOverlaps);	
+	}
+	void uapi_UCapsuleComponent_SetCapsuleSize(void* target, float InRadius, float InHalfHeight, bool bUpdateOverlaps){	
+		((UCapsuleComponent*)target)->SetCapsuleSize(InRadius, InHalfHeight, bUpdateOverlaps);	
+	}
+	void uapi_UCapsuleComponent_UpdateBodySetup(void* target){	
+		((UCapsuleComponent*)target)->UpdateBodySetup();	
+	}
 	void uapi_UCharacterMovementComponent_AddForce(void* target, Vector3 Force){	
 		((UCharacterMovementComponent*)target)->AddForce(ToFVector(Force));	
 	}
@@ -6046,79 +6316,6 @@ extern "C"{
 		auto result = ((UCharacterMovementComponent*)target)->VisualizeMovement();	
 		return result;	
 	}
-	void uapi_UCapsuleComponent_CalcBoundingCylinder(void* target, float& CylinderRadius, float& CylinderHalfHeight){	
-		((UCapsuleComponent*)target)->CalcBoundingCylinder(CylinderRadius, CylinderHalfHeight);	
-	}
-	void* uapi_UCapsuleComponent_CreateSceneProxy(void* target){	
-		auto result = (void*)((UCapsuleComponent*)target)->CreateSceneProxy();	
-		return result;	
-	}
-	CollisionShape uapi_UCapsuleComponent_GetCollisionShape(void* target, float Inflation){	
-		auto result = ToCollisionShape(((UCapsuleComponent*)target)->GetCollisionShape(Inflation));	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleHalfHeight();	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleHalfHeight_WithoutHemisphere();	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetScaledCapsuleRadius(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetScaledCapsuleRadius();	
-		return result;	
-	}
-	void uapi_UCapsuleComponent_GetScaledCapsuleSize(void* target, float& OutRadius, float& OutHalfHeight){	
-		((UCapsuleComponent*)target)->GetScaledCapsuleSize(OutRadius, OutHalfHeight);	
-	}
-	void uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere(void* target, float& OutRadius, float& OutHalfHeightWithoutHemisphere){	
-		((UCapsuleComponent*)target)->GetScaledCapsuleSize_WithoutHemisphere(OutRadius, OutHalfHeightWithoutHemisphere);	
-	}
-	float uapi_UCapsuleComponent_GetShapeScale(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetShapeScale();	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleHalfHeight();	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleHalfHeight_WithoutHemisphere();	
-		return result;	
-	}
-	float uapi_UCapsuleComponent_GetUnscaledCapsuleRadius(void* target){	
-		auto result = ((UCapsuleComponent*)target)->GetUnscaledCapsuleRadius();	
-		return result;	
-	}
-	void uapi_UCapsuleComponent_GetUnscaledCapsuleSize(void* target, float& OutRadius, float& OutHalfHeight){	
-		((UCapsuleComponent*)target)->GetUnscaledCapsuleSize(OutRadius, OutHalfHeight);	
-	}
-	void uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere(void* target, float& OutRadius, float& OutHalfHeightWithoutHemisphere){	
-		((UCapsuleComponent*)target)->GetUnscaledCapsuleSize_WithoutHemisphere(OutRadius, OutHalfHeightWithoutHemisphere);	
-	}
-	void uapi_UCapsuleComponent_InitCapsuleSize(void* target, float InRadius, float InHalfHeight){	
-		((UCapsuleComponent*)target)->InitCapsuleSize(InRadius, InHalfHeight);	
-	}
-	bool uapi_UCapsuleComponent_IsZeroExtent(void* target){	
-		auto result = ((UCapsuleComponent*)target)->IsZeroExtent();	
-		return result;	
-	}
-	void uapi_UCapsuleComponent_PostLoad(void* target){	
-		((UCapsuleComponent*)target)->PostLoad();	
-	}
-	void uapi_UCapsuleComponent_SetCapsuleHalfHeight(void* target, float HalfHeight, bool bUpdateOverlaps){	
-		((UCapsuleComponent*)target)->SetCapsuleHalfHeight(HalfHeight, bUpdateOverlaps);	
-	}
-	void uapi_UCapsuleComponent_SetCapsuleRadius(void* target, float Radius, bool bUpdateOverlaps){	
-		((UCapsuleComponent*)target)->SetCapsuleRadius(Radius, bUpdateOverlaps);	
-	}
-	void uapi_UCapsuleComponent_SetCapsuleSize(void* target, float InRadius, float InHalfHeight, bool bUpdateOverlaps){	
-		((UCapsuleComponent*)target)->SetCapsuleSize(InRadius, InHalfHeight, bUpdateOverlaps);	
-	}
-	void uapi_UCapsuleComponent_UpdateBodySetup(void* target){	
-		((UCapsuleComponent*)target)->UpdateBodySetup();	
-	}
 }
 
 using uapi_UObject_AbortInsideMemberFunctionFn = void(*)(void(*)(void* target));
@@ -6223,6 +6420,8 @@ using uapi_UObject_IsSelectedFn = void(*)(bool(*)(void* target));
 
 using uapi_UObject_IsSupportedForNetworkingFn = void(*)(bool(*)(void* target));
 
+using uapi_UObject_LoadConfigFn = void(*)(void(*)(void* target,UClass* ConfigClass,TCHAR* Filename,uint32 PropagationFlags,FProperty* PropertyToLoad));
+
 using uapi_UObject_MarkAsEditorOnlySubobjectFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_ModifyFn = void(*)(bool(*)(void* target,bool bAlwaysMarkDirty));
@@ -6280,6 +6479,8 @@ using uapi_UObject_PreNetReceiveFn = void(*)(void(*)(void* target));
 using uapi_UObject_RegenerateClassFn = void(*)(void*(*)(void* target,UClass* ClassToRegenerate,UObject* PreviousCDO));
 
 using uapi_UObject_ReinitializePropertiesFn = void(*)(void(*)(void* target,UObject* SourceObject,FObjectInstancingGraph* InstanceGraph));
+
+using uapi_UObject_ReloadConfigFn = void(*)(void(*)(void* target,UClass* ConfigClass,TCHAR* Filename,uint32 PropagationFlags,FProperty* PropertyToLoad));
 
 using uapi_UObject_SaveConfigFn = void(*)(void(*)(void* target,uint64 Flags,TCHAR* Filename,FConfigCacheIni* Config,bool bAllowCopyToDefaultObject));
 
@@ -6731,6 +6932,8 @@ using uapi_AActor_K2_TeleportToFn = void(*)(bool(*)(void* target,Vector3 DestLoc
 
 using uapi_AActor_LifeSpanExpiredFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_MakeNoiseFn = void(*)(void(*)(void* target,float Loudness,APawn* NoiseInstigator,Vector3 NoiseLocation,float MaxRange,UName Tag));
+
 using uapi_AActor_MarkComponentsAsPendingKillFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_MarkComponentsRenderStateDirtyFn = void(*)(void(*)(void* target));
@@ -6988,6 +7191,8 @@ using uapi_AActor_UseShortConnectTimeoutFn = void(*)(bool(*)(void* target));
 using uapi_AActor_UserConstructionScriptFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_WasRecentlyRenderedFn = void(*)(bool(*)(void* target,float Tolerance));
+
+using uapi_APawn_GetControllerFn = void(*)(void*(*)(void* target));
 
 using uapi_APawn_GetLocalViewingPlayerControllerFn = void(*)(void*(*)(void* target));
 
@@ -7463,6 +7668,32 @@ using uapi_APlayerController_UseShortConnectTimeoutFn = void(*)(bool(*)(void* ta
 
 using uapi_APlayerController_ViewAPlayerFn = void(*)(void(*)(void* target,int32 dir));
 
+using uapi_FRandomStream_FRandFn = void(*)(float(*)(void* target));
+
+using uapi_FRandomStream_GenerateNewSeedFn = void(*)(void(*)(void* target));
+
+using uapi_FRandomStream_GetCurrentSeedFn = void(*)(int32(*)(void* target));
+
+using uapi_FRandomStream_GetFractionFn = void(*)(float(*)(void* target));
+
+using uapi_FRandomStream_GetInitialSeedFn = void(*)(int32(*)(void* target));
+
+using uapi_FRandomStream_GetUnitVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_FRandomStream_GetUnsignedIntFn = void(*)(uint32(*)(void* target));
+
+using uapi_FRandomStream_InitializeFn = void(*)(void(*)(void* target,int32 InSeed));
+
+using uapi_FRandomStream_RandHelperFn = void(*)(int32(*)(void* target,int32 A));
+
+using uapi_FRandomStream_RandRangeFn = void(*)(int32(*)(void* target,int32 Min,int32 Max));
+
+using uapi_FRandomStream_ResetFn = void(*)(void(*)(void* target));
+
+using uapi_FRandomStream_ToStringFn = void(*)(const char*(*)(void* target));
+
+using uapi_FRandomStream_VRandFn = void(*)(Vector3(*)(void* target));
+
 using uapi_UGameplayStatics_ActivateReverbEffectFn = void(*)(void(*)(UObject* WorldContextObject,UReverbEffect* ReverbEffect,UName TagName,float Priority,float Volume,float FadeTime));
 
 using uapi_UGameplayStatics_AreSubtitlesEnabledFn = void(*)(bool(*)());
@@ -7595,7 +7826,11 @@ using uapi_UGameplayStatics_SetSubtitlesEnabledFn = void(*)(void(*)(bool bEnable
 
 using uapi_UGameplayStatics_SpawnDecalAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,UMaterialInterface* DecalMaterial,Vector3 DecalSize,Vector3 Location,Rotator Rotation,float LifeSpan));
 
+using uapi_UGameplayStatics_SpawnForceFeedbackAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,UForceFeedbackEffect* ForceFeedbackEffect,Vector3 Location,Rotator Rotation,bool bLooping,float IntensityMultiplier,float StartTime,UForceFeedbackAttenuation* AttenuationSettings,bool bAutoDestroy));
+
 using uapi_UGameplayStatics_SpawnSound2DFn = void(*)(void*(*)(UObject* WorldContextObject,USoundBase* Sound,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundConcurrency* ConcurrencySettings,bool bPersistAcrossLevelTransition,bool bAutoDestroy));
+
+using uapi_UGameplayStatics_SpawnSoundAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,USoundBase* Sound,Vector3 Location,Rotator Rotation,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundAttenuation* AttenuationSettings,USoundConcurrency* ConcurrencySettings,bool bAutoDestroy));
 
 using uapi_UGameplayStatics_UnRetainAllSoundsInSoundClassFn = void(*)(void(*)(USoundClass* InSoundClass));
 
@@ -8563,6 +8798,8 @@ using uapi_UAnimInstance_Montage_JumpToSectionsEndFn = void(*)(void(*)(void* tar
 
 using uapi_UAnimInstance_Montage_PauseFn = void(*)(void(*)(void* target,UAnimMontage* Montage));
 
+using uapi_UAnimInstance_Montage_PlayFn = void(*)(float(*)(void* target,UAnimMontage* MontageToPlay,float InPlayRate,EMontagePlayReturnType ReturnValueType,float InTimeToStartMontageAt,bool bStopAllMontages));
+
 using uapi_UAnimInstance_Montage_ResumeFn = void(*)(void(*)(void* target,UAnimMontage* Montage));
 
 using uapi_UAnimInstance_Montage_SetNextSectionFn = void(*)(void(*)(void* target,UName SectionNameToChange,UName NextSection,UAnimMontage* Montage));
@@ -8861,9 +9098,75 @@ using uapi_UKismetSystemLibrary_TransactObjectFn = void(*)(void(*)(UObject* Obje
 
 using uapi_UKismetSystemLibrary_UnregisterForRemoteNotificationsFn = void(*)(void(*)());
 
+using uapi_UAnimMontage_AddAnimCompositeSectionFn = void(*)(int32(*)(void* target,UName InSectionName,float StartPos));
+
+using uapi_UAnimMontage_CalculateSequenceLengthFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_CanBeUsedInCompositionFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_CanUseMarkerSyncFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_CollectMarkersFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn = void(*)(void*(*)(UAnimSequenceBase* Asset,UName SlotNodeName,float BlendInTime,float BlendOutTime,float InPlayRate,int32 LoopCount,float BlendOutTriggerTime,float InTimeToStartMontageAt));
+
+using uapi_UAnimMontage_DeleteAnimCompositeSectionFn = void(*)(bool(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn = void(*)(Transform(*)(void* target,float StartTrackPosition,float EndTrackPosition));
+
+using uapi_UAnimMontage_FindFirstBranchingPointMarkerFn = void(*)(void*(*)(void* target,float StartTrackPos,float EndTrackPos));
+
+using uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn = void(*)(int32(*)(void* target,float CurrentTime,float& PosWithinCompositeSection));
+
+using uapi_UAnimMontage_GetAnimationDataFn = void(*)(void*(*)(void* target,UName SlotName));
+
+using uapi_UAnimMontage_GetDefaultBlendInTimeFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_GetDefaultBlendOutTimeFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_GetGroupNameFn = void(*)(UName(*)(void* target));
+
 using uapi_UAnimMontage_GetNumSectionsFn = void(*)(int32(*)(void* target));
 
+using uapi_UAnimMontage_GetSectionIndexFn = void(*)(int32(*)(void* target,UName InSectionName));
+
+using uapi_UAnimMontage_GetSectionIndexFromPositionFn = void(*)(int32(*)(void* target,float Position));
+
+using uapi_UAnimMontage_GetSectionLengthFn = void(*)(float(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_GetSectionNameFn = void(*)(UName(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_GetSectionStartAndEndTimeFn = void(*)(void(*)(void* target,int32 SectionIndex,float& OutStartTime,float& OutEndTime));
+
+using uapi_UAnimMontage_GetSectionTimeLeftFromPosFn = void(*)(float(*)(void* target,float Position));
+
+using uapi_UAnimMontage_HasRootMotionFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_HasValidSlotSetupFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_InvalidateRecursiveAssetFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_IsValidAdditiveFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_IsValidSectionIndexFn = void(*)(bool(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_IsValidSectionNameFn = void(*)(bool(*)(void* target,UName InSectionName));
+
 using uapi_UAnimMontage_IsValidSlotFn = void(*)(bool(*)(void* target,UName InSlotName));
+
+using uapi_UAnimMontage_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_PreSaveFn = void(*)(void(*)(void* target,ITargetPlatform* TargetPlatform));
+
+using uapi_UAnimMontage_RefreshCacheDataFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_SetCompositeLengthFn = void(*)(void(*)(void* target,float InLength));
+
+using uapi_UAnimMontage_UnregisterOnMontageChangedFn = void(*)(void(*)(void* target,void* Unregister));
+
+using uapi_UAnimMontage_UpdateLinkableElementsFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_UpdateLinkableElements2Fn = void(*)(void(*)(void* target,int32 SlotIdx,int32 SegmentIdx));
 
 using uapi_USkeletalMeshComponent_AddClothCollisionSourceFn = void(*)(void(*)(void* target,USkeletalMeshComponent* InSourceComponent,UPhysicsAsset* InSourcePhysicsAsset));
 
@@ -9255,6 +9558,48 @@ using uapi_USkeletalMeshComponent_ValidateAnimationFn = void(*)(void(*)(void* ta
 
 using uapi_USkeletalMeshComponent_WakeAllRigidBodiesFn = void(*)(void(*)(void* target));
 
+using uapi_UCapsuleComponent_CalcBoundingCylinderFn = void(*)(void(*)(void* target,float& CylinderRadius,float& CylinderHalfHeight));
+
+using uapi_UCapsuleComponent_CreateSceneProxyFn = void(*)(void*(*)(void* target));
+
+using uapi_UCapsuleComponent_GetCollisionShapeFn = void(*)(CollisionShape(*)(void* target,float Inflation));
+
+using uapi_UCapsuleComponent_GetScaledCapsuleHalfHeightFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetScaledCapsuleRadiusFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetScaledCapsuleSizeFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeight));
+
+using uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeightWithoutHemisphere));
+
+using uapi_UCapsuleComponent_GetShapeScaleFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeightFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetUnscaledCapsuleRadiusFn = void(*)(float(*)(void* target));
+
+using uapi_UCapsuleComponent_GetUnscaledCapsuleSizeFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeight));
+
+using uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeightWithoutHemisphere));
+
+using uapi_UCapsuleComponent_InitCapsuleSizeFn = void(*)(void(*)(void* target,float InRadius,float InHalfHeight));
+
+using uapi_UCapsuleComponent_IsZeroExtentFn = void(*)(bool(*)(void* target));
+
+using uapi_UCapsuleComponent_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UCapsuleComponent_SetCapsuleHalfHeightFn = void(*)(void(*)(void* target,float HalfHeight,bool bUpdateOverlaps));
+
+using uapi_UCapsuleComponent_SetCapsuleRadiusFn = void(*)(void(*)(void* target,float Radius,bool bUpdateOverlaps));
+
+using uapi_UCapsuleComponent_SetCapsuleSizeFn = void(*)(void(*)(void* target,float InRadius,float InHalfHeight,bool bUpdateOverlaps));
+
+using uapi_UCapsuleComponent_UpdateBodySetupFn = void(*)(void(*)(void* target));
+
 using uapi_UCharacterMovementComponent_AddForceFn = void(*)(void(*)(void* target,Vector3 Force));
 
 using uapi_UCharacterMovementComponent_AddImpulseFn = void(*)(void(*)(void* target,Vector3 Impulse,bool bVelocityChange));
@@ -9543,48 +9888,6 @@ using uapi_UCharacterMovementComponent_UpdateProxyAccelerationFn = void(*)(void(
 
 using uapi_UCharacterMovementComponent_VisualizeMovementFn = void(*)(float(*)(void* target));
 
-using uapi_UCapsuleComponent_CalcBoundingCylinderFn = void(*)(void(*)(void* target,float& CylinderRadius,float& CylinderHalfHeight));
-
-using uapi_UCapsuleComponent_CreateSceneProxyFn = void(*)(void*(*)(void* target));
-
-using uapi_UCapsuleComponent_GetCollisionShapeFn = void(*)(CollisionShape(*)(void* target,float Inflation));
-
-using uapi_UCapsuleComponent_GetScaledCapsuleHalfHeightFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetScaledCapsuleRadiusFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetScaledCapsuleSizeFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeight));
-
-using uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeightWithoutHemisphere));
-
-using uapi_UCapsuleComponent_GetShapeScaleFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeightFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetUnscaledCapsuleRadiusFn = void(*)(float(*)(void* target));
-
-using uapi_UCapsuleComponent_GetUnscaledCapsuleSizeFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeight));
-
-using uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereFn = void(*)(void(*)(void* target,float& OutRadius,float& OutHalfHeightWithoutHemisphere));
-
-using uapi_UCapsuleComponent_InitCapsuleSizeFn = void(*)(void(*)(void* target,float InRadius,float InHalfHeight));
-
-using uapi_UCapsuleComponent_IsZeroExtentFn = void(*)(bool(*)(void* target));
-
-using uapi_UCapsuleComponent_PostLoadFn = void(*)(void(*)(void* target));
-
-using uapi_UCapsuleComponent_SetCapsuleHalfHeightFn = void(*)(void(*)(void* target,float HalfHeight,bool bUpdateOverlaps));
-
-using uapi_UCapsuleComponent_SetCapsuleRadiusFn = void(*)(void(*)(void* target,float Radius,bool bUpdateOverlaps));
-
-using uapi_UCapsuleComponent_SetCapsuleSizeFn = void(*)(void(*)(void* target,float InRadius,float InHalfHeight,bool bUpdateOverlaps));
-
-using uapi_UCapsuleComponent_UpdateBodySetupFn = void(*)(void(*)(void* target));
-
 void register_all(Plugin* plugin){
     
 	auto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT("create_native_string\0"));
@@ -9848,6 +10151,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_IsSupportedForNetworking(&uapi_UObject_IsSupportedForNetworking);
     }
 
+    auto const apiuapi_UObject_LoadConfig = (uapi_UObject_LoadConfigFn)plugin->GetDllExport(TEXT("set_UObject_LoadConfig_handler\0"));
+    if(apiuapi_UObject_LoadConfig){
+        apiuapi_UObject_LoadConfig(&uapi_UObject_LoadConfig);
+    }
+
     auto const apiuapi_UObject_MarkAsEditorOnlySubobject = (uapi_UObject_MarkAsEditorOnlySubobjectFn)plugin->GetDllExport(TEXT("set_UObject_MarkAsEditorOnlySubobject_handler\0"));
     if(apiuapi_UObject_MarkAsEditorOnlySubobject){
         apiuapi_UObject_MarkAsEditorOnlySubobject(&uapi_UObject_MarkAsEditorOnlySubobject);
@@ -9991,6 +10299,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UObject_ReinitializeProperties = (uapi_UObject_ReinitializePropertiesFn)plugin->GetDllExport(TEXT("set_UObject_ReinitializeProperties_handler\0"));
     if(apiuapi_UObject_ReinitializeProperties){
         apiuapi_UObject_ReinitializeProperties(&uapi_UObject_ReinitializeProperties);
+    }
+
+    auto const apiuapi_UObject_ReloadConfig = (uapi_UObject_ReloadConfigFn)plugin->GetDllExport(TEXT("set_UObject_ReloadConfig_handler\0"));
+    if(apiuapi_UObject_ReloadConfig){
+        apiuapi_UObject_ReloadConfig(&uapi_UObject_ReloadConfig);
     }
 
     auto const apiuapi_UObject_SaveConfig = (uapi_UObject_SaveConfigFn)plugin->GetDllExport(TEXT("set_UObject_SaveConfig_handler\0"));
@@ -11118,6 +11431,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_LifeSpanExpired(&uapi_AActor_LifeSpanExpired);
     }
 
+    auto const apiuapi_AActor_MakeNoise = (uapi_AActor_MakeNoiseFn)plugin->GetDllExport(TEXT("set_AActor_MakeNoise_handler\0"));
+    if(apiuapi_AActor_MakeNoise){
+        apiuapi_AActor_MakeNoise(&uapi_AActor_MakeNoise);
+    }
+
     auto const apiuapi_AActor_MarkComponentsAsPendingKill = (uapi_AActor_MarkComponentsAsPendingKillFn)plugin->GetDllExport(TEXT("set_AActor_MarkComponentsAsPendingKill_handler\0"));
     if(apiuapi_AActor_MarkComponentsAsPendingKill){
         apiuapi_AActor_MarkComponentsAsPendingKill(&uapi_AActor_MarkComponentsAsPendingKill);
@@ -11761,6 +12079,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_WasRecentlyRendered = (uapi_AActor_WasRecentlyRenderedFn)plugin->GetDllExport(TEXT("set_AActor_WasRecentlyRendered_handler\0"));
     if(apiuapi_AActor_WasRecentlyRendered){
         apiuapi_AActor_WasRecentlyRendered(&uapi_AActor_WasRecentlyRendered);
+    }
+
+    auto const apiuapi_APawn_GetController = (uapi_APawn_GetControllerFn)plugin->GetDllExport(TEXT("set_APawn_GetController_handler\0"));
+    if(apiuapi_APawn_GetController){
+        apiuapi_APawn_GetController(&uapi_APawn_GetController);
     }
 
     auto const apiuapi_APawn_GetLocalViewingPlayerController = (uapi_APawn_GetLocalViewingPlayerControllerFn)plugin->GetDllExport(TEXT("set_APawn_GetLocalViewingPlayerController_handler\0"));
@@ -12948,6 +13271,71 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ViewAPlayer(&uapi_APlayerController_ViewAPlayer);
     }
 
+    auto const apiuapi_FRandomStream_FRand = (uapi_FRandomStream_FRandFn)plugin->GetDllExport(TEXT("set_FRandomStream_FRand_handler\0"));
+    if(apiuapi_FRandomStream_FRand){
+        apiuapi_FRandomStream_FRand(&uapi_FRandomStream_FRand);
+    }
+
+    auto const apiuapi_FRandomStream_GenerateNewSeed = (uapi_FRandomStream_GenerateNewSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GenerateNewSeed_handler\0"));
+    if(apiuapi_FRandomStream_GenerateNewSeed){
+        apiuapi_FRandomStream_GenerateNewSeed(&uapi_FRandomStream_GenerateNewSeed);
+    }
+
+    auto const apiuapi_FRandomStream_GetCurrentSeed = (uapi_FRandomStream_GetCurrentSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetCurrentSeed_handler\0"));
+    if(apiuapi_FRandomStream_GetCurrentSeed){
+        apiuapi_FRandomStream_GetCurrentSeed(&uapi_FRandomStream_GetCurrentSeed);
+    }
+
+    auto const apiuapi_FRandomStream_GetFraction = (uapi_FRandomStream_GetFractionFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetFraction_handler\0"));
+    if(apiuapi_FRandomStream_GetFraction){
+        apiuapi_FRandomStream_GetFraction(&uapi_FRandomStream_GetFraction);
+    }
+
+    auto const apiuapi_FRandomStream_GetInitialSeed = (uapi_FRandomStream_GetInitialSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetInitialSeed_handler\0"));
+    if(apiuapi_FRandomStream_GetInitialSeed){
+        apiuapi_FRandomStream_GetInitialSeed(&uapi_FRandomStream_GetInitialSeed);
+    }
+
+    auto const apiuapi_FRandomStream_GetUnitVector = (uapi_FRandomStream_GetUnitVectorFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetUnitVector_handler\0"));
+    if(apiuapi_FRandomStream_GetUnitVector){
+        apiuapi_FRandomStream_GetUnitVector(&uapi_FRandomStream_GetUnitVector);
+    }
+
+    auto const apiuapi_FRandomStream_GetUnsignedInt = (uapi_FRandomStream_GetUnsignedIntFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetUnsignedInt_handler\0"));
+    if(apiuapi_FRandomStream_GetUnsignedInt){
+        apiuapi_FRandomStream_GetUnsignedInt(&uapi_FRandomStream_GetUnsignedInt);
+    }
+
+    auto const apiuapi_FRandomStream_Initialize = (uapi_FRandomStream_InitializeFn)plugin->GetDllExport(TEXT("set_FRandomStream_Initialize_handler\0"));
+    if(apiuapi_FRandomStream_Initialize){
+        apiuapi_FRandomStream_Initialize(&uapi_FRandomStream_Initialize);
+    }
+
+    auto const apiuapi_FRandomStream_RandHelper = (uapi_FRandomStream_RandHelperFn)plugin->GetDllExport(TEXT("set_FRandomStream_RandHelper_handler\0"));
+    if(apiuapi_FRandomStream_RandHelper){
+        apiuapi_FRandomStream_RandHelper(&uapi_FRandomStream_RandHelper);
+    }
+
+    auto const apiuapi_FRandomStream_RandRange = (uapi_FRandomStream_RandRangeFn)plugin->GetDllExport(TEXT("set_FRandomStream_RandRange_handler\0"));
+    if(apiuapi_FRandomStream_RandRange){
+        apiuapi_FRandomStream_RandRange(&uapi_FRandomStream_RandRange);
+    }
+
+    auto const apiuapi_FRandomStream_Reset = (uapi_FRandomStream_ResetFn)plugin->GetDllExport(TEXT("set_FRandomStream_Reset_handler\0"));
+    if(apiuapi_FRandomStream_Reset){
+        apiuapi_FRandomStream_Reset(&uapi_FRandomStream_Reset);
+    }
+
+    auto const apiuapi_FRandomStream_ToString = (uapi_FRandomStream_ToStringFn)plugin->GetDllExport(TEXT("set_FRandomStream_ToString_handler\0"));
+    if(apiuapi_FRandomStream_ToString){
+        apiuapi_FRandomStream_ToString(&uapi_FRandomStream_ToString);
+    }
+
+    auto const apiuapi_FRandomStream_VRand = (uapi_FRandomStream_VRandFn)plugin->GetDllExport(TEXT("set_FRandomStream_VRand_handler\0"));
+    if(apiuapi_FRandomStream_VRand){
+        apiuapi_FRandomStream_VRand(&uapi_FRandomStream_VRand);
+    }
+
     auto const apiuapi_UGameplayStatics_ActivateReverbEffect = (uapi_UGameplayStatics_ActivateReverbEffectFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_ActivateReverbEffect_handler\0"));
     if(apiuapi_UGameplayStatics_ActivateReverbEffect){
         apiuapi_UGameplayStatics_ActivateReverbEffect(&uapi_UGameplayStatics_ActivateReverbEffect);
@@ -13278,9 +13666,19 @@ void register_all(Plugin* plugin){
         apiuapi_UGameplayStatics_SpawnDecalAtLocation(&uapi_UGameplayStatics_SpawnDecalAtLocation);
     }
 
+    auto const apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation = (uapi_UGameplayStatics_SpawnForceFeedbackAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnForceFeedbackAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation){
+        apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation(&uapi_UGameplayStatics_SpawnForceFeedbackAtLocation);
+    }
+
     auto const apiuapi_UGameplayStatics_SpawnSound2D = (uapi_UGameplayStatics_SpawnSound2DFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnSound2D_handler\0"));
     if(apiuapi_UGameplayStatics_SpawnSound2D){
         apiuapi_UGameplayStatics_SpawnSound2D(&uapi_UGameplayStatics_SpawnSound2D);
+    }
+
+    auto const apiuapi_UGameplayStatics_SpawnSoundAtLocation = (uapi_UGameplayStatics_SpawnSoundAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnSoundAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnSoundAtLocation){
+        apiuapi_UGameplayStatics_SpawnSoundAtLocation(&uapi_UGameplayStatics_SpawnSoundAtLocation);
     }
 
     auto const apiuapi_UGameplayStatics_UnRetainAllSoundsInSoundClass = (uapi_UGameplayStatics_UnRetainAllSoundsInSoundClassFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_UnRetainAllSoundsInSoundClass_handler\0"));
@@ -15698,6 +16096,11 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_Montage_Pause(&uapi_UAnimInstance_Montage_Pause);
     }
 
+    auto const apiuapi_UAnimInstance_Montage_Play = (uapi_UAnimInstance_Montage_PlayFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Play_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_Play){
+        apiuapi_UAnimInstance_Montage_Play(&uapi_UAnimInstance_Montage_Play);
+    }
+
     auto const apiuapi_UAnimInstance_Montage_Resume = (uapi_UAnimInstance_Montage_ResumeFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Resume_handler\0"));
     if(apiuapi_UAnimInstance_Montage_Resume){
         apiuapi_UAnimInstance_Montage_Resume(&uapi_UAnimInstance_Montage_Resume);
@@ -16443,14 +16846,179 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(&uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications);
     }
 
+    auto const apiuapi_UAnimMontage_AddAnimCompositeSection = (uapi_UAnimMontage_AddAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_AddAnimCompositeSection_handler\0"));
+    if(apiuapi_UAnimMontage_AddAnimCompositeSection){
+        apiuapi_UAnimMontage_AddAnimCompositeSection(&uapi_UAnimMontage_AddAnimCompositeSection);
+    }
+
+    auto const apiuapi_UAnimMontage_CalculateSequenceLength = (uapi_UAnimMontage_CalculateSequenceLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CalculateSequenceLength_handler\0"));
+    if(apiuapi_UAnimMontage_CalculateSequenceLength){
+        apiuapi_UAnimMontage_CalculateSequenceLength(&uapi_UAnimMontage_CalculateSequenceLength);
+    }
+
+    auto const apiuapi_UAnimMontage_CanBeUsedInComposition = (uapi_UAnimMontage_CanBeUsedInCompositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanBeUsedInComposition_handler\0"));
+    if(apiuapi_UAnimMontage_CanBeUsedInComposition){
+        apiuapi_UAnimMontage_CanBeUsedInComposition(&uapi_UAnimMontage_CanBeUsedInComposition);
+    }
+
+    auto const apiuapi_UAnimMontage_CanUseMarkerSync = (uapi_UAnimMontage_CanUseMarkerSyncFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanUseMarkerSync_handler\0"));
+    if(apiuapi_UAnimMontage_CanUseMarkerSync){
+        apiuapi_UAnimMontage_CanUseMarkerSync(&uapi_UAnimMontage_CanUseMarkerSync);
+    }
+
+    auto const apiuapi_UAnimMontage_CollectMarkers = (uapi_UAnimMontage_CollectMarkersFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CollectMarkers_handler\0"));
+    if(apiuapi_UAnimMontage_CollectMarkers){
+        apiuapi_UAnimMontage_CollectMarkers(&uapi_UAnimMontage_CollectMarkers);
+    }
+
+    auto const apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage = (uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler\0"));
+    if(apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage){
+        apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(&uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage);
+    }
+
+    auto const apiuapi_UAnimMontage_DeleteAnimCompositeSection = (uapi_UAnimMontage_DeleteAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_DeleteAnimCompositeSection_handler\0"));
+    if(apiuapi_UAnimMontage_DeleteAnimCompositeSection){
+        apiuapi_UAnimMontage_DeleteAnimCompositeSection(&uapi_UAnimMontage_DeleteAnimCompositeSection);
+    }
+
+    auto const apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange = (uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_ExtractRootMotionFromTrackRange_handler\0"));
+    if(apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange){
+        apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange(&uapi_UAnimMontage_ExtractRootMotionFromTrackRange);
+    }
+
+    auto const apiuapi_UAnimMontage_FindFirstBranchingPointMarker = (uapi_UAnimMontage_FindFirstBranchingPointMarkerFn)plugin->GetDllExport(TEXT("set_UAnimMontage_FindFirstBranchingPointMarker_handler\0"));
+    if(apiuapi_UAnimMontage_FindFirstBranchingPointMarker){
+        apiuapi_UAnimMontage_FindFirstBranchingPointMarker(&uapi_UAnimMontage_FindFirstBranchingPointMarker);
+    }
+
+    auto const apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos = (uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler\0"));
+    if(apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos){
+        apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(&uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos);
+    }
+
+    auto const apiuapi_UAnimMontage_GetAnimationData = (uapi_UAnimMontage_GetAnimationDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimationData_handler\0"));
+    if(apiuapi_UAnimMontage_GetAnimationData){
+        apiuapi_UAnimMontage_GetAnimationData(&uapi_UAnimMontage_GetAnimationData);
+    }
+
+    auto const apiuapi_UAnimMontage_GetDefaultBlendInTime = (uapi_UAnimMontage_GetDefaultBlendInTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendInTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetDefaultBlendInTime){
+        apiuapi_UAnimMontage_GetDefaultBlendInTime(&uapi_UAnimMontage_GetDefaultBlendInTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetDefaultBlendOutTime = (uapi_UAnimMontage_GetDefaultBlendOutTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendOutTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetDefaultBlendOutTime){
+        apiuapi_UAnimMontage_GetDefaultBlendOutTime(&uapi_UAnimMontage_GetDefaultBlendOutTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetGroupName = (uapi_UAnimMontage_GetGroupNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetGroupName_handler\0"));
+    if(apiuapi_UAnimMontage_GetGroupName){
+        apiuapi_UAnimMontage_GetGroupName(&uapi_UAnimMontage_GetGroupName);
+    }
+
     auto const apiuapi_UAnimMontage_GetNumSections = (uapi_UAnimMontage_GetNumSectionsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetNumSections_handler\0"));
     if(apiuapi_UAnimMontage_GetNumSections){
         apiuapi_UAnimMontage_GetNumSections(&uapi_UAnimMontage_GetNumSections);
     }
 
+    auto const apiuapi_UAnimMontage_GetSectionIndex = (uapi_UAnimMontage_GetSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndex_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionIndex){
+        apiuapi_UAnimMontage_GetSectionIndex(&uapi_UAnimMontage_GetSectionIndex);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionIndexFromPosition = (uapi_UAnimMontage_GetSectionIndexFromPositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndexFromPosition_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionIndexFromPosition){
+        apiuapi_UAnimMontage_GetSectionIndexFromPosition(&uapi_UAnimMontage_GetSectionIndexFromPosition);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionLength = (uapi_UAnimMontage_GetSectionLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionLength_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionLength){
+        apiuapi_UAnimMontage_GetSectionLength(&uapi_UAnimMontage_GetSectionLength);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionName = (uapi_UAnimMontage_GetSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionName_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionName){
+        apiuapi_UAnimMontage_GetSectionName(&uapi_UAnimMontage_GetSectionName);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionStartAndEndTime = (uapi_UAnimMontage_GetSectionStartAndEndTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionStartAndEndTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionStartAndEndTime){
+        apiuapi_UAnimMontage_GetSectionStartAndEndTime(&uapi_UAnimMontage_GetSectionStartAndEndTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionTimeLeftFromPos = (uapi_UAnimMontage_GetSectionTimeLeftFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionTimeLeftFromPos_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionTimeLeftFromPos){
+        apiuapi_UAnimMontage_GetSectionTimeLeftFromPos(&uapi_UAnimMontage_GetSectionTimeLeftFromPos);
+    }
+
+    auto const apiuapi_UAnimMontage_HasRootMotion = (uapi_UAnimMontage_HasRootMotionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_HasRootMotion_handler\0"));
+    if(apiuapi_UAnimMontage_HasRootMotion){
+        apiuapi_UAnimMontage_HasRootMotion(&uapi_UAnimMontage_HasRootMotion);
+    }
+
+    auto const apiuapi_UAnimMontage_HasValidSlotSetup = (uapi_UAnimMontage_HasValidSlotSetupFn)plugin->GetDllExport(TEXT("set_UAnimMontage_HasValidSlotSetup_handler\0"));
+    if(apiuapi_UAnimMontage_HasValidSlotSetup){
+        apiuapi_UAnimMontage_HasValidSlotSetup(&uapi_UAnimMontage_HasValidSlotSetup);
+    }
+
+    auto const apiuapi_UAnimMontage_InvalidateRecursiveAsset = (uapi_UAnimMontage_InvalidateRecursiveAssetFn)plugin->GetDllExport(TEXT("set_UAnimMontage_InvalidateRecursiveAsset_handler\0"));
+    if(apiuapi_UAnimMontage_InvalidateRecursiveAsset){
+        apiuapi_UAnimMontage_InvalidateRecursiveAsset(&uapi_UAnimMontage_InvalidateRecursiveAsset);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidAdditive = (uapi_UAnimMontage_IsValidAdditiveFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidAdditive_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidAdditive){
+        apiuapi_UAnimMontage_IsValidAdditive(&uapi_UAnimMontage_IsValidAdditive);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidSectionIndex = (uapi_UAnimMontage_IsValidSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionIndex_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidSectionIndex){
+        apiuapi_UAnimMontage_IsValidSectionIndex(&uapi_UAnimMontage_IsValidSectionIndex);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidSectionName = (uapi_UAnimMontage_IsValidSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionName_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidSectionName){
+        apiuapi_UAnimMontage_IsValidSectionName(&uapi_UAnimMontage_IsValidSectionName);
+    }
+
     auto const apiuapi_UAnimMontage_IsValidSlot = (uapi_UAnimMontage_IsValidSlotFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSlot_handler\0"));
     if(apiuapi_UAnimMontage_IsValidSlot){
         apiuapi_UAnimMontage_IsValidSlot(&uapi_UAnimMontage_IsValidSlot);
+    }
+
+    auto const apiuapi_UAnimMontage_PostLoad = (uapi_UAnimMontage_PostLoadFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PostLoad_handler\0"));
+    if(apiuapi_UAnimMontage_PostLoad){
+        apiuapi_UAnimMontage_PostLoad(&uapi_UAnimMontage_PostLoad);
+    }
+
+    auto const apiuapi_UAnimMontage_PreSave = (uapi_UAnimMontage_PreSaveFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PreSave_handler\0"));
+    if(apiuapi_UAnimMontage_PreSave){
+        apiuapi_UAnimMontage_PreSave(&uapi_UAnimMontage_PreSave);
+    }
+
+    auto const apiuapi_UAnimMontage_RefreshCacheData = (uapi_UAnimMontage_RefreshCacheDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_RefreshCacheData_handler\0"));
+    if(apiuapi_UAnimMontage_RefreshCacheData){
+        apiuapi_UAnimMontage_RefreshCacheData(&uapi_UAnimMontage_RefreshCacheData);
+    }
+
+    auto const apiuapi_UAnimMontage_SetCompositeLength = (uapi_UAnimMontage_SetCompositeLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_SetCompositeLength_handler\0"));
+    if(apiuapi_UAnimMontage_SetCompositeLength){
+        apiuapi_UAnimMontage_SetCompositeLength(&uapi_UAnimMontage_SetCompositeLength);
+    }
+
+    auto const apiuapi_UAnimMontage_UnregisterOnMontageChanged = (uapi_UAnimMontage_UnregisterOnMontageChangedFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UnregisterOnMontageChanged_handler\0"));
+    if(apiuapi_UAnimMontage_UnregisterOnMontageChanged){
+        apiuapi_UAnimMontage_UnregisterOnMontageChanged(&uapi_UAnimMontage_UnregisterOnMontageChanged);
+    }
+
+    auto const apiuapi_UAnimMontage_UpdateLinkableElements = (uapi_UAnimMontage_UpdateLinkableElementsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements_handler\0"));
+    if(apiuapi_UAnimMontage_UpdateLinkableElements){
+        apiuapi_UAnimMontage_UpdateLinkableElements(&uapi_UAnimMontage_UpdateLinkableElements);
+    }
+
+    auto const apiuapi_UAnimMontage_UpdateLinkableElements2 = (uapi_UAnimMontage_UpdateLinkableElements2Fn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements2_handler\0"));
+    if(apiuapi_UAnimMontage_UpdateLinkableElements2){
+        apiuapi_UAnimMontage_UpdateLinkableElements2(&uapi_UAnimMontage_UpdateLinkableElements2);
     }
 
     auto const apiuapi_USkeletalMeshComponent_AddClothCollisionSource = (uapi_USkeletalMeshComponent_AddClothCollisionSourceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_AddClothCollisionSource_handler\0"));
@@ -17428,6 +17996,111 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_WakeAllRigidBodies(&uapi_USkeletalMeshComponent_WakeAllRigidBodies);
     }
 
+    auto const apiuapi_UCapsuleComponent_CalcBoundingCylinder = (uapi_UCapsuleComponent_CalcBoundingCylinderFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_CalcBoundingCylinder_handler\0"));
+    if(apiuapi_UCapsuleComponent_CalcBoundingCylinder){
+        apiuapi_UCapsuleComponent_CalcBoundingCylinder(&uapi_UCapsuleComponent_CalcBoundingCylinder);
+    }
+
+    auto const apiuapi_UCapsuleComponent_CreateSceneProxy = (uapi_UCapsuleComponent_CreateSceneProxyFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_CreateSceneProxy_handler\0"));
+    if(apiuapi_UCapsuleComponent_CreateSceneProxy){
+        apiuapi_UCapsuleComponent_CreateSceneProxy(&uapi_UCapsuleComponent_CreateSceneProxy);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetCollisionShape = (uapi_UCapsuleComponent_GetCollisionShapeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetCollisionShape_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetCollisionShape){
+        apiuapi_UCapsuleComponent_GetCollisionShape(&uapi_UCapsuleComponent_GetCollisionShape);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight = (uapi_UCapsuleComponent_GetScaledCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleHalfHeight_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight){
+        apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight(&uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere = (uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere){
+        apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere(&uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleRadius = (uapi_UCapsuleComponent_GetScaledCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleRadius_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetScaledCapsuleRadius){
+        apiuapi_UCapsuleComponent_GetScaledCapsuleRadius(&uapi_UCapsuleComponent_GetScaledCapsuleRadius);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleSize = (uapi_UCapsuleComponent_GetScaledCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleSize_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetScaledCapsuleSize){
+        apiuapi_UCapsuleComponent_GetScaledCapsuleSize(&uapi_UCapsuleComponent_GetScaledCapsuleSize);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere = (uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere){
+        apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere(&uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetShapeScale = (uapi_UCapsuleComponent_GetShapeScaleFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetShapeScale_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetShapeScale){
+        apiuapi_UCapsuleComponent_GetShapeScale(&uapi_UCapsuleComponent_GetShapeScale);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight = (uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight){
+        apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight(&uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere = (uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere){
+        apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere(&uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius = (uapi_UCapsuleComponent_GetUnscaledCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleRadius_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius){
+        apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius(&uapi_UCapsuleComponent_GetUnscaledCapsuleRadius);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize = (uapi_UCapsuleComponent_GetUnscaledCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleSize_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize){
+        apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize(&uapi_UCapsuleComponent_GetUnscaledCapsuleSize);
+    }
+
+    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere = (uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere_handler\0"));
+    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere){
+        apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere(&uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere);
+    }
+
+    auto const apiuapi_UCapsuleComponent_InitCapsuleSize = (uapi_UCapsuleComponent_InitCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_InitCapsuleSize_handler\0"));
+    if(apiuapi_UCapsuleComponent_InitCapsuleSize){
+        apiuapi_UCapsuleComponent_InitCapsuleSize(&uapi_UCapsuleComponent_InitCapsuleSize);
+    }
+
+    auto const apiuapi_UCapsuleComponent_IsZeroExtent = (uapi_UCapsuleComponent_IsZeroExtentFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_IsZeroExtent_handler\0"));
+    if(apiuapi_UCapsuleComponent_IsZeroExtent){
+        apiuapi_UCapsuleComponent_IsZeroExtent(&uapi_UCapsuleComponent_IsZeroExtent);
+    }
+
+    auto const apiuapi_UCapsuleComponent_PostLoad = (uapi_UCapsuleComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_PostLoad_handler\0"));
+    if(apiuapi_UCapsuleComponent_PostLoad){
+        apiuapi_UCapsuleComponent_PostLoad(&uapi_UCapsuleComponent_PostLoad);
+    }
+
+    auto const apiuapi_UCapsuleComponent_SetCapsuleHalfHeight = (uapi_UCapsuleComponent_SetCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleHalfHeight_handler\0"));
+    if(apiuapi_UCapsuleComponent_SetCapsuleHalfHeight){
+        apiuapi_UCapsuleComponent_SetCapsuleHalfHeight(&uapi_UCapsuleComponent_SetCapsuleHalfHeight);
+    }
+
+    auto const apiuapi_UCapsuleComponent_SetCapsuleRadius = (uapi_UCapsuleComponent_SetCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleRadius_handler\0"));
+    if(apiuapi_UCapsuleComponent_SetCapsuleRadius){
+        apiuapi_UCapsuleComponent_SetCapsuleRadius(&uapi_UCapsuleComponent_SetCapsuleRadius);
+    }
+
+    auto const apiuapi_UCapsuleComponent_SetCapsuleSize = (uapi_UCapsuleComponent_SetCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleSize_handler\0"));
+    if(apiuapi_UCapsuleComponent_SetCapsuleSize){
+        apiuapi_UCapsuleComponent_SetCapsuleSize(&uapi_UCapsuleComponent_SetCapsuleSize);
+    }
+
+    auto const apiuapi_UCapsuleComponent_UpdateBodySetup = (uapi_UCapsuleComponent_UpdateBodySetupFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_UpdateBodySetup_handler\0"));
+    if(apiuapi_UCapsuleComponent_UpdateBodySetup){
+        apiuapi_UCapsuleComponent_UpdateBodySetup(&uapi_UCapsuleComponent_UpdateBodySetup);
+    }
+
     auto const apiuapi_UCharacterMovementComponent_AddForce = (uapi_UCharacterMovementComponent_AddForceFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_AddForce_handler\0"));
     if(apiuapi_UCharacterMovementComponent_AddForce){
         apiuapi_UCharacterMovementComponent_AddForce(&uapi_UCharacterMovementComponent_AddForce);
@@ -18146,110 +18819,5 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UCharacterMovementComponent_VisualizeMovement = (uapi_UCharacterMovementComponent_VisualizeMovementFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_VisualizeMovement_handler\0"));
     if(apiuapi_UCharacterMovementComponent_VisualizeMovement){
         apiuapi_UCharacterMovementComponent_VisualizeMovement(&uapi_UCharacterMovementComponent_VisualizeMovement);
-    }
-
-    auto const apiuapi_UCapsuleComponent_CalcBoundingCylinder = (uapi_UCapsuleComponent_CalcBoundingCylinderFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_CalcBoundingCylinder_handler\0"));
-    if(apiuapi_UCapsuleComponent_CalcBoundingCylinder){
-        apiuapi_UCapsuleComponent_CalcBoundingCylinder(&uapi_UCapsuleComponent_CalcBoundingCylinder);
-    }
-
-    auto const apiuapi_UCapsuleComponent_CreateSceneProxy = (uapi_UCapsuleComponent_CreateSceneProxyFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_CreateSceneProxy_handler\0"));
-    if(apiuapi_UCapsuleComponent_CreateSceneProxy){
-        apiuapi_UCapsuleComponent_CreateSceneProxy(&uapi_UCapsuleComponent_CreateSceneProxy);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetCollisionShape = (uapi_UCapsuleComponent_GetCollisionShapeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetCollisionShape_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetCollisionShape){
-        apiuapi_UCapsuleComponent_GetCollisionShape(&uapi_UCapsuleComponent_GetCollisionShape);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight = (uapi_UCapsuleComponent_GetScaledCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleHalfHeight_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight){
-        apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight(&uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere = (uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere){
-        apiuapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere(&uapi_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleRadius = (uapi_UCapsuleComponent_GetScaledCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleRadius_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetScaledCapsuleRadius){
-        apiuapi_UCapsuleComponent_GetScaledCapsuleRadius(&uapi_UCapsuleComponent_GetScaledCapsuleRadius);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleSize = (uapi_UCapsuleComponent_GetScaledCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleSize_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetScaledCapsuleSize){
-        apiuapi_UCapsuleComponent_GetScaledCapsuleSize(&uapi_UCapsuleComponent_GetScaledCapsuleSize);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere = (uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere){
-        apiuapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere(&uapi_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetShapeScale = (uapi_UCapsuleComponent_GetShapeScaleFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetShapeScale_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetShapeScale){
-        apiuapi_UCapsuleComponent_GetShapeScale(&uapi_UCapsuleComponent_GetShapeScale);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight = (uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight){
-        apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight(&uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere = (uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere){
-        apiuapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere(&uapi_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius = (uapi_UCapsuleComponent_GetUnscaledCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleRadius_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius){
-        apiuapi_UCapsuleComponent_GetUnscaledCapsuleRadius(&uapi_UCapsuleComponent_GetUnscaledCapsuleRadius);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize = (uapi_UCapsuleComponent_GetUnscaledCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleSize_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize){
-        apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize(&uapi_UCapsuleComponent_GetUnscaledCapsuleSize);
-    }
-
-    auto const apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere = (uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere_handler\0"));
-    if(apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere){
-        apiuapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere(&uapi_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere);
-    }
-
-    auto const apiuapi_UCapsuleComponent_InitCapsuleSize = (uapi_UCapsuleComponent_InitCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_InitCapsuleSize_handler\0"));
-    if(apiuapi_UCapsuleComponent_InitCapsuleSize){
-        apiuapi_UCapsuleComponent_InitCapsuleSize(&uapi_UCapsuleComponent_InitCapsuleSize);
-    }
-
-    auto const apiuapi_UCapsuleComponent_IsZeroExtent = (uapi_UCapsuleComponent_IsZeroExtentFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_IsZeroExtent_handler\0"));
-    if(apiuapi_UCapsuleComponent_IsZeroExtent){
-        apiuapi_UCapsuleComponent_IsZeroExtent(&uapi_UCapsuleComponent_IsZeroExtent);
-    }
-
-    auto const apiuapi_UCapsuleComponent_PostLoad = (uapi_UCapsuleComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_PostLoad_handler\0"));
-    if(apiuapi_UCapsuleComponent_PostLoad){
-        apiuapi_UCapsuleComponent_PostLoad(&uapi_UCapsuleComponent_PostLoad);
-    }
-
-    auto const apiuapi_UCapsuleComponent_SetCapsuleHalfHeight = (uapi_UCapsuleComponent_SetCapsuleHalfHeightFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleHalfHeight_handler\0"));
-    if(apiuapi_UCapsuleComponent_SetCapsuleHalfHeight){
-        apiuapi_UCapsuleComponent_SetCapsuleHalfHeight(&uapi_UCapsuleComponent_SetCapsuleHalfHeight);
-    }
-
-    auto const apiuapi_UCapsuleComponent_SetCapsuleRadius = (uapi_UCapsuleComponent_SetCapsuleRadiusFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleRadius_handler\0"));
-    if(apiuapi_UCapsuleComponent_SetCapsuleRadius){
-        apiuapi_UCapsuleComponent_SetCapsuleRadius(&uapi_UCapsuleComponent_SetCapsuleRadius);
-    }
-
-    auto const apiuapi_UCapsuleComponent_SetCapsuleSize = (uapi_UCapsuleComponent_SetCapsuleSizeFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_SetCapsuleSize_handler\0"));
-    if(apiuapi_UCapsuleComponent_SetCapsuleSize){
-        apiuapi_UCapsuleComponent_SetCapsuleSize(&uapi_UCapsuleComponent_SetCapsuleSize);
-    }
-
-    auto const apiuapi_UCapsuleComponent_UpdateBodySetup = (uapi_UCapsuleComponent_UpdateBodySetupFn)plugin->GetDllExport(TEXT("set_UCapsuleComponent_UpdateBodySetup_handler\0"));
-    if(apiuapi_UCapsuleComponent_UpdateBodySetup){
-        apiuapi_UCapsuleComponent_UpdateBodySetup(&uapi_UCapsuleComponent_UpdateBodySetup);
     }
 }

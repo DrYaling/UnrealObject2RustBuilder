@@ -513,7 +513,8 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                 )
             ){
                 if start.offset >= end.offset{
-                    return Err(anyhow!("api {:?} unrecongnized with offset incorrect {:?}", api, kind));
+                    println!("api {:?} unrecongnized with offset incorrect {:?}", api, kind);
+                    continue;
                 }
                 param.type_str = state.content[start.offset..end.offset].trim().to_string();
                 //remove =

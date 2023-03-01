@@ -3,6 +3,7 @@
 #![allow(non_camel_case_types)]
 #![allow(dead_code)]
 #![allow(unused_imports)]
+use super::*;
 use std::{ffi::{c_void, CString}, os::raw::c_char, ops::{Deref, DerefMut}};
 use ffis::*;
 pub struct RefResult<T: Sized>{
@@ -98,6 +99,8 @@ mod opaque_types{
 	pub type USoundAttenuationOpaque = c_void;//cpp type USoundAttenuation
 	pub type UInitialActiveSoundParamsOpaque = c_void;//cpp type UInitialActiveSoundParams
 	pub type UDecalComponentOpaque = c_void;//cpp type UDecalComponent
+	pub type UForceFeedbackComponentOpaque = c_void;//cpp type UForceFeedbackComponent
+	pub type UForceFeedbackAttenuationOpaque = c_void;//cpp type UForceFeedbackAttenuation
 	pub type UArrowComponentOpaque = c_void;//cpp type UArrowComponent
 	pub type UCapsuleComponentOpaque = c_void;//cpp type UCapsuleComponent
 	pub type UCharacterMovementComponentOpaque = c_void;//cpp type UCharacterMovementComponent
@@ -123,6 +126,8 @@ mod opaque_types{
 	pub type UBlendProfileOpaque = c_void;//cpp type UBlendProfile
 	pub type UAnimNotifyStateOpaque = c_void;//cpp type UAnimNotifyState
 	pub type FAnimNotifyEventOpaque = c_void;//cpp type FAnimNotifyEvent
+	pub type FBranchingPointMarkerOpaque = c_void;//cpp type FBranchingPointMarker
+	pub type FAnimTrackOpaque = c_void;//cpp type FAnimTrack
 	pub type UPhysicsAssetOpaque = c_void;//cpp type UPhysicsAsset
 	pub type FPrimitiveDrawInterfaceOpaque = c_void;//cpp type FPrimitiveDrawInterface
 	pub type FCanvasOpaque = c_void;//cpp type FCanvas
@@ -141,14 +146,14 @@ mod opaque_types{
 	pub type UPhysicalMaterialOpaque = c_void;//cpp type UPhysicalMaterial
 	pub type USkinnedAssetOpaque = c_void;//cpp type USkinnedAsset
 	pub type UParticleSystemComponentOpaque = c_void;//cpp type UParticleSystemComponent
+	pub type FPrimitiveSceneProxyOpaque = c_void;//cpp type FPrimitiveSceneProxy
 	pub type FSavedMove_CharacterOpaque = c_void;//cpp type FSavedMove_Character
 	pub type FNetworkPredictionData_ClientOpaque = c_void;//cpp type FNetworkPredictionData_Client
 	pub type FNetworkPredictionData_Client_CharacterOpaque = c_void;//cpp type FNetworkPredictionData_Client_Character
 	pub type FNetworkPredictionData_ServerOpaque = c_void;//cpp type FNetworkPredictionData_Server
 	pub type FNetworkPredictionData_Server_CharacterOpaque = c_void;//cpp type FNetworkPredictionData_Server_Character
 	pub type FRootMotionSourceOpaque = c_void;//cpp type FRootMotionSource
-	pub type UAvoidanceManagerOpaque = c_void;//cpp type UAvoidanceManager
-	pub type FPrimitiveSceneProxyOpaque = c_void;//cpp type FPrimitiveSceneProxy            
+	pub type UAvoidanceManagerOpaque = c_void;//cpp type UAvoidanceManager            
 }
 pub use opaque_types::*;
 
@@ -359,7 +364,6 @@ unreal FName
 pub struct UName{
 	pub entry: u32,
 	pub number: u32,
-	other: [u8; 0]
 }
 ///imply that this is a unreal object
 pub trait IPtr: Sized{
@@ -679,6 +683,10 @@ impl UObject{
 		unsafe{ UObject_IsSupportedForNetworkingInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn LoadConfig(&mut self, ConfigClass: *mut UClassOpaque, Filename: *mut TCHAROpaque, PropagationFlags: u32, PropertyToLoad: *mut FPropertyOpaque){
+		unsafe{ UObject_LoadConfigInvokerHandler.as_ref().unwrap()(self.inner, ConfigClass, Filename, PropagationFlags, PropertyToLoad) }
+	}
+	#[inline]
 	pub fn MarkAsEditorOnlySubobject(&mut self){
 		unsafe{ UObject_MarkAsEditorOnlySubobjectInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -793,6 +801,10 @@ impl UObject{
 	#[inline]
 	pub fn ReinitializeProperties(&mut self, SourceObject: &mut UObject, InstanceGraph: *mut FObjectInstancingGraphOpaque){
 		unsafe{ UObject_ReinitializePropertiesInvokerHandler.as_ref().unwrap()(self.inner, SourceObject.inner(), InstanceGraph) }
+	}
+	#[inline]
+	pub fn ReloadConfig(&mut self, ConfigClass: *mut UClassOpaque, Filename: *mut TCHAROpaque, PropagationFlags: u32, PropertyToLoad: *mut FPropertyOpaque){
+		unsafe{ UObject_ReloadConfigInvokerHandler.as_ref().unwrap()(self.inner, ConfigClass, Filename, PropagationFlags, PropertyToLoad) }
 	}
 	#[inline]
 	pub fn SaveConfig(&mut self, Flags: u64, Filename: *mut TCHAROpaque, Config: *mut FConfigCacheIniOpaque, bAllowCopyToDefaultObject: bool){
@@ -1713,6 +1725,10 @@ impl AActor{
 		unsafe{ AActor_LifeSpanExpiredInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn MakeNoise(&mut self, Loudness: f32, NoiseInstigator: &mut APawn, NoiseLocation: Vector3, MaxRange: f32, Tag: UName){
+		unsafe{ AActor_MakeNoiseInvokerHandler.as_ref().unwrap()(self.inner, Loudness, NoiseInstigator.inner(), NoiseLocation, MaxRange, Tag) }
+	}
+	#[inline]
 	pub fn MarkComponentsAsPendingKill(&mut self){
 		unsafe{ AActor_MarkComponentsAsPendingKillInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -2247,6 +2263,10 @@ impl IPtr for APawn{
 }
 impl APawn{
     
+	#[inline]
+	pub fn GetController(&self) -> Option<AController>{
+		unsafe{ AController::from_ptr(APawn_GetControllerInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
 	#[inline]
 	pub fn GetLocalViewingPlayerController(&self) -> Option<APlayerController>{
 		unsafe{ APlayerController::from_ptr(APawn_GetLocalViewingPlayerControllerInvokerHandler.as_ref().unwrap()(self.inner)) }
@@ -3249,6 +3269,58 @@ impl IPtr for FRandomStream{
 }
 impl FRandomStream{
     
+	#[inline]
+	pub fn FRand(&self) -> f32{
+		unsafe{ FRandomStream_FRandInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GenerateNewSeed(&mut self){
+		unsafe{ FRandomStream_GenerateNewSeedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCurrentSeed(&self) -> i32{
+		unsafe{ FRandomStream_GetCurrentSeedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetFraction(&self) -> f32{
+		unsafe{ FRandomStream_GetFractionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetInitialSeed(&self) -> i32{
+		unsafe{ FRandomStream_GetInitialSeedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnitVector(&self) -> Vector3{
+		unsafe{ FRandomStream_GetUnitVectorInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnsignedInt(&self) -> u32{
+		unsafe{ FRandomStream_GetUnsignedIntInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn Initialize(&mut self, InSeed: i32){
+		unsafe{ FRandomStream_InitializeInvokerHandler.as_ref().unwrap()(self.inner, InSeed) }
+	}
+	#[inline]
+	pub fn RandHelper(&self, A: i32) -> i32{
+		unsafe{ FRandomStream_RandHelperInvokerHandler.as_ref().unwrap()(self.inner, A) }
+	}
+	#[inline]
+	pub fn RandRange(&self, Min: i32, Max: i32) -> i32{
+		unsafe{ FRandomStream_RandRangeInvokerHandler.as_ref().unwrap()(self.inner, Min, Max) }
+	}
+	#[inline]
+	pub fn Reset(&self){
+		unsafe{ FRandomStream_ResetInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ToString(&self) -> String{
+		unsafe{ char_str_2_string(FRandomStream_ToStringInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn VRand(&self) -> Vector3{
+		unsafe{ FRandomStream_VRandInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
 }
 pub struct FLargeWorldCoordinatesReal{
     inner: *mut FLargeWorldCoordinatesRealOpaque
@@ -3539,8 +3611,16 @@ impl UGameplayStatics{
 		unsafe{ UGameplayStatics_SpawnDecalAtLocationInvokerHandler.as_ref().unwrap()(WorldContextObject.inner(), DecalMaterial, DecalSize, Location, Rotation, LifeSpan) }
 	}
 	#[inline]
+	pub fn SpawnForceFeedbackAtLocation(WorldContextObject: &UObject, ForceFeedbackEffect: *mut UForceFeedbackEffectOpaque, Location: Vector3, Rotation: Rotator, bLooping: bool, IntensityMultiplier: f32, StartTime: f32, AttenuationSettings: *mut UForceFeedbackAttenuationOpaque, bAutoDestroy: bool) -> *mut UForceFeedbackComponentOpaque{
+		unsafe{ UGameplayStatics_SpawnForceFeedbackAtLocationInvokerHandler.as_ref().unwrap()(WorldContextObject.inner(), ForceFeedbackEffect, Location, Rotation, bLooping, IntensityMultiplier, StartTime, AttenuationSettings, bAutoDestroy) }
+	}
+	#[inline]
 	pub fn SpawnSound2D(WorldContextObject: &UObject, Sound: *mut USoundBaseOpaque, VolumeMultiplier: f32, PitchMultiplier: f32, StartTime: f32, ConcurrencySettings: *mut USoundConcurrencyOpaque, bPersistAcrossLevelTransition: bool, bAutoDestroy: bool) -> *mut UAudioComponentOpaque{
 		unsafe{ UGameplayStatics_SpawnSound2DInvokerHandler.as_ref().unwrap()(WorldContextObject.inner(), Sound, VolumeMultiplier, PitchMultiplier, StartTime, ConcurrencySettings, bPersistAcrossLevelTransition, bAutoDestroy) }
+	}
+	#[inline]
+	pub fn SpawnSoundAtLocation(WorldContextObject: &UObject, Sound: *mut USoundBaseOpaque, Location: Vector3, Rotation: Rotator, VolumeMultiplier: f32, PitchMultiplier: f32, StartTime: f32, AttenuationSettings: *mut USoundAttenuationOpaque, ConcurrencySettings: *mut USoundConcurrencyOpaque, bAutoDestroy: bool) -> *mut UAudioComponentOpaque{
+		unsafe{ UGameplayStatics_SpawnSoundAtLocationInvokerHandler.as_ref().unwrap()(WorldContextObject.inner(), Sound, Location, Rotation, VolumeMultiplier, PitchMultiplier, StartTime, AttenuationSettings, ConcurrencySettings, bAutoDestroy) }
 	}
 	#[inline]
 	pub fn UnRetainAllSoundsInSoundClass(InSoundClass: *mut USoundClassOpaque){
@@ -5601,6 +5681,10 @@ impl UAnimInstance{
 		unsafe{ UAnimInstance_Montage_PauseInvokerHandler.as_ref().unwrap()(self.inner, Montage.inner()) }
 	}
 	#[inline]
+	pub fn Montage_Play(&mut self, MontageToPlay: &mut UAnimMontage, InPlayRate: f32, ReturnValueType: EMontagePlayReturnType, InTimeToStartMontageAt: f32, bStopAllMontages: bool) -> f32{
+		unsafe{ UAnimInstance_Montage_PlayInvokerHandler.as_ref().unwrap()(self.inner, MontageToPlay.inner(), InPlayRate, ReturnValueType, InTimeToStartMontageAt, bStopAllMontages) }
+	}
+	#[inline]
 	pub fn Montage_Resume(&mut self, Montage: &UAnimMontage){
 		unsafe{ UAnimInstance_Montage_ResumeInvokerHandler.as_ref().unwrap()(self.inner, Montage.inner()) }
 	}
@@ -6231,12 +6315,144 @@ impl IPtr for UAnimMontage{
 impl UAnimMontage{
     
 	#[inline]
+	pub fn AddAnimCompositeSection(&mut self, InSectionName: UName, StartPos: f32) -> i32{
+		unsafe{ UAnimMontage_AddAnimCompositeSectionInvokerHandler.as_ref().unwrap()(self.inner, InSectionName, StartPos) }
+	}
+	#[inline]
+	pub fn CalculateSequenceLength(&mut self) -> f32{
+		unsafe{ UAnimMontage_CalculateSequenceLengthInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CanBeUsedInComposition(&self) -> bool{
+		unsafe{ UAnimMontage_CanBeUsedInCompositionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CanUseMarkerSync(&self) -> bool{
+		unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CollectMarkers(&mut self){
+		unsafe{ UAnimMontage_CollectMarkersInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CreateSlotAnimationAsDynamicMontage(Asset: *mut UAnimSequenceBaseOpaque, SlotNodeName: UName, BlendInTime: f32, BlendOutTime: f32, InPlayRate: f32, LoopCount: i32, BlendOutTriggerTime: f32, InTimeToStartMontageAt: f32) -> Option<UAnimMontage>{
+		unsafe{ UAnimMontage::from_ptr(UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler.as_ref().unwrap()(Asset, SlotNodeName, BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt)) }
+	}
+	#[inline]
+	pub fn DeleteAnimCompositeSection(&mut self, SectionIndex: i32) -> bool{
+		unsafe{ UAnimMontage_DeleteAnimCompositeSectionInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
+	}
+	#[inline]
+	pub fn ExtractRootMotionFromTrackRange(&self, StartTrackPosition: f32, EndTrackPosition: f32) -> Transform{
+		unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler.as_ref().unwrap()(self.inner, StartTrackPosition, EndTrackPosition) }
+	}
+	#[inline]
+	pub fn FindFirstBranchingPointMarker(&self, StartTrackPos: f32, EndTrackPos: f32) -> *mut FBranchingPointMarkerOpaque{
+		unsafe{ UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler.as_ref().unwrap()(self.inner, StartTrackPos, EndTrackPos) }
+	}
+	#[inline]
+	pub fn GetAnimCompositeSectionIndexFromPos(&self, CurrentTime: f32, PosWithinCompositeSection: &mut f32) -> i32{
+		unsafe{ UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler.as_ref().unwrap()(self.inner, CurrentTime, PosWithinCompositeSection) }
+	}
+	#[inline]
+	pub fn GetAnimationData(&self, SlotName: UName) -> *mut FAnimTrackOpaque{
+		unsafe{ UAnimMontage_GetAnimationDataInvokerHandler.as_ref().unwrap()(self.inner, SlotName) }
+	}
+	#[inline]
+	pub fn GetDefaultBlendInTime(&self) -> f32{
+		unsafe{ UAnimMontage_GetDefaultBlendInTimeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDefaultBlendOutTime(&self) -> f32{
+		unsafe{ UAnimMontage_GetDefaultBlendOutTimeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetGroupName(&self) -> UName{
+		unsafe{ UAnimMontage_GetGroupNameInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn GetNumSections(&self) -> i32{
 		unsafe{ UAnimMontage_GetNumSectionsInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn GetSectionIndex(&self, InSectionName: UName) -> i32{
+		unsafe{ UAnimMontage_GetSectionIndexInvokerHandler.as_ref().unwrap()(self.inner, InSectionName) }
+	}
+	#[inline]
+	pub fn GetSectionIndexFromPosition(&self, Position: f32) -> i32{
+		unsafe{ UAnimMontage_GetSectionIndexFromPositionInvokerHandler.as_ref().unwrap()(self.inner, Position) }
+	}
+	#[inline]
+	pub fn GetSectionLength(&self, SectionIndex: i32) -> f32{
+		unsafe{ UAnimMontage_GetSectionLengthInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
+	}
+	#[inline]
+	pub fn GetSectionName(&self, SectionIndex: i32) -> UName{
+		unsafe{ UAnimMontage_GetSectionNameInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
+	}
+	#[inline]
+	pub fn GetSectionStartAndEndTime(&self, SectionIndex: i32, OutStartTime: &mut f32, OutEndTime: &mut f32){
+		unsafe{ UAnimMontage_GetSectionStartAndEndTimeInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex, OutStartTime, OutEndTime) }
+	}
+	#[inline]
+	pub fn GetSectionTimeLeftFromPos(&mut self, Position: f32) -> f32{
+		unsafe{ UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler.as_ref().unwrap()(self.inner, Position) }
+	}
+	#[inline]
+	pub fn HasRootMotion(&self) -> bool{
+		unsafe{ UAnimMontage_HasRootMotionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasValidSlotSetup(&self) -> bool{
+		unsafe{ UAnimMontage_HasValidSlotSetupInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn InvalidateRecursiveAsset(&mut self){
+		unsafe{ UAnimMontage_InvalidateRecursiveAssetInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsValidAdditive(&self) -> bool{
+		unsafe{ UAnimMontage_IsValidAdditiveInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsValidSectionIndex(&self, SectionIndex: i32) -> bool{
+		unsafe{ UAnimMontage_IsValidSectionIndexInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
+	}
+	#[inline]
+	pub fn IsValidSectionName(&self, InSectionName: UName) -> bool{
+		unsafe{ UAnimMontage_IsValidSectionNameInvokerHandler.as_ref().unwrap()(self.inner, InSectionName) }
+	}
+	#[inline]
 	pub fn IsValidSlot(&self, InSlotName: UName) -> bool{
 		unsafe{ UAnimMontage_IsValidSlotInvokerHandler.as_ref().unwrap()(self.inner, InSlotName) }
+	}
+	#[inline]
+	pub fn PostLoad(&mut self){
+		unsafe{ UAnimMontage_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PreSave(&mut self, TargetPlatform: *mut ITargetPlatformOpaque){
+		unsafe{ UAnimMontage_PreSaveInvokerHandler.as_ref().unwrap()(self.inner, TargetPlatform) }
+	}
+	#[inline]
+	pub fn RefreshCacheData(&mut self){
+		unsafe{ UAnimMontage_RefreshCacheDataInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetCompositeLength(&mut self, InLength: f32){
+		unsafe{ UAnimMontage_SetCompositeLengthInvokerHandler.as_ref().unwrap()(self.inner, InLength) }
+	}
+	#[inline]
+	pub fn UnregisterOnMontageChanged(&mut self, Unregister: *mut c_void){
+		unsafe{ UAnimMontage_UnregisterOnMontageChangedInvokerHandler.as_ref().unwrap()(self.inner, Unregister) }
+	}
+	#[inline]
+	pub fn UpdateLinkableElements(&mut self){
+		unsafe{ UAnimMontage_UpdateLinkableElementsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateLinkableElements2(&mut self, SlotIdx: i32, SegmentIdx: i32){
+		unsafe{ UAnimMontage_UpdateLinkableElements2InvokerHandler.as_ref().unwrap()(self.inner, SlotIdx, SegmentIdx) }
 	}
 }
 pub struct USkeletalMeshComponent{
@@ -7037,6 +7253,108 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_WakeAllRigidBodiesInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 }
+pub struct UCapsuleComponent{
+    inner: *mut UCapsuleComponentOpaque
+}
+impl IPtr for UCapsuleComponent{
+    #[inline]
+    fn inner(&self) -> *mut UCapsuleComponentOpaque { self.inner }
+    #[inline]
+    fn from_ptr(ptr: *mut c_void) -> Option<Self>{
+        if_else!(
+            ptr.is_null(),
+            None,
+            Some(Self{inner: ptr})
+        )        
+    }
+}
+impl UCapsuleComponent{
+    
+	#[inline]
+	pub fn CalcBoundingCylinder(&self, CylinderRadius: &mut f32, CylinderHalfHeight: &mut f32){
+		unsafe{ UCapsuleComponent_CalcBoundingCylinderInvokerHandler.as_ref().unwrap()(self.inner, CylinderRadius, CylinderHalfHeight) }
+	}
+	#[inline]
+	pub fn CreateSceneProxy(&mut self) -> *mut FPrimitiveSceneProxyOpaque{
+		unsafe{ UCapsuleComponent_CreateSceneProxyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCollisionShape(&self, Inflation: f32) -> CollisionShape{
+		unsafe{ UCapsuleComponent_GetCollisionShapeInvokerHandler.as_ref().unwrap()(self.inner, Inflation) }
+	}
+	#[inline]
+	pub fn GetScaledCapsuleHalfHeight(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetScaledCapsuleHalfHeight_WithoutHemisphere(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetScaledCapsuleRadius(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetScaledCapsuleSize(&self, OutRadius: &mut f32, OutHalfHeight: &mut f32){
+		unsafe{ UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeight) }
+	}
+	#[inline]
+	pub fn GetScaledCapsuleSize_WithoutHemisphere(&self, OutRadius: &mut f32, OutHalfHeightWithoutHemisphere: &mut f32){
+		unsafe{ UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeightWithoutHemisphere) }
+	}
+	#[inline]
+	pub fn GetShapeScale(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetShapeScaleInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnscaledCapsuleHalfHeight(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnscaledCapsuleHalfHeight_WithoutHemisphere(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnscaledCapsuleRadius(&self) -> f32{
+		unsafe{ UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnscaledCapsuleSize(&self, OutRadius: &mut f32, OutHalfHeight: &mut f32){
+		unsafe{ UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeight) }
+	}
+	#[inline]
+	pub fn GetUnscaledCapsuleSize_WithoutHemisphere(&self, OutRadius: &mut f32, OutHalfHeightWithoutHemisphere: &mut f32){
+		unsafe{ UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeightWithoutHemisphere) }
+	}
+	#[inline]
+	pub fn InitCapsuleSize(&mut self, InRadius: f32, InHalfHeight: f32){
+		unsafe{ UCapsuleComponent_InitCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, InRadius, InHalfHeight) }
+	}
+	#[inline]
+	pub fn IsZeroExtent(&self) -> bool{
+		unsafe{ UCapsuleComponent_IsZeroExtentInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostLoad(&mut self){
+		unsafe{ UCapsuleComponent_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetCapsuleHalfHeight(&mut self, HalfHeight: f32, bUpdateOverlaps: bool){
+		unsafe{ UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner, HalfHeight, bUpdateOverlaps) }
+	}
+	#[inline]
+	pub fn SetCapsuleRadius(&mut self, Radius: f32, bUpdateOverlaps: bool){
+		unsafe{ UCapsuleComponent_SetCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner, Radius, bUpdateOverlaps) }
+	}
+	#[inline]
+	pub fn SetCapsuleSize(&mut self, InRadius: f32, InHalfHeight: f32, bUpdateOverlaps: bool){
+		unsafe{ UCapsuleComponent_SetCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, InRadius, InHalfHeight, bUpdateOverlaps) }
+	}
+	#[inline]
+	pub fn UpdateBodySetup(&mut self){
+		unsafe{ UCapsuleComponent_UpdateBodySetupInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+}
 pub struct UCharacterMovementComponent{
     inner: *mut UCharacterMovementComponentOpaque
 }
@@ -7631,108 +7949,6 @@ impl UCharacterMovementComponent{
 		unsafe{ UCharacterMovementComponent_VisualizeMovementInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 }
-pub struct UCapsuleComponent{
-    inner: *mut UCapsuleComponentOpaque
-}
-impl IPtr for UCapsuleComponent{
-    #[inline]
-    fn inner(&self) -> *mut UCapsuleComponentOpaque { self.inner }
-    #[inline]
-    fn from_ptr(ptr: *mut c_void) -> Option<Self>{
-        if_else!(
-            ptr.is_null(),
-            None,
-            Some(Self{inner: ptr})
-        )        
-    }
-}
-impl UCapsuleComponent{
-    
-	#[inline]
-	pub fn CalcBoundingCylinder(&self, CylinderRadius: &mut f32, CylinderHalfHeight: &mut f32){
-		unsafe{ UCapsuleComponent_CalcBoundingCylinderInvokerHandler.as_ref().unwrap()(self.inner, CylinderRadius, CylinderHalfHeight) }
-	}
-	#[inline]
-	pub fn CreateSceneProxy(&mut self) -> *mut FPrimitiveSceneProxyOpaque{
-		unsafe{ UCapsuleComponent_CreateSceneProxyInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetCollisionShape(&self, Inflation: f32) -> CollisionShape{
-		unsafe{ UCapsuleComponent_GetCollisionShapeInvokerHandler.as_ref().unwrap()(self.inner, Inflation) }
-	}
-	#[inline]
-	pub fn GetScaledCapsuleHalfHeight(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetScaledCapsuleHalfHeight_WithoutHemisphere(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetScaledCapsuleRadius(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetScaledCapsuleSize(&self, OutRadius: &mut f32, OutHalfHeight: &mut f32){
-		unsafe{ UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeight) }
-	}
-	#[inline]
-	pub fn GetScaledCapsuleSize_WithoutHemisphere(&self, OutRadius: &mut f32, OutHalfHeightWithoutHemisphere: &mut f32){
-		unsafe{ UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeightWithoutHemisphere) }
-	}
-	#[inline]
-	pub fn GetShapeScale(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetShapeScaleInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetUnscaledCapsuleHalfHeight(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetUnscaledCapsuleHalfHeight_WithoutHemisphere(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetUnscaledCapsuleRadius(&self) -> f32{
-		unsafe{ UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetUnscaledCapsuleSize(&self, OutRadius: &mut f32, OutHalfHeight: &mut f32){
-		unsafe{ UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeight) }
-	}
-	#[inline]
-	pub fn GetUnscaledCapsuleSize_WithoutHemisphere(&self, OutRadius: &mut f32, OutHalfHeightWithoutHemisphere: &mut f32){
-		unsafe{ UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler.as_ref().unwrap()(self.inner, OutRadius, OutHalfHeightWithoutHemisphere) }
-	}
-	#[inline]
-	pub fn InitCapsuleSize(&mut self, InRadius: f32, InHalfHeight: f32){
-		unsafe{ UCapsuleComponent_InitCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, InRadius, InHalfHeight) }
-	}
-	#[inline]
-	pub fn IsZeroExtent(&self) -> bool{
-		unsafe{ UCapsuleComponent_IsZeroExtentInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn PostLoad(&mut self){
-		unsafe{ UCapsuleComponent_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn SetCapsuleHalfHeight(&mut self, HalfHeight: f32, bUpdateOverlaps: bool){
-		unsafe{ UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler.as_ref().unwrap()(self.inner, HalfHeight, bUpdateOverlaps) }
-	}
-	#[inline]
-	pub fn SetCapsuleRadius(&mut self, Radius: f32, bUpdateOverlaps: bool){
-		unsafe{ UCapsuleComponent_SetCapsuleRadiusInvokerHandler.as_ref().unwrap()(self.inner, Radius, bUpdateOverlaps) }
-	}
-	#[inline]
-	pub fn SetCapsuleSize(&mut self, InRadius: f32, InHalfHeight: f32, bUpdateOverlaps: bool){
-		unsafe{ UCapsuleComponent_SetCapsuleSizeInvokerHandler.as_ref().unwrap()(self.inner, InRadius, InHalfHeight, bUpdateOverlaps) }
-	}
-	#[inline]
-	pub fn UpdateBodySetup(&mut self){
-		unsafe{ UCapsuleComponent_UpdateBodySetupInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-}
 mod ffis{
 	use super::*;
 
@@ -8093,6 +8309,13 @@ mod ffis{
         unsafe{ UObject_IsSupportedForNetworkingInvokerHandler = Some(handler) };
     }
 
+    type UObject_LoadConfigInvoker = unsafe extern "C" fn(*mut c_void, *mut UClassOpaque, *mut TCHAROpaque, u32, *mut FPropertyOpaque);
+    pub(super) static mut UObject_LoadConfigInvokerHandler: Option<UObject_LoadConfigInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UObject_LoadConfig_handler(handler: UObject_LoadConfigInvoker){
+        unsafe{ UObject_LoadConfigInvokerHandler = Some(handler) };
+    }
+
     type UObject_MarkAsEditorOnlySubobjectInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut UObject_MarkAsEditorOnlySubobjectInvokerHandler: Option<UObject_MarkAsEditorOnlySubobjectInvoker> = None;
     #[no_mangle]
@@ -8294,6 +8517,13 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UObject_ReinitializeProperties_handler(handler: UObject_ReinitializePropertiesInvoker){
         unsafe{ UObject_ReinitializePropertiesInvokerHandler = Some(handler) };
+    }
+
+    type UObject_ReloadConfigInvoker = unsafe extern "C" fn(*mut c_void, *mut UClassOpaque, *mut TCHAROpaque, u32, *mut FPropertyOpaque);
+    pub(super) static mut UObject_ReloadConfigInvokerHandler: Option<UObject_ReloadConfigInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UObject_ReloadConfig_handler(handler: UObject_ReloadConfigInvoker){
+        unsafe{ UObject_ReloadConfigInvokerHandler = Some(handler) };
     }
 
     type UObject_SaveConfigInvoker = unsafe extern "C" fn(*mut c_void, u64, *mut TCHAROpaque, *mut FConfigCacheIniOpaque, bool);
@@ -9871,6 +10101,13 @@ mod ffis{
         unsafe{ AActor_LifeSpanExpiredInvokerHandler = Some(handler) };
     }
 
+    type AActor_MakeNoiseInvoker = unsafe extern "C" fn(*mut c_void, f32, *mut APawnOpaque, Vector3, f32, UName);
+    pub(super) static mut AActor_MakeNoiseInvokerHandler: Option<AActor_MakeNoiseInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_AActor_MakeNoise_handler(handler: AActor_MakeNoiseInvoker){
+        unsafe{ AActor_MakeNoiseInvokerHandler = Some(handler) };
+    }
+
     type AActor_MarkComponentsAsPendingKillInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut AActor_MarkComponentsAsPendingKillInvokerHandler: Option<AActor_MarkComponentsAsPendingKillInvoker> = None;
     #[no_mangle]
@@ -10772,6 +11009,13 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_AActor_WasRecentlyRendered_handler(handler: AActor_WasRecentlyRenderedInvoker){
         unsafe{ AActor_WasRecentlyRenderedInvokerHandler = Some(handler) };
+    }
+
+    type APawn_GetControllerInvoker = unsafe extern "C" fn(*mut c_void) -> *mut AControllerOpaque;
+    pub(super) static mut APawn_GetControllerInvokerHandler: Option<APawn_GetControllerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_APawn_GetController_handler(handler: APawn_GetControllerInvoker){
+        unsafe{ APawn_GetControllerInvokerHandler = Some(handler) };
     }
 
     type APawn_GetLocalViewingPlayerControllerInvoker = unsafe extern "C" fn(*mut c_void) -> *mut APlayerControllerOpaque;
@@ -12433,6 +12677,97 @@ mod ffis{
         unsafe{ APlayerController_ViewAPlayerInvokerHandler = Some(handler) };
     }
 
+    type FRandomStream_FRandInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut FRandomStream_FRandInvokerHandler: Option<FRandomStream_FRandInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_FRand_handler(handler: FRandomStream_FRandInvoker){
+        unsafe{ FRandomStream_FRandInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GenerateNewSeedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut FRandomStream_GenerateNewSeedInvokerHandler: Option<FRandomStream_GenerateNewSeedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GenerateNewSeed_handler(handler: FRandomStream_GenerateNewSeedInvoker){
+        unsafe{ FRandomStream_GenerateNewSeedInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GetCurrentSeedInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut FRandomStream_GetCurrentSeedInvokerHandler: Option<FRandomStream_GetCurrentSeedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GetCurrentSeed_handler(handler: FRandomStream_GetCurrentSeedInvoker){
+        unsafe{ FRandomStream_GetCurrentSeedInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GetFractionInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut FRandomStream_GetFractionInvokerHandler: Option<FRandomStream_GetFractionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GetFraction_handler(handler: FRandomStream_GetFractionInvoker){
+        unsafe{ FRandomStream_GetFractionInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GetInitialSeedInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut FRandomStream_GetInitialSeedInvokerHandler: Option<FRandomStream_GetInitialSeedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GetInitialSeed_handler(handler: FRandomStream_GetInitialSeedInvoker){
+        unsafe{ FRandomStream_GetInitialSeedInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GetUnitVectorInvoker = unsafe extern "C" fn(*mut c_void) -> Vector3;
+    pub(super) static mut FRandomStream_GetUnitVectorInvokerHandler: Option<FRandomStream_GetUnitVectorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GetUnitVector_handler(handler: FRandomStream_GetUnitVectorInvoker){
+        unsafe{ FRandomStream_GetUnitVectorInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_GetUnsignedIntInvoker = unsafe extern "C" fn(*mut c_void) -> u32;
+    pub(super) static mut FRandomStream_GetUnsignedIntInvokerHandler: Option<FRandomStream_GetUnsignedIntInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_GetUnsignedInt_handler(handler: FRandomStream_GetUnsignedIntInvoker){
+        unsafe{ FRandomStream_GetUnsignedIntInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_InitializeInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut FRandomStream_InitializeInvokerHandler: Option<FRandomStream_InitializeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_Initialize_handler(handler: FRandomStream_InitializeInvoker){
+        unsafe{ FRandomStream_InitializeInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_RandHelperInvoker = unsafe extern "C" fn(*mut c_void, i32) -> i32;
+    pub(super) static mut FRandomStream_RandHelperInvokerHandler: Option<FRandomStream_RandHelperInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_RandHelper_handler(handler: FRandomStream_RandHelperInvoker){
+        unsafe{ FRandomStream_RandHelperInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_RandRangeInvoker = unsafe extern "C" fn(*mut c_void, i32, i32) -> i32;
+    pub(super) static mut FRandomStream_RandRangeInvokerHandler: Option<FRandomStream_RandRangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_RandRange_handler(handler: FRandomStream_RandRangeInvoker){
+        unsafe{ FRandomStream_RandRangeInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_ResetInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut FRandomStream_ResetInvokerHandler: Option<FRandomStream_ResetInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_Reset_handler(handler: FRandomStream_ResetInvoker){
+        unsafe{ FRandomStream_ResetInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_ToStringInvoker = unsafe extern "C" fn(*mut c_void) -> *const std::os::raw::c_char;
+    pub(super) static mut FRandomStream_ToStringInvokerHandler: Option<FRandomStream_ToStringInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_ToString_handler(handler: FRandomStream_ToStringInvoker){
+        unsafe{ FRandomStream_ToStringInvokerHandler = Some(handler) };
+    }
+
+    type FRandomStream_VRandInvoker = unsafe extern "C" fn(*mut c_void) -> Vector3;
+    pub(super) static mut FRandomStream_VRandInvokerHandler: Option<FRandomStream_VRandInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_FRandomStream_VRand_handler(handler: FRandomStream_VRandInvoker){
+        unsafe{ FRandomStream_VRandInvokerHandler = Some(handler) };
+    }
+
     type UGameplayStatics_ActivateReverbEffectInvoker = unsafe extern "C" fn(*mut UObjectOpaque, *mut UReverbEffectOpaque, UName, f32, f32, f32);
     pub(super) static mut UGameplayStatics_ActivateReverbEffectInvokerHandler: Option<UGameplayStatics_ActivateReverbEffectInvoker> = None;
     #[no_mangle]
@@ -12895,11 +13230,25 @@ mod ffis{
         unsafe{ UGameplayStatics_SpawnDecalAtLocationInvokerHandler = Some(handler) };
     }
 
+    type UGameplayStatics_SpawnForceFeedbackAtLocationInvoker = unsafe extern "C" fn(*mut UObjectOpaque, *mut UForceFeedbackEffectOpaque, Vector3, Rotator, bool, f32, f32, *mut UForceFeedbackAttenuationOpaque, bool) -> *mut UForceFeedbackComponentOpaque;
+    pub(super) static mut UGameplayStatics_SpawnForceFeedbackAtLocationInvokerHandler: Option<UGameplayStatics_SpawnForceFeedbackAtLocationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UGameplayStatics_SpawnForceFeedbackAtLocation_handler(handler: UGameplayStatics_SpawnForceFeedbackAtLocationInvoker){
+        unsafe{ UGameplayStatics_SpawnForceFeedbackAtLocationInvokerHandler = Some(handler) };
+    }
+
     type UGameplayStatics_SpawnSound2DInvoker = unsafe extern "C" fn(*mut UObjectOpaque, *mut USoundBaseOpaque, f32, f32, f32, *mut USoundConcurrencyOpaque, bool, bool) -> *mut UAudioComponentOpaque;
     pub(super) static mut UGameplayStatics_SpawnSound2DInvokerHandler: Option<UGameplayStatics_SpawnSound2DInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UGameplayStatics_SpawnSound2D_handler(handler: UGameplayStatics_SpawnSound2DInvoker){
         unsafe{ UGameplayStatics_SpawnSound2DInvokerHandler = Some(handler) };
+    }
+
+    type UGameplayStatics_SpawnSoundAtLocationInvoker = unsafe extern "C" fn(*mut UObjectOpaque, *mut USoundBaseOpaque, Vector3, Rotator, f32, f32, f32, *mut USoundAttenuationOpaque, *mut USoundConcurrencyOpaque, bool) -> *mut UAudioComponentOpaque;
+    pub(super) static mut UGameplayStatics_SpawnSoundAtLocationInvokerHandler: Option<UGameplayStatics_SpawnSoundAtLocationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UGameplayStatics_SpawnSoundAtLocation_handler(handler: UGameplayStatics_SpawnSoundAtLocationInvoker){
+        unsafe{ UGameplayStatics_SpawnSoundAtLocationInvokerHandler = Some(handler) };
     }
 
     type UGameplayStatics_UnRetainAllSoundsInSoundClassInvoker = unsafe extern "C" fn(*mut USoundClassOpaque);
@@ -16283,6 +16632,13 @@ mod ffis{
         unsafe{ UAnimInstance_Montage_PauseInvokerHandler = Some(handler) };
     }
 
+    type UAnimInstance_Montage_PlayInvoker = unsafe extern "C" fn(*mut c_void, *mut UAnimMontageOpaque, f32, EMontagePlayReturnType, f32, bool) -> f32;
+    pub(super) static mut UAnimInstance_Montage_PlayInvokerHandler: Option<UAnimInstance_Montage_PlayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimInstance_Montage_Play_handler(handler: UAnimInstance_Montage_PlayInvoker){
+        unsafe{ UAnimInstance_Montage_PlayInvokerHandler = Some(handler) };
+    }
+
     type UAnimInstance_Montage_ResumeInvoker = unsafe extern "C" fn(*mut c_void, *mut UAnimMontageOpaque);
     pub(super) static mut UAnimInstance_Montage_ResumeInvokerHandler: Option<UAnimInstance_Montage_ResumeInvoker> = None;
     #[no_mangle]
@@ -17326,6 +17682,104 @@ mod ffis{
         unsafe{ UKismetSystemLibrary_UnregisterForRemoteNotificationsInvokerHandler = Some(handler) };
     }
 
+    type UAnimMontage_AddAnimCompositeSectionInvoker = unsafe extern "C" fn(*mut c_void, UName, f32) -> i32;
+    pub(super) static mut UAnimMontage_AddAnimCompositeSectionInvokerHandler: Option<UAnimMontage_AddAnimCompositeSectionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_AddAnimCompositeSection_handler(handler: UAnimMontage_AddAnimCompositeSectionInvoker){
+        unsafe{ UAnimMontage_AddAnimCompositeSectionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_CalculateSequenceLengthInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UAnimMontage_CalculateSequenceLengthInvokerHandler: Option<UAnimMontage_CalculateSequenceLengthInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_CalculateSequenceLength_handler(handler: UAnimMontage_CalculateSequenceLengthInvoker){
+        unsafe{ UAnimMontage_CalculateSequenceLengthInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_CanBeUsedInCompositionInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UAnimMontage_CanBeUsedInCompositionInvokerHandler: Option<UAnimMontage_CanBeUsedInCompositionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_CanBeUsedInComposition_handler(handler: UAnimMontage_CanBeUsedInCompositionInvoker){
+        unsafe{ UAnimMontage_CanBeUsedInCompositionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_CanUseMarkerSyncInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UAnimMontage_CanUseMarkerSyncInvokerHandler: Option<UAnimMontage_CanUseMarkerSyncInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_CanUseMarkerSync_handler(handler: UAnimMontage_CanUseMarkerSyncInvoker){
+        unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_CollectMarkersInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UAnimMontage_CollectMarkersInvokerHandler: Option<UAnimMontage_CollectMarkersInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_CollectMarkers_handler(handler: UAnimMontage_CollectMarkersInvoker){
+        unsafe{ UAnimMontage_CollectMarkersInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker = unsafe extern "C" fn(*mut UAnimSequenceBaseOpaque, UName, f32, f32, f32, i32, f32, f32) -> *mut UAnimMontageOpaque;
+    pub(super) static mut UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler: Option<UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler(handler: UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker){
+        unsafe{ UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_DeleteAnimCompositeSectionInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
+    pub(super) static mut UAnimMontage_DeleteAnimCompositeSectionInvokerHandler: Option<UAnimMontage_DeleteAnimCompositeSectionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_DeleteAnimCompositeSection_handler(handler: UAnimMontage_DeleteAnimCompositeSectionInvoker){
+        unsafe{ UAnimMontage_DeleteAnimCompositeSectionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_ExtractRootMotionFromTrackRangeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32) -> Transform;
+    pub(super) static mut UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler: Option<UAnimMontage_ExtractRootMotionFromTrackRangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_ExtractRootMotionFromTrackRange_handler(handler: UAnimMontage_ExtractRootMotionFromTrackRangeInvoker){
+        unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_FindFirstBranchingPointMarkerInvoker = unsafe extern "C" fn(*mut c_void, f32, f32) -> *mut FBranchingPointMarkerOpaque;
+    pub(super) static mut UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler: Option<UAnimMontage_FindFirstBranchingPointMarkerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_FindFirstBranchingPointMarker_handler(handler: UAnimMontage_FindFirstBranchingPointMarkerInvoker){
+        unsafe{ UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker = unsafe extern "C" fn(*mut c_void, f32, &mut f32) -> i32;
+    pub(super) static mut UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler: Option<UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler(handler: UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker){
+        unsafe{ UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetAnimationDataInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut FAnimTrackOpaque;
+    pub(super) static mut UAnimMontage_GetAnimationDataInvokerHandler: Option<UAnimMontage_GetAnimationDataInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetAnimationData_handler(handler: UAnimMontage_GetAnimationDataInvoker){
+        unsafe{ UAnimMontage_GetAnimationDataInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetDefaultBlendInTimeInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UAnimMontage_GetDefaultBlendInTimeInvokerHandler: Option<UAnimMontage_GetDefaultBlendInTimeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetDefaultBlendInTime_handler(handler: UAnimMontage_GetDefaultBlendInTimeInvoker){
+        unsafe{ UAnimMontage_GetDefaultBlendInTimeInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetDefaultBlendOutTimeInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UAnimMontage_GetDefaultBlendOutTimeInvokerHandler: Option<UAnimMontage_GetDefaultBlendOutTimeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetDefaultBlendOutTime_handler(handler: UAnimMontage_GetDefaultBlendOutTimeInvoker){
+        unsafe{ UAnimMontage_GetDefaultBlendOutTimeInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetGroupNameInvoker = unsafe extern "C" fn(*mut c_void) -> UName;
+    pub(super) static mut UAnimMontage_GetGroupNameInvokerHandler: Option<UAnimMontage_GetGroupNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetGroupName_handler(handler: UAnimMontage_GetGroupNameInvoker){
+        unsafe{ UAnimMontage_GetGroupNameInvokerHandler = Some(handler) };
+    }
+
     type UAnimMontage_GetNumSectionsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
     pub(super) static mut UAnimMontage_GetNumSectionsInvokerHandler: Option<UAnimMontage_GetNumSectionsInvoker> = None;
     #[no_mangle]
@@ -17333,11 +17787,144 @@ mod ffis{
         unsafe{ UAnimMontage_GetNumSectionsInvokerHandler = Some(handler) };
     }
 
+    type UAnimMontage_GetSectionIndexInvoker = unsafe extern "C" fn(*mut c_void, UName) -> i32;
+    pub(super) static mut UAnimMontage_GetSectionIndexInvokerHandler: Option<UAnimMontage_GetSectionIndexInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionIndex_handler(handler: UAnimMontage_GetSectionIndexInvoker){
+        unsafe{ UAnimMontage_GetSectionIndexInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetSectionIndexFromPositionInvoker = unsafe extern "C" fn(*mut c_void, f32) -> i32;
+    pub(super) static mut UAnimMontage_GetSectionIndexFromPositionInvokerHandler: Option<UAnimMontage_GetSectionIndexFromPositionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionIndexFromPosition_handler(handler: UAnimMontage_GetSectionIndexFromPositionInvoker){
+        unsafe{ UAnimMontage_GetSectionIndexFromPositionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetSectionLengthInvoker = unsafe extern "C" fn(*mut c_void, i32) -> f32;
+    pub(super) static mut UAnimMontage_GetSectionLengthInvokerHandler: Option<UAnimMontage_GetSectionLengthInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionLength_handler(handler: UAnimMontage_GetSectionLengthInvoker){
+        unsafe{ UAnimMontage_GetSectionLengthInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetSectionNameInvoker = unsafe extern "C" fn(*mut c_void, i32) -> UName;
+    pub(super) static mut UAnimMontage_GetSectionNameInvokerHandler: Option<UAnimMontage_GetSectionNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionName_handler(handler: UAnimMontage_GetSectionNameInvoker){
+        unsafe{ UAnimMontage_GetSectionNameInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetSectionStartAndEndTimeInvoker = unsafe extern "C" fn(*mut c_void, i32, &mut f32, &mut f32);
+    pub(super) static mut UAnimMontage_GetSectionStartAndEndTimeInvokerHandler: Option<UAnimMontage_GetSectionStartAndEndTimeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionStartAndEndTime_handler(handler: UAnimMontage_GetSectionStartAndEndTimeInvoker){
+        unsafe{ UAnimMontage_GetSectionStartAndEndTimeInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_GetSectionTimeLeftFromPosInvoker = unsafe extern "C" fn(*mut c_void, f32) -> f32;
+    pub(super) static mut UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler: Option<UAnimMontage_GetSectionTimeLeftFromPosInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_GetSectionTimeLeftFromPos_handler(handler: UAnimMontage_GetSectionTimeLeftFromPosInvoker){
+        unsafe{ UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_HasRootMotionInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UAnimMontage_HasRootMotionInvokerHandler: Option<UAnimMontage_HasRootMotionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_HasRootMotion_handler(handler: UAnimMontage_HasRootMotionInvoker){
+        unsafe{ UAnimMontage_HasRootMotionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_HasValidSlotSetupInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UAnimMontage_HasValidSlotSetupInvokerHandler: Option<UAnimMontage_HasValidSlotSetupInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_HasValidSlotSetup_handler(handler: UAnimMontage_HasValidSlotSetupInvoker){
+        unsafe{ UAnimMontage_HasValidSlotSetupInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_InvalidateRecursiveAssetInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UAnimMontage_InvalidateRecursiveAssetInvokerHandler: Option<UAnimMontage_InvalidateRecursiveAssetInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_InvalidateRecursiveAsset_handler(handler: UAnimMontage_InvalidateRecursiveAssetInvoker){
+        unsafe{ UAnimMontage_InvalidateRecursiveAssetInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_IsValidAdditiveInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UAnimMontage_IsValidAdditiveInvokerHandler: Option<UAnimMontage_IsValidAdditiveInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_IsValidAdditive_handler(handler: UAnimMontage_IsValidAdditiveInvoker){
+        unsafe{ UAnimMontage_IsValidAdditiveInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_IsValidSectionIndexInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
+    pub(super) static mut UAnimMontage_IsValidSectionIndexInvokerHandler: Option<UAnimMontage_IsValidSectionIndexInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_IsValidSectionIndex_handler(handler: UAnimMontage_IsValidSectionIndexInvoker){
+        unsafe{ UAnimMontage_IsValidSectionIndexInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_IsValidSectionNameInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
+    pub(super) static mut UAnimMontage_IsValidSectionNameInvokerHandler: Option<UAnimMontage_IsValidSectionNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_IsValidSectionName_handler(handler: UAnimMontage_IsValidSectionNameInvoker){
+        unsafe{ UAnimMontage_IsValidSectionNameInvokerHandler = Some(handler) };
+    }
+
     type UAnimMontage_IsValidSlotInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
     pub(super) static mut UAnimMontage_IsValidSlotInvokerHandler: Option<UAnimMontage_IsValidSlotInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UAnimMontage_IsValidSlot_handler(handler: UAnimMontage_IsValidSlotInvoker){
         unsafe{ UAnimMontage_IsValidSlotInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UAnimMontage_PostLoadInvokerHandler: Option<UAnimMontage_PostLoadInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_PostLoad_handler(handler: UAnimMontage_PostLoadInvoker){
+        unsafe{ UAnimMontage_PostLoadInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_PreSaveInvoker = unsafe extern "C" fn(*mut c_void, *mut ITargetPlatformOpaque);
+    pub(super) static mut UAnimMontage_PreSaveInvokerHandler: Option<UAnimMontage_PreSaveInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_PreSave_handler(handler: UAnimMontage_PreSaveInvoker){
+        unsafe{ UAnimMontage_PreSaveInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_RefreshCacheDataInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UAnimMontage_RefreshCacheDataInvokerHandler: Option<UAnimMontage_RefreshCacheDataInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_RefreshCacheData_handler(handler: UAnimMontage_RefreshCacheDataInvoker){
+        unsafe{ UAnimMontage_RefreshCacheDataInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_SetCompositeLengthInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UAnimMontage_SetCompositeLengthInvokerHandler: Option<UAnimMontage_SetCompositeLengthInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_SetCompositeLength_handler(handler: UAnimMontage_SetCompositeLengthInvoker){
+        unsafe{ UAnimMontage_SetCompositeLengthInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_UnregisterOnMontageChangedInvoker = unsafe extern "C" fn(*mut c_void, *mut c_void);
+    pub(super) static mut UAnimMontage_UnregisterOnMontageChangedInvokerHandler: Option<UAnimMontage_UnregisterOnMontageChangedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_UnregisterOnMontageChanged_handler(handler: UAnimMontage_UnregisterOnMontageChangedInvoker){
+        unsafe{ UAnimMontage_UnregisterOnMontageChangedInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_UpdateLinkableElementsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UAnimMontage_UpdateLinkableElementsInvokerHandler: Option<UAnimMontage_UpdateLinkableElementsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_UpdateLinkableElements_handler(handler: UAnimMontage_UpdateLinkableElementsInvoker){
+        unsafe{ UAnimMontage_UpdateLinkableElementsInvokerHandler = Some(handler) };
+    }
+
+    type UAnimMontage_UpdateLinkableElements2Invoker = unsafe extern "C" fn(*mut c_void, i32, i32);
+    pub(super) static mut UAnimMontage_UpdateLinkableElements2InvokerHandler: Option<UAnimMontage_UpdateLinkableElements2Invoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimMontage_UpdateLinkableElements2_handler(handler: UAnimMontage_UpdateLinkableElements2Invoker){
+        unsafe{ UAnimMontage_UpdateLinkableElements2InvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_AddClothCollisionSourceInvoker = unsafe extern "C" fn(*mut c_void, *mut USkeletalMeshComponentOpaque, *mut UPhysicsAssetOpaque);
@@ -18705,6 +19292,153 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_WakeAllRigidBodiesInvokerHandler = Some(handler) };
     }
 
+    type UCapsuleComponent_CalcBoundingCylinderInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
+    pub(super) static mut UCapsuleComponent_CalcBoundingCylinderInvokerHandler: Option<UCapsuleComponent_CalcBoundingCylinderInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_CalcBoundingCylinder_handler(handler: UCapsuleComponent_CalcBoundingCylinderInvoker){
+        unsafe{ UCapsuleComponent_CalcBoundingCylinderInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_CreateSceneProxyInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FPrimitiveSceneProxyOpaque;
+    pub(super) static mut UCapsuleComponent_CreateSceneProxyInvokerHandler: Option<UCapsuleComponent_CreateSceneProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_CreateSceneProxy_handler(handler: UCapsuleComponent_CreateSceneProxyInvoker){
+        unsafe{ UCapsuleComponent_CreateSceneProxyInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetCollisionShapeInvoker = unsafe extern "C" fn(*mut c_void, f32) -> CollisionShape;
+    pub(super) static mut UCapsuleComponent_GetCollisionShapeInvokerHandler: Option<UCapsuleComponent_GetCollisionShapeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetCollisionShape_handler(handler: UCapsuleComponent_GetCollisionShapeInvoker){
+        unsafe{ UCapsuleComponent_GetCollisionShapeInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleHalfHeight_handler(handler: UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker){
+        unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere_handler(handler: UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker){
+        unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetScaledCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleRadiusInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleRadius_handler(handler: UCapsuleComponent_GetScaledCapsuleRadiusInvoker){
+        unsafe{ UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetScaledCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
+    pub(super) static mut UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleSizeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleSize_handler(handler: UCapsuleComponent_GetScaledCapsuleSizeInvoker){
+        unsafe{ UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
+    pub(super) static mut UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere_handler(handler: UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker){
+        unsafe{ UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetShapeScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetShapeScaleInvokerHandler: Option<UCapsuleComponent_GetShapeScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetShapeScale_handler(handler: UCapsuleComponent_GetShapeScaleInvoker){
+        unsafe{ UCapsuleComponent_GetShapeScaleInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_handler(handler: UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker){
+        unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere_handler(handler: UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker){
+        unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleRadius_handler(handler: UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker){
+        unsafe{ UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetUnscaledCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
+    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleSizeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleSize_handler(handler: UCapsuleComponent_GetUnscaledCapsuleSizeInvoker){
+        unsafe{ UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
+    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere_handler(handler: UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker){
+        unsafe{ UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_InitCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32);
+    pub(super) static mut UCapsuleComponent_InitCapsuleSizeInvokerHandler: Option<UCapsuleComponent_InitCapsuleSizeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_InitCapsuleSize_handler(handler: UCapsuleComponent_InitCapsuleSizeInvoker){
+        unsafe{ UCapsuleComponent_InitCapsuleSizeInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_IsZeroExtentInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UCapsuleComponent_IsZeroExtentInvokerHandler: Option<UCapsuleComponent_IsZeroExtentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_IsZeroExtent_handler(handler: UCapsuleComponent_IsZeroExtentInvoker){
+        unsafe{ UCapsuleComponent_IsZeroExtentInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UCapsuleComponent_PostLoadInvokerHandler: Option<UCapsuleComponent_PostLoadInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_PostLoad_handler(handler: UCapsuleComponent_PostLoadInvoker){
+        unsafe{ UCapsuleComponent_PostLoadInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_SetCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void, f32, bool);
+    pub(super) static mut UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_SetCapsuleHalfHeightInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_SetCapsuleHalfHeight_handler(handler: UCapsuleComponent_SetCapsuleHalfHeightInvoker){
+        unsafe{ UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_SetCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void, f32, bool);
+    pub(super) static mut UCapsuleComponent_SetCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_SetCapsuleRadiusInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_SetCapsuleRadius_handler(handler: UCapsuleComponent_SetCapsuleRadiusInvoker){
+        unsafe{ UCapsuleComponent_SetCapsuleRadiusInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_SetCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32, bool);
+    pub(super) static mut UCapsuleComponent_SetCapsuleSizeInvokerHandler: Option<UCapsuleComponent_SetCapsuleSizeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_SetCapsuleSize_handler(handler: UCapsuleComponent_SetCapsuleSizeInvoker){
+        unsafe{ UCapsuleComponent_SetCapsuleSizeInvokerHandler = Some(handler) };
+    }
+
+    type UCapsuleComponent_UpdateBodySetupInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UCapsuleComponent_UpdateBodySetupInvokerHandler: Option<UCapsuleComponent_UpdateBodySetupInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UCapsuleComponent_UpdateBodySetup_handler(handler: UCapsuleComponent_UpdateBodySetupInvoker){
+        unsafe{ UCapsuleComponent_UpdateBodySetupInvokerHandler = Some(handler) };
+    }
+
     type UCharacterMovementComponent_AddForceInvoker = unsafe extern "C" fn(*mut c_void, Vector3);
     pub(super) static mut UCharacterMovementComponent_AddForceInvokerHandler: Option<UCharacterMovementComponent_AddForceInvoker> = None;
     #[no_mangle]
@@ -19711,152 +20445,5 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UCharacterMovementComponent_VisualizeMovement_handler(handler: UCharacterMovementComponent_VisualizeMovementInvoker){
         unsafe{ UCharacterMovementComponent_VisualizeMovementInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_CalcBoundingCylinderInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
-    pub(super) static mut UCapsuleComponent_CalcBoundingCylinderInvokerHandler: Option<UCapsuleComponent_CalcBoundingCylinderInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_CalcBoundingCylinder_handler(handler: UCapsuleComponent_CalcBoundingCylinderInvoker){
-        unsafe{ UCapsuleComponent_CalcBoundingCylinderInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_CreateSceneProxyInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FPrimitiveSceneProxyOpaque;
-    pub(super) static mut UCapsuleComponent_CreateSceneProxyInvokerHandler: Option<UCapsuleComponent_CreateSceneProxyInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_CreateSceneProxy_handler(handler: UCapsuleComponent_CreateSceneProxyInvoker){
-        unsafe{ UCapsuleComponent_CreateSceneProxyInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetCollisionShapeInvoker = unsafe extern "C" fn(*mut c_void, f32) -> CollisionShape;
-    pub(super) static mut UCapsuleComponent_GetCollisionShapeInvokerHandler: Option<UCapsuleComponent_GetCollisionShapeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetCollisionShape_handler(handler: UCapsuleComponent_GetCollisionShapeInvoker){
-        unsafe{ UCapsuleComponent_GetCollisionShapeInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleHalfHeight_handler(handler: UCapsuleComponent_GetScaledCapsuleHalfHeightInvoker){
-        unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeightInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphere_handler(handler: UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvoker){
-        unsafe{ UCapsuleComponent_GetScaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetScaledCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleRadiusInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleRadius_handler(handler: UCapsuleComponent_GetScaledCapsuleRadiusInvoker){
-        unsafe{ UCapsuleComponent_GetScaledCapsuleRadiusInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetScaledCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
-    pub(super) static mut UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleSizeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleSize_handler(handler: UCapsuleComponent_GetScaledCapsuleSizeInvoker){
-        unsafe{ UCapsuleComponent_GetScaledCapsuleSizeInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
-    pub(super) static mut UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphere_handler(handler: UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvoker){
-        unsafe{ UCapsuleComponent_GetScaledCapsuleSize_WithoutHemisphereInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetShapeScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetShapeScaleInvokerHandler: Option<UCapsuleComponent_GetShapeScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetShapeScale_handler(handler: UCapsuleComponent_GetShapeScaleInvoker){
-        unsafe{ UCapsuleComponent_GetShapeScaleInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_handler(handler: UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvoker){
-        unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeightInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphere_handler(handler: UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvoker){
-        unsafe{ UCapsuleComponent_GetUnscaledCapsuleHalfHeight_WithoutHemisphereInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleRadius_handler(handler: UCapsuleComponent_GetUnscaledCapsuleRadiusInvoker){
-        unsafe{ UCapsuleComponent_GetUnscaledCapsuleRadiusInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetUnscaledCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
-    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleSizeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleSize_handler(handler: UCapsuleComponent_GetUnscaledCapsuleSizeInvoker){
-        unsafe{ UCapsuleComponent_GetUnscaledCapsuleSizeInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker = unsafe extern "C" fn(*mut c_void, &mut f32, &mut f32);
-    pub(super) static mut UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler: Option<UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphere_handler(handler: UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvoker){
-        unsafe{ UCapsuleComponent_GetUnscaledCapsuleSize_WithoutHemisphereInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_InitCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32);
-    pub(super) static mut UCapsuleComponent_InitCapsuleSizeInvokerHandler: Option<UCapsuleComponent_InitCapsuleSizeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_InitCapsuleSize_handler(handler: UCapsuleComponent_InitCapsuleSizeInvoker){
-        unsafe{ UCapsuleComponent_InitCapsuleSizeInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_IsZeroExtentInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UCapsuleComponent_IsZeroExtentInvokerHandler: Option<UCapsuleComponent_IsZeroExtentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_IsZeroExtent_handler(handler: UCapsuleComponent_IsZeroExtentInvoker){
-        unsafe{ UCapsuleComponent_IsZeroExtentInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UCapsuleComponent_PostLoadInvokerHandler: Option<UCapsuleComponent_PostLoadInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_PostLoad_handler(handler: UCapsuleComponent_PostLoadInvoker){
-        unsafe{ UCapsuleComponent_PostLoadInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_SetCapsuleHalfHeightInvoker = unsafe extern "C" fn(*mut c_void, f32, bool);
-    pub(super) static mut UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler: Option<UCapsuleComponent_SetCapsuleHalfHeightInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_SetCapsuleHalfHeight_handler(handler: UCapsuleComponent_SetCapsuleHalfHeightInvoker){
-        unsafe{ UCapsuleComponent_SetCapsuleHalfHeightInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_SetCapsuleRadiusInvoker = unsafe extern "C" fn(*mut c_void, f32, bool);
-    pub(super) static mut UCapsuleComponent_SetCapsuleRadiusInvokerHandler: Option<UCapsuleComponent_SetCapsuleRadiusInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_SetCapsuleRadius_handler(handler: UCapsuleComponent_SetCapsuleRadiusInvoker){
-        unsafe{ UCapsuleComponent_SetCapsuleRadiusInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_SetCapsuleSizeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32, bool);
-    pub(super) static mut UCapsuleComponent_SetCapsuleSizeInvokerHandler: Option<UCapsuleComponent_SetCapsuleSizeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_SetCapsuleSize_handler(handler: UCapsuleComponent_SetCapsuleSizeInvoker){
-        unsafe{ UCapsuleComponent_SetCapsuleSizeInvokerHandler = Some(handler) };
-    }
-
-    type UCapsuleComponent_UpdateBodySetupInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UCapsuleComponent_UpdateBodySetupInvokerHandler: Option<UCapsuleComponent_UpdateBodySetupInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UCapsuleComponent_UpdateBodySetup_handler(handler: UCapsuleComponent_UpdateBodySetupInvoker){
-        unsafe{ UCapsuleComponent_UpdateBodySetupInvokerHandler = Some(handler) };
     }
 }

@@ -119,14 +119,12 @@ mod opaque_types{
 	pub type IAnimClassInterfaceOpaque = c_void;//cpp type IAnimClassInterface
 	pub type FAnimNode_StateMachineOpaque = c_void;//cpp type FAnimNode_StateMachine
 	pub type FPoseSnapshotOpaque = c_void;//cpp type FPoseSnapshot
-	pub type FAnimNode_AssetPlayerBaseOpaque = c_void;//cpp type FAnimNode_AssetPlayerBase
 	pub type UAnimSequenceBaseOpaque = c_void;//cpp type UAnimSequenceBase
 	pub type FOnMontageBlendingOutStartedOpaque = c_void;//cpp type FOnMontageBlendingOutStarted
 	pub type USkeletalMeshOpaque = c_void;//cpp type USkeletalMesh
 	pub type UBlendProfileOpaque = c_void;//cpp type UBlendProfile
 	pub type UAnimNotifyStateOpaque = c_void;//cpp type UAnimNotifyState
 	pub type FAnimNotifyEventOpaque = c_void;//cpp type FAnimNotifyEvent
-	pub type FBranchingPointMarkerOpaque = c_void;//cpp type FBranchingPointMarker
 	pub type FAnimTrackOpaque = c_void;//cpp type FAnimTrack
 	pub type UPhysicsAssetOpaque = c_void;//cpp type UPhysicsAsset
 	pub type FPrimitiveDrawInterfaceOpaque = c_void;//cpp type FPrimitiveDrawInterface
@@ -965,6 +963,10 @@ impl AActor{
 		unsafe{ AActor_ClearInstanceComponentsInvokerHandler.as_ref().unwrap()(self.inner, bDestroyComponents) }
 	}
 	#[inline]
+	pub fn ContainsDataLayer(&self, DataLayerAsset: *mut UDataLayerAssetOpaque) -> bool{
+		unsafe{ AActor_ContainsDataLayerInvokerHandler.as_ref().unwrap()(self.inner, DataLayerAsset) }
+	}
+	#[inline]
 	pub fn CopyRemoteRoleFrom(&mut self, CopyFromActor: &AActor){
 		unsafe{ AActor_CopyRemoteRoleFromInvokerHandler.as_ref().unwrap()(self.inner, CopyFromActor.inner()) }
 	}
@@ -1003,10 +1005,6 @@ impl AActor{
 	#[inline]
 	pub fn Destroyed(&mut self){
 		unsafe{ AActor_DestroyedInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn DetachRootComponentFromParent(&mut self, bMaintainWorldPosition: bool){
-		unsafe{ AActor_DetachRootComponentFromParentInvokerHandler.as_ref().unwrap()(self.inner, bMaintainWorldPosition) }
 	}
 	#[inline]
 	pub fn DisableComponentsSimulatePhysics(&mut self){
@@ -2780,18 +2778,6 @@ impl APlayerController{
 		unsafe{ APlayerController_GameplayUnmuteAllPlayersInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn GetDeprecatedInputPitchScale(&self) -> f32{
-		unsafe{ APlayerController_GetDeprecatedInputPitchScaleInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetDeprecatedInputRollScale(&self) -> f32{
-		unsafe{ APlayerController_GetDeprecatedInputRollScaleInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetDeprecatedInputYawScale(&self) -> f32{
-		unsafe{ APlayerController_GetDeprecatedInputYawScaleInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn GetFocalLocation(&self) -> Vector3{
 		unsafe{ APlayerController_GetFocalLocationInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -3132,18 +3118,6 @@ impl APlayerController{
 		unsafe{ APlayerController_SetControllerLightColorInvokerHandler.as_ref().unwrap()(self.inner, Color) }
 	}
 	#[inline]
-	pub fn SetDeprecatedInputPitchScale(&mut self, NewValue: f32){
-		unsafe{ APlayerController_SetDeprecatedInputPitchScaleInvokerHandler.as_ref().unwrap()(self.inner, NewValue) }
-	}
-	#[inline]
-	pub fn SetDeprecatedInputRollScale(&mut self, NewValue: f32){
-		unsafe{ APlayerController_SetDeprecatedInputRollScaleInvokerHandler.as_ref().unwrap()(self.inner, NewValue) }
-	}
-	#[inline]
-	pub fn SetDeprecatedInputYawScale(&mut self, NewValue: f32){
-		unsafe{ APlayerController_SetDeprecatedInputYawScaleInvokerHandler.as_ref().unwrap()(self.inner, NewValue) }
-	}
-	#[inline]
 	pub fn SetDisableHaptics(&mut self, bNewDisabled: bool){
 		unsafe{ APlayerController_SetDisableHapticsInvokerHandler.as_ref().unwrap()(self.inner, bNewDisabled) }
 	}
@@ -3386,7 +3360,7 @@ impl UGameplayStatics{
 		unsafe{ UGameplayStatics_FlushLevelStreamingInvokerHandler.as_ref().unwrap()(WorldContextObject.inner()) }
 	}
 	#[inline]
-	pub fn GetAccurateRealTime(Seconds: &mut i32, PartialSeconds: &mut f32){
+	pub fn GetAccurateRealTime(Seconds: &mut i32, PartialSeconds: &mut f64){
 		unsafe{ UGameplayStatics_GetAccurateRealTimeInvokerHandler.as_ref().unwrap()(Seconds, PartialSeconds) }
 	}
 	#[inline]
@@ -4199,10 +4173,6 @@ impl USceneComponent{
 	#[inline]
 	pub fn DestroyComponent(&mut self, bPromoteChildren: bool){
 		unsafe{ USceneComponent_DestroyComponentInvokerHandler.as_ref().unwrap()(self.inner, bPromoteChildren) }
-	}
-	#[inline]
-	pub fn DetachFromParent(&mut self, bMaintainWorldPosition: bool, bCallModify: bool){
-		unsafe{ USceneComponent_DetachFromParentInvokerHandler.as_ref().unwrap()(self.inner, bMaintainWorldPosition, bCallModify) }
 	}
 	#[inline]
 	pub fn DoesSocketExist(&self, InSocketName: UName) -> bool{
@@ -5461,10 +5431,6 @@ impl UAnimInstance{
 		unsafe{ UAnimInstance_GetLODLevelInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn GetLayerSubInstanceByGroup(&self, InGroup: UName) -> Option<UAnimInstance>{
-		unsafe{ UAnimInstance::from_ptr(UAnimInstance_GetLayerSubInstanceByGroupInvokerHandler.as_ref().unwrap()(self.inner, InGroup)) }
-	}
-	#[inline]
 	pub fn GetLinkedAnimGraphInstanceByTag(&self, InTag: UName) -> Option<UAnimInstance>{
 		unsafe{ UAnimInstance::from_ptr(UAnimInstance_GetLinkedAnimGraphInstanceByTagInvokerHandler.as_ref().unwrap()(self.inner, InTag)) }
 	}
@@ -5525,10 +5491,6 @@ impl UAnimInstance{
 		unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
 	}
 	#[inline]
-	pub fn GetRelevantAssetPlayerFromState(&self, MachineIndex: i32, StateIndex: i32) -> *mut FAnimNode_AssetPlayerBaseOpaque{
-		unsafe{ UAnimInstance_GetRelevantAssetPlayerFromStateInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
-	}
-	#[inline]
 	pub fn GetRootMotionMontageInstance(&self) -> *mut FAnimMontageInstanceOpaque{
 		unsafe{ UAnimInstance_GetRootMotionMontageInstanceInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -5551,14 +5513,6 @@ impl UAnimInstance{
 	#[inline]
 	pub fn GetStateMachineInstanceFromName(&self, MachineName: UName) -> *mut FAnimNode_StateMachineOpaque{
 		unsafe{ UAnimInstance_GetStateMachineInstanceFromNameInvokerHandler.as_ref().unwrap()(self.inner, MachineName) }
-	}
-	#[inline]
-	pub fn GetSubInputNode(&mut self, InSubInput: UName, InGraph: UName) -> *mut FAnimNode_LinkedInputPoseOpaque{
-		unsafe{ UAnimInstance_GetSubInputNodeInvokerHandler.as_ref().unwrap()(self.inner, InSubInput, InGraph) }
-	}
-	#[inline]
-	pub fn GetSubInstanceByTag(&self, InTag: UName) -> Option<UAnimInstance>{
-		unsafe{ UAnimInstance::from_ptr(UAnimInstance_GetSubInstanceByTagInvokerHandler.as_ref().unwrap()(self.inner, InTag)) }
 	}
 	#[inline]
 	pub fn GetSyncGroupIndexFromName(&self, SyncGroupName: UName) -> i32{
@@ -5737,10 +5691,6 @@ impl UAnimInstance{
 		unsafe{ UAnimInstance_NeedsUpdateInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn OnUROPreInterpolation(&mut self){
-		unsafe{ UAnimInstance_OnUROPreInterpolationInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn OnUROSkipTickAnimation(&mut self){
 		unsafe{ UAnimInstance_OnUROSkipTickAnimationInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -5823,10 +5773,6 @@ impl UAnimInstance{
 	#[inline]
 	pub fn RequestSlotGroupInertialization(&mut self, InSlotGroupName: UName, Duration: f32, BlendProfile: *mut UBlendProfileOpaque){
 		unsafe{ UAnimInstance_RequestSlotGroupInertializationInvokerHandler.as_ref().unwrap()(self.inner, InSlotGroupName, Duration, BlendProfile) }
-	}
-	#[inline]
-	pub fn ResetDynamics(&mut self){
-		unsafe{ UAnimInstance_ResetDynamicsInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn SavePoseSnapshot(&mut self, SnapshotName: UName){
@@ -6123,10 +6069,6 @@ impl UKismetSystemLibrary{
 		unsafe{ UKismetSystemLibrary_IsServerInvokerHandler.as_ref().unwrap()(WorldContextObject.inner()) }
 	}
 	#[inline]
-	pub fn IsSplitScreen(WorldContextObject: &UObject) -> bool{
-		unsafe{ UKismetSystemLibrary_IsSplitScreenInvokerHandler.as_ref().unwrap()(WorldContextObject.inner()) }
-	}
-	#[inline]
 	pub fn IsStandalone(WorldContextObject: &UObject) -> bool{
 		unsafe{ UKismetSystemLibrary_IsStandaloneInvokerHandler.as_ref().unwrap()(WorldContextObject.inner()) }
 	}
@@ -6191,10 +6133,6 @@ impl UKismetSystemLibrary{
 		unsafe{ UKismetSystemLibrary_MakeLiteralDoubleInvokerHandler.as_ref().unwrap()(Value) }
 	}
 	#[inline]
-	pub fn MakeLiteralFloat(Value: f32) -> f32{
-		unsafe{ UKismetSystemLibrary_MakeLiteralFloatInvokerHandler.as_ref().unwrap()(Value) }
-	}
-	#[inline]
 	pub fn MakeLiteralInt(Value: i32) -> i32{
 		unsafe{ UKismetSystemLibrary_MakeLiteralIntInvokerHandler.as_ref().unwrap()(Value) }
 	}
@@ -6243,10 +6181,6 @@ impl UKismetSystemLibrary{
 	#[inline]
 	pub fn SetDoublePropertyByName(Object: &mut UObject, PropertyName: UName, Value: f64){
 		unsafe{ UKismetSystemLibrary_SetDoublePropertyByNameInvokerHandler.as_ref().unwrap()(Object.inner(), PropertyName, Value) }
-	}
-	#[inline]
-	pub fn SetFloatPropertyByName(Object: &mut UObject, PropertyName: UName, Value: f32){
-		unsafe{ UKismetSystemLibrary_SetFloatPropertyByNameInvokerHandler.as_ref().unwrap()(Object.inner(), PropertyName, Value) }
 	}
 	#[inline]
 	pub fn SetGamepadsBlockDeviceFeedback(bBlock: bool){
@@ -6331,10 +6265,6 @@ impl UAnimMontage{
 		unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn CollectMarkers(&mut self){
-		unsafe{ UAnimMontage_CollectMarkersInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn CreateSlotAnimationAsDynamicMontage(Asset: *mut UAnimSequenceBaseOpaque, SlotNodeName: UName, BlendInTime: f32, BlendOutTime: f32, InPlayRate: f32, LoopCount: i32, BlendOutTriggerTime: f32, InTimeToStartMontageAt: f32) -> Option<UAnimMontage>{
 		unsafe{ UAnimMontage::from_ptr(UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler.as_ref().unwrap()(Asset, SlotNodeName, BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt)) }
 	}
@@ -6345,10 +6275,6 @@ impl UAnimMontage{
 	#[inline]
 	pub fn ExtractRootMotionFromTrackRange(&self, StartTrackPosition: f32, EndTrackPosition: f32) -> Transform{
 		unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler.as_ref().unwrap()(self.inner, StartTrackPosition, EndTrackPosition) }
-	}
-	#[inline]
-	pub fn FindFirstBranchingPointMarker(&self, StartTrackPos: f32, EndTrackPos: f32) -> *mut FBranchingPointMarkerOpaque{
-		unsafe{ UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler.as_ref().unwrap()(self.inner, StartTrackPos, EndTrackPos) }
 	}
 	#[inline]
 	pub fn GetAnimCompositeSectionIndexFromPos(&self, CurrentTime: f32, PosWithinCompositeSection: &mut f32) -> i32{
@@ -6403,10 +6329,6 @@ impl UAnimMontage{
 		unsafe{ UAnimMontage_HasRootMotionInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn HasValidSlotSetup(&self) -> bool{
-		unsafe{ UAnimMontage_HasValidSlotSetupInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn InvalidateRecursiveAsset(&mut self){
 		unsafe{ UAnimMontage_InvalidateRecursiveAssetInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -6429,10 +6351,6 @@ impl UAnimMontage{
 	#[inline]
 	pub fn PostLoad(&mut self){
 		unsafe{ UAnimMontage_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn PreSave(&mut self, TargetPlatform: *mut ITargetPlatformOpaque){
-		unsafe{ UAnimMontage_PreSaveInvokerHandler.as_ref().unwrap()(self.inner, TargetPlatform) }
 	}
 	#[inline]
 	pub fn RefreshCacheData(&mut self){
@@ -6503,10 +6421,6 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn BindClothToLeaderPoseComponent(&mut self){
 		unsafe{ USkeletalMeshComponent_BindClothToLeaderPoseComponentInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn BindClothToMasterPoseComponent(&mut self){
-		unsafe{ USkeletalMeshComponent_BindClothToMasterPoseComponentInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn BreakConstraint(&mut self, Impulse: Vector3, HitLocation: Vector3, InBoneName: UName){
@@ -6653,16 +6567,8 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_GetCurrentJointAnglesInvokerHandler.as_ref().unwrap()(self.inner, InBoneName, Swing1Angle, TwistAngle, Swing2Angle) }
 	}
 	#[inline]
-	pub fn GetDisableAnimCurves(&self) -> bool{
-		unsafe{ USkeletalMeshComponent_GetDisableAnimCurvesInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn GetDisablePostProcessBlueprint(&self) -> bool{
 		unsafe{ USkeletalMeshComponent_GetDisablePostProcessBlueprintInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetLayerSubInstanceByGroup(&self, InGroup: UName) -> Option<UAnimInstance>{
-		unsafe{ UAnimInstance::from_ptr(USkeletalMeshComponent_GetLayerSubInstanceByGroupInvokerHandler.as_ref().unwrap()(self.inner, InGroup)) }
 	}
 	#[inline]
 	pub fn GetLinkedAnimGraphInstanceByTag(&self, InTag: UName) -> Option<UAnimInstance>{
@@ -6699,14 +6605,6 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn GetSkeletalMeshAsset(&self) -> *mut USkeletalMeshOpaque{
 		unsafe{ USkeletalMeshComponent_GetSkeletalMeshAssetInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetSubInstanceByName(&self, InTag: UName) -> Option<UAnimInstance>{
-		unsafe{ UAnimInstance::from_ptr(USkeletalMeshComponent_GetSubInstanceByNameInvokerHandler.as_ref().unwrap()(self.inner, InTag)) }
-	}
-	#[inline]
-	pub fn GetSubInstanceByTag(&self, InTag: UName) -> Option<UAnimInstance>{
-		unsafe{ UAnimInstance::from_ptr(USkeletalMeshComponent_GetSubInstanceByTagInvokerHandler.as_ref().unwrap()(self.inner, InTag)) }
 	}
 	#[inline]
 	pub fn GetTeleportDistanceThreshold(&self) -> f32{
@@ -6749,10 +6647,6 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_InitCollisionRelationshipsInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
-	pub fn InitSkelControls(&mut self){
-		unsafe{ USkeletalMeshComponent_InitSkelControlsInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
 	pub fn InitializeAnimScriptInstance(&mut self, bForceReinit: bool, bInDeferRootNodeInitialization: bool) -> bool{
 		unsafe{ USkeletalMeshComponent_InitializeAnimScriptInstanceInvokerHandler.as_ref().unwrap()(self.inner, bForceReinit, bInDeferRootNodeInitialization) }
 	}
@@ -6779,10 +6673,6 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn IsClothBoundToLeaderComponent(&self) -> bool{
 		unsafe{ USkeletalMeshComponent_IsClothBoundToLeaderComponentInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn IsClothBoundToMasterComponent(&self) -> bool{
-		unsafe{ USkeletalMeshComponent_IsClothBoundToMasterComponentInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn IsClothingSimulationSuspended(&self) -> bool{
@@ -7013,10 +6903,6 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_SetConstraintProfileForAllInvokerHandler.as_ref().unwrap()(self.inner, ProfileName, bDefaultIfNotFound) }
 	}
 	#[inline]
-	pub fn SetDisableAnimCurves(&mut self, bInDisableAnimCurves: bool){
-		unsafe{ USkeletalMeshComponent_SetDisableAnimCurvesInvokerHandler.as_ref().unwrap()(self.inner, bInDisableAnimCurves) }
-	}
-	#[inline]
 	pub fn SetDisablePostProcessBlueprint(&mut self, bInDisablePostProcess: bool){
 		unsafe{ USkeletalMeshComponent_SetDisablePostProcessBlueprintInvokerHandler.as_ref().unwrap()(self.inner, bInDisablePostProcess) }
 	}
@@ -7087,10 +6973,6 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn SetSkeletalMeshAsset(&mut self, NewMesh: *mut USkeletalMeshOpaque){
 		unsafe{ USkeletalMeshComponent_SetSkeletalMeshAssetInvokerHandler.as_ref().unwrap()(self.inner, NewMesh) }
-	}
-	#[inline]
-	pub fn SetSkeletalMeshWithoutResettingAnimation(&mut self, NewMesh: *mut USkeletalMeshOpaque){
-		unsafe{ USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvokerHandler.as_ref().unwrap()(self.inner, NewMesh) }
 	}
 	#[inline]
 	pub fn SetSkinnedAssetAndUpdate(&mut self, InSkinnedAsset: *mut USkinnedAssetOpaque, bReinitPose: bool){
@@ -7189,16 +7071,8 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_UnbindClothFromLeaderPoseComponentInvokerHandler.as_ref().unwrap()(self.inner, bRestoreSimulationSpace) }
 	}
 	#[inline]
-	pub fn UnbindClothFromMasterPoseComponent(&mut self, bRestoreSimulationSpace: bool){
-		unsafe{ USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvokerHandler.as_ref().unwrap()(self.inner, bRestoreSimulationSpace) }
-	}
-	#[inline]
 	pub fn UpdateBoneBodyMapping(&mut self){
 		unsafe{ USkeletalMeshComponent_UpdateBoneBodyMappingInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn UpdateClothCollision(&mut self){
-		unsafe{ USkeletalMeshComponent_UpdateClothCollisionInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn UpdateClothTransform(&mut self){
@@ -7239,10 +7113,6 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn UpdateRBJointMotors(&mut self){
 		unsafe{ USkeletalMeshComponent_UpdateRBJointMotorsInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn UpdateSlaveComponent(&mut self){
-		unsafe{ USkeletalMeshComponent_UpdateSlaveComponentInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn ValidateAnimation(&mut self){
@@ -8771,6 +8641,13 @@ mod ffis{
         unsafe{ AActor_ClearInstanceComponentsInvokerHandler = Some(handler) };
     }
 
+    type AActor_ContainsDataLayerInvoker = unsafe extern "C" fn(*mut c_void, *mut UDataLayerAssetOpaque) -> bool;
+    pub(super) static mut AActor_ContainsDataLayerInvokerHandler: Option<AActor_ContainsDataLayerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_AActor_ContainsDataLayer_handler(handler: AActor_ContainsDataLayerInvoker){
+        unsafe{ AActor_ContainsDataLayerInvokerHandler = Some(handler) };
+    }
+
     type AActor_CopyRemoteRoleFromInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque);
     pub(super) static mut AActor_CopyRemoteRoleFromInvokerHandler: Option<AActor_CopyRemoteRoleFromInvoker> = None;
     #[no_mangle]
@@ -8839,13 +8716,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_AActor_Destroyed_handler(handler: AActor_DestroyedInvoker){
         unsafe{ AActor_DestroyedInvokerHandler = Some(handler) };
-    }
-
-    type AActor_DetachRootComponentFromParentInvoker = unsafe extern "C" fn(*mut c_void, bool);
-    pub(super) static mut AActor_DetachRootComponentFromParentInvokerHandler: Option<AActor_DetachRootComponentFromParentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_AActor_DetachRootComponentFromParent_handler(handler: AActor_DetachRootComponentFromParentInvoker){
-        unsafe{ AActor_DetachRootComponentFromParentInvokerHandler = Some(handler) };
     }
 
     type AActor_DisableComponentsSimulatePhysicsInvoker = unsafe extern "C" fn(*mut c_void);
@@ -11851,27 +11721,6 @@ mod ffis{
         unsafe{ APlayerController_GameplayUnmuteAllPlayersInvokerHandler = Some(handler) };
     }
 
-    type APlayerController_GetDeprecatedInputPitchScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut APlayerController_GetDeprecatedInputPitchScaleInvokerHandler: Option<APlayerController_GetDeprecatedInputPitchScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_GetDeprecatedInputPitchScale_handler(handler: APlayerController_GetDeprecatedInputPitchScaleInvoker){
-        unsafe{ APlayerController_GetDeprecatedInputPitchScaleInvokerHandler = Some(handler) };
-    }
-
-    type APlayerController_GetDeprecatedInputRollScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut APlayerController_GetDeprecatedInputRollScaleInvokerHandler: Option<APlayerController_GetDeprecatedInputRollScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_GetDeprecatedInputRollScale_handler(handler: APlayerController_GetDeprecatedInputRollScaleInvoker){
-        unsafe{ APlayerController_GetDeprecatedInputRollScaleInvokerHandler = Some(handler) };
-    }
-
-    type APlayerController_GetDeprecatedInputYawScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut APlayerController_GetDeprecatedInputYawScaleInvokerHandler: Option<APlayerController_GetDeprecatedInputYawScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_GetDeprecatedInputYawScale_handler(handler: APlayerController_GetDeprecatedInputYawScaleInvoker){
-        unsafe{ APlayerController_GetDeprecatedInputYawScaleInvokerHandler = Some(handler) };
-    }
-
     type APlayerController_GetFocalLocationInvoker = unsafe extern "C" fn(*mut c_void) -> Vector3;
     pub(super) static mut APlayerController_GetFocalLocationInvokerHandler: Option<APlayerController_GetFocalLocationInvoker> = None;
     #[no_mangle]
@@ -12467,27 +12316,6 @@ mod ffis{
         unsafe{ APlayerController_SetControllerLightColorInvokerHandler = Some(handler) };
     }
 
-    type APlayerController_SetDeprecatedInputPitchScaleInvoker = unsafe extern "C" fn(*mut c_void, f32);
-    pub(super) static mut APlayerController_SetDeprecatedInputPitchScaleInvokerHandler: Option<APlayerController_SetDeprecatedInputPitchScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_SetDeprecatedInputPitchScale_handler(handler: APlayerController_SetDeprecatedInputPitchScaleInvoker){
-        unsafe{ APlayerController_SetDeprecatedInputPitchScaleInvokerHandler = Some(handler) };
-    }
-
-    type APlayerController_SetDeprecatedInputRollScaleInvoker = unsafe extern "C" fn(*mut c_void, f32);
-    pub(super) static mut APlayerController_SetDeprecatedInputRollScaleInvokerHandler: Option<APlayerController_SetDeprecatedInputRollScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_SetDeprecatedInputRollScale_handler(handler: APlayerController_SetDeprecatedInputRollScaleInvoker){
-        unsafe{ APlayerController_SetDeprecatedInputRollScaleInvokerHandler = Some(handler) };
-    }
-
-    type APlayerController_SetDeprecatedInputYawScaleInvoker = unsafe extern "C" fn(*mut c_void, f32);
-    pub(super) static mut APlayerController_SetDeprecatedInputYawScaleInvokerHandler: Option<APlayerController_SetDeprecatedInputYawScaleInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_APlayerController_SetDeprecatedInputYawScale_handler(handler: APlayerController_SetDeprecatedInputYawScaleInvoker){
-        unsafe{ APlayerController_SetDeprecatedInputYawScaleInvokerHandler = Some(handler) };
-    }
-
     type APlayerController_SetDisableHapticsInvoker = unsafe extern "C" fn(*mut c_void, bool);
     pub(super) static mut APlayerController_SetDisableHapticsInvokerHandler: Option<APlayerController_SetDisableHapticsInvoker> = None;
     #[no_mangle]
@@ -12838,7 +12666,7 @@ mod ffis{
         unsafe{ UGameplayStatics_FlushLevelStreamingInvokerHandler = Some(handler) };
     }
 
-    type UGameplayStatics_GetAccurateRealTimeInvoker = unsafe extern "C" fn(&mut i32, &mut f32);
+    type UGameplayStatics_GetAccurateRealTimeInvoker = unsafe extern "C" fn(&mut i32, &mut f64);
     pub(super) static mut UGameplayStatics_GetAccurateRealTimeInvokerHandler: Option<UGameplayStatics_GetAccurateRealTimeInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UGameplayStatics_GetAccurateRealTime_handler(handler: UGameplayStatics_GetAccurateRealTimeInvoker){
@@ -14166,13 +13994,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USceneComponent_DestroyComponent_handler(handler: USceneComponent_DestroyComponentInvoker){
         unsafe{ USceneComponent_DestroyComponentInvokerHandler = Some(handler) };
-    }
-
-    type USceneComponent_DetachFromParentInvoker = unsafe extern "C" fn(*mut c_void, bool, bool);
-    pub(super) static mut USceneComponent_DetachFromParentInvokerHandler: Option<USceneComponent_DetachFromParentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USceneComponent_DetachFromParent_handler(handler: USceneComponent_DetachFromParentInvoker){
-        unsafe{ USceneComponent_DetachFromParentInvokerHandler = Some(handler) };
     }
 
     type USceneComponent_DoesSocketExistInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
@@ -16247,13 +16068,6 @@ mod ffis{
         unsafe{ UAnimInstance_GetLODLevelInvokerHandler = Some(handler) };
     }
 
-    type UAnimInstance_GetLayerSubInstanceByGroupInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
-    pub(super) static mut UAnimInstance_GetLayerSubInstanceByGroupInvokerHandler: Option<UAnimInstance_GetLayerSubInstanceByGroupInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_GetLayerSubInstanceByGroup_handler(handler: UAnimInstance_GetLayerSubInstanceByGroupInvoker){
-        unsafe{ UAnimInstance_GetLayerSubInstanceByGroupInvokerHandler = Some(handler) };
-    }
-
     type UAnimInstance_GetLinkedAnimGraphInstanceByTagInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
     pub(super) static mut UAnimInstance_GetLinkedAnimGraphInstanceByTagInvokerHandler: Option<UAnimInstance_GetLinkedAnimGraphInstanceByTagInvoker> = None;
     #[no_mangle]
@@ -16359,13 +16173,6 @@ mod ffis{
         unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler = Some(handler) };
     }
 
-    type UAnimInstance_GetRelevantAssetPlayerFromStateInvoker = unsafe extern "C" fn(*mut c_void, i32, i32) -> *mut FAnimNode_AssetPlayerBaseOpaque;
-    pub(super) static mut UAnimInstance_GetRelevantAssetPlayerFromStateInvokerHandler: Option<UAnimInstance_GetRelevantAssetPlayerFromStateInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_GetRelevantAssetPlayerFromState_handler(handler: UAnimInstance_GetRelevantAssetPlayerFromStateInvoker){
-        unsafe{ UAnimInstance_GetRelevantAssetPlayerFromStateInvokerHandler = Some(handler) };
-    }
-
     type UAnimInstance_GetRootMotionMontageInstanceInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FAnimMontageInstanceOpaque;
     pub(super) static mut UAnimInstance_GetRootMotionMontageInstanceInvokerHandler: Option<UAnimInstance_GetRootMotionMontageInstanceInvoker> = None;
     #[no_mangle]
@@ -16406,20 +16213,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimInstance_GetStateMachineInstanceFromName_handler(handler: UAnimInstance_GetStateMachineInstanceFromNameInvoker){
         unsafe{ UAnimInstance_GetStateMachineInstanceFromNameInvokerHandler = Some(handler) };
-    }
-
-    type UAnimInstance_GetSubInputNodeInvoker = unsafe extern "C" fn(*mut c_void, UName, UName) -> *mut FAnimNode_LinkedInputPoseOpaque;
-    pub(super) static mut UAnimInstance_GetSubInputNodeInvokerHandler: Option<UAnimInstance_GetSubInputNodeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_GetSubInputNode_handler(handler: UAnimInstance_GetSubInputNodeInvoker){
-        unsafe{ UAnimInstance_GetSubInputNodeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimInstance_GetSubInstanceByTagInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
-    pub(super) static mut UAnimInstance_GetSubInstanceByTagInvokerHandler: Option<UAnimInstance_GetSubInstanceByTagInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_GetSubInstanceByTag_handler(handler: UAnimInstance_GetSubInstanceByTagInvoker){
-        unsafe{ UAnimInstance_GetSubInstanceByTagInvokerHandler = Some(handler) };
     }
 
     type UAnimInstance_GetSyncGroupIndexFromNameInvoker = unsafe extern "C" fn(*mut c_void, UName) -> i32;
@@ -16730,13 +16523,6 @@ mod ffis{
         unsafe{ UAnimInstance_NeedsUpdateInvokerHandler = Some(handler) };
     }
 
-    type UAnimInstance_OnUROPreInterpolationInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimInstance_OnUROPreInterpolationInvokerHandler: Option<UAnimInstance_OnUROPreInterpolationInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_OnUROPreInterpolation_handler(handler: UAnimInstance_OnUROPreInterpolationInvoker){
-        unsafe{ UAnimInstance_OnUROPreInterpolationInvokerHandler = Some(handler) };
-    }
-
     type UAnimInstance_OnUROSkipTickAnimationInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut UAnimInstance_OnUROSkipTickAnimationInvokerHandler: Option<UAnimInstance_OnUROSkipTickAnimationInvoker> = None;
     #[no_mangle]
@@ -16882,13 +16668,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimInstance_RequestSlotGroupInertialization_handler(handler: UAnimInstance_RequestSlotGroupInertializationInvoker){
         unsafe{ UAnimInstance_RequestSlotGroupInertializationInvokerHandler = Some(handler) };
-    }
-
-    type UAnimInstance_ResetDynamicsInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimInstance_ResetDynamicsInvokerHandler: Option<UAnimInstance_ResetDynamicsInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_ResetDynamics_handler(handler: UAnimInstance_ResetDynamicsInvoker){
-        unsafe{ UAnimInstance_ResetDynamicsInvokerHandler = Some(handler) };
     }
 
     type UAnimInstance_SavePoseSnapshotInvoker = unsafe extern "C" fn(*mut c_void, UName);
@@ -17395,13 +17174,6 @@ mod ffis{
         unsafe{ UKismetSystemLibrary_IsServerInvokerHandler = Some(handler) };
     }
 
-    type UKismetSystemLibrary_IsSplitScreenInvoker = unsafe extern "C" fn(*mut UObjectOpaque) -> bool;
-    pub(super) static mut UKismetSystemLibrary_IsSplitScreenInvokerHandler: Option<UKismetSystemLibrary_IsSplitScreenInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UKismetSystemLibrary_IsSplitScreen_handler(handler: UKismetSystemLibrary_IsSplitScreenInvoker){
-        unsafe{ UKismetSystemLibrary_IsSplitScreenInvokerHandler = Some(handler) };
-    }
-
     type UKismetSystemLibrary_IsStandaloneInvoker = unsafe extern "C" fn(*mut UObjectOpaque) -> bool;
     pub(super) static mut UKismetSystemLibrary_IsStandaloneInvokerHandler: Option<UKismetSystemLibrary_IsStandaloneInvoker> = None;
     #[no_mangle]
@@ -17500,13 +17272,6 @@ mod ffis{
         unsafe{ UKismetSystemLibrary_MakeLiteralDoubleInvokerHandler = Some(handler) };
     }
 
-    type UKismetSystemLibrary_MakeLiteralFloatInvoker = unsafe extern "C" fn(f32) -> f32;
-    pub(super) static mut UKismetSystemLibrary_MakeLiteralFloatInvokerHandler: Option<UKismetSystemLibrary_MakeLiteralFloatInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UKismetSystemLibrary_MakeLiteralFloat_handler(handler: UKismetSystemLibrary_MakeLiteralFloatInvoker){
-        unsafe{ UKismetSystemLibrary_MakeLiteralFloatInvokerHandler = Some(handler) };
-    }
-
     type UKismetSystemLibrary_MakeLiteralIntInvoker = unsafe extern "C" fn(i32) -> i32;
     pub(super) static mut UKismetSystemLibrary_MakeLiteralIntInvokerHandler: Option<UKismetSystemLibrary_MakeLiteralIntInvoker> = None;
     #[no_mangle]
@@ -17589,13 +17354,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UKismetSystemLibrary_SetDoublePropertyByName_handler(handler: UKismetSystemLibrary_SetDoublePropertyByNameInvoker){
         unsafe{ UKismetSystemLibrary_SetDoublePropertyByNameInvokerHandler = Some(handler) };
-    }
-
-    type UKismetSystemLibrary_SetFloatPropertyByNameInvoker = unsafe extern "C" fn(*mut UObjectOpaque, UName, f32);
-    pub(super) static mut UKismetSystemLibrary_SetFloatPropertyByNameInvokerHandler: Option<UKismetSystemLibrary_SetFloatPropertyByNameInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UKismetSystemLibrary_SetFloatPropertyByName_handler(handler: UKismetSystemLibrary_SetFloatPropertyByNameInvoker){
-        unsafe{ UKismetSystemLibrary_SetFloatPropertyByNameInvokerHandler = Some(handler) };
     }
 
     type UKismetSystemLibrary_SetGamepadsBlockDeviceFeedbackInvoker = unsafe extern "C" fn(bool);
@@ -17710,13 +17468,6 @@ mod ffis{
         unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler = Some(handler) };
     }
 
-    type UAnimMontage_CollectMarkersInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimMontage_CollectMarkersInvokerHandler: Option<UAnimMontage_CollectMarkersInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_CollectMarkers_handler(handler: UAnimMontage_CollectMarkersInvoker){
-        unsafe{ UAnimMontage_CollectMarkersInvokerHandler = Some(handler) };
-    }
-
     type UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker = unsafe extern "C" fn(*mut UAnimSequenceBaseOpaque, UName, f32, f32, f32, i32, f32, f32) -> *mut UAnimMontageOpaque;
     pub(super) static mut UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler: Option<UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker> = None;
     #[no_mangle]
@@ -17736,13 +17487,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimMontage_ExtractRootMotionFromTrackRange_handler(handler: UAnimMontage_ExtractRootMotionFromTrackRangeInvoker){
         unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_FindFirstBranchingPointMarkerInvoker = unsafe extern "C" fn(*mut c_void, f32, f32) -> *mut FBranchingPointMarkerOpaque;
-    pub(super) static mut UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler: Option<UAnimMontage_FindFirstBranchingPointMarkerInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_FindFirstBranchingPointMarker_handler(handler: UAnimMontage_FindFirstBranchingPointMarkerInvoker){
-        unsafe{ UAnimMontage_FindFirstBranchingPointMarkerInvokerHandler = Some(handler) };
     }
 
     type UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker = unsafe extern "C" fn(*mut c_void, f32, &mut f32) -> i32;
@@ -17836,13 +17580,6 @@ mod ffis{
         unsafe{ UAnimMontage_HasRootMotionInvokerHandler = Some(handler) };
     }
 
-    type UAnimMontage_HasValidSlotSetupInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UAnimMontage_HasValidSlotSetupInvokerHandler: Option<UAnimMontage_HasValidSlotSetupInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_HasValidSlotSetup_handler(handler: UAnimMontage_HasValidSlotSetupInvoker){
-        unsafe{ UAnimMontage_HasValidSlotSetupInvokerHandler = Some(handler) };
-    }
-
     type UAnimMontage_InvalidateRecursiveAssetInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut UAnimMontage_InvalidateRecursiveAssetInvokerHandler: Option<UAnimMontage_InvalidateRecursiveAssetInvoker> = None;
     #[no_mangle]
@@ -17883,13 +17620,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimMontage_PostLoad_handler(handler: UAnimMontage_PostLoadInvoker){
         unsafe{ UAnimMontage_PostLoadInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_PreSaveInvoker = unsafe extern "C" fn(*mut c_void, *mut ITargetPlatformOpaque);
-    pub(super) static mut UAnimMontage_PreSaveInvokerHandler: Option<UAnimMontage_PreSaveInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_PreSave_handler(handler: UAnimMontage_PreSaveInvoker){
-        unsafe{ UAnimMontage_PreSaveInvokerHandler = Some(handler) };
     }
 
     type UAnimMontage_RefreshCacheDataInvoker = unsafe extern "C" fn(*mut c_void);
@@ -17981,13 +17711,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_BindClothToLeaderPoseComponent_handler(handler: USkeletalMeshComponent_BindClothToLeaderPoseComponentInvoker){
         unsafe{ USkeletalMeshComponent_BindClothToLeaderPoseComponentInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_BindClothToMasterPoseComponentInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut USkeletalMeshComponent_BindClothToMasterPoseComponentInvokerHandler: Option<USkeletalMeshComponent_BindClothToMasterPoseComponentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_BindClothToMasterPoseComponent_handler(handler: USkeletalMeshComponent_BindClothToMasterPoseComponentInvoker){
-        unsafe{ USkeletalMeshComponent_BindClothToMasterPoseComponentInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_BreakConstraintInvoker = unsafe extern "C" fn(*mut c_void, Vector3, Vector3, UName);
@@ -18242,25 +17965,11 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_GetCurrentJointAnglesInvokerHandler = Some(handler) };
     }
 
-    type USkeletalMeshComponent_GetDisableAnimCurvesInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut USkeletalMeshComponent_GetDisableAnimCurvesInvokerHandler: Option<USkeletalMeshComponent_GetDisableAnimCurvesInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_GetDisableAnimCurves_handler(handler: USkeletalMeshComponent_GetDisableAnimCurvesInvoker){
-        unsafe{ USkeletalMeshComponent_GetDisableAnimCurvesInvokerHandler = Some(handler) };
-    }
-
     type USkeletalMeshComponent_GetDisablePostProcessBlueprintInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
     pub(super) static mut USkeletalMeshComponent_GetDisablePostProcessBlueprintInvokerHandler: Option<USkeletalMeshComponent_GetDisablePostProcessBlueprintInvoker> = None;
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_GetDisablePostProcessBlueprint_handler(handler: USkeletalMeshComponent_GetDisablePostProcessBlueprintInvoker){
         unsafe{ USkeletalMeshComponent_GetDisablePostProcessBlueprintInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_GetLayerSubInstanceByGroupInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
-    pub(super) static mut USkeletalMeshComponent_GetLayerSubInstanceByGroupInvokerHandler: Option<USkeletalMeshComponent_GetLayerSubInstanceByGroupInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_GetLayerSubInstanceByGroup_handler(handler: USkeletalMeshComponent_GetLayerSubInstanceByGroupInvoker){
-        unsafe{ USkeletalMeshComponent_GetLayerSubInstanceByGroupInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTagInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
@@ -18324,20 +18033,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_GetSkeletalMeshAsset_handler(handler: USkeletalMeshComponent_GetSkeletalMeshAssetInvoker){
         unsafe{ USkeletalMeshComponent_GetSkeletalMeshAssetInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_GetSubInstanceByNameInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
-    pub(super) static mut USkeletalMeshComponent_GetSubInstanceByNameInvokerHandler: Option<USkeletalMeshComponent_GetSubInstanceByNameInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_GetSubInstanceByName_handler(handler: USkeletalMeshComponent_GetSubInstanceByNameInvoker){
-        unsafe{ USkeletalMeshComponent_GetSubInstanceByNameInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_GetSubInstanceByTagInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut UAnimInstanceOpaque;
-    pub(super) static mut USkeletalMeshComponent_GetSubInstanceByTagInvokerHandler: Option<USkeletalMeshComponent_GetSubInstanceByTagInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_GetSubInstanceByTag_handler(handler: USkeletalMeshComponent_GetSubInstanceByTagInvoker){
-        unsafe{ USkeletalMeshComponent_GetSubInstanceByTagInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_GetTeleportDistanceThresholdInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
@@ -18410,13 +18105,6 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_InitCollisionRelationshipsInvokerHandler = Some(handler) };
     }
 
-    type USkeletalMeshComponent_InitSkelControlsInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut USkeletalMeshComponent_InitSkelControlsInvokerHandler: Option<USkeletalMeshComponent_InitSkelControlsInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_InitSkelControls_handler(handler: USkeletalMeshComponent_InitSkelControlsInvoker){
-        unsafe{ USkeletalMeshComponent_InitSkelControlsInvokerHandler = Some(handler) };
-    }
-
     type USkeletalMeshComponent_InitializeAnimScriptInstanceInvoker = unsafe extern "C" fn(*mut c_void, bool, bool) -> bool;
     pub(super) static mut USkeletalMeshComponent_InitializeAnimScriptInstanceInvokerHandler: Option<USkeletalMeshComponent_InitializeAnimScriptInstanceInvoker> = None;
     #[no_mangle]
@@ -18464,13 +18152,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_IsClothBoundToLeaderComponent_handler(handler: USkeletalMeshComponent_IsClothBoundToLeaderComponentInvoker){
         unsafe{ USkeletalMeshComponent_IsClothBoundToLeaderComponentInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_IsClothBoundToMasterComponentInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut USkeletalMeshComponent_IsClothBoundToMasterComponentInvokerHandler: Option<USkeletalMeshComponent_IsClothBoundToMasterComponentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_IsClothBoundToMasterComponent_handler(handler: USkeletalMeshComponent_IsClothBoundToMasterComponentInvoker){
-        unsafe{ USkeletalMeshComponent_IsClothBoundToMasterComponentInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_IsClothingSimulationSuspendedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
@@ -18872,13 +18553,6 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_SetConstraintProfileForAllInvokerHandler = Some(handler) };
     }
 
-    type USkeletalMeshComponent_SetDisableAnimCurvesInvoker = unsafe extern "C" fn(*mut c_void, bool);
-    pub(super) static mut USkeletalMeshComponent_SetDisableAnimCurvesInvokerHandler: Option<USkeletalMeshComponent_SetDisableAnimCurvesInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_SetDisableAnimCurves_handler(handler: USkeletalMeshComponent_SetDisableAnimCurvesInvoker){
-        unsafe{ USkeletalMeshComponent_SetDisableAnimCurvesInvokerHandler = Some(handler) };
-    }
-
     type USkeletalMeshComponent_SetDisablePostProcessBlueprintInvoker = unsafe extern "C" fn(*mut c_void, bool);
     pub(super) static mut USkeletalMeshComponent_SetDisablePostProcessBlueprintInvokerHandler: Option<USkeletalMeshComponent_SetDisablePostProcessBlueprintInvoker> = None;
     #[no_mangle]
@@ -19003,13 +18677,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_SetSkeletalMeshAsset_handler(handler: USkeletalMeshComponent_SetSkeletalMeshAssetInvoker){
         unsafe{ USkeletalMeshComponent_SetSkeletalMeshAssetInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvoker = unsafe extern "C" fn(*mut c_void, *mut USkeletalMeshOpaque);
-    pub(super) static mut USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvokerHandler: Option<USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation_handler(handler: USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvoker){
-        unsafe{ USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_SetSkinnedAssetAndUpdateInvoker = unsafe extern "C" fn(*mut c_void, *mut USkinnedAssetOpaque, bool);
@@ -19180,25 +18847,11 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_UnbindClothFromLeaderPoseComponentInvokerHandler = Some(handler) };
     }
 
-    type USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvoker = unsafe extern "C" fn(*mut c_void, bool);
-    pub(super) static mut USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvokerHandler: Option<USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent_handler(handler: USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvoker){
-        unsafe{ USkeletalMeshComponent_UnbindClothFromMasterPoseComponentInvokerHandler = Some(handler) };
-    }
-
     type USkeletalMeshComponent_UpdateBoneBodyMappingInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut USkeletalMeshComponent_UpdateBoneBodyMappingInvokerHandler: Option<USkeletalMeshComponent_UpdateBoneBodyMappingInvoker> = None;
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_UpdateBoneBodyMapping_handler(handler: USkeletalMeshComponent_UpdateBoneBodyMappingInvoker){
         unsafe{ USkeletalMeshComponent_UpdateBoneBodyMappingInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_UpdateClothCollisionInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut USkeletalMeshComponent_UpdateClothCollisionInvokerHandler: Option<USkeletalMeshComponent_UpdateClothCollisionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_UpdateClothCollision_handler(handler: USkeletalMeshComponent_UpdateClothCollisionInvoker){
-        unsafe{ USkeletalMeshComponent_UpdateClothCollisionInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_UpdateClothTransformInvoker = unsafe extern "C" fn(*mut c_void);
@@ -19269,13 +18922,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_UpdateRBJointMotors_handler(handler: USkeletalMeshComponent_UpdateRBJointMotorsInvoker){
         unsafe{ USkeletalMeshComponent_UpdateRBJointMotorsInvokerHandler = Some(handler) };
-    }
-
-    type USkeletalMeshComponent_UpdateSlaveComponentInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut USkeletalMeshComponent_UpdateSlaveComponentInvokerHandler: Option<USkeletalMeshComponent_UpdateSlaveComponentInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_USkeletalMeshComponent_UpdateSlaveComponent_handler(handler: USkeletalMeshComponent_UpdateSlaveComponentInvoker){
-        unsafe{ USkeletalMeshComponent_UpdateSlaveComponentInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_ValidateAnimationInvoker = unsafe extern "C" fn(*mut c_void);

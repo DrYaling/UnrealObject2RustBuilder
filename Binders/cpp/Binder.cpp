@@ -496,6 +496,10 @@ extern "C"{
 	void uapi_AActor_ClearInstanceComponents(void* target, bool bDestroyComponents){	
 		((AActor*)target)->ClearInstanceComponents(bDestroyComponents);	
 	}
+	bool uapi_AActor_ContainsDataLayer(void* target, UDataLayerAsset* DataLayerAsset){	
+		auto result = ((AActor*)target)->ContainsDataLayer(DataLayerAsset);	
+		return result;	
+	}
 	void uapi_AActor_CopyRemoteRoleFrom(void* target, AActor* CopyFromActor){	
 		((AActor*)target)->CopyRemoteRoleFrom(CopyFromActor);	
 	}
@@ -530,9 +534,6 @@ extern "C"{
 	}
 	void uapi_AActor_Destroyed(void* target){	
 		((AActor*)target)->Destroyed();	
-	}
-	void uapi_AActor_DetachRootComponentFromParent(void* target, bool bMaintainWorldPosition){	
-		((AActor*)target)->DetachRootComponentFromParent(bMaintainWorldPosition);	
 	}
 	void uapi_AActor_DisableComponentsSimulatePhysics(void* target){	
 		((AActor*)target)->DisableComponentsSimulatePhysics();	
@@ -2025,18 +2026,6 @@ extern "C"{
 	void uapi_APlayerController_GameplayUnmuteAllPlayers(void* target){	
 		((APlayerController*)target)->GameplayUnmuteAllPlayers();	
 	}
-	float uapi_APlayerController_GetDeprecatedInputPitchScale(void* target){	
-		auto result = ((APlayerController*)target)->GetDeprecatedInputPitchScale();	
-		return result;	
-	}
-	float uapi_APlayerController_GetDeprecatedInputRollScale(void* target){	
-		auto result = ((APlayerController*)target)->GetDeprecatedInputRollScale();	
-		return result;	
-	}
-	float uapi_APlayerController_GetDeprecatedInputYawScale(void* target){	
-		auto result = ((APlayerController*)target)->GetDeprecatedInputYawScale();	
-		return result;	
-	}
 	Vector3 uapi_APlayerController_GetFocalLocation(void* target){	
 		auto result = ToVector3(((APlayerController*)target)->GetFocalLocation());	
 		return result;	
@@ -2322,15 +2311,6 @@ extern "C"{
 	void uapi_APlayerController_SetControllerLightColor(void* target, Color Color){	
 		((APlayerController*)target)->SetControllerLightColor(ToFColor(Color));	
 	}
-	void uapi_APlayerController_SetDeprecatedInputPitchScale(void* target, float NewValue){	
-		((APlayerController*)target)->SetDeprecatedInputPitchScale(NewValue);	
-	}
-	void uapi_APlayerController_SetDeprecatedInputRollScale(void* target, float NewValue){	
-		((APlayerController*)target)->SetDeprecatedInputRollScale(NewValue);	
-	}
-	void uapi_APlayerController_SetDeprecatedInputYawScale(void* target, float NewValue){	
-		((APlayerController*)target)->SetDeprecatedInputYawScale(NewValue);	
-	}
 	void uapi_APlayerController_SetDisableHaptics(void* target, bool bNewDisabled){	
 		((APlayerController*)target)->SetDisableHaptics(bNewDisabled);	
 	}
@@ -2501,7 +2481,7 @@ extern "C"{
 	void uapi_UGameplayStatics_FlushLevelStreaming(UObject* WorldContextObject){	
 		(UGameplayStatics::FlushLevelStreaming(WorldContextObject));	
 	}
-	void uapi_UGameplayStatics_GetAccurateRealTime(int32& Seconds, float& PartialSeconds){	
+	void uapi_UGameplayStatics_GetAccurateRealTime(int32& Seconds, double& PartialSeconds){	
 		(UGameplayStatics::GetAccurateRealTime(Seconds, PartialSeconds));	
 	}
 	UName uapi_UGameplayStatics_GetActiveSpatialPluginName(UObject* WorldContextObject){	
@@ -3152,9 +3132,6 @@ extern "C"{
 	}
 	void uapi_USceneComponent_DestroyComponent(void* target, bool bPromoteChildren){	
 		((USceneComponent*)target)->DestroyComponent(bPromoteChildren);	
-	}
-	void uapi_USceneComponent_DetachFromParent(void* target, bool bMaintainWorldPosition, bool bCallModify){	
-		((USceneComponent*)target)->DetachFromParent(bMaintainWorldPosition, bCallModify);	
 	}
 	bool uapi_USceneComponent_DoesSocketExist(void* target, UName InSocketName){	
 		auto result = ((USceneComponent*)target)->DoesSocketExist(ToFName(InSocketName));	
@@ -4203,10 +4180,6 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->GetLODLevel();	
 		return result;	
 	}
-	void* uapi_UAnimInstance_GetLayerSubInstanceByGroup(void* target, UName InGroup){	
-		auto result = (void*)((UAnimInstance*)target)->GetLayerSubInstanceByGroup(ToFName(InGroup));	
-		return result;	
-	}
 	void* uapi_UAnimInstance_GetLinkedAnimGraphInstanceByTag(void* target, UName InTag){	
 		auto result = (void*)((UAnimInstance*)target)->GetLinkedAnimGraphInstanceByTag(ToFName(InTag));	
 		return result;	
@@ -4267,10 +4240,6 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->GetRelevantAnimTimeRemainingFraction(MachineIndex, StateIndex);	
 		return result;	
 	}
-	void* uapi_UAnimInstance_GetRelevantAssetPlayerFromState(void* target, int32 MachineIndex, int32 StateIndex){	
-		auto result = (void*)((UAnimInstance*)target)->GetRelevantAssetPlayerFromState(MachineIndex, StateIndex);	
-		return result;	
-	}
 	void* uapi_UAnimInstance_GetRootMotionMontageInstance(void* target){	
 		auto result = (void*)((UAnimInstance*)target)->GetRootMotionMontageInstance();	
 		return result;	
@@ -4293,14 +4262,6 @@ extern "C"{
 	}
 	void* uapi_UAnimInstance_GetStateMachineInstanceFromName(void* target, UName MachineName){	
 		auto result = (void*)((UAnimInstance*)target)->GetStateMachineInstanceFromName(ToFName(MachineName));	
-		return result;	
-	}
-	void* uapi_UAnimInstance_GetSubInputNode(void* target, UName InSubInput, UName InGraph){	
-		auto result = (void*)((UAnimInstance*)target)->GetSubInputNode(ToFName(InSubInput), ToFName(InGraph));	
-		return result;	
-	}
-	void* uapi_UAnimInstance_GetSubInstanceByTag(void* target, UName InTag){	
-		auto result = (void*)((UAnimInstance*)target)->GetSubInstanceByTag(ToFName(InTag));	
 		return result;	
 	}
 	int32 uapi_UAnimInstance_GetSyncGroupIndexFromName(void* target, UName SyncGroupName){	
@@ -4459,9 +4420,6 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->NeedsUpdate();	
 		return result;	
 	}
-	void uapi_UAnimInstance_OnUROPreInterpolation(void* target){	
-		((UAnimInstance*)target)->OnUROPreInterpolation();	
-	}
 	void uapi_UAnimInstance_OnUROSkipTickAnimation(void* target){	
 		((UAnimInstance*)target)->OnUROSkipTickAnimation();	
 	}
@@ -4530,9 +4488,6 @@ extern "C"{
 	}
 	void uapi_UAnimInstance_RequestSlotGroupInertialization(void* target, UName InSlotGroupName, float Duration, UBlendProfile* BlendProfile){	
 		((UAnimInstance*)target)->RequestSlotGroupInertialization(ToFName(InSlotGroupName), Duration, BlendProfile);	
-	}
-	void uapi_UAnimInstance_ResetDynamics(void* target){	
-		((UAnimInstance*)target)->ResetDynamics();	
 	}
 	void uapi_UAnimInstance_SavePoseSnapshot(void* target, UName SnapshotName){	
 		((UAnimInstance*)target)->SavePoseSnapshot(ToFName(SnapshotName));	
@@ -4800,10 +4755,6 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::IsServer(WorldContextObject));	
 		return result;	
 	}
-	bool uapi_UKismetSystemLibrary_IsSplitScreen(UObject* WorldContextObject){	
-		auto result = (UKismetSystemLibrary::IsSplitScreen(WorldContextObject));	
-		return result;	
-	}
 	bool uapi_UKismetSystemLibrary_IsStandalone(UObject* WorldContextObject){	
 		auto result = (UKismetSystemLibrary::IsStandalone(WorldContextObject));	
 		return result;	
@@ -4864,10 +4815,6 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::MakeLiteralDouble(Value));	
 		return result;	
 	}
-	float uapi_UKismetSystemLibrary_MakeLiteralFloat(float Value){	
-		auto result = (UKismetSystemLibrary::MakeLiteralFloat(Value));	
-		return result;	
-	}
 	int32 uapi_UKismetSystemLibrary_MakeLiteralInt(int32 Value){	
 		auto result = (UKismetSystemLibrary::MakeLiteralInt(Value));	
 		return result;	
@@ -4910,9 +4857,6 @@ extern "C"{
 	}
 	void uapi_UKismetSystemLibrary_SetDoublePropertyByName(UObject* Object, UName PropertyName, double Value){	
 		(UKismetSystemLibrary::SetDoublePropertyByName(Object, ToFName(PropertyName), Value));	
-	}
-	void uapi_UKismetSystemLibrary_SetFloatPropertyByName(UObject* Object, UName PropertyName, float Value){	
-		(UKismetSystemLibrary::SetFloatPropertyByName(Object, ToFName(PropertyName), Value));	
 	}
 	void uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback(bool bBlock){	
 		(UKismetSystemLibrary::SetGamepadsBlockDeviceFeedback(bBlock));	
@@ -4966,9 +4910,6 @@ extern "C"{
 		auto result = ((UAnimMontage*)target)->CanUseMarkerSync();	
 		return result;	
 	}
-	void uapi_UAnimMontage_CollectMarkers(void* target){	
-		((UAnimMontage*)target)->CollectMarkers();	
-	}
 	void* uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(UAnimSequenceBase* Asset, UName SlotNodeName, float BlendInTime, float BlendOutTime, float InPlayRate, int32 LoopCount, float BlendOutTriggerTime, float InTimeToStartMontageAt){	
 		auto result = (void*)(UAnimMontage::CreateSlotAnimationAsDynamicMontage(Asset, ToFName(SlotNodeName), BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt));	
 		return result;	
@@ -4979,10 +4920,6 @@ extern "C"{
 	}
 	Transform uapi_UAnimMontage_ExtractRootMotionFromTrackRange(void* target, float StartTrackPosition, float EndTrackPosition){	
 		auto result = ToTransform(((UAnimMontage*)target)->ExtractRootMotionFromTrackRange(StartTrackPosition, EndTrackPosition));	
-		return result;	
-	}
-	void* uapi_UAnimMontage_FindFirstBranchingPointMarker(void* target, float StartTrackPos, float EndTrackPos){	
-		auto result = (void*)((UAnimMontage*)target)->FindFirstBranchingPointMarker(StartTrackPos, EndTrackPos);	
 		return result;	
 	}
 	int32 uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(void* target, float CurrentTime, float& PosWithinCompositeSection){	
@@ -5036,10 +4973,6 @@ extern "C"{
 		auto result = ((UAnimMontage*)target)->HasRootMotion();	
 		return result;	
 	}
-	bool uapi_UAnimMontage_HasValidSlotSetup(void* target){	
-		auto result = ((UAnimMontage*)target)->HasValidSlotSetup();	
-		return result;	
-	}
 	void uapi_UAnimMontage_InvalidateRecursiveAsset(void* target){	
 		((UAnimMontage*)target)->InvalidateRecursiveAsset();	
 	}
@@ -5061,9 +4994,6 @@ extern "C"{
 	}
 	void uapi_UAnimMontage_PostLoad(void* target){	
 		((UAnimMontage*)target)->PostLoad();	
-	}
-	void uapi_UAnimMontage_PreSave(void* target, ITargetPlatform* TargetPlatform){	
-		((UAnimMontage*)target)->PreSave(TargetPlatform);	
 	}
 	void uapi_UAnimMontage_RefreshCacheData(void* target){	
 		((UAnimMontage*)target)->RefreshCacheData();	
@@ -5104,9 +5034,6 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_BindClothToLeaderPoseComponent(void* target){	
 		((USkeletalMeshComponent*)target)->BindClothToLeaderPoseComponent();	
-	}
-	void uapi_USkeletalMeshComponent_BindClothToMasterPoseComponent(void* target){	
-		((USkeletalMeshComponent*)target)->BindClothToMasterPoseComponent();	
 	}
 	void uapi_USkeletalMeshComponent_BreakConstraint(void* target, Vector3 Impulse, Vector3 HitLocation, UName InBoneName){	
 		((USkeletalMeshComponent*)target)->BreakConstraint(ToFVector(Impulse), ToFVector(HitLocation), ToFName(InBoneName));	
@@ -5235,16 +5162,8 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_GetCurrentJointAngles(void* target, UName InBoneName, float& Swing1Angle, float& TwistAngle, float& Swing2Angle){	
 		((USkeletalMeshComponent*)target)->GetCurrentJointAngles(ToFName(InBoneName), Swing1Angle, TwistAngle, Swing2Angle);	
 	}
-	bool uapi_USkeletalMeshComponent_GetDisableAnimCurves(void* target){	
-		auto result = ((USkeletalMeshComponent*)target)->GetDisableAnimCurves();	
-		return result;	
-	}
 	bool uapi_USkeletalMeshComponent_GetDisablePostProcessBlueprint(void* target){	
 		auto result = ((USkeletalMeshComponent*)target)->GetDisablePostProcessBlueprint();	
-		return result;	
-	}
-	void* uapi_USkeletalMeshComponent_GetLayerSubInstanceByGroup(void* target, UName InGroup){	
-		auto result = (void*)((USkeletalMeshComponent*)target)->GetLayerSubInstanceByGroup(ToFName(InGroup));	
 		return result;	
 	}
 	void* uapi_USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTag(void* target, UName InTag){	
@@ -5281,14 +5200,6 @@ extern "C"{
 	}
 	void* uapi_USkeletalMeshComponent_GetSkeletalMeshAsset(void* target){	
 		auto result = (void*)((USkeletalMeshComponent*)target)->GetSkeletalMeshAsset();	
-		return result;	
-	}
-	void* uapi_USkeletalMeshComponent_GetSubInstanceByName(void* target, UName InTag){	
-		auto result = (void*)((USkeletalMeshComponent*)target)->GetSubInstanceByName(ToFName(InTag));	
-		return result;	
-	}
-	void* uapi_USkeletalMeshComponent_GetSubInstanceByTag(void* target, UName InTag){	
-		auto result = (void*)((USkeletalMeshComponent*)target)->GetSubInstanceByTag(ToFName(InTag));	
 		return result;	
 	}
 	float uapi_USkeletalMeshComponent_GetTeleportDistanceThreshold(void* target){	
@@ -5328,9 +5239,6 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_InitCollisionRelationships(void* target){	
 		((USkeletalMeshComponent*)target)->InitCollisionRelationships();	
 	}
-	void uapi_USkeletalMeshComponent_InitSkelControls(void* target){	
-		((USkeletalMeshComponent*)target)->InitSkelControls();	
-	}
 	bool uapi_USkeletalMeshComponent_InitializeAnimScriptInstance(void* target, bool bForceReinit, bool bInDeferRootNodeInitialization){	
 		auto result = ((USkeletalMeshComponent*)target)->InitializeAnimScriptInstance(bForceReinit, bInDeferRootNodeInitialization);	
 		return result;	
@@ -5356,10 +5264,6 @@ extern "C"{
 	}
 	bool uapi_USkeletalMeshComponent_IsClothBoundToLeaderComponent(void* target){	
 		auto result = ((USkeletalMeshComponent*)target)->IsClothBoundToLeaderComponent();	
-		return result;	
-	}
-	bool uapi_USkeletalMeshComponent_IsClothBoundToMasterComponent(void* target){	
-		auto result = ((USkeletalMeshComponent*)target)->IsClothBoundToMasterComponent();	
 		return result;	
 	}
 	bool uapi_USkeletalMeshComponent_IsClothingSimulationSuspended(void* target){	
@@ -5544,9 +5448,6 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_SetConstraintProfileForAll(void* target, UName ProfileName, bool bDefaultIfNotFound){	
 		((USkeletalMeshComponent*)target)->SetConstraintProfileForAll(ToFName(ProfileName), bDefaultIfNotFound);	
 	}
-	void uapi_USkeletalMeshComponent_SetDisableAnimCurves(void* target, bool bInDisableAnimCurves){	
-		((USkeletalMeshComponent*)target)->SetDisableAnimCurves(bInDisableAnimCurves);	
-	}
 	void uapi_USkeletalMeshComponent_SetDisablePostProcessBlueprint(void* target, bool bInDisablePostProcess){	
 		((USkeletalMeshComponent*)target)->SetDisablePostProcessBlueprint(bInDisablePostProcess);	
 	}
@@ -5600,9 +5501,6 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_SetSkeletalMeshAsset(void* target, USkeletalMesh* NewMesh){	
 		((USkeletalMeshComponent*)target)->SetSkeletalMeshAsset(NewMesh);	
-	}
-	void uapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation(void* target, USkeletalMesh* NewMesh){	
-		((USkeletalMeshComponent*)target)->SetSkeletalMeshWithoutResettingAnimation(NewMesh);	
 	}
 	void uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate(void* target, USkinnedAsset* InSkinnedAsset, bool bReinitPose){	
 		((USkeletalMeshComponent*)target)->SetSkinnedAssetAndUpdate(InSkinnedAsset, bReinitPose);	
@@ -5683,14 +5581,8 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_UnbindClothFromLeaderPoseComponent(void* target, bool bRestoreSimulationSpace){	
 		((USkeletalMeshComponent*)target)->UnbindClothFromLeaderPoseComponent(bRestoreSimulationSpace);	
 	}
-	void uapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent(void* target, bool bRestoreSimulationSpace){	
-		((USkeletalMeshComponent*)target)->UnbindClothFromMasterPoseComponent(bRestoreSimulationSpace);	
-	}
 	void uapi_USkeletalMeshComponent_UpdateBoneBodyMapping(void* target){	
 		((USkeletalMeshComponent*)target)->UpdateBoneBodyMapping();	
-	}
-	void uapi_USkeletalMeshComponent_UpdateClothCollision(void* target){	
-		((USkeletalMeshComponent*)target)->UpdateClothCollision();	
 	}
 	void uapi_USkeletalMeshComponent_UpdateClothTransform(void* target){	
 		((USkeletalMeshComponent*)target)->UpdateClothTransform();	
@@ -5723,9 +5615,6 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_UpdateRBJointMotors(void* target){	
 		((USkeletalMeshComponent*)target)->UpdateRBJointMotors();	
-	}
-	void uapi_USkeletalMeshComponent_UpdateSlaveComponent(void* target){	
-		((USkeletalMeshComponent*)target)->UpdateSlaveComponent();	
 	}
 	void uapi_USkeletalMeshComponent_ValidateAnimation(void* target){	
 		((USkeletalMeshComponent*)target)->ValidateAnimation();	
@@ -6552,6 +6441,8 @@ using uapi_AActor_ClearCrossLevelReferencesFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_ClearInstanceComponentsFn = void(*)(void(*)(void* target,bool bDestroyComponents));
 
+using uapi_AActor_ContainsDataLayerFn = void(*)(bool(*)(void* target,UDataLayerAsset* DataLayerAsset));
+
 using uapi_AActor_CopyRemoteRoleFromFn = void(*)(void(*)(void* target,AActor* CopyFromActor));
 
 using uapi_AActor_CreateComponentFromTemplateFn = void(*)(void*(*)(void* target,UActorComponent* Template,UName InName));
@@ -6571,8 +6462,6 @@ using uapi_AActor_DestroyConstructedComponentsFn = void(*)(void(*)(void* target)
 using uapi_AActor_DestroyNetworkActorHandledFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_DestroyedFn = void(*)(void(*)(void* target));
-
-using uapi_AActor_DetachRootComponentFromParentFn = void(*)(void(*)(void* target,bool bMaintainWorldPosition));
 
 using uapi_AActor_DisableComponentsSimulatePhysicsFn = void(*)(void(*)(void* target));
 
@@ -7432,12 +7321,6 @@ using uapi_APlayerController_GameHasEndedFn = void(*)(void(*)(void* target,AActo
 
 using uapi_APlayerController_GameplayUnmuteAllPlayersFn = void(*)(void(*)(void* target));
 
-using uapi_APlayerController_GetDeprecatedInputPitchScaleFn = void(*)(float(*)(void* target));
-
-using uapi_APlayerController_GetDeprecatedInputRollScaleFn = void(*)(float(*)(void* target));
-
-using uapi_APlayerController_GetDeprecatedInputYawScaleFn = void(*)(float(*)(void* target));
-
 using uapi_APlayerController_GetFocalLocationFn = void(*)(Vector3(*)(void* target));
 
 using uapi_APlayerController_GetHUDFn = void(*)(void*(*)(void* target));
@@ -7608,12 +7491,6 @@ using uapi_APlayerController_SetCinematicMode2Fn = void(*)(void(*)(void* target,
 
 using uapi_APlayerController_SetControllerLightColorFn = void(*)(void(*)(void* target,Color Color));
 
-using uapi_APlayerController_SetDeprecatedInputPitchScaleFn = void(*)(void(*)(void* target,float NewValue));
-
-using uapi_APlayerController_SetDeprecatedInputRollScaleFn = void(*)(void(*)(void* target,float NewValue));
-
-using uapi_APlayerController_SetDeprecatedInputYawScaleFn = void(*)(void(*)(void* target,float NewValue));
-
 using uapi_APlayerController_SetDisableHapticsFn = void(*)(void(*)(void* target,bool bNewDisabled));
 
 using uapi_APlayerController_SetMotionControlsEnabledFn = void(*)(void(*)(void* target,bool bEnabled));
@@ -7714,7 +7591,7 @@ using uapi_UGameplayStatics_EnableLiveStreamingFn = void(*)(void(*)(bool Enable)
 
 using uapi_UGameplayStatics_FlushLevelStreamingFn = void(*)(void(*)(UObject* WorldContextObject));
 
-using uapi_UGameplayStatics_GetAccurateRealTimeFn = void(*)(void(*)(int32& Seconds,float& PartialSeconds));
+using uapi_UGameplayStatics_GetAccurateRealTimeFn = void(*)(void(*)(int32& Seconds,double& PartialSeconds));
 
 using uapi_UGameplayStatics_GetActiveSpatialPluginNameFn = void(*)(UName(*)(UObject* WorldContextObject));
 
@@ -8093,8 +7970,6 @@ using uapi_USceneComponent_ClearSkipUpdateOverlapsFn = void(*)(void(*)(void* tar
 using uapi_USceneComponent_ConditionalUpdateComponentToWorldFn = void(*)(void(*)(void* target));
 
 using uapi_USceneComponent_DestroyComponentFn = void(*)(void(*)(void* target,bool bPromoteChildren));
-
-using uapi_USceneComponent_DetachFromParentFn = void(*)(void(*)(void* target,bool bMaintainWorldPosition,bool bCallModify));
 
 using uapi_USceneComponent_DoesSocketExistFn = void(*)(bool(*)(void* target,UName InSocketName));
 
@@ -8688,8 +8563,6 @@ using uapi_UAnimInstance_GetInstanceTransitionTimeElapsedFractionFn = void(*)(fl
 
 using uapi_UAnimInstance_GetLODLevelFn = void(*)(int32(*)(void* target));
 
-using uapi_UAnimInstance_GetLayerSubInstanceByGroupFn = void(*)(void*(*)(void* target,UName InGroup));
-
 using uapi_UAnimInstance_GetLinkedAnimGraphInstanceByTagFn = void(*)(void*(*)(void* target,UName InTag));
 
 using uapi_UAnimInstance_GetLinkedAnimLayerInstanceByGroupFn = void(*)(void*(*)(void* target,UName InGroup));
@@ -8720,8 +8593,6 @@ using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFn = void(*)(float(*)(void*
 
 using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFractionFn = void(*)(float(*)(void* target,int32 MachineIndex,int32 StateIndex));
 
-using uapi_UAnimInstance_GetRelevantAssetPlayerFromStateFn = void(*)(void*(*)(void* target,int32 MachineIndex,int32 StateIndex));
-
 using uapi_UAnimInstance_GetRootMotionMontageInstanceFn = void(*)(void*(*)(void* target));
 
 using uapi_UAnimInstance_GetSkelMeshComponentFn = void(*)(void*(*)(void* target));
@@ -8733,10 +8604,6 @@ using uapi_UAnimInstance_GetStateMachineInstanceFn = void(*)(void*(*)(void* targ
 using uapi_UAnimInstance_GetStateMachineInstanceDescFn = void(*)(void*(*)(void* target,UName MachineName));
 
 using uapi_UAnimInstance_GetStateMachineInstanceFromNameFn = void(*)(void*(*)(void* target,UName MachineName));
-
-using uapi_UAnimInstance_GetSubInputNodeFn = void(*)(void*(*)(void* target,UName InSubInput,UName InGraph));
-
-using uapi_UAnimInstance_GetSubInstanceByTagFn = void(*)(void*(*)(void* target,UName InTag));
 
 using uapi_UAnimInstance_GetSyncGroupIndexFromNameFn = void(*)(int32(*)(void* target,UName SyncGroupName));
 
@@ -8826,8 +8693,6 @@ using uapi_UAnimInstance_NativeUpdateAnimationFn = void(*)(void(*)(void* target,
 
 using uapi_UAnimInstance_NeedsUpdateFn = void(*)(bool(*)(void* target));
 
-using uapi_UAnimInstance_OnUROPreInterpolationFn = void(*)(void(*)(void* target));
-
 using uapi_UAnimInstance_OnUROSkipTickAnimationFn = void(*)(void(*)(void* target));
 
 using uapi_UAnimInstance_PCV_ShouldNotifyAboutNodesNotUsingFastPathFn = void(*)(bool(*)(void* target));
@@ -8869,8 +8734,6 @@ using uapi_UAnimInstance_RemovePoseSnapshotFn = void(*)(void(*)(void* target,UNa
 using uapi_UAnimInstance_RequestMontageInertializationFn = void(*)(void(*)(void* target,UAnimMontage* Montage,float Duration,UBlendProfile* BlendProfile));
 
 using uapi_UAnimInstance_RequestSlotGroupInertializationFn = void(*)(void(*)(void* target,UName InSlotGroupName,float Duration,UBlendProfile* BlendProfile));
-
-using uapi_UAnimInstance_ResetDynamicsFn = void(*)(void(*)(void* target));
 
 using uapi_UAnimInstance_SavePoseSnapshotFn = void(*)(void(*)(void* target,UName SnapshotName));
 
@@ -9016,8 +8879,6 @@ using uapi_UKismetSystemLibrary_IsScreensaverEnabledFn = void(*)(bool(*)());
 
 using uapi_UKismetSystemLibrary_IsServerFn = void(*)(bool(*)(UObject* WorldContextObject));
 
-using uapi_UKismetSystemLibrary_IsSplitScreenFn = void(*)(bool(*)(UObject* WorldContextObject));
-
 using uapi_UKismetSystemLibrary_IsStandaloneFn = void(*)(bool(*)(UObject* WorldContextObject));
 
 using uapi_UKismetSystemLibrary_IsUnattendedFn = void(*)(bool(*)());
@@ -9046,8 +8907,6 @@ using uapi_UKismetSystemLibrary_MakeLiteralByteFn = void(*)(uint8(*)(uint8 Value
 
 using uapi_UKismetSystemLibrary_MakeLiteralDoubleFn = void(*)(double(*)(double Value));
 
-using uapi_UKismetSystemLibrary_MakeLiteralFloatFn = void(*)(float(*)(float Value));
-
 using uapi_UKismetSystemLibrary_MakeLiteralIntFn = void(*)(int32(*)(int32 Value));
 
 using uapi_UKismetSystemLibrary_MakeLiteralInt64Fn = void(*)(int64(*)(int64 Value));
@@ -9071,8 +8930,6 @@ using uapi_UKismetSystemLibrary_SetBoolPropertyByNameFn = void(*)(void(*)(UObjec
 using uapi_UKismetSystemLibrary_SetBytePropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,uint8 Value));
 
 using uapi_UKismetSystemLibrary_SetDoublePropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,double Value));
-
-using uapi_UKismetSystemLibrary_SetFloatPropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,float Value));
 
 using uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedbackFn = void(*)(void(*)(bool bBlock));
 
@@ -9106,15 +8963,11 @@ using uapi_UAnimMontage_CanBeUsedInCompositionFn = void(*)(bool(*)(void* target)
 
 using uapi_UAnimMontage_CanUseMarkerSyncFn = void(*)(bool(*)(void* target));
 
-using uapi_UAnimMontage_CollectMarkersFn = void(*)(void(*)(void* target));
-
 using uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn = void(*)(void*(*)(UAnimSequenceBase* Asset,UName SlotNodeName,float BlendInTime,float BlendOutTime,float InPlayRate,int32 LoopCount,float BlendOutTriggerTime,float InTimeToStartMontageAt));
 
 using uapi_UAnimMontage_DeleteAnimCompositeSectionFn = void(*)(bool(*)(void* target,int32 SectionIndex));
 
 using uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn = void(*)(Transform(*)(void* target,float StartTrackPosition,float EndTrackPosition));
-
-using uapi_UAnimMontage_FindFirstBranchingPointMarkerFn = void(*)(void*(*)(void* target,float StartTrackPos,float EndTrackPos));
 
 using uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn = void(*)(int32(*)(void* target,float CurrentTime,float& PosWithinCompositeSection));
 
@@ -9142,8 +8995,6 @@ using uapi_UAnimMontage_GetSectionTimeLeftFromPosFn = void(*)(float(*)(void* tar
 
 using uapi_UAnimMontage_HasRootMotionFn = void(*)(bool(*)(void* target));
 
-using uapi_UAnimMontage_HasValidSlotSetupFn = void(*)(bool(*)(void* target));
-
 using uapi_UAnimMontage_InvalidateRecursiveAssetFn = void(*)(void(*)(void* target));
 
 using uapi_UAnimMontage_IsValidAdditiveFn = void(*)(bool(*)(void* target));
@@ -9155,8 +9006,6 @@ using uapi_UAnimMontage_IsValidSectionNameFn = void(*)(bool(*)(void* target,UNam
 using uapi_UAnimMontage_IsValidSlotFn = void(*)(bool(*)(void* target,UName InSlotName));
 
 using uapi_UAnimMontage_PostLoadFn = void(*)(void(*)(void* target));
-
-using uapi_UAnimMontage_PreSaveFn = void(*)(void(*)(void* target,ITargetPlatform* TargetPlatform));
 
 using uapi_UAnimMontage_RefreshCacheDataFn = void(*)(void(*)(void* target));
 
@@ -9183,8 +9032,6 @@ using uapi_USkeletalMeshComponent_ApplyEditedComponentSpaceTransformsFn = void(*
 using uapi_USkeletalMeshComponent_BeginPlayFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_BindClothToLeaderPoseComponentFn = void(*)(void(*)(void* target));
-
-using uapi_USkeletalMeshComponent_BindClothToMasterPoseComponentFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_BreakConstraintFn = void(*)(void(*)(void* target,Vector3 Impulse,Vector3 HitLocation,UName InBoneName));
 
@@ -9258,11 +9105,7 @@ using uapi_USkeletalMeshComponent_GetConstraintInstanceByIndexFn = void(*)(void*
 
 using uapi_USkeletalMeshComponent_GetCurrentJointAnglesFn = void(*)(void(*)(void* target,UName InBoneName,float& Swing1Angle,float& TwistAngle,float& Swing2Angle));
 
-using uapi_USkeletalMeshComponent_GetDisableAnimCurvesFn = void(*)(bool(*)(void* target));
-
 using uapi_USkeletalMeshComponent_GetDisablePostProcessBlueprintFn = void(*)(bool(*)(void* target));
-
-using uapi_USkeletalMeshComponent_GetLayerSubInstanceByGroupFn = void(*)(void*(*)(void* target,UName InGroup));
 
 using uapi_USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTagFn = void(*)(void*(*)(void* target,UName InTag));
 
@@ -9281,10 +9124,6 @@ using uapi_USkeletalMeshComponent_GetSingleNodeInstanceFn = void(*)(void*(*)(voi
 using uapi_USkeletalMeshComponent_GetSkeletalCenterOfMassFn = void(*)(Vector3(*)(void* target));
 
 using uapi_USkeletalMeshComponent_GetSkeletalMeshAssetFn = void(*)(void*(*)(void* target));
-
-using uapi_USkeletalMeshComponent_GetSubInstanceByNameFn = void(*)(void*(*)(void* target,UName InTag));
-
-using uapi_USkeletalMeshComponent_GetSubInstanceByTagFn = void(*)(void*(*)(void* target,UName InTag));
 
 using uapi_USkeletalMeshComponent_GetTeleportDistanceThresholdFn = void(*)(float(*)(void* target));
 
@@ -9306,8 +9145,6 @@ using uapi_USkeletalMeshComponent_InitArticulatedFn = void(*)(void(*)(void* targ
 
 using uapi_USkeletalMeshComponent_InitCollisionRelationshipsFn = void(*)(void(*)(void* target));
 
-using uapi_USkeletalMeshComponent_InitSkelControlsFn = void(*)(void(*)(void* target));
-
 using uapi_USkeletalMeshComponent_InitializeAnimScriptInstanceFn = void(*)(bool(*)(void* target,bool bForceReinit,bool bInDeferRootNodeInitialization));
 
 using uapi_USkeletalMeshComponent_InitializeComponentFn = void(*)(void(*)(void* target));
@@ -9321,8 +9158,6 @@ using uapi_USkeletalMeshComponent_IsAnySimulatingPhysicsFn = void(*)(bool(*)(voi
 using uapi_USkeletalMeshComponent_IsBodyGravityEnabledFn = void(*)(bool(*)(void* target,UName BoneName));
 
 using uapi_USkeletalMeshComponent_IsClothBoundToLeaderComponentFn = void(*)(bool(*)(void* target));
-
-using uapi_USkeletalMeshComponent_IsClothBoundToMasterComponentFn = void(*)(bool(*)(void* target));
 
 using uapi_USkeletalMeshComponent_IsClothingSimulationSuspendedFn = void(*)(bool(*)(void* target));
 
@@ -9438,8 +9273,6 @@ using uapi_USkeletalMeshComponent_SetConstraintProfileFn = void(*)(void(*)(void*
 
 using uapi_USkeletalMeshComponent_SetConstraintProfileForAllFn = void(*)(void(*)(void* target,UName ProfileName,bool bDefaultIfNotFound));
 
-using uapi_USkeletalMeshComponent_SetDisableAnimCurvesFn = void(*)(void(*)(void* target,bool bInDisableAnimCurves));
-
 using uapi_USkeletalMeshComponent_SetDisablePostProcessBlueprintFn = void(*)(void(*)(void* target,bool bInDisablePostProcess));
 
 using uapi_USkeletalMeshComponent_SetEnableBodyGravityFn = void(*)(void(*)(void* target,bool bEnableGravity,UName BoneName));
@@ -9475,8 +9308,6 @@ using uapi_USkeletalMeshComponent_SetRootBodyIndexFn = void(*)(void(*)(void* tar
 using uapi_USkeletalMeshComponent_SetSimulatePhysicsFn = void(*)(void(*)(void* target,bool bEnabled));
 
 using uapi_USkeletalMeshComponent_SetSkeletalMeshAssetFn = void(*)(void(*)(void* target,USkeletalMesh* NewMesh));
-
-using uapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationFn = void(*)(void(*)(void* target,USkeletalMesh* NewMesh));
 
 using uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdateFn = void(*)(void(*)(void* target,USkinnedAsset* InSkinnedAsset,bool bReinitPose));
 
@@ -9526,11 +9357,7 @@ using uapi_USkeletalMeshComponent_UnHideBoneFn = void(*)(void(*)(void* target,in
 
 using uapi_USkeletalMeshComponent_UnbindClothFromLeaderPoseComponentFn = void(*)(void(*)(void* target,bool bRestoreSimulationSpace));
 
-using uapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponentFn = void(*)(void(*)(void* target,bool bRestoreSimulationSpace));
-
 using uapi_USkeletalMeshComponent_UpdateBoneBodyMappingFn = void(*)(void(*)(void* target));
-
-using uapi_USkeletalMeshComponent_UpdateClothCollisionFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_UpdateClothTransformFn = void(*)(void(*)(void* target));
 
@@ -9551,8 +9378,6 @@ using uapi_USkeletalMeshComponent_UpdatePhysicsToRBChannelsFn = void(*)(void(*)(
 using uapi_USkeletalMeshComponent_UpdatePoseWatchesFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_UpdateRBJointMotorsFn = void(*)(void(*)(void* target));
-
-using uapi_USkeletalMeshComponent_UpdateSlaveComponentFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_ValidateAnimationFn = void(*)(void(*)(void* target));
 
@@ -10481,6 +10306,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_ClearInstanceComponents(&uapi_AActor_ClearInstanceComponents);
     }
 
+    auto const apiuapi_AActor_ContainsDataLayer = (uapi_AActor_ContainsDataLayerFn)plugin->GetDllExport(TEXT("set_AActor_ContainsDataLayer_handler\0"));
+    if(apiuapi_AActor_ContainsDataLayer){
+        apiuapi_AActor_ContainsDataLayer(&uapi_AActor_ContainsDataLayer);
+    }
+
     auto const apiuapi_AActor_CopyRemoteRoleFrom = (uapi_AActor_CopyRemoteRoleFromFn)plugin->GetDllExport(TEXT("set_AActor_CopyRemoteRoleFrom_handler\0"));
     if(apiuapi_AActor_CopyRemoteRoleFrom){
         apiuapi_AActor_CopyRemoteRoleFrom(&uapi_AActor_CopyRemoteRoleFrom);
@@ -10529,11 +10359,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_Destroyed = (uapi_AActor_DestroyedFn)plugin->GetDllExport(TEXT("set_AActor_Destroyed_handler\0"));
     if(apiuapi_AActor_Destroyed){
         apiuapi_AActor_Destroyed(&uapi_AActor_Destroyed);
-    }
-
-    auto const apiuapi_AActor_DetachRootComponentFromParent = (uapi_AActor_DetachRootComponentFromParentFn)plugin->GetDllExport(TEXT("set_AActor_DetachRootComponentFromParent_handler\0"));
-    if(apiuapi_AActor_DetachRootComponentFromParent){
-        apiuapi_AActor_DetachRootComponentFromParent(&uapi_AActor_DetachRootComponentFromParent);
     }
 
     auto const apiuapi_AActor_DisableComponentsSimulatePhysics = (uapi_AActor_DisableComponentsSimulatePhysicsFn)plugin->GetDllExport(TEXT("set_AActor_DisableComponentsSimulatePhysics_handler\0"));
@@ -12681,21 +12506,6 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_GameplayUnmuteAllPlayers(&uapi_APlayerController_GameplayUnmuteAllPlayers);
     }
 
-    auto const apiuapi_APlayerController_GetDeprecatedInputPitchScale = (uapi_APlayerController_GetDeprecatedInputPitchScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_GetDeprecatedInputPitchScale_handler\0"));
-    if(apiuapi_APlayerController_GetDeprecatedInputPitchScale){
-        apiuapi_APlayerController_GetDeprecatedInputPitchScale(&uapi_APlayerController_GetDeprecatedInputPitchScale);
-    }
-
-    auto const apiuapi_APlayerController_GetDeprecatedInputRollScale = (uapi_APlayerController_GetDeprecatedInputRollScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_GetDeprecatedInputRollScale_handler\0"));
-    if(apiuapi_APlayerController_GetDeprecatedInputRollScale){
-        apiuapi_APlayerController_GetDeprecatedInputRollScale(&uapi_APlayerController_GetDeprecatedInputRollScale);
-    }
-
-    auto const apiuapi_APlayerController_GetDeprecatedInputYawScale = (uapi_APlayerController_GetDeprecatedInputYawScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_GetDeprecatedInputYawScale_handler\0"));
-    if(apiuapi_APlayerController_GetDeprecatedInputYawScale){
-        apiuapi_APlayerController_GetDeprecatedInputYawScale(&uapi_APlayerController_GetDeprecatedInputYawScale);
-    }
-
     auto const apiuapi_APlayerController_GetFocalLocation = (uapi_APlayerController_GetFocalLocationFn)plugin->GetDllExport(TEXT("set_APlayerController_GetFocalLocation_handler\0"));
     if(apiuapi_APlayerController_GetFocalLocation){
         apiuapi_APlayerController_GetFocalLocation(&uapi_APlayerController_GetFocalLocation);
@@ -13119,21 +12929,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_SetControllerLightColor = (uapi_APlayerController_SetControllerLightColorFn)plugin->GetDllExport(TEXT("set_APlayerController_SetControllerLightColor_handler\0"));
     if(apiuapi_APlayerController_SetControllerLightColor){
         apiuapi_APlayerController_SetControllerLightColor(&uapi_APlayerController_SetControllerLightColor);
-    }
-
-    auto const apiuapi_APlayerController_SetDeprecatedInputPitchScale = (uapi_APlayerController_SetDeprecatedInputPitchScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_SetDeprecatedInputPitchScale_handler\0"));
-    if(apiuapi_APlayerController_SetDeprecatedInputPitchScale){
-        apiuapi_APlayerController_SetDeprecatedInputPitchScale(&uapi_APlayerController_SetDeprecatedInputPitchScale);
-    }
-
-    auto const apiuapi_APlayerController_SetDeprecatedInputRollScale = (uapi_APlayerController_SetDeprecatedInputRollScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_SetDeprecatedInputRollScale_handler\0"));
-    if(apiuapi_APlayerController_SetDeprecatedInputRollScale){
-        apiuapi_APlayerController_SetDeprecatedInputRollScale(&uapi_APlayerController_SetDeprecatedInputRollScale);
-    }
-
-    auto const apiuapi_APlayerController_SetDeprecatedInputYawScale = (uapi_APlayerController_SetDeprecatedInputYawScaleFn)plugin->GetDllExport(TEXT("set_APlayerController_SetDeprecatedInputYawScale_handler\0"));
-    if(apiuapi_APlayerController_SetDeprecatedInputYawScale){
-        apiuapi_APlayerController_SetDeprecatedInputYawScale(&uapi_APlayerController_SetDeprecatedInputYawScale);
     }
 
     auto const apiuapi_APlayerController_SetDisableHaptics = (uapi_APlayerController_SetDisableHapticsFn)plugin->GetDllExport(TEXT("set_APlayerController_SetDisableHaptics_handler\0"));
@@ -14334,11 +14129,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USceneComponent_DestroyComponent = (uapi_USceneComponent_DestroyComponentFn)plugin->GetDllExport(TEXT("set_USceneComponent_DestroyComponent_handler\0"));
     if(apiuapi_USceneComponent_DestroyComponent){
         apiuapi_USceneComponent_DestroyComponent(&uapi_USceneComponent_DestroyComponent);
-    }
-
-    auto const apiuapi_USceneComponent_DetachFromParent = (uapi_USceneComponent_DetachFromParentFn)plugin->GetDllExport(TEXT("set_USceneComponent_DetachFromParent_handler\0"));
-    if(apiuapi_USceneComponent_DetachFromParent){
-        apiuapi_USceneComponent_DetachFromParent(&uapi_USceneComponent_DetachFromParent);
     }
 
     auto const apiuapi_USceneComponent_DoesSocketExist = (uapi_USceneComponent_DoesSocketExistFn)plugin->GetDllExport(TEXT("set_USceneComponent_DoesSocketExist_handler\0"));
@@ -15821,11 +15611,6 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_GetLODLevel(&uapi_UAnimInstance_GetLODLevel);
     }
 
-    auto const apiuapi_UAnimInstance_GetLayerSubInstanceByGroup = (uapi_UAnimInstance_GetLayerSubInstanceByGroupFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetLayerSubInstanceByGroup_handler\0"));
-    if(apiuapi_UAnimInstance_GetLayerSubInstanceByGroup){
-        apiuapi_UAnimInstance_GetLayerSubInstanceByGroup(&uapi_UAnimInstance_GetLayerSubInstanceByGroup);
-    }
-
     auto const apiuapi_UAnimInstance_GetLinkedAnimGraphInstanceByTag = (uapi_UAnimInstance_GetLinkedAnimGraphInstanceByTagFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetLinkedAnimGraphInstanceByTag_handler\0"));
     if(apiuapi_UAnimInstance_GetLinkedAnimGraphInstanceByTag){
         apiuapi_UAnimInstance_GetLinkedAnimGraphInstanceByTag(&uapi_UAnimInstance_GetLinkedAnimGraphInstanceByTag);
@@ -15901,11 +15686,6 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction(&uapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction);
     }
 
-    auto const apiuapi_UAnimInstance_GetRelevantAssetPlayerFromState = (uapi_UAnimInstance_GetRelevantAssetPlayerFromStateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRelevantAssetPlayerFromState_handler\0"));
-    if(apiuapi_UAnimInstance_GetRelevantAssetPlayerFromState){
-        apiuapi_UAnimInstance_GetRelevantAssetPlayerFromState(&uapi_UAnimInstance_GetRelevantAssetPlayerFromState);
-    }
-
     auto const apiuapi_UAnimInstance_GetRootMotionMontageInstance = (uapi_UAnimInstance_GetRootMotionMontageInstanceFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRootMotionMontageInstance_handler\0"));
     if(apiuapi_UAnimInstance_GetRootMotionMontageInstance){
         apiuapi_UAnimInstance_GetRootMotionMontageInstance(&uapi_UAnimInstance_GetRootMotionMontageInstance);
@@ -15934,16 +15714,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_GetStateMachineInstanceFromName = (uapi_UAnimInstance_GetStateMachineInstanceFromNameFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetStateMachineInstanceFromName_handler\0"));
     if(apiuapi_UAnimInstance_GetStateMachineInstanceFromName){
         apiuapi_UAnimInstance_GetStateMachineInstanceFromName(&uapi_UAnimInstance_GetStateMachineInstanceFromName);
-    }
-
-    auto const apiuapi_UAnimInstance_GetSubInputNode = (uapi_UAnimInstance_GetSubInputNodeFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetSubInputNode_handler\0"));
-    if(apiuapi_UAnimInstance_GetSubInputNode){
-        apiuapi_UAnimInstance_GetSubInputNode(&uapi_UAnimInstance_GetSubInputNode);
-    }
-
-    auto const apiuapi_UAnimInstance_GetSubInstanceByTag = (uapi_UAnimInstance_GetSubInstanceByTagFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetSubInstanceByTag_handler\0"));
-    if(apiuapi_UAnimInstance_GetSubInstanceByTag){
-        apiuapi_UAnimInstance_GetSubInstanceByTag(&uapi_UAnimInstance_GetSubInstanceByTag);
     }
 
     auto const apiuapi_UAnimInstance_GetSyncGroupIndexFromName = (uapi_UAnimInstance_GetSyncGroupIndexFromNameFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetSyncGroupIndexFromName_handler\0"));
@@ -16166,11 +15936,6 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_NeedsUpdate(&uapi_UAnimInstance_NeedsUpdate);
     }
 
-    auto const apiuapi_UAnimInstance_OnUROPreInterpolation = (uapi_UAnimInstance_OnUROPreInterpolationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_OnUROPreInterpolation_handler\0"));
-    if(apiuapi_UAnimInstance_OnUROPreInterpolation){
-        apiuapi_UAnimInstance_OnUROPreInterpolation(&uapi_UAnimInstance_OnUROPreInterpolation);
-    }
-
     auto const apiuapi_UAnimInstance_OnUROSkipTickAnimation = (uapi_UAnimInstance_OnUROSkipTickAnimationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_OnUROSkipTickAnimation_handler\0"));
     if(apiuapi_UAnimInstance_OnUROSkipTickAnimation){
         apiuapi_UAnimInstance_OnUROSkipTickAnimation(&uapi_UAnimInstance_OnUROSkipTickAnimation);
@@ -16274,11 +16039,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_RequestSlotGroupInertialization = (uapi_UAnimInstance_RequestSlotGroupInertializationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RequestSlotGroupInertialization_handler\0"));
     if(apiuapi_UAnimInstance_RequestSlotGroupInertialization){
         apiuapi_UAnimInstance_RequestSlotGroupInertialization(&uapi_UAnimInstance_RequestSlotGroupInertialization);
-    }
-
-    auto const apiuapi_UAnimInstance_ResetDynamics = (uapi_UAnimInstance_ResetDynamicsFn)plugin->GetDllExport(TEXT("set_UAnimInstance_ResetDynamics_handler\0"));
-    if(apiuapi_UAnimInstance_ResetDynamics){
-        apiuapi_UAnimInstance_ResetDynamics(&uapi_UAnimInstance_ResetDynamics);
     }
 
     auto const apiuapi_UAnimInstance_SavePoseSnapshot = (uapi_UAnimInstance_SavePoseSnapshotFn)plugin->GetDllExport(TEXT("set_UAnimInstance_SavePoseSnapshot_handler\0"));
@@ -16641,11 +16401,6 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_IsServer(&uapi_UKismetSystemLibrary_IsServer);
     }
 
-    auto const apiuapi_UKismetSystemLibrary_IsSplitScreen = (uapi_UKismetSystemLibrary_IsSplitScreenFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsSplitScreen_handler\0"));
-    if(apiuapi_UKismetSystemLibrary_IsSplitScreen){
-        apiuapi_UKismetSystemLibrary_IsSplitScreen(&uapi_UKismetSystemLibrary_IsSplitScreen);
-    }
-
     auto const apiuapi_UKismetSystemLibrary_IsStandalone = (uapi_UKismetSystemLibrary_IsStandaloneFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsStandalone_handler\0"));
     if(apiuapi_UKismetSystemLibrary_IsStandalone){
         apiuapi_UKismetSystemLibrary_IsStandalone(&uapi_UKismetSystemLibrary_IsStandalone);
@@ -16716,11 +16471,6 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_MakeLiteralDouble(&uapi_UKismetSystemLibrary_MakeLiteralDouble);
     }
 
-    auto const apiuapi_UKismetSystemLibrary_MakeLiteralFloat = (uapi_UKismetSystemLibrary_MakeLiteralFloatFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_MakeLiteralFloat_handler\0"));
-    if(apiuapi_UKismetSystemLibrary_MakeLiteralFloat){
-        apiuapi_UKismetSystemLibrary_MakeLiteralFloat(&uapi_UKismetSystemLibrary_MakeLiteralFloat);
-    }
-
     auto const apiuapi_UKismetSystemLibrary_MakeLiteralInt = (uapi_UKismetSystemLibrary_MakeLiteralIntFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_MakeLiteralInt_handler\0"));
     if(apiuapi_UKismetSystemLibrary_MakeLiteralInt){
         apiuapi_UKismetSystemLibrary_MakeLiteralInt(&uapi_UKismetSystemLibrary_MakeLiteralInt);
@@ -16779,11 +16529,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_SetDoublePropertyByName = (uapi_UKismetSystemLibrary_SetDoublePropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetDoublePropertyByName_handler\0"));
     if(apiuapi_UKismetSystemLibrary_SetDoublePropertyByName){
         apiuapi_UKismetSystemLibrary_SetDoublePropertyByName(&uapi_UKismetSystemLibrary_SetDoublePropertyByName);
-    }
-
-    auto const apiuapi_UKismetSystemLibrary_SetFloatPropertyByName = (uapi_UKismetSystemLibrary_SetFloatPropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetFloatPropertyByName_handler\0"));
-    if(apiuapi_UKismetSystemLibrary_SetFloatPropertyByName){
-        apiuapi_UKismetSystemLibrary_SetFloatPropertyByName(&uapi_UKismetSystemLibrary_SetFloatPropertyByName);
     }
 
     auto const apiuapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback = (uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedbackFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback_handler\0"));
@@ -16866,11 +16611,6 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimMontage_CanUseMarkerSync(&uapi_UAnimMontage_CanUseMarkerSync);
     }
 
-    auto const apiuapi_UAnimMontage_CollectMarkers = (uapi_UAnimMontage_CollectMarkersFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CollectMarkers_handler\0"));
-    if(apiuapi_UAnimMontage_CollectMarkers){
-        apiuapi_UAnimMontage_CollectMarkers(&uapi_UAnimMontage_CollectMarkers);
-    }
-
     auto const apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage = (uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler\0"));
     if(apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage){
         apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(&uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage);
@@ -16884,11 +16624,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange = (uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_ExtractRootMotionFromTrackRange_handler\0"));
     if(apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange){
         apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange(&uapi_UAnimMontage_ExtractRootMotionFromTrackRange);
-    }
-
-    auto const apiuapi_UAnimMontage_FindFirstBranchingPointMarker = (uapi_UAnimMontage_FindFirstBranchingPointMarkerFn)plugin->GetDllExport(TEXT("set_UAnimMontage_FindFirstBranchingPointMarker_handler\0"));
-    if(apiuapi_UAnimMontage_FindFirstBranchingPointMarker){
-        apiuapi_UAnimMontage_FindFirstBranchingPointMarker(&uapi_UAnimMontage_FindFirstBranchingPointMarker);
     }
 
     auto const apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos = (uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler\0"));
@@ -16956,11 +16691,6 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimMontage_HasRootMotion(&uapi_UAnimMontage_HasRootMotion);
     }
 
-    auto const apiuapi_UAnimMontage_HasValidSlotSetup = (uapi_UAnimMontage_HasValidSlotSetupFn)plugin->GetDllExport(TEXT("set_UAnimMontage_HasValidSlotSetup_handler\0"));
-    if(apiuapi_UAnimMontage_HasValidSlotSetup){
-        apiuapi_UAnimMontage_HasValidSlotSetup(&uapi_UAnimMontage_HasValidSlotSetup);
-    }
-
     auto const apiuapi_UAnimMontage_InvalidateRecursiveAsset = (uapi_UAnimMontage_InvalidateRecursiveAssetFn)plugin->GetDllExport(TEXT("set_UAnimMontage_InvalidateRecursiveAsset_handler\0"));
     if(apiuapi_UAnimMontage_InvalidateRecursiveAsset){
         apiuapi_UAnimMontage_InvalidateRecursiveAsset(&uapi_UAnimMontage_InvalidateRecursiveAsset);
@@ -16989,11 +16719,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimMontage_PostLoad = (uapi_UAnimMontage_PostLoadFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PostLoad_handler\0"));
     if(apiuapi_UAnimMontage_PostLoad){
         apiuapi_UAnimMontage_PostLoad(&uapi_UAnimMontage_PostLoad);
-    }
-
-    auto const apiuapi_UAnimMontage_PreSave = (uapi_UAnimMontage_PreSaveFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PreSave_handler\0"));
-    if(apiuapi_UAnimMontage_PreSave){
-        apiuapi_UAnimMontage_PreSave(&uapi_UAnimMontage_PreSave);
     }
 
     auto const apiuapi_UAnimMontage_RefreshCacheData = (uapi_UAnimMontage_RefreshCacheDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_RefreshCacheData_handler\0"));
@@ -17059,11 +16784,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_BindClothToLeaderPoseComponent = (uapi_USkeletalMeshComponent_BindClothToLeaderPoseComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_BindClothToLeaderPoseComponent_handler\0"));
     if(apiuapi_USkeletalMeshComponent_BindClothToLeaderPoseComponent){
         apiuapi_USkeletalMeshComponent_BindClothToLeaderPoseComponent(&uapi_USkeletalMeshComponent_BindClothToLeaderPoseComponent);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_BindClothToMasterPoseComponent = (uapi_USkeletalMeshComponent_BindClothToMasterPoseComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_BindClothToMasterPoseComponent_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_BindClothToMasterPoseComponent){
-        apiuapi_USkeletalMeshComponent_BindClothToMasterPoseComponent(&uapi_USkeletalMeshComponent_BindClothToMasterPoseComponent);
     }
 
     auto const apiuapi_USkeletalMeshComponent_BreakConstraint = (uapi_USkeletalMeshComponent_BreakConstraintFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_BreakConstraint_handler\0"));
@@ -17246,19 +16966,9 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_GetCurrentJointAngles(&uapi_USkeletalMeshComponent_GetCurrentJointAngles);
     }
 
-    auto const apiuapi_USkeletalMeshComponent_GetDisableAnimCurves = (uapi_USkeletalMeshComponent_GetDisableAnimCurvesFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetDisableAnimCurves_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_GetDisableAnimCurves){
-        apiuapi_USkeletalMeshComponent_GetDisableAnimCurves(&uapi_USkeletalMeshComponent_GetDisableAnimCurves);
-    }
-
     auto const apiuapi_USkeletalMeshComponent_GetDisablePostProcessBlueprint = (uapi_USkeletalMeshComponent_GetDisablePostProcessBlueprintFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetDisablePostProcessBlueprint_handler\0"));
     if(apiuapi_USkeletalMeshComponent_GetDisablePostProcessBlueprint){
         apiuapi_USkeletalMeshComponent_GetDisablePostProcessBlueprint(&uapi_USkeletalMeshComponent_GetDisablePostProcessBlueprint);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_GetLayerSubInstanceByGroup = (uapi_USkeletalMeshComponent_GetLayerSubInstanceByGroupFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetLayerSubInstanceByGroup_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_GetLayerSubInstanceByGroup){
-        apiuapi_USkeletalMeshComponent_GetLayerSubInstanceByGroup(&uapi_USkeletalMeshComponent_GetLayerSubInstanceByGroup);
     }
 
     auto const apiuapi_USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTag = (uapi_USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTagFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetLinkedAnimGraphInstanceByTag_handler\0"));
@@ -17304,16 +17014,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_GetSkeletalMeshAsset = (uapi_USkeletalMeshComponent_GetSkeletalMeshAssetFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetSkeletalMeshAsset_handler\0"));
     if(apiuapi_USkeletalMeshComponent_GetSkeletalMeshAsset){
         apiuapi_USkeletalMeshComponent_GetSkeletalMeshAsset(&uapi_USkeletalMeshComponent_GetSkeletalMeshAsset);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_GetSubInstanceByName = (uapi_USkeletalMeshComponent_GetSubInstanceByNameFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetSubInstanceByName_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_GetSubInstanceByName){
-        apiuapi_USkeletalMeshComponent_GetSubInstanceByName(&uapi_USkeletalMeshComponent_GetSubInstanceByName);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_GetSubInstanceByTag = (uapi_USkeletalMeshComponent_GetSubInstanceByTagFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetSubInstanceByTag_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_GetSubInstanceByTag){
-        apiuapi_USkeletalMeshComponent_GetSubInstanceByTag(&uapi_USkeletalMeshComponent_GetSubInstanceByTag);
     }
 
     auto const apiuapi_USkeletalMeshComponent_GetTeleportDistanceThreshold = (uapi_USkeletalMeshComponent_GetTeleportDistanceThresholdFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_GetTeleportDistanceThreshold_handler\0"));
@@ -17366,11 +17066,6 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_InitCollisionRelationships(&uapi_USkeletalMeshComponent_InitCollisionRelationships);
     }
 
-    auto const apiuapi_USkeletalMeshComponent_InitSkelControls = (uapi_USkeletalMeshComponent_InitSkelControlsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_InitSkelControls_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_InitSkelControls){
-        apiuapi_USkeletalMeshComponent_InitSkelControls(&uapi_USkeletalMeshComponent_InitSkelControls);
-    }
-
     auto const apiuapi_USkeletalMeshComponent_InitializeAnimScriptInstance = (uapi_USkeletalMeshComponent_InitializeAnimScriptInstanceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_InitializeAnimScriptInstance_handler\0"));
     if(apiuapi_USkeletalMeshComponent_InitializeAnimScriptInstance){
         apiuapi_USkeletalMeshComponent_InitializeAnimScriptInstance(&uapi_USkeletalMeshComponent_InitializeAnimScriptInstance);
@@ -17404,11 +17099,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_IsClothBoundToLeaderComponent = (uapi_USkeletalMeshComponent_IsClothBoundToLeaderComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_IsClothBoundToLeaderComponent_handler\0"));
     if(apiuapi_USkeletalMeshComponent_IsClothBoundToLeaderComponent){
         apiuapi_USkeletalMeshComponent_IsClothBoundToLeaderComponent(&uapi_USkeletalMeshComponent_IsClothBoundToLeaderComponent);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_IsClothBoundToMasterComponent = (uapi_USkeletalMeshComponent_IsClothBoundToMasterComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_IsClothBoundToMasterComponent_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_IsClothBoundToMasterComponent){
-        apiuapi_USkeletalMeshComponent_IsClothBoundToMasterComponent(&uapi_USkeletalMeshComponent_IsClothBoundToMasterComponent);
     }
 
     auto const apiuapi_USkeletalMeshComponent_IsClothingSimulationSuspended = (uapi_USkeletalMeshComponent_IsClothingSimulationSuspendedFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_IsClothingSimulationSuspended_handler\0"));
@@ -17696,11 +17386,6 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_SetConstraintProfileForAll(&uapi_USkeletalMeshComponent_SetConstraintProfileForAll);
     }
 
-    auto const apiuapi_USkeletalMeshComponent_SetDisableAnimCurves = (uapi_USkeletalMeshComponent_SetDisableAnimCurvesFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetDisableAnimCurves_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_SetDisableAnimCurves){
-        apiuapi_USkeletalMeshComponent_SetDisableAnimCurves(&uapi_USkeletalMeshComponent_SetDisableAnimCurves);
-    }
-
     auto const apiuapi_USkeletalMeshComponent_SetDisablePostProcessBlueprint = (uapi_USkeletalMeshComponent_SetDisablePostProcessBlueprintFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetDisablePostProcessBlueprint_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetDisablePostProcessBlueprint){
         apiuapi_USkeletalMeshComponent_SetDisablePostProcessBlueprint(&uapi_USkeletalMeshComponent_SetDisablePostProcessBlueprint);
@@ -17789,11 +17474,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset = (uapi_USkeletalMeshComponent_SetSkeletalMeshAssetFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSkeletalMeshAsset_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset){
         apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset(&uapi_USkeletalMeshComponent_SetSkeletalMeshAsset);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation = (uapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimationFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation){
-        apiuapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation(&uapi_USkeletalMeshComponent_SetSkeletalMeshWithoutResettingAnimation);
     }
 
     auto const apiuapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate = (uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdateFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSkinnedAssetAndUpdate_handler\0"));
@@ -17916,19 +17596,9 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_UnbindClothFromLeaderPoseComponent(&uapi_USkeletalMeshComponent_UnbindClothFromLeaderPoseComponent);
     }
 
-    auto const apiuapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent = (uapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent){
-        apiuapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent(&uapi_USkeletalMeshComponent_UnbindClothFromMasterPoseComponent);
-    }
-
     auto const apiuapi_USkeletalMeshComponent_UpdateBoneBodyMapping = (uapi_USkeletalMeshComponent_UpdateBoneBodyMappingFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateBoneBodyMapping_handler\0"));
     if(apiuapi_USkeletalMeshComponent_UpdateBoneBodyMapping){
         apiuapi_USkeletalMeshComponent_UpdateBoneBodyMapping(&uapi_USkeletalMeshComponent_UpdateBoneBodyMapping);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_UpdateClothCollision = (uapi_USkeletalMeshComponent_UpdateClothCollisionFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateClothCollision_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_UpdateClothCollision){
-        apiuapi_USkeletalMeshComponent_UpdateClothCollision(&uapi_USkeletalMeshComponent_UpdateClothCollision);
     }
 
     auto const apiuapi_USkeletalMeshComponent_UpdateClothTransform = (uapi_USkeletalMeshComponent_UpdateClothTransformFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateClothTransform_handler\0"));
@@ -17979,11 +17649,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_UpdateRBJointMotors = (uapi_USkeletalMeshComponent_UpdateRBJointMotorsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateRBJointMotors_handler\0"));
     if(apiuapi_USkeletalMeshComponent_UpdateRBJointMotors){
         apiuapi_USkeletalMeshComponent_UpdateRBJointMotors(&uapi_USkeletalMeshComponent_UpdateRBJointMotors);
-    }
-
-    auto const apiuapi_USkeletalMeshComponent_UpdateSlaveComponent = (uapi_USkeletalMeshComponent_UpdateSlaveComponentFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateSlaveComponent_handler\0"));
-    if(apiuapi_USkeletalMeshComponent_UpdateSlaveComponent){
-        apiuapi_USkeletalMeshComponent_UpdateSlaveComponent(&uapi_USkeletalMeshComponent_UpdateSlaveComponent);
     }
 
     auto const apiuapi_USkeletalMeshComponent_ValidateAnimation = (uapi_USkeletalMeshComponent_ValidateAnimationFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_ValidateAnimation_handler\0"));

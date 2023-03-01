@@ -315,7 +315,7 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
             line.contains("UCLASS") ||
             line.contains("UPROPERTY") ||
             line.contains("DEPRECATED_") ||
-            line.contains("_DEPRECATED") ||
+            (line.contains("_DEPRECATED") && !line.starts_with("UE_DEPRECATED")) ||
             line.contains("UINTERFACE") ||
             line.contains("DEFINE_ACTORDESC_TYPE") ||
             line.contains("DECLARE_") ||
@@ -519,9 +519,12 @@ fn normalize_function(lines: &mut Vec<String>, read_line: &mut usize) -> bool{
 }
 fn remove_deprecated(lines: &mut Vec<String>){    
     let mut read_line = 0usize;
+    fn is_deprecated(line: &str) -> bool{
+        line.starts_with("UE_DEPRECATED")
+    }
     while read_line < lines.len() {
         let line = lines[read_line].trim();
-        if line.starts_with("UE_DEPRECATED"){
+        if is_deprecated(line){
             // let removed = 
             lines.remove(read_line);
             //remove fn brackets

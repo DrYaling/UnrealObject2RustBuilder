@@ -68,19 +68,6 @@ pub struct Vector2 {
 
 pub type Vector4 = Quaternion;
 
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct HitResult {
-    pub actor: *mut c_void,
-    pub primtive: *mut c_void,
-    pub distance: f32,
-    pub normal: Vector3,
-    pub location: Vector3,
-    pub impact_normal: Vector3,
-    pub impact_location: Vector3,
-    pub pentration_depth: f32,
-    pub start_penetrating: u32
-}
 
 #[repr(C)]
 #[derive(Default, Clone, Copy, Debug, PartialEq)]

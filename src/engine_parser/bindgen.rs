@@ -143,7 +143,7 @@ impl<T: Sized> DerefMut for RefResult<T> {
             header: vec![],
             default_rs_header: rs_source.len(),
             rs_source,
-            rs_enums: vec![],
+            rs_enums: vec!["#![allow(non_camel_case_types)]".to_string()],
             registers: vec![
                 "\r\n\tauto const api_create_native_string = (create_native_string_handler)plugin->GetDllExport(TEXT(\"create_native_string\\0\"));".to_string(),
                 "\tif(api_create_native_string){ create_native_string = api_create_native_string; }".to_string(),

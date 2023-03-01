@@ -225,19 +225,6 @@ pub struct Vector2 {
 
 pub type Vector4 = Quaternion;
 
-#[repr(C)]
-#[derive(Clone, Copy)]
-pub struct HitResult {
-    pub actor: *mut c_void,
-    pub primtive: *mut c_void,
-    pub distance: f32,
-    pub normal: Vector3,
-    pub location: Vector3,
-    pub impact_normal: Vector3,
-    pub impact_location: Vector3,
-    pub pentration_depth: f32,
-    pub start_penetrating: u32
-}
 
 #[repr(C)]
 #[derive(Default, Clone, Copy, Debug, PartialEq)]
@@ -4219,6 +4206,10 @@ impl USceneComponent{
 		unsafe{ USceneComponent::from_ptr(USceneComponent_GetChildComponentInvokerHandler.as_ref().unwrap()(self.inner, ChildIndex)) }
 	}
 	#[inline]
+	pub fn GetCollisionObjectType(&self) -> ECollisionChannel{
+		unsafe{ USceneComponent_GetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn GetComponentLocation(&self) -> Vector3{
 		unsafe{ USceneComponent_GetComponentLocationInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -6819,6 +6810,10 @@ impl USkeletalMeshComponent{
 		unsafe{ USkeletalMeshComponent_ResumeClothingSimulationInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn SetAllBodiesCollisionObjectType(&mut self, NewChannel: ECollisionChannel){
+		unsafe{ USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner, NewChannel) }
+	}
+	#[inline]
 	pub fn SetAllBodiesNotifyRigidBodyCollision(&mut self, bNewNotifyRigidBodyCollision: bool){
 		unsafe{ USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionInvokerHandler.as_ref().unwrap()(self.inner, bNewNotifyRigidBodyCollision) }
 	}
@@ -6889,6 +6884,10 @@ impl USkeletalMeshComponent{
 	#[inline]
 	pub fn SetClothMaxDistanceScale(&mut self, Scale: f32){
 		unsafe{ USkeletalMeshComponent_SetClothMaxDistanceScaleInvokerHandler.as_ref().unwrap()(self.inner, Scale) }
+	}
+	#[inline]
+	pub fn SetCollisionObjectType(&mut self, Channel: ECollisionChannel){
+		unsafe{ USkeletalMeshComponent_SetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner, Channel) }
 	}
 	#[inline]
 	pub fn SetComponentTickEnabled(&mut self, bEnabled: bool){
@@ -14073,6 +14072,13 @@ mod ffis{
         unsafe{ USceneComponent_GetChildComponentInvokerHandler = Some(handler) };
     }
 
+    type USceneComponent_GetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionChannel;
+    pub(super) static mut USceneComponent_GetCollisionObjectTypeInvokerHandler: Option<USceneComponent_GetCollisionObjectTypeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_USceneComponent_GetCollisionObjectType_handler(handler: USceneComponent_GetCollisionObjectTypeInvoker){
+        unsafe{ USceneComponent_GetCollisionObjectTypeInvokerHandler = Some(handler) };
+    }
+
     type USceneComponent_GetComponentLocationInvoker = unsafe extern "C" fn(*mut c_void) -> Vector3;
     pub(super) static mut USceneComponent_GetComponentLocationInvokerHandler: Option<USceneComponent_GetComponentLocationInvoker> = None;
     #[no_mangle]
@@ -18406,6 +18412,13 @@ mod ffis{
         unsafe{ USkeletalMeshComponent_ResumeClothingSimulationInvokerHandler = Some(handler) };
     }
 
+    type USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void, ECollisionChannel);
+    pub(super) static mut USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvokerHandler: Option<USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_USkeletalMeshComponent_SetAllBodiesCollisionObjectType_handler(handler: USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvoker){
+        unsafe{ USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeInvokerHandler = Some(handler) };
+    }
+
     type USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionInvoker = unsafe extern "C" fn(*mut c_void, bool);
     pub(super) static mut USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionInvokerHandler: Option<USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionInvoker> = None;
     #[no_mangle]
@@ -18530,6 +18543,13 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_USkeletalMeshComponent_SetClothMaxDistanceScale_handler(handler: USkeletalMeshComponent_SetClothMaxDistanceScaleInvoker){
         unsafe{ USkeletalMeshComponent_SetClothMaxDistanceScaleInvokerHandler = Some(handler) };
+    }
+
+    type USkeletalMeshComponent_SetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void, ECollisionChannel);
+    pub(super) static mut USkeletalMeshComponent_SetCollisionObjectTypeInvokerHandler: Option<USkeletalMeshComponent_SetCollisionObjectTypeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_USkeletalMeshComponent_SetCollisionObjectType_handler(handler: USkeletalMeshComponent_SetCollisionObjectTypeInvoker){
+        unsafe{ USkeletalMeshComponent_SetCollisionObjectTypeInvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_SetComponentTickEnabledInvoker = unsafe extern "C" fn(*mut c_void, bool);

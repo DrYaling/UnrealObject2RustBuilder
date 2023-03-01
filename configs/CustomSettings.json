@@ -174,7 +174,8 @@
         
     ],
     "ExportEnums":[
-        "EMontagePlayReturnType"
+        "EMontagePlayReturnType",
+        "ECollisionChannel"
     ],
     "ExportConsts":[
 

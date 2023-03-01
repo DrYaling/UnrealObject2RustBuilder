@@ -3177,6 +3177,10 @@ extern "C"{
 		auto result = (void*)((USceneComponent*)target)->GetChildComponent(ChildIndex);	
 		return result;	
 	}
+	ECollisionChannel uapi_USceneComponent_GetCollisionObjectType(void* target){	
+		auto result = ((USceneComponent*)target)->GetCollisionObjectType();	
+		return result;	
+	}
 	Vector3 uapi_USceneComponent_GetComponentLocation(void* target){	
 		auto result = ToVector3(((USceneComponent*)target)->GetComponentLocation());	
 		return result;	
@@ -5385,6 +5389,9 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_ResumeClothingSimulation(void* target){	
 		((USkeletalMeshComponent*)target)->ResumeClothingSimulation();	
 	}
+	void uapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectType(void* target, ECollisionChannel NewChannel){	
+		((USkeletalMeshComponent*)target)->SetAllBodiesCollisionObjectType(NewChannel);	
+	}
 	void uapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision(void* target, bool bNewNotifyRigidBodyCollision){	
 		((USkeletalMeshComponent*)target)->SetAllBodiesNotifyRigidBodyCollision(bNewNotifyRigidBodyCollision);	
 	}
@@ -5438,6 +5445,9 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_SetClothMaxDistanceScale(void* target, float Scale){	
 		((USkeletalMeshComponent*)target)->SetClothMaxDistanceScale(Scale);	
+	}
+	void uapi_USkeletalMeshComponent_SetCollisionObjectType(void* target, ECollisionChannel Channel){	
+		((USkeletalMeshComponent*)target)->SetCollisionObjectType(Channel);	
 	}
 	void uapi_USkeletalMeshComponent_SetComponentTickEnabled(void* target, bool bEnabled){	
 		((USkeletalMeshComponent*)target)->SetComponentTickEnabled(bEnabled);	
@@ -7993,6 +8003,8 @@ using uapi_USceneComponent_GetAttachmentRootActorFn = void(*)(void*(*)(void* tar
 
 using uapi_USceneComponent_GetChildComponentFn = void(*)(void*(*)(void* target,int32 ChildIndex));
 
+using uapi_USceneComponent_GetCollisionObjectTypeFn = void(*)(ECollisionChannel(*)(void* target));
+
 using uapi_USceneComponent_GetComponentLocationFn = void(*)(Vector3(*)(void* target));
 
 using uapi_USceneComponent_GetComponentQuatFn = void(*)(Quaternion(*)(void* target));
@@ -9231,6 +9243,8 @@ using uapi_USkeletalMeshComponent_ResetRootBodyIndexFn = void(*)(void(*)(void* t
 
 using uapi_USkeletalMeshComponent_ResumeClothingSimulationFn = void(*)(void(*)(void* target));
 
+using uapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeFn = void(*)(void(*)(void* target,ECollisionChannel NewChannel));
+
 using uapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision));
 
 using uapi_USkeletalMeshComponent_SetAllBodiesPhysicsBlendWeightFn = void(*)(void(*)(void* target,float PhysicsBlendWeight,bool bSkipCustomPhysicsType));
@@ -9266,6 +9280,8 @@ using uapi_USkeletalMeshComponent_SetAnimationFn = void(*)(void(*)(void* target,
 using uapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollisionFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision,UName BoneName));
 
 using uapi_USkeletalMeshComponent_SetClothMaxDistanceScaleFn = void(*)(void(*)(void* target,float Scale));
+
+using uapi_USkeletalMeshComponent_SetCollisionObjectTypeFn = void(*)(void(*)(void* target,ECollisionChannel Channel));
 
 using uapi_USkeletalMeshComponent_SetComponentTickEnabledFn = void(*)(void(*)(void* target,bool bEnabled));
 
@@ -14186,6 +14202,11 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_GetChildComponent(&uapi_USceneComponent_GetChildComponent);
     }
 
+    auto const apiuapi_USceneComponent_GetCollisionObjectType = (uapi_USceneComponent_GetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_USceneComponent_GetCollisionObjectType_handler\0"));
+    if(apiuapi_USceneComponent_GetCollisionObjectType){
+        apiuapi_USceneComponent_GetCollisionObjectType(&uapi_USceneComponent_GetCollisionObjectType);
+    }
+
     auto const apiuapi_USceneComponent_GetComponentLocation = (uapi_USceneComponent_GetComponentLocationFn)plugin->GetDllExport(TEXT("set_USceneComponent_GetComponentLocation_handler\0"));
     if(apiuapi_USceneComponent_GetComponentLocation){
         apiuapi_USceneComponent_GetComponentLocation(&uapi_USceneComponent_GetComponentLocation);
@@ -17281,6 +17302,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_ResumeClothingSimulation(&uapi_USkeletalMeshComponent_ResumeClothingSimulation);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectType = (uapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetAllBodiesCollisionObjectType_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectType){
+        apiuapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectType(&uapi_USkeletalMeshComponent_SetAllBodiesCollisionObjectType);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision = (uapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollisionFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision){
         apiuapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision(&uapi_USkeletalMeshComponent_SetAllBodiesNotifyRigidBodyCollision);
@@ -17369,6 +17395,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_SetClothMaxDistanceScale = (uapi_USkeletalMeshComponent_SetClothMaxDistanceScaleFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetClothMaxDistanceScale_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetClothMaxDistanceScale){
         apiuapi_USkeletalMeshComponent_SetClothMaxDistanceScale(&uapi_USkeletalMeshComponent_SetClothMaxDistanceScale);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_SetCollisionObjectType = (uapi_USkeletalMeshComponent_SetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetCollisionObjectType_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetCollisionObjectType){
+        apiuapi_USkeletalMeshComponent_SetCollisionObjectType(&uapi_USkeletalMeshComponent_SetCollisionObjectType);
     }
 
     auto const apiuapi_USkeletalMeshComponent_SetComponentTickEnabled = (uapi_USkeletalMeshComponent_SetComponentTickEnabledFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetComponentTickEnabled_handler\0"));

@@ -113,6 +113,32 @@ mod opaque_types{
 	pub type Opaque = c_void;//cpp type 
 	pub type FSceneInterfaceOpaque = c_void;//cpp type FSceneInterface
 	pub type FTickFunctionOpaque = c_void;//cpp type FTickFunction
+	pub type UMaterialParameterCollectionOpaque = c_void;//cpp type UMaterialParameterCollection
+	pub type FSceneViewOpaque = c_void;//cpp type FSceneView
+	pub type UAISystemBaseOpaque = c_void;//cpp type UAISystemBase
+	pub type UObjectRedirectorOpaque = c_void;//cpp type UObjectRedirector
+	pub type FLevelCollectionOpaque = c_void;//cpp type FLevelCollection
+	pub type FAudioDeviceOpaque = c_void;//cpp type FAudioDevice
+	pub type UAvoidanceManagerOpaque = c_void;//cpp type UAvoidanceManager
+	pub type ABrushOpaque = c_void;//cpp type ABrush
+	pub type UDemoNetDriverOpaque = c_void;//cpp type UDemoNetDriver
+	pub type UGameViewportClientOpaque = c_void;//cpp type UGameViewportClient
+	pub type ALevelScriptActorOpaque = c_void;//cpp type ALevelScriptActor
+	pub type UMaterialParameterCollectionInstanceOpaque = c_void;//cpp type UMaterialParameterCollectionInstance
+	pub type FPhysSceneOpaque = c_void;//cpp type FPhysScene
+	pub type AServerStreamingLevelsVisibilityOpaque = c_void;//cpp type AServerStreamingLevelsVisibility
+	pub type UWorldPartitionOpaque = c_void;//cpp type UWorldPartition
+	pub type IInterface_PostProcessVolumeOpaque = c_void;//cpp type IInterface_PostProcessVolume
+	pub type UChannelOpaque = c_void;//cpp type UChannel
+	pub type UBlueprintOpaque = c_void;//cpp type UBlueprint
+	pub type ACameraActorOpaque = c_void;//cpp type ACameraActor
+	pub type UNavigationSystemBaseOpaque = c_void;//cpp type UNavigationSystemBase
+	pub type AWorldDataLayersOpaque = c_void;//cpp type AWorldDataLayers
+	pub type FPrimitiveSceneProxyOpaque = c_void;//cpp type FPrimitiveSceneProxy
+	pub type FBodyInstanceOpaque = c_void;//cpp type FBodyInstance
+	pub type UBodySetupOpaque = c_void;//cpp type UBodySetup
+	pub type UActorTextureStreamingBuildDataComponentOpaque = c_void;//cpp type UActorTextureStreamingBuildDataComponent
+	pub type UPhysicalMaterialOpaque = c_void;//cpp type UPhysicalMaterial
 	pub type UAnimInstanceOpaque = c_void;//cpp type UAnimInstance
 	pub type FAnimNode_LinkedInputPoseOpaque = c_void;//cpp type FAnimNode_LinkedInputPose
 	pub type FBakedAnimationStateMachineOpaque = c_void;//cpp type FBakedAnimationStateMachine
@@ -129,29 +155,22 @@ mod opaque_types{
 	pub type UPhysicsAssetOpaque = c_void;//cpp type UPhysicsAsset
 	pub type FPrimitiveDrawInterfaceOpaque = c_void;//cpp type FPrimitiveDrawInterface
 	pub type FCanvasOpaque = c_void;//cpp type FCanvas
-	pub type FSceneViewOpaque = c_void;//cpp type FSceneView
 	pub type FConstraintInstanceOpaque = c_void;//cpp type FConstraintInstance
-	pub type FBodyInstanceOpaque = c_void;//cpp type FBodyInstance
-	pub type UBodySetupOpaque = c_void;//cpp type UBodySetup
 	pub type IClothingSimulationOpaque = c_void;//cpp type IClothingSimulation
 	pub type IClothingSimulationContextOpaque = c_void;//cpp type IClothingSimulationContext
 	pub type UClothingSimulationInteractorOpaque = c_void;//cpp type UClothingSimulationInteractor
 	pub type UAnimSingleNodeInstanceOpaque = c_void;//cpp type UAnimSingleNodeInstance
-	pub type FPhysSceneOpaque = c_void;//cpp type FPhysScene
 	pub type USkelControlLookAtOpaque = c_void;//cpp type USkelControlLookAt
 	pub type UAnimationAssetOpaque = c_void;//cpp type UAnimationAsset
 	pub type FActorComponentTickFunctionOpaque = c_void;//cpp type FActorComponentTickFunction
-	pub type UPhysicalMaterialOpaque = c_void;//cpp type UPhysicalMaterial
 	pub type USkinnedAssetOpaque = c_void;//cpp type USkinnedAsset
 	pub type UParticleSystemComponentOpaque = c_void;//cpp type UParticleSystemComponent
-	pub type FPrimitiveSceneProxyOpaque = c_void;//cpp type FPrimitiveSceneProxy
 	pub type FSavedMove_CharacterOpaque = c_void;//cpp type FSavedMove_Character
 	pub type FNetworkPredictionData_ClientOpaque = c_void;//cpp type FNetworkPredictionData_Client
 	pub type FNetworkPredictionData_Client_CharacterOpaque = c_void;//cpp type FNetworkPredictionData_Client_Character
 	pub type FNetworkPredictionData_ServerOpaque = c_void;//cpp type FNetworkPredictionData_Server
 	pub type FNetworkPredictionData_Server_CharacterOpaque = c_void;//cpp type FNetworkPredictionData_Server_Character
-	pub type FRootMotionSourceOpaque = c_void;//cpp type FRootMotionSource
-	pub type UAvoidanceManagerOpaque = c_void;//cpp type UAvoidanceManager            
+	pub type FRootMotionSourceOpaque = c_void;//cpp type FRootMotionSource            
 }
 pub use opaque_types::*;
 
@@ -5117,6 +5136,870 @@ impl IPtr for UWorld{
 }
 impl UWorld{
     
+	#[inline]
+	pub fn AddController(&mut self, Controller: &mut AController){
+		unsafe{ UWorld_AddControllerInvokerHandler.as_ref().unwrap()(self.inner, Controller.inner()) }
+	}
+	#[inline]
+	pub fn AddLevel(&mut self, InLevel: *mut ULevelOpaque) -> bool{
+		unsafe{ UWorld_AddLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn AddNetworkActor(&mut self, Actor: &mut AActor){
+		unsafe{ UWorld_AddNetworkActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner()) }
+	}
+	#[inline]
+	pub fn AddParameterCollectionInstance(&mut self, Collection: *mut UMaterialParameterCollectionOpaque, bUpdateScene: bool){
+		unsafe{ UWorld_AddParameterCollectionInstanceInvokerHandler.as_ref().unwrap()(self.inner, Collection, bUpdateScene) }
+	}
+	#[inline]
+	pub fn AddPhysicsVolume(&mut self, Volume: *mut APhysicsVolumeOpaque){
+		unsafe{ UWorld_AddPhysicsVolumeInvokerHandler.as_ref().unwrap()(self.inner, Volume) }
+	}
+	#[inline]
+	pub fn AddPostProcessingSettings(&mut self, ViewLocation: Vector3, SceneView: *mut FSceneViewOpaque){
+		unsafe{ UWorld_AddPostProcessingSettingsInvokerHandler.as_ref().unwrap()(self.inner, ViewLocation, SceneView) }
+	}
+	#[inline]
+	pub fn AddStreamingLevel(&mut self, StreamingLevelToAdd: *mut ULevelStreamingOpaque){
+		unsafe{ UWorld_AddStreamingLevelInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevelToAdd) }
+	}
+	#[inline]
+	pub fn AddUniqueStreamingLevel(&mut self, StreamingLevelToAdd: *mut ULevelStreamingOpaque){
+		unsafe{ UWorld_AddUniqueStreamingLevelInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevelToAdd) }
+	}
+	#[inline]
+	pub fn AllowAudioPlayback(&self) -> bool{
+		unsafe{ UWorld_AllowAudioPlaybackInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn AllowLevelLoadRequests(&self) -> bool{
+		unsafe{ UWorld_AllowLevelLoadRequestsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn AreActorsInitialized(&self) -> bool{
+		unsafe{ UWorld_AreActorsInitializedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn AreAlwaysLoadedLevelsLoaded(&self) -> bool{
+		unsafe{ UWorld_AreAlwaysLoadedLevelsLoadedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn AsyncLoadAlwaysLoadedLevelsForSeamlessTravel(&mut self){
+		unsafe{ UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BeginDestroy(&mut self){
+		unsafe{ UWorld_BeginDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BeginPlay(&mut self){
+		unsafe{ UWorld_BeginPlayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BeginTearingDown(&mut self){
+		unsafe{ UWorld_BeginTearingDownInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BlockTillLevelStreamingCompleted(&mut self){
+		unsafe{ UWorld_BlockTillLevelStreamingCompletedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BroadcastLevelsChanged(&mut self){
+		unsafe{ UWorld_BroadcastLevelsChangedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn BuildPIEPackagePrefix(PIEInstanceID: i32) -> String{
+		unsafe{ char_str_2_string(UWorld_BuildPIEPackagePrefixInvokerHandler.as_ref().unwrap()(PIEInstanceID)) }
+	}
+	#[inline]
+	pub fn CancelPendingMapChange(&mut self){
+		unsafe{ UWorld_CancelPendingMapChangeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CleanupActors(&mut self){
+		unsafe{ UWorld_CleanupActorsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CleanupWorld(&mut self, bSessionEnded: bool, bCleanupResources: bool, NewWorld: &mut UWorld){
+		unsafe{ UWorld_CleanupWorldInvokerHandler.as_ref().unwrap()(self.inner, bSessionEnded, bCleanupResources, NewWorld.inner()) }
+	}
+	#[inline]
+	pub fn ClearActorComponentEndOfFrameUpdate(&mut self, Component: &mut UActorComponent){
+		unsafe{ UWorld_ClearActorComponentEndOfFrameUpdateInvokerHandler.as_ref().unwrap()(self.inner, Component.inner()) }
+	}
+	#[inline]
+	pub fn ClearDemoNetDriver(&mut self){
+		unsafe{ UWorld_ClearDemoNetDriverInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ClearNetDriver(&mut self, Driver: *mut UNetDriverOpaque){
+		unsafe{ UWorld_ClearNetDriverInvokerHandler.as_ref().unwrap()(self.inner, Driver) }
+	}
+	#[inline]
+	pub fn ClearStreamingLevels(&mut self){
+		unsafe{ UWorld_ClearStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ClearWorldComponents(&mut self){
+		unsafe{ UWorld_ClearWorldComponentsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CommitMapChange(&mut self){
+		unsafe{ UWorld_CommitMapChangeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CommitModelSurfaces(&mut self){
+		unsafe{ UWorld_CommitModelSurfacesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ConditionallyBuildStreamingData(&mut self){
+		unsafe{ UWorld_ConditionallyBuildStreamingDataInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ContainsActor(&self, Actor: &mut AActor) -> bool{
+		unsafe{ UWorld_ContainsActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner()) }
+	}
+	#[inline]
+	pub fn ContainsLevel(&self, InLevel: *mut ULevelOpaque) -> bool{
+		unsafe{ UWorld_ContainsLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn CopyGameState(&mut self, FromGameMode: &mut AGameModeBase, FromGameState: *mut AGameStateBaseOpaque){
+		unsafe{ UWorld_CopyGameStateInvokerHandler.as_ref().unwrap()(self.inner, FromGameMode.inner(), FromGameState) }
+	}
+	#[inline]
+	pub fn CreateAISystem(&mut self) -> *mut UAISystemBaseOpaque{
+		unsafe{ UWorld_CreateAISystemInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CreateFXSystem(&mut self){
+		unsafe{ UWorld_CreateFXSystemInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CreatePhysicsScene(&mut self, Settings: *mut AWorldSettingsOpaque){
+		unsafe{ UWorld_CreatePhysicsSceneInvokerHandler.as_ref().unwrap()(self.inner, Settings) }
+	}
+	#[inline]
+	pub fn DeSelectLevel(&mut self, InLevel: *mut ULevelOpaque){
+		unsafe{ UWorld_DeSelectLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn DelayStreamingVolumeUpdates(&mut self, InFrameDelay: i32){
+		unsafe{ UWorld_DelayStreamingVolumeUpdatesInvokerHandler.as_ref().unwrap()(self.inner, InFrameDelay) }
+	}
+	#[inline]
+	pub fn DestroyActor(&mut self, Actor: &mut AActor, bNetForce: bool, bShouldModifyLevel: bool) -> bool{
+		unsafe{ UWorld_DestroyActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner(), bNetForce, bShouldModifyLevel) }
+	}
+	#[inline]
+	pub fn DestroyDemoNetDriver(&mut self){
+		unsafe{ UWorld_DestroyDemoNetDriverInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn DestroySwappedPC(&mut self, Connection: *mut UNetConnectionOpaque) -> bool{
+		unsafe{ UWorld_DestroySwappedPCInvokerHandler.as_ref().unwrap()(self.inner, Connection) }
+	}
+	#[inline]
+	pub fn DestroyWorld(&mut self, bInformEngineOfWorld: bool, NewWorld: &mut UWorld){
+		unsafe{ UWorld_DestroyWorldInvokerHandler.as_ref().unwrap()(self.inner, bInformEngineOfWorld, NewWorld.inner()) }
+	}
+	#[inline]
+	pub fn DuplicateRequestedLevels(&mut self, MapName: UName){
+		unsafe{ UWorld_DuplicateRequestedLevelsInvokerHandler.as_ref().unwrap()(self.inner, MapName) }
+	}
+	#[inline]
+	pub fn EditorDestroyActor(&mut self, Actor: &mut AActor, bShouldModifyLevel: bool) -> bool{
+		unsafe{ UWorld_EditorDestroyActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner(), bShouldModifyLevel) }
+	}
+	#[inline]
+	pub fn EncroachingBlockingGeometry(&mut self, TestActor: &AActor, TestLocation: Vector3, TestRotation: Rotator, ProposedAdjustment: *mut Vector3) -> bool{
+		unsafe{ UWorld_EncroachingBlockingGeometryInvokerHandler.as_ref().unwrap()(self.inner, TestActor.inner(), TestLocation, TestRotation, ProposedAdjustment) }
+	}
+	#[inline]
+	pub fn EnsureCollisionTreeIsBuilt(&mut self){
+		unsafe{ UWorld_EnsureCollisionTreeIsBuiltInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn FindWorldInPackage(Package: *mut UPackageOpaque) -> Option<UWorld>{
+		unsafe{ UWorld::from_ptr(UWorld_FindWorldInPackageInvokerHandler.as_ref().unwrap()(Package)) }
+	}
+	#[inline]
+	pub fn FinishDestroy(&mut self){
+		unsafe{ UWorld_FinishDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn FinishPhysicsSim(&mut self){
+		unsafe{ UWorld_FinishPhysicsSimInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn FlushDeferredParameterCollectionInstanceUpdates(&mut self){
+		unsafe{ UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn FollowWorldRedirectorInPackage(Package: *mut UPackageOpaque, OptionalOutRedirector: *mut UObjectRedirectorOpaque) -> Option<UWorld>{
+		unsafe{ UWorld::from_ptr(UWorld_FollowWorldRedirectorInPackageInvokerHandler.as_ref().unwrap()(Package, OptionalOutRedirector)) }
+	}
+	#[inline]
+	pub fn GetAISystem(&mut self) -> *mut UAISystemBaseOpaque{
+		unsafe{ UWorld_GetAISystemInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetActiveLevelCollection(&self) -> *mut FLevelCollectionOpaque{
+		unsafe{ UWorld_GetActiveLevelCollectionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetActiveLevelCollectionIndex(&self) -> i32{
+		unsafe{ UWorld_GetActiveLevelCollectionIndexInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetActiveLightingScenario(&self) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetActiveLightingScenarioInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetActorCount(&self) -> i32{
+		unsafe{ UWorld_GetActorCountInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetAddressURL(&self) -> String{
+		unsafe{ char_str_2_string(UWorld_GetAddressURLInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetAllowDeferredPhysicsStateCreation(&self) -> bool{
+		unsafe{ UWorld_GetAllowDeferredPhysicsStateCreationInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetAudioDeviceRaw(&self) -> *mut FAudioDeviceOpaque{
+		unsafe{ UWorld_GetAudioDeviceRawInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetAudioTimeSeconds(&self) -> f64{
+		unsafe{ UWorld_GetAudioTimeSecondsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetAvoidanceManager(&mut self) -> *mut UAvoidanceManagerOpaque{
+		unsafe{ UWorld_GetAvoidanceManagerInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetBlockTillLevelStreamingCompletedEpoch(&self) -> i32{
+		unsafe{ UWorld_GetBlockTillLevelStreamingCompletedEpochInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCanvasForDrawMaterialToRenderTarget(&mut self) -> *mut UCanvasOpaque{
+		unsafe{ UWorld_GetCanvasForDrawMaterialToRenderTargetInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCanvasForRenderingToTarget(&mut self) -> *mut UCanvasOpaque{
+		unsafe{ UWorld_GetCanvasForRenderingToTargetInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCurrentLevel(&self) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetCurrentLevelInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCurrentLevelPendingInvisibility(&self) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetCurrentLevelPendingInvisibilityInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCurrentLevelPendingVisibility(&self) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetCurrentLevelPendingVisibilityInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDebugDisplayName(&self) -> String{
+		unsafe{ char_str_2_string(UWorld_GetDebugDisplayNameInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetDefaultBrush(&self) -> *mut ABrushOpaque{
+		unsafe{ UWorld_GetDefaultBrushInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDefaultGravityZ(&self) -> f32{
+		unsafe{ UWorld_GetDefaultGravityZInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDefaultPhysicsVolume(&self) -> *mut APhysicsVolumeOpaque{
+		unsafe{ UWorld_GetDefaultPhysicsVolumeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDeltaSeconds(&self) -> f32{
+		unsafe{ UWorld_GetDeltaSecondsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDemoNetDriver(&self) -> *mut UDemoNetDriverOpaque{
+		unsafe{ UWorld_GetDemoNetDriverInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDetailMode(&self) -> i32{
+		unsafe{ UWorld_GetDetailModeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetDuplicatedWorldForPIE(InWorld: &mut UWorld, InPIEackage: *mut UPackageOpaque, PIEInstanceID: i32) -> Option<UWorld>{
+		unsafe{ UWorld::from_ptr(UWorld_GetDuplicatedWorldForPIEInvokerHandler.as_ref().unwrap()(InWorld.inner(), InPIEackage, PIEInstanceID)) }
+	}
+	#[inline]
+	pub fn GetFirstLocalPlayerFromController(&self) -> *mut ULocalPlayerOpaque{
+		unsafe{ UWorld_GetFirstLocalPlayerFromControllerInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetFirstPlayerController(&self) -> Option<APlayerController>{
+		unsafe{ APlayerController::from_ptr(UWorld_GetFirstPlayerControllerInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetGameInstance(&self) -> *mut UGameInstanceOpaque{
+		unsafe{ UWorld_GetGameInstanceInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetGameState(&self) -> *mut AGameStateBaseOpaque{
+		unsafe{ UWorld_GetGameStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetGameViewport(&self) -> *mut UGameViewportClientOpaque{
+		unsafe{ UWorld_GetGameViewportInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetGravityZ(&self) -> f32{
+		unsafe{ UWorld_GetGravityZInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetIsInBlockTillLevelStreamingCompleted(&self) -> bool{
+		unsafe{ UWorld_GetIsInBlockTillLevelStreamingCompletedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetLevel(&self, InLevelIndex: i32) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevelIndex) }
+	}
+	#[inline]
+	pub fn GetLevelScriptActor(&self, OwnerLevel: *mut ULevelOpaque) -> *mut ALevelScriptActorOpaque{
+		unsafe{ UWorld_GetLevelScriptActorInvokerHandler.as_ref().unwrap()(self.inner, OwnerLevel) }
+	}
+	#[inline]
+	pub fn GetLevelStreamingForPackageName(&mut self, PackageName: UName) -> *mut ULevelStreamingOpaque{
+		unsafe{ UWorld_GetLevelStreamingForPackageNameInvokerHandler.as_ref().unwrap()(self.inner, PackageName) }
+	}
+	#[inline]
+	pub fn GetLocalURL(&self) -> String{
+		unsafe{ char_str_2_string(UWorld_GetLocalURLInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetMapName(&self) -> String{
+		unsafe{ char_str_2_string(UWorld_GetMapNameInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetNetDriver(&self) -> *mut UNetDriverOpaque{
+		unsafe{ UWorld_GetNetDriverInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNonDefaultPhysicsVolumeCount(&self) -> i32{
+		unsafe{ UWorld_GetNonDefaultPhysicsVolumeCountInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNumControllers(&self) -> i32{
+		unsafe{ UWorld_GetNumControllersInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNumLevels(&self) -> i32{
+		unsafe{ UWorld_GetNumLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNumPlayerControllers(&self) -> i32{
+		unsafe{ UWorld_GetNumPlayerControllersInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNumSelectedLevels(&self) -> i32{
+		unsafe{ UWorld_GetNumSelectedLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetParameterCollectionInstance(&self, Collection: *mut UMaterialParameterCollectionOpaque) -> *mut UMaterialParameterCollectionInstanceOpaque{
+		unsafe{ UWorld_GetParameterCollectionInstanceInvokerHandler.as_ref().unwrap()(self.inner, Collection) }
+	}
+	#[inline]
+	pub fn GetPhysicsScene(&self) -> *mut FPhysSceneOpaque{
+		unsafe{ UWorld_GetPhysicsSceneInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetProgressDenominator(&self) -> i32{
+		unsafe{ UWorld_GetProgressDenominatorInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetRealTimeSeconds(&self) -> f64{
+		unsafe{ UWorld_GetRealTimeSecondsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetSelectedLevel(&self, InLevelIndex: i32) -> *mut ULevelOpaque{
+		unsafe{ UWorld_GetSelectedLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevelIndex) }
+	}
+	#[inline]
+	pub fn GetServerStreamingLevelsVisibility(&self) -> *mut AServerStreamingLevelsVisibilityOpaque{
+		unsafe{ UWorld_GetServerStreamingLevelsVisibilityInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetShouldForceUnloadStreamingLevels(&self) -> bool{
+		unsafe{ UWorld_GetShouldForceUnloadStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetShouldForceVisibleStreamingLevels(&self) -> bool{
+		unsafe{ UWorld_GetShouldForceVisibleStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetTimeSeconds(&self) -> f64{
+		unsafe{ UWorld_GetTimeSecondsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetUnpausedTimeSeconds(&self) -> f64{
+		unsafe{ UWorld_GetUnpausedTimeSecondsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetWorld(&self) -> Option<UWorld>{
+		unsafe{ UWorld::from_ptr(UWorld_GetWorldInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetWorldPartition(&self) -> *mut UWorldPartitionOpaque{
+		unsafe{ UWorld_GetWorldPartitionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetWorldSettings(&self, bCheckStreamingPersistent: bool, bChecked: bool) -> *mut AWorldSettingsOpaque{
+		unsafe{ UWorld_GetWorldSettingsInvokerHandler.as_ref().unwrap()(self.inner, bCheckStreamingPersistent, bChecked) }
+	}
+	#[inline]
+	pub fn HandleTimelineScrubbed(&mut self){
+		unsafe{ UWorld_HandleTimelineScrubbedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasBegunPlay(&self) -> bool{
+		unsafe{ UWorld_HasBegunPlayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasDefaultPhysicsVolume(&self) -> bool{
+		unsafe{ UWorld_HasDefaultPhysicsVolumeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasEndOfFrameUpdates(&self) -> bool{
+		unsafe{ UWorld_HasEndOfFrameUpdatesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasEverBeenInitialized(&self) -> bool{
+		unsafe{ UWorld_HasEverBeenInitializedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasMarkedObjectsPendingKill(&self) -> bool{
+		unsafe{ UWorld_HasMarkedObjectsPendingKillInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasStreamingLevelsToConsider(&self) -> bool{
+		unsafe{ UWorld_HasStreamingLevelsToConsiderInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn InitializeSubsystems(&mut self){
+		unsafe{ UWorld_InitializeSubsystemsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn InsertPostProcessVolume(&mut self, InVolume: *mut IInterface_PostProcessVolumeOpaque){
+		unsafe{ UWorld_InsertPostProcessVolumeInvokerHandler.as_ref().unwrap()(self.inner, InVolume) }
+	}
+	#[inline]
+	pub fn InvalidateAllSkyCaptures(&mut self){
+		unsafe{ UWorld_InvalidateAllSkyCapturesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn InvalidateModelGeometry(&mut self, InLevel: *mut ULevelOpaque){
+		unsafe{ UWorld_InvalidateModelGeometryInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn InvalidateModelSurface(&mut self, bCurrentLevelOnly: bool){
+		unsafe{ UWorld_InvalidateModelSurfaceInvokerHandler.as_ref().unwrap()(self.inner, bCurrentLevelOnly) }
+	}
+	#[inline]
+	pub fn IsCameraMoveable(&self) -> bool{
+		unsafe{ UWorld_IsCameraMoveableInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsEditorWorld(&self) -> bool{
+		unsafe{ UWorld_IsEditorWorldInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsGameWorld(&self) -> bool{
+		unsafe{ UWorld_IsGameWorldInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsInSeamlessTravel(&self) -> bool{
+		unsafe{ UWorld_IsInSeamlessTravelInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsInitialized(&self) -> bool{
+		unsafe{ UWorld_IsInitializedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsInstanced(&self) -> bool{
+		unsafe{ UWorld_IsInstancedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsLevelSelected(&self, InLevel: *mut ULevelOpaque) -> bool{
+		unsafe{ UWorld_IsLevelSelectedInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn IsMapChangeReady(&self) -> bool{
+		unsafe{ UWorld_IsMapChangeReadyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsMovieSceneSequenceTickHandlerBound(&self) -> bool{
+		unsafe{ UWorld_IsMovieSceneSequenceTickHandlerBoundInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsNameStableForNetworking(&self) -> bool{
+		unsafe{ UWorld_IsNameStableForNetworkingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsNavigationRebuilt(&self) -> bool{
+		unsafe{ UWorld_IsNavigationRebuiltInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPartitionedWorld(&self) -> bool{
+		unsafe{ UWorld_IsPartitionedWorldInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPartitionedWorld2(InWorld: &UWorld) -> bool{
+		unsafe{ UWorld_IsPartitionedWorld2InvokerHandler.as_ref().unwrap()(InWorld.inner()) }
+	}
+	#[inline]
+	pub fn IsPaused(&self) -> bool{
+		unsafe{ UWorld_IsPausedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayInEditor(&self) -> bool{
+		unsafe{ UWorld_IsPlayInEditorInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayInMobilePreview(&self) -> bool{
+		unsafe{ UWorld_IsPlayInMobilePreviewInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayInPreview(&self) -> bool{
+		unsafe{ UWorld_IsPlayInPreviewInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayInVulkanPreview(&self) -> bool{
+		unsafe{ UWorld_IsPlayInVulkanPreviewInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayingClientReplay(&self) -> bool{
+		unsafe{ UWorld_IsPlayingClientReplayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPlayingReplay(&self) -> bool{
+		unsafe{ UWorld_IsPlayingReplayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPreparingMapChange(&self) -> bool{
+		unsafe{ UWorld_IsPreparingMapChangeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsPreviewWorld(&self) -> bool{
+		unsafe{ UWorld_IsPreviewWorldInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsReadyForFinishDestroy(&mut self) -> bool{
+		unsafe{ UWorld_IsReadyForFinishDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsRecordingClientReplay(&self) -> bool{
+		unsafe{ UWorld_IsRecordingClientReplayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsRecordingReplay(&self) -> bool{
+		unsafe{ UWorld_IsRecordingReplayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsRefreshingStreamingLevels(&self) -> bool{
+		unsafe{ UWorld_IsRefreshingStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsStreamingLevelBeingConsidered(&self, StreamingLevel: *mut ULevelStreamingOpaque) -> bool{
+		unsafe{ UWorld_IsStreamingLevelBeingConsideredInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevel) }
+	}
+	#[inline]
+	pub fn IsVisibilityRequestPending(&self) -> bool{
+		unsafe{ UWorld_IsVisibilityRequestPendingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsWorldOrExternalActorPackage(Package: *mut UPackageOpaque) -> bool{
+		unsafe{ UWorld_IsWorldOrExternalActorPackageInvokerHandler.as_ref().unwrap()(Package) }
+	}
+	#[inline]
+	pub fn IssueEditorLoadWarnings(&mut self){
+		unsafe{ UWorld_IssueEditorLoadWarningsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn K2_GetWorldSettings(&mut self) -> *mut AWorldSettingsOpaque{
+		unsafe{ UWorld_K2_GetWorldSettingsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn MarkActorComponentForNeededEndOfFrameUpdate(&mut self, Component: &mut UActorComponent, bForceGameThread: bool){
+		unsafe{ UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvokerHandler.as_ref().unwrap()(self.inner, Component.inner(), bForceGameThread) }
+	}
+	#[inline]
+	pub fn MarkObjectsPendingKill(&mut self){
+		unsafe{ UWorld_MarkObjectsPendingKillInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ModifyLevel(&self, Level: *mut ULevelOpaque){
+		unsafe{ UWorld_ModifyLevelInvokerHandler.as_ref().unwrap()(self.inner, Level) }
+	}
+	#[inline]
+	pub fn NotifyAcceptedConnection(&mut self, Connection: *mut UNetConnectionOpaque){
+		unsafe{ UWorld_NotifyAcceptedConnectionInvokerHandler.as_ref().unwrap()(self.inner, Connection) }
+	}
+	#[inline]
+	pub fn NotifyAcceptingChannel(&mut self, Channel: *mut UChannelOpaque) -> bool{
+		unsafe{ UWorld_NotifyAcceptingChannelInvokerHandler.as_ref().unwrap()(self.inner, Channel) }
+	}
+	#[inline]
+	pub fn NotifyOfBlueprintDebuggingAssociation(&mut self, Blueprint: *mut UBlueprintOpaque, DebugObject: &mut UObject){
+		unsafe{ UWorld_NotifyOfBlueprintDebuggingAssociationInvokerHandler.as_ref().unwrap()(self.inner, Blueprint, DebugObject.inner()) }
+	}
+	#[inline]
+	pub fn PopulateStreamingLevelsToConsider(&mut self){
+		unsafe{ UWorld_PopulateStreamingLevelsToConsiderInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostDuplicate(&mut self, bDuplicateForPIE: bool){
+		unsafe{ UWorld_PostDuplicateInvokerHandler.as_ref().unwrap()(self.inner, bDuplicateForPIE) }
+	}
+	#[inline]
+	pub fn PostInitializeSubsystems(&mut self){
+		unsafe{ UWorld_PostInitializeSubsystemsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostLoad(&mut self){
+		unsafe{ UWorld_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ProcessLevelStreamingVolumes(&mut self, OverrideViewLocation: *mut Vector3){
+		unsafe{ UWorld_ProcessLevelStreamingVolumesInvokerHandler.as_ref().unwrap()(self.inner, OverrideViewLocation) }
+	}
+	#[inline]
+	pub fn PropagateLightingScenarioChange(&mut self){
+		unsafe{ UWorld_PropagateLightingScenarioChangeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn RefreshStreamingLevels(&mut self){
+		unsafe{ UWorld_RefreshStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn RegisterAutoActivateCamera(&mut self, CameraActor: *mut ACameraActorOpaque, PlayerIndex: i32){
+		unsafe{ UWorld_RegisterAutoActivateCameraInvokerHandler.as_ref().unwrap()(self.inner, CameraActor, PlayerIndex) }
+	}
+	#[inline]
+	pub fn ReleasePhysicsScene(&mut self){
+		unsafe{ UWorld_ReleasePhysicsSceneInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn RemoveActor(&self, Actor: &mut AActor, bShouldModifyLevel: bool){
+		unsafe{ UWorld_RemoveActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner(), bShouldModifyLevel) }
+	}
+	#[inline]
+	pub fn RemoveController(&mut self, Controller: &mut AController){
+		unsafe{ UWorld_RemoveControllerInvokerHandler.as_ref().unwrap()(self.inner, Controller.inner()) }
+	}
+	#[inline]
+	pub fn RemoveLevel(&mut self, InLevel: *mut ULevelOpaque) -> bool{
+		unsafe{ UWorld_RemoveLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn RemoveNetworkActor(&self, Actor: &mut AActor){
+		unsafe{ UWorld_RemoveNetworkActorInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner()) }
+	}
+	#[inline]
+	pub fn RemovePhysicsVolume(&mut self, Volume: *mut APhysicsVolumeOpaque){
+		unsafe{ UWorld_RemovePhysicsVolumeInvokerHandler.as_ref().unwrap()(self.inner, Volume) }
+	}
+	#[inline]
+	pub fn RemovePostProcessVolume(&mut self, InVolume: *mut IInterface_PostProcessVolumeOpaque){
+		unsafe{ UWorld_RemovePostProcessVolumeInvokerHandler.as_ref().unwrap()(self.inner, InVolume) }
+	}
+	#[inline]
+	pub fn RemoveStreamingLevel(&mut self, StreamingLevelToRemove: *mut ULevelStreamingOpaque) -> bool{
+		unsafe{ UWorld_RemoveStreamingLevelInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevelToRemove) }
+	}
+	#[inline]
+	pub fn RemoveStreamingLevelAt(&mut self, IndexToRemove: i32) -> bool{
+		unsafe{ UWorld_RemoveStreamingLevelAtInvokerHandler.as_ref().unwrap()(self.inner, IndexToRemove) }
+	}
+	#[inline]
+	pub fn RenameToPIEWorld(&mut self, PIEInstanceID: i32){
+		unsafe{ UWorld_RenameToPIEWorldInvokerHandler.as_ref().unwrap()(self.inner, PIEInstanceID) }
+	}
+	#[inline]
+	pub fn RequiresHitProxies(&self) -> bool{
+		unsafe{ UWorld_RequiresHitProxiesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SelectLevel(&mut self, InLevel: *mut ULevelOpaque){
+		unsafe{ UWorld_SelectLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn SendAllEndOfFrameUpdates(&mut self){
+		unsafe{ UWorld_SendAllEndOfFrameUpdatesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetActiveLevelCollection(&mut self, LevelCollectionIndex: i32){
+		unsafe{ UWorld_SetActiveLevelCollectionInvokerHandler.as_ref().unwrap()(self.inner, LevelCollectionIndex) }
+	}
+	#[inline]
+	pub fn SetAllowDeferredPhysicsStateCreation(&mut self, bAllow: bool){
+		unsafe{ UWorld_SetAllowDeferredPhysicsStateCreationInvokerHandler.as_ref().unwrap()(self.inner, bAllow) }
+	}
+	#[inline]
+	pub fn SetCurrentLevel(&mut self, InLevel: *mut ULevelOpaque) -> bool{
+		unsafe{ UWorld_SetCurrentLevelInvokerHandler.as_ref().unwrap()(self.inner, InLevel) }
+	}
+	#[inline]
+	pub fn SetDemoNetDriver(&mut self, InDemoNetDriver: *mut UDemoNetDriverOpaque){
+		unsafe{ UWorld_SetDemoNetDriverInvokerHandler.as_ref().unwrap()(self.inner, InDemoNetDriver) }
+	}
+	#[inline]
+	pub fn SetGameInstance(&mut self, NewGI: *mut UGameInstanceOpaque){
+		unsafe{ UWorld_SetGameInstanceInvokerHandler.as_ref().unwrap()(self.inner, NewGI) }
+	}
+	#[inline]
+	pub fn SetGameState(&mut self, NewGameState: *mut AGameStateBaseOpaque){
+		unsafe{ UWorld_SetGameStateInvokerHandler.as_ref().unwrap()(self.inner, NewGameState) }
+	}
+	#[inline]
+	pub fn SetMapNeedsLightingFullyRebuilt(&mut self, InNumLightingUnbuiltObjects: i32, InNumUnbuiltReflectionCaptures: i32){
+		unsafe{ UWorld_SetMapNeedsLightingFullyRebuiltInvokerHandler.as_ref().unwrap()(self.inner, InNumLightingUnbuiltObjects, InNumUnbuiltReflectionCaptures) }
+	}
+	#[inline]
+	pub fn SetMaterialParameterCollectionInstanceNeedsUpdate(&mut self){
+		unsafe{ UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetNavigationSystem(&mut self, InNavigationSystem: *mut UNavigationSystemBaseOpaque){
+		unsafe{ UWorld_SetNavigationSystemInvokerHandler.as_ref().unwrap()(self.inner, InNavigationSystem) }
+	}
+	#[inline]
+	pub fn SetNetDriver(&mut self, NewDriver: *mut UNetDriverOpaque){
+		unsafe{ UWorld_SetNetDriverInvokerHandler.as_ref().unwrap()(self.inner, NewDriver) }
+	}
+	#[inline]
+	pub fn SetPhysicsScene(&mut self, InScene: *mut FPhysSceneOpaque){
+		unsafe{ UWorld_SetPhysicsSceneInvokerHandler.as_ref().unwrap()(self.inner, InScene) }
+	}
+	#[inline]
+	pub fn SetSeamlessTravelMidpointPause(&mut self, bNowPaused: bool){
+		unsafe{ UWorld_SetSeamlessTravelMidpointPauseInvokerHandler.as_ref().unwrap()(self.inner, bNowPaused) }
+	}
+	#[inline]
+	pub fn SetShouldForceUnloadStreamingLevels(&mut self, bInShouldForceUnloadStreamingLevels: bool){
+		unsafe{ UWorld_SetShouldForceUnloadStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner, bInShouldForceUnloadStreamingLevels) }
+	}
+	#[inline]
+	pub fn SetShouldForceVisibleStreamingLevels(&mut self, bInShouldForceVisibleStreamingLevels: bool){
+		unsafe{ UWorld_SetShouldForceVisibleStreamingLevelsInvokerHandler.as_ref().unwrap()(self.inner, bInShouldForceVisibleStreamingLevels) }
+	}
+	#[inline]
+	pub fn SetShouldTick(&mut self, bInShouldTick: bool){
+		unsafe{ UWorld_SetShouldTickInvokerHandler.as_ref().unwrap()(self.inner, bInShouldTick) }
+	}
+	#[inline]
+	pub fn SetWorldDataLayers(&mut self, NewWorldDataLayers: *mut AWorldDataLayersOpaque){
+		unsafe{ UWorld_SetWorldDataLayersInvokerHandler.as_ref().unwrap()(self.inner, NewWorldDataLayers) }
+	}
+	#[inline]
+	pub fn SetupParameterCollectionInstances(&mut self){
+		unsafe{ UWorld_SetupParameterCollectionInstancesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetupPhysicsTickFunctions(&mut self, DeltaSeconds: f32){
+		unsafe{ UWorld_SetupPhysicsTickFunctionsInvokerHandler.as_ref().unwrap()(self.inner, DeltaSeconds) }
+	}
+	#[inline]
+	pub fn ShouldTick(&self) -> bool{
+		unsafe{ UWorld_ShouldTickInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ShrinkLevel(&mut self){
+		unsafe{ UWorld_ShrinkLevelInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SpawnBrush(&mut self) -> *mut ABrushOpaque{
+		unsafe{ UWorld_SpawnBrushInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn StartPhysicsSim(&mut self){
+		unsafe{ UWorld_StartPhysicsSimInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn StoreIrisAndClearReferences(&mut self){
+		unsafe{ UWorld_StoreIrisAndClearReferencesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SupportsMakingInvisibleTransactionRequests(&self) -> bool{
+		unsafe{ UWorld_SupportsMakingInvisibleTransactionRequestsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SupportsMakingVisibleTransactionRequests(&self) -> bool{
+		unsafe{ UWorld_SupportsMakingVisibleTransactionRequestsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn TickNetClient(&mut self, DeltaSeconds: f32){
+		unsafe{ UWorld_TickNetClientInvokerHandler.as_ref().unwrap()(self.inner, DeltaSeconds) }
+	}
+	#[inline]
+	pub fn TimeSince(&self, Time: f64) -> f64{
+		unsafe{ UWorld_TimeSinceInvokerHandler.as_ref().unwrap()(self.inner, Time) }
+	}
+	#[inline]
+	pub fn TransferBlueprintDebugReferences(&mut self, NewWorld: &mut UWorld){
+		unsafe{ UWorld_TransferBlueprintDebugReferencesInvokerHandler.as_ref().unwrap()(self.inner, NewWorld.inner()) }
+	}
+	#[inline]
+	pub fn TriggerStreamingDataRebuild(&mut self){
+		unsafe{ UWorld_TriggerStreamingDataRebuildInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateActorComponentEndOfFrameUpdateState(&self, Component: &mut UActorComponent){
+		unsafe{ UWorld_UpdateActorComponentEndOfFrameUpdateStateInvokerHandler.as_ref().unwrap()(self.inner, Component.inner()) }
+	}
+	#[inline]
+	pub fn UpdateAllSkyCaptures(&mut self){
+		unsafe{ UWorld_UpdateAllSkyCapturesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateConstraintActors(&mut self){
+		unsafe{ UWorld_UpdateConstraintActorsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateCullDistanceVolumes(&mut self, ActorToUpdate: &mut AActor, ComponentToUpdate: &mut UPrimitiveComponent) -> bool{
+		unsafe{ UWorld_UpdateCullDistanceVolumesInvokerHandler.as_ref().unwrap()(self.inner, ActorToUpdate.inner(), ComponentToUpdate.inner()) }
+	}
+	#[inline]
+	pub fn UpdateLevelStreaming(&mut self){
+		unsafe{ UWorld_UpdateLevelStreamingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateParameterCollectionInstances(&mut self, bUpdateInstanceUniformBuffers: bool, bRecreateUniformBuffer: bool){
+		unsafe{ UWorld_UpdateParameterCollectionInstancesInvokerHandler.as_ref().unwrap()(self.inner, bUpdateInstanceUniformBuffers, bRecreateUniformBuffer) }
+	}
+	#[inline]
+	pub fn UpdateStreamingLevelPriority(&mut self, StreamingLevel: *mut ULevelStreamingOpaque){
+		unsafe{ UWorld_UpdateStreamingLevelPriorityInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevel) }
+	}
+	#[inline]
+	pub fn UpdateStreamingLevelShouldBeConsidered(&mut self, StreamingLevelToConsider: *mut ULevelStreamingOpaque){
+		unsafe{ UWorld_UpdateStreamingLevelShouldBeConsideredInvokerHandler.as_ref().unwrap()(self.inner, StreamingLevelToConsider) }
+	}
+	#[inline]
+	pub fn UpdateWorldComponents(&mut self, bRerunConstructionScripts: bool, bCurrentLevelOnly: bool, Context: *mut FRegisterComponentContextOpaque){
+		unsafe{ UWorld_UpdateWorldComponentsInvokerHandler.as_ref().unwrap()(self.inner, bRerunConstructionScripts, bCurrentLevelOnly, Context) }
+	}
+	#[inline]
+	pub fn UsesGameHiddenFlags(&self) -> bool{
+		unsafe{ UWorld_UsesGameHiddenFlagsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn WelcomePlayer(&mut self, Connection: *mut UNetConnectionOpaque){
+		unsafe{ UWorld_WelcomePlayerInvokerHandler.as_ref().unwrap()(self.inner, Connection) }
+	}
 }
 pub struct UPrimitiveComponent{
     inner: *mut UPrimitiveComponentOpaque
@@ -5136,8 +6019,76 @@ impl IPtr for UPrimitiveComponent{
 impl UPrimitiveComponent{
     
 	#[inline]
+	pub fn AddAngularImpulseInDegrees(&mut self, Impulse: Vector3, BoneName: UName, bVelChange: bool){
+		unsafe{ UPrimitiveComponent_AddAngularImpulseInDegreesInvokerHandler.as_ref().unwrap()(self.inner, Impulse, BoneName, bVelChange) }
+	}
+	#[inline]
+	pub fn AddAngularImpulseInRadians(&mut self, Impulse: Vector3, BoneName: UName, bVelChange: bool){
+		unsafe{ UPrimitiveComponent_AddAngularImpulseInRadiansInvokerHandler.as_ref().unwrap()(self.inner, Impulse, BoneName, bVelChange) }
+	}
+	#[inline]
+	pub fn AddForce(&mut self, Force: Vector3, BoneName: UName, bAccelChange: bool){
+		unsafe{ UPrimitiveComponent_AddForceInvokerHandler.as_ref().unwrap()(self.inner, Force, BoneName, bAccelChange) }
+	}
+	#[inline]
+	pub fn AddForceAtLocation(&mut self, Force: Vector3, Location: Vector3, BoneName: UName){
+		unsafe{ UPrimitiveComponent_AddForceAtLocationInvokerHandler.as_ref().unwrap()(self.inner, Force, Location, BoneName) }
+	}
+	#[inline]
+	pub fn AddForceAtLocationLocal(&mut self, Force: Vector3, Location: Vector3, BoneName: UName){
+		unsafe{ UPrimitiveComponent_AddForceAtLocationLocalInvokerHandler.as_ref().unwrap()(self.inner, Force, Location, BoneName) }
+	}
+	#[inline]
+	pub fn AddImpulse(&mut self, Impulse: Vector3, BoneName: UName, bVelChange: bool){
+		unsafe{ UPrimitiveComponent_AddImpulseInvokerHandler.as_ref().unwrap()(self.inner, Impulse, BoneName, bVelChange) }
+	}
+	#[inline]
+	pub fn AddImpulseAtLocation(&mut self, Impulse: Vector3, Location: Vector3, BoneName: UName){
+		unsafe{ UPrimitiveComponent_AddImpulseAtLocationInvokerHandler.as_ref().unwrap()(self.inner, Impulse, Location, BoneName) }
+	}
+	#[inline]
+	pub fn AddTorqueInDegrees(&mut self, Torque: Vector3, BoneName: UName, bAccelChange: bool){
+		unsafe{ UPrimitiveComponent_AddTorqueInDegreesInvokerHandler.as_ref().unwrap()(self.inner, Torque, BoneName, bAccelChange) }
+	}
+	#[inline]
+	pub fn AddTorqueInRadians(&mut self, Torque: Vector3, BoneName: UName, bAccelChange: bool){
+		unsafe{ UPrimitiveComponent_AddTorqueInRadiansInvokerHandler.as_ref().unwrap()(self.inner, Torque, BoneName, bAccelChange) }
+	}
+	#[inline]
+	pub fn AddVelocityChangeImpulseAtLocation(&mut self, Impulse: Vector3, Location: Vector3, BoneName: UName){
+		unsafe{ UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvokerHandler.as_ref().unwrap()(self.inner, Impulse, Location, BoneName) }
+	}
+	#[inline]
+	pub fn BeginDestroy(&mut self){
+		unsafe{ UPrimitiveComponent_BeginDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn BeginPlay(&mut self){
 		unsafe{ UPrimitiveComponent_BeginPlayInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CalculateMass(&mut self, BoneName: UName) -> f32{
+		unsafe{ UPrimitiveComponent_CalculateMassInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn CanCharacterStepUp(&self, Pawn: &mut APawn) -> bool{
+		unsafe{ UPrimitiveComponent_CanCharacterStepUpInvokerHandler.as_ref().unwrap()(self.inner, Pawn.inner()) }
+	}
+	#[inline]
+	pub fn CanEditChange(&self, InProperty: *mut FPropertyOpaque) -> bool{
+		unsafe{ UPrimitiveComponent_CanEditChangeInvokerHandler.as_ref().unwrap()(self.inner, InProperty) }
+	}
+	#[inline]
+	pub fn CanEditSimulatePhysics(&mut self) -> bool{
+		unsafe{ UPrimitiveComponent_CanEditSimulatePhysicsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CanSkipGetTextureStreamingRenderAssetInfo(&self) -> bool{
+		unsafe{ UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CheckForErrors(&mut self){
+		unsafe{ UPrimitiveComponent_CheckForErrorsInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn ClearMoveIgnoreActors(&mut self){
@@ -5148,6 +6099,66 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_ClearMoveIgnoreComponentsInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn ComputeHashTextureStreamingBuiltData(&self) -> u32{
+		unsafe{ UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn CreateRenderState_Concurrent(&mut self, Context: *mut FRegisterComponentContextOpaque){
+		unsafe{ UPrimitiveComponent_CreateRenderState_ConcurrentInvokerHandler.as_ref().unwrap()(self.inner, Context) }
+	}
+	#[inline]
+	pub fn CreateSceneProxy(&mut self) -> *mut FPrimitiveSceneProxyOpaque{
+		unsafe{ UPrimitiveComponent_CreateSceneProxyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn DestroyRenderState_Concurrent(&mut self){
+		unsafe{ UPrimitiveComponent_DestroyRenderState_ConcurrentInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn DispatchMouseOverEvents(CurrentComponent: &mut UPrimitiveComponent, NewComponent: &mut UPrimitiveComponent){
+		unsafe{ UPrimitiveComponent_DispatchMouseOverEventsInvokerHandler.as_ref().unwrap()(CurrentComponent.inner(), NewComponent.inner()) }
+	}
+	#[inline]
+	pub fn FinishDestroy(&mut self){
+		unsafe{ UPrimitiveComponent_FinishDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetAngularDamping(&self) -> f32{
+		unsafe{ UPrimitiveComponent_GetAngularDampingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetBodyInstance(&self, BoneName: UName, bGetWelded: bool, Index: i32) -> *mut FBodyInstanceOpaque{
+		unsafe{ UPrimitiveComponent_GetBodyInstanceInvokerHandler.as_ref().unwrap()(self.inner, BoneName, bGetWelded, Index) }
+	}
+	#[inline]
+	pub fn GetBodySetup(&mut self) -> *mut UBodySetupOpaque{
+		unsafe{ UPrimitiveComponent_GetBodySetupInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCenterOfMass(&self, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetCenterOfMassInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetCollisionObjectType(&self) -> ECollisionChannel{
+		unsafe{ UPrimitiveComponent_GetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCollisionProfileName(&self) -> UName{
+		unsafe{ UPrimitiveComponent_GetCollisionProfileNameInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetCollisionShape(&self, Inflation: f32) -> CollisionShape{
+		unsafe{ UPrimitiveComponent_GetCollisionShapeInvokerHandler.as_ref().unwrap()(self.inner, Inflation) }
+	}
+	#[inline]
+	pub fn GetComponentTransformFromBodyInstance(&mut self, UseBI: *mut FBodyInstanceOpaque) -> Transform{
+		unsafe{ UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvokerHandler.as_ref().unwrap()(self.inner, UseBI) }
+	}
+	#[inline]
+	pub fn GetComponentVelocity(&self) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetComponentVelocityInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn GetCustomPrimitiveDataIndexForScalarParameter(&self, ParameterName: UName) -> i32{
 		unsafe{ UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterInvokerHandler.as_ref().unwrap()(self.inner, ParameterName) }
 	}
@@ -5156,8 +6167,32 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_GetCustomPrimitiveDataIndexForVectorParameterInvokerHandler.as_ref().unwrap()(self.inner, ParameterName) }
 	}
 	#[inline]
+	pub fn GetDiffuseBoost(&self, ElementIndex: i32) -> f32{
+		unsafe{ UPrimitiveComponent_GetDiffuseBoostInvokerHandler.as_ref().unwrap()(self.inner, ElementIndex) }
+	}
+	#[inline]
+	pub fn GetEditorMaterial(&self, ElementIndex: i32) -> *mut UMaterialInterfaceOpaque{
+		unsafe{ UPrimitiveComponent_GetEditorMaterialInvokerHandler.as_ref().unwrap()(self.inner, ElementIndex) }
+	}
+	#[inline]
+	pub fn GetEmissiveBoost(&self, ElementIndex: i32) -> f32{
+		unsafe{ UPrimitiveComponent_GetEmissiveBoostInvokerHandler.as_ref().unwrap()(self.inner, ElementIndex) }
+	}
+	#[inline]
 	pub fn GetGenerateOverlapEvents(&self) -> bool{
 		unsafe{ UPrimitiveComponent_GetGenerateOverlapEventsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetHiddenEditorViews(&self) -> u64{
+		unsafe{ UPrimitiveComponent_GetHiddenEditorViewsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetInertiaTensor(&self, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetInertiaTensorInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetLODParentPrimitive(&self) -> Option<UPrimitiveComponent>{
+		unsafe{ UPrimitiveComponent::from_ptr(UPrimitiveComponent_GetLODParentPrimitiveInvokerHandler.as_ref().unwrap()(self.inner)) }
 	}
 	#[inline]
 	pub fn GetLastRenderTime(&self) -> f32{
@@ -5168,28 +6203,340 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_GetLastRenderTimeOnScreenInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn GetLevelInstanceEditingState(&self) -> bool{
+		unsafe{ UPrimitiveComponent_GetLevelInstanceEditingStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetLightAndShadowMapMemoryUsage(&self, LightMapMemoryUsage: &mut i32, ShadowMapMemoryUsage: &mut i32){
+		unsafe{ UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvokerHandler.as_ref().unwrap()(self.inner, LightMapMemoryUsage, ShadowMapMemoryUsage) }
+	}
+	#[inline]
+	pub fn GetLightMapResolution(&self, Width: &mut i32, Height: &mut i32) -> bool{
+		unsafe{ UPrimitiveComponent_GetLightMapResolutionInvokerHandler.as_ref().unwrap()(self.inner, Width, Height) }
+	}
+	#[inline]
+	pub fn GetLightingAttachmentRoot(&self) -> Option<UPrimitiveComponent>{
+		unsafe{ UPrimitiveComponent::from_ptr(UPrimitiveComponent_GetLightingAttachmentRootInvokerHandler.as_ref().unwrap()(self.inner)) }
+	}
+	#[inline]
+	pub fn GetLinearDamping(&self) -> f32{
+		unsafe{ UPrimitiveComponent_GetLinearDampingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetMass(&self) -> f32{
+		unsafe{ UPrimitiveComponent_GetMassInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetMassScale(&self, BoneName: UName) -> f32{
+		unsafe{ UPrimitiveComponent_GetMassScaleInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetMaterial(&self, ElementIndex: i32) -> *mut UMaterialInterfaceOpaque{
+		unsafe{ UPrimitiveComponent_GetMaterialInvokerHandler.as_ref().unwrap()(self.inner, ElementIndex) }
+	}
+	#[inline]
+	pub fn GetMaterialFromCollisionFaceIndex(&self, FaceIndex: i32, SectionIndex: &mut i32) -> *mut UMaterialInterfaceOpaque{
+		unsafe{ UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvokerHandler.as_ref().unwrap()(self.inner, FaceIndex, SectionIndex) }
+	}
+	#[inline]
+	pub fn GetNumMaterials(&self) -> i32{
+		unsafe{ UPrimitiveComponent_GetNumMaterialsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetNumUncachedStaticLightingInteractions(&self) -> i32{
+		unsafe{ UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetPhysicsAngularVelocityInDegrees(&self, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetPhysicsAngularVelocityInRadians(&self, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetPhysicsLinearVelocity(&mut self, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetPhysicsLinearVelocityInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn GetPhysicsLinearVelocityAtPoint(&mut self, Point: Vector3, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvokerHandler.as_ref().unwrap()(self.inner, Point, BoneName) }
+	}
+	#[inline]
 	pub fn GetRayTracingGroupId(&self) -> i32{
 		unsafe{ UPrimitiveComponent_GetRayTracingGroupIdInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetShadowIndirectOnly(&self) -> bool{
+		unsafe{ UPrimitiveComponent_GetShadowIndirectOnlyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetStaticLightMapResolution(&self) -> i32{
+		unsafe{ UPrimitiveComponent_GetStaticLightMapResolutionInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn GetStreamingScale(&self) -> f32{
+		unsafe{ UPrimitiveComponent_GetStreamingScaleInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn GetVirtualTextureMainPassMaxDrawDistance(&self) -> f32{
 		unsafe{ UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistanceInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn HasStaticLighting(&self) -> bool{
+		unsafe{ UPrimitiveComponent_HasStaticLightingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasValidPhysicsState(&self) -> bool{
+		unsafe{ UPrimitiveComponent_HasValidPhysicsStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn HasValidSettingsForStaticLighting(&self, bOverlookInvalidComponents: bool) -> bool{
+		unsafe{ UPrimitiveComponent_HasValidSettingsForStaticLightingInvokerHandler.as_ref().unwrap()(self.inner, bOverlookInvalidComponents) }
+	}
+	#[inline]
 	pub fn IgnoreActorWhenMoving(&mut self, Actor: &mut AActor, bShouldIgnore: bool){
 		unsafe{ UPrimitiveComponent_IgnoreActorWhenMovingInvokerHandler.as_ref().unwrap()(self.inner, Actor.inner(), bShouldIgnore) }
+	}
+	#[inline]
+	pub fn IgnoreBoundsForEditorFocus(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IgnoreBoundsForEditorFocusInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
 	pub fn IgnoreComponentWhenMoving(&mut self, Component: &mut UPrimitiveComponent, bShouldIgnore: bool){
 		unsafe{ UPrimitiveComponent_IgnoreComponentWhenMovingInvokerHandler.as_ref().unwrap()(self.inner, Component.inner(), bShouldIgnore) }
 	}
 	#[inline]
+	pub fn InvalidateLightingCacheDetailed(&mut self, bInvalidateBuildEnqueuedLighting: bool, bTranslationOnly: bool){
+		unsafe{ UPrimitiveComponent_InvalidateLightingCacheDetailedInvokerHandler.as_ref().unwrap()(self.inner, bInvalidateBuildEnqueuedLighting, bTranslationOnly) }
+	}
+	#[inline]
 	pub fn InvalidateLumenSurfaceCache(&mut self){
 		unsafe{ UPrimitiveComponent_InvalidateLumenSurfaceCacheInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
 	#[inline]
+	pub fn IsAnyRigidBodyAwake(&mut self) -> bool{
+		unsafe{ UPrimitiveComponent_IsAnyRigidBodyAwakeInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn IsAttachedToStreamingManager(&self) -> bool{
 		unsafe{ UPrimitiveComponent_IsAttachedToStreamingManagerInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsCompiling(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsCompilingInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsComponentIndividuallySelected(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsComponentIndividuallySelectedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsEditorOnly(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsEditorOnlyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsGravityEnabled(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsGravityEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsNavigationRelevant(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsNavigationRelevantInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsOverlappingActor(&self, Other: &AActor) -> bool{
+		unsafe{ UPrimitiveComponent_IsOverlappingActorInvokerHandler.as_ref().unwrap()(self.inner, Other.inner()) }
+	}
+	#[inline]
+	pub fn IsOverlappingComponent(&self, OtherComp: &UPrimitiveComponent) -> bool{
+		unsafe{ UPrimitiveComponent_IsOverlappingComponentInvokerHandler.as_ref().unwrap()(self.inner, OtherComp.inner()) }
+	}
+	#[inline]
+	pub fn IsReadyForFinishDestroy(&mut self) -> bool{
+		unsafe{ UPrimitiveComponent_IsReadyForFinishDestroyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsSimulatingPhysics(&self, BoneName: UName) -> bool{
+		unsafe{ UPrimitiveComponent_IsSimulatingPhysicsInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn IsWelded(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsWeldedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsWorldGeometry(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsWorldGeometryInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn IsZeroExtent(&self) -> bool{
+		unsafe{ UPrimitiveComponent_IsZeroExtentInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn K2_IsCollisionEnabled(&self) -> bool{
+		unsafe{ UPrimitiveComponent_K2_IsCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn K2_IsPhysicsCollisionEnabled(&self) -> bool{
+		unsafe{ UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn K2_IsQueryCollisionEnabled(&self) -> bool{
+		unsafe{ UPrimitiveComponent_K2_IsQueryCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn NeedsLoadForClient(&self) -> bool{
+		unsafe{ UPrimitiveComponent_NeedsLoadForClientInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn NeedsLoadForServer(&self) -> bool{
+		unsafe{ UPrimitiveComponent_NeedsLoadForServerInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnActorEnableCollisionChanged(&mut self){
+		unsafe{ UPrimitiveComponent_OnActorEnableCollisionChangedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnAttachmentChanged(&mut self){
+		unsafe{ UPrimitiveComponent_OnAttachmentChangedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnComponentDestroyed(&mut self, bDestroyingHierarchy: bool){
+		unsafe{ UPrimitiveComponent_OnComponentDestroyedInvokerHandler.as_ref().unwrap()(self.inner, bDestroyingHierarchy) }
+	}
+	#[inline]
+	pub fn OnCreatePhysicsState(&mut self){
+		unsafe{ UPrimitiveComponent_OnCreatePhysicsStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnDestroyPhysicsState(&mut self){
+		unsafe{ UPrimitiveComponent_OnDestroyPhysicsStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnRegister(&mut self){
+		unsafe{ UPrimitiveComponent_OnRegisterInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn OnUnregister(&mut self){
+		unsafe{ UPrimitiveComponent_OnUnregisterInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostDuplicate(&mut self, bDuplicateForPIE: bool){
+		unsafe{ UPrimitiveComponent_PostDuplicateInvokerHandler.as_ref().unwrap()(self.inner, bDuplicateForPIE) }
+	}
+	#[inline]
+	pub fn PostEditImport(&mut self){
+		unsafe{ UPrimitiveComponent_PostEditImportInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostInitProperties(&mut self){
+		unsafe{ UPrimitiveComponent_PostInitPropertiesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PostLoad(&mut self){
+		unsafe{ UPrimitiveComponent_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PushEditorVisibilityToProxy(&mut self, InVisibility: u64){
+		unsafe{ UPrimitiveComponent_PushEditorVisibilityToProxyInvokerHandler.as_ref().unwrap()(self.inner, InVisibility) }
+	}
+	#[inline]
+	pub fn PushHoveredToProxy(&mut self, bInHovered: bool){
+		unsafe{ UPrimitiveComponent_PushHoveredToProxyInvokerHandler.as_ref().unwrap()(self.inner, bInHovered) }
+	}
+	#[inline]
+	pub fn PushLevelInstanceEditingStateToProxy(&mut self, bInEditingState: bool){
+		unsafe{ UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvokerHandler.as_ref().unwrap()(self.inner, bInEditingState) }
+	}
+	#[inline]
+	pub fn PushSelectionToProxy(&mut self){
+		unsafe{ UPrimitiveComponent_PushSelectionToProxyInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PutAllRigidBodiesToSleep(&mut self){
+		unsafe{ UPrimitiveComponent_PutAllRigidBodiesToSleepInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn PutRigidBodyToSleep(&mut self, BoneName: UName){
+		unsafe{ UPrimitiveComponent_PutRigidBodyToSleepInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn RemapActorTextureStreamingBuiltDataToLevel(&mut self, InActorTextureBuildData: *mut UActorTextureStreamingBuildDataComponentOpaque) -> bool{
+		unsafe{ UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvokerHandler.as_ref().unwrap()(self.inner, InActorTextureBuildData) }
+	}
+	#[inline]
+	pub fn RigidBodyIsAwake(&self, BoneName: UName) -> bool{
+		unsafe{ UPrimitiveComponent_RigidBodyIsAwakeInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
+	pub fn ScaleByMomentOfInertia(&self, InputVector: Vector3, BoneName: UName) -> Vector3{
+		unsafe{ UPrimitiveComponent_ScaleByMomentOfInertiaInvokerHandler.as_ref().unwrap()(self.inner, InputVector, BoneName) }
+	}
+	#[inline]
+	pub fn SendRenderDebugPhysics(&mut self, OverrideSceneProxy: *mut FPrimitiveSceneProxyOpaque){
+		unsafe{ UPrimitiveComponent_SendRenderDebugPhysicsInvokerHandler.as_ref().unwrap()(self.inner, OverrideSceneProxy) }
+	}
+	#[inline]
+	pub fn SendRenderTransform_Concurrent(&mut self){
+		unsafe{ UPrimitiveComponent_SendRenderTransform_ConcurrentInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SetAllMassScale(&mut self, InMassScale: f32){
+		unsafe{ UPrimitiveComponent_SetAllMassScaleInvokerHandler.as_ref().unwrap()(self.inner, InMassScale) }
+	}
+	#[inline]
+	pub fn SetAllPhysicsLinearVelocity(&mut self, NewVel: Vector3, bAddToCurrent: bool){
+		unsafe{ UPrimitiveComponent_SetAllPhysicsLinearVelocityInvokerHandler.as_ref().unwrap()(self.inner, NewVel, bAddToCurrent) }
+	}
+	#[inline]
+	pub fn SetAllPhysicsPosition(&mut self, NewPos: Vector3){
+		unsafe{ UPrimitiveComponent_SetAllPhysicsPositionInvokerHandler.as_ref().unwrap()(self.inner, NewPos) }
+	}
+	#[inline]
+	pub fn SetAllPhysicsRotation(&mut self, NewRot: Rotator){
+		unsafe{ UPrimitiveComponent_SetAllPhysicsRotationInvokerHandler.as_ref().unwrap()(self.inner, NewRot) }
+	}
+	#[inline]
+	pub fn SetAllUseCCD(&mut self, InUseCCD: bool){
+		unsafe{ UPrimitiveComponent_SetAllUseCCDInvokerHandler.as_ref().unwrap()(self.inner, InUseCCD) }
+	}
+	#[inline]
+	pub fn SetAngularDamping(&mut self, InDamping: f32){
+		unsafe{ UPrimitiveComponent_SetAngularDampingInvokerHandler.as_ref().unwrap()(self.inner, InDamping) }
+	}
+	#[inline]
+	pub fn SetBoundsScale(&mut self, NewBoundsScale: f32){
+		unsafe{ UPrimitiveComponent_SetBoundsScaleInvokerHandler.as_ref().unwrap()(self.inner, NewBoundsScale) }
+	}
+	#[inline]
+	pub fn SetCachedMaxDrawDistance(&mut self, NewCachedMaxDrawDistance: f32){
+		unsafe{ UPrimitiveComponent_SetCachedMaxDrawDistanceInvokerHandler.as_ref().unwrap()(self.inner, NewCachedMaxDrawDistance) }
+	}
+	#[inline]
+	pub fn SetCastHiddenShadow(&mut self, NewCastHiddenShadow: bool){
+		unsafe{ UPrimitiveComponent_SetCastHiddenShadowInvokerHandler.as_ref().unwrap()(self.inner, NewCastHiddenShadow) }
+	}
+	#[inline]
+	pub fn SetCastShadow(&mut self, NewCastShadow: bool){
+		unsafe{ UPrimitiveComponent_SetCastShadowInvokerHandler.as_ref().unwrap()(self.inner, NewCastShadow) }
+	}
+	#[inline]
+	pub fn SetCenterOfMass(&mut self, CenterOfMassOffset: Vector3, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetCenterOfMassInvokerHandler.as_ref().unwrap()(self.inner, CenterOfMassOffset, BoneName) }
+	}
+	#[inline]
+	pub fn SetCollisionObjectType(&mut self, Channel: ECollisionChannel){
+		unsafe{ UPrimitiveComponent_SetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner, Channel) }
+	}
+	#[inline]
+	pub fn SetCollisionProfileName(&mut self, InCollisionProfileName: UName, bUpdateOverlaps: bool){
+		unsafe{ UPrimitiveComponent_SetCollisionProfileNameInvokerHandler.as_ref().unwrap()(self.inner, InCollisionProfileName, bUpdateOverlaps) }
+	}
+	#[inline]
+	pub fn SetCullDistance(&mut self, NewCullDistance: f32){
+		unsafe{ UPrimitiveComponent_SetCullDistanceInvokerHandler.as_ref().unwrap()(self.inner, NewCullDistance) }
+	}
+	#[inline]
+	pub fn SetCustomDepthStencilValue(&mut self, Value: i32){
+		unsafe{ UPrimitiveComponent_SetCustomDepthStencilValueInvokerHandler.as_ref().unwrap()(self.inner, Value) }
 	}
 	#[inline]
 	pub fn SetCustomPrimitiveDataFloat(&mut self, DataIndex: i32, Value: f32){
@@ -5224,8 +6571,32 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4InvokerHandler.as_ref().unwrap()(self.inner, DataIndex, Value) }
 	}
 	#[inline]
+	pub fn SetEmissiveLightSource(&mut self, NewEmissiveLightSource: bool){
+		unsafe{ UPrimitiveComponent_SetEmissiveLightSourceInvokerHandler.as_ref().unwrap()(self.inner, NewEmissiveLightSource) }
+	}
+	#[inline]
+	pub fn SetEnableGravity(&mut self, bGravityEnabled: bool){
+		unsafe{ UPrimitiveComponent_SetEnableGravityInvokerHandler.as_ref().unwrap()(self.inner, bGravityEnabled) }
+	}
+	#[inline]
 	pub fn SetGenerateOverlapEvents(&mut self, bInGenerateOverlapEvents: bool){
 		unsafe{ UPrimitiveComponent_SetGenerateOverlapEventsInvokerHandler.as_ref().unwrap()(self.inner, bInGenerateOverlapEvents) }
+	}
+	#[inline]
+	pub fn SetHiddenInSceneCapture(&mut self, bValue: bool){
+		unsafe{ UPrimitiveComponent_SetHiddenInSceneCaptureInvokerHandler.as_ref().unwrap()(self.inner, bValue) }
+	}
+	#[inline]
+	pub fn SetIgnoreBoundsForEditorFocus(&mut self, bIgnore: bool){
+		unsafe{ UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvokerHandler.as_ref().unwrap()(self.inner, bIgnore) }
+	}
+	#[inline]
+	pub fn SetIsBeingMovedByEditor(&mut self, bNewIsBeingMoved: bool){
+		unsafe{ UPrimitiveComponent_SetIsBeingMovedByEditorInvokerHandler.as_ref().unwrap()(self.inner, bNewIsBeingMoved) }
+	}
+	#[inline]
+	pub fn SetLODParentPrimitive(&mut self, InLODParentPrimitive: &mut UPrimitiveComponent){
+		unsafe{ UPrimitiveComponent_SetLODParentPrimitiveInvokerHandler.as_ref().unwrap()(self.inner, InLODParentPrimitive.inner()) }
 	}
 	#[inline]
 	pub fn SetLastRenderTime(&mut self, InLastRenderTime: f32){
@@ -5236,12 +6607,104 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_SetLightingChannelsInvokerHandler.as_ref().unwrap()(self.inner, bChannel0, bChannel1, bChannel2) }
 	}
 	#[inline]
+	pub fn SetLinearDamping(&mut self, InDamping: f32){
+		unsafe{ UPrimitiveComponent_SetLinearDampingInvokerHandler.as_ref().unwrap()(self.inner, InDamping) }
+	}
+	#[inline]
+	pub fn SetMassOverrideInKg(&mut self, BoneName: UName, MassInKg: f32, bOverrideMass: bool){
+		unsafe{ UPrimitiveComponent_SetMassOverrideInKgInvokerHandler.as_ref().unwrap()(self.inner, BoneName, MassInKg, bOverrideMass) }
+	}
+	#[inline]
+	pub fn SetMassScale(&mut self, BoneName: UName, InMassScale: f32){
+		unsafe{ UPrimitiveComponent_SetMassScaleInvokerHandler.as_ref().unwrap()(self.inner, BoneName, InMassScale) }
+	}
+	#[inline]
+	pub fn SetMaterial(&mut self, ElementIndex: i32, Material: *mut UMaterialInterfaceOpaque){
+		unsafe{ UPrimitiveComponent_SetMaterialInvokerHandler.as_ref().unwrap()(self.inner, ElementIndex, Material) }
+	}
+	#[inline]
+	pub fn SetMaterialByName(&mut self, MaterialSlotName: UName, Material: *mut UMaterialInterfaceOpaque){
+		unsafe{ UPrimitiveComponent_SetMaterialByNameInvokerHandler.as_ref().unwrap()(self.inner, MaterialSlotName, Material) }
+	}
+	#[inline]
+	pub fn SetNotifyRigidBodyCollision(&mut self, bNewNotifyRigidBodyCollision: bool){
+		unsafe{ UPrimitiveComponent_SetNotifyRigidBodyCollisionInvokerHandler.as_ref().unwrap()(self.inner, bNewNotifyRigidBodyCollision) }
+	}
+	#[inline]
+	pub fn SetOnlyOwnerSee(&mut self, bNewOnlyOwnerSee: bool){
+		unsafe{ UPrimitiveComponent_SetOnlyOwnerSeeInvokerHandler.as_ref().unwrap()(self.inner, bNewOnlyOwnerSee) }
+	}
+	#[inline]
+	pub fn SetOwnerNoSee(&mut self, bNewOwnerNoSee: bool){
+		unsafe{ UPrimitiveComponent_SetOwnerNoSeeInvokerHandler.as_ref().unwrap()(self.inner, bNewOwnerNoSee) }
+	}
+	#[inline]
+	pub fn SetPhysMaterialOverride(&mut self, NewPhysMaterial: *mut UPhysicalMaterialOpaque){
+		unsafe{ UPrimitiveComponent_SetPhysMaterialOverrideInvokerHandler.as_ref().unwrap()(self.inner, NewPhysMaterial) }
+	}
+	#[inline]
+	pub fn SetPhysicsAngularVelocityInDegrees(&mut self, NewAngVel: Vector3, bAddToCurrent: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvokerHandler.as_ref().unwrap()(self.inner, NewAngVel, bAddToCurrent, BoneName) }
+	}
+	#[inline]
+	pub fn SetPhysicsAngularVelocityInRadians(&mut self, NewAngVel: Vector3, bAddToCurrent: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvokerHandler.as_ref().unwrap()(self.inner, NewAngVel, bAddToCurrent, BoneName) }
+	}
+	#[inline]
+	pub fn SetPhysicsLinearVelocity(&mut self, NewVel: Vector3, bAddToCurrent: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetPhysicsLinearVelocityInvokerHandler.as_ref().unwrap()(self.inner, NewVel, bAddToCurrent, BoneName) }
+	}
+	#[inline]
+	pub fn SetPhysicsMaxAngularVelocityInDegrees(&mut self, NewMaxAngVel: f32, bAddToCurrent: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvokerHandler.as_ref().unwrap()(self.inner, NewMaxAngVel, bAddToCurrent, BoneName) }
+	}
+	#[inline]
+	pub fn SetPhysicsMaxAngularVelocityInRadians(&mut self, NewMaxAngVel: f32, bAddToCurrent: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvokerHandler.as_ref().unwrap()(self.inner, NewMaxAngVel, bAddToCurrent, BoneName) }
+	}
+	#[inline]
+	pub fn SetReceivesDecals(&mut self, bNewReceivesDecals: bool){
+		unsafe{ UPrimitiveComponent_SetReceivesDecalsInvokerHandler.as_ref().unwrap()(self.inner, bNewReceivesDecals) }
+	}
+	#[inline]
+	pub fn SetRenderCustomDepth(&mut self, bValue: bool){
+		unsafe{ UPrimitiveComponent_SetRenderCustomDepthInvokerHandler.as_ref().unwrap()(self.inner, bValue) }
+	}
+	#[inline]
+	pub fn SetRenderInDepthPass(&mut self, bValue: bool){
+		unsafe{ UPrimitiveComponent_SetRenderInDepthPassInvokerHandler.as_ref().unwrap()(self.inner, bValue) }
+	}
+	#[inline]
+	pub fn SetRenderInMainPass(&mut self, bValue: bool){
+		unsafe{ UPrimitiveComponent_SetRenderInMainPassInvokerHandler.as_ref().unwrap()(self.inner, bValue) }
+	}
+	#[inline]
 	pub fn SetScalarParameterForCustomPrimitiveData(&mut self, ParameterName: UName, Value: f32){
 		unsafe{ UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataInvokerHandler.as_ref().unwrap()(self.inner, ParameterName, Value) }
 	}
 	#[inline]
 	pub fn SetScalarParameterForDefaultCustomPrimitiveData(&mut self, ParameterName: UName, Value: f32){
 		unsafe{ UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveDataInvokerHandler.as_ref().unwrap()(self.inner, ParameterName, Value) }
+	}
+	#[inline]
+	pub fn SetSimulatePhysics(&mut self, bSimulate: bool){
+		unsafe{ UPrimitiveComponent_SetSimulatePhysicsInvokerHandler.as_ref().unwrap()(self.inner, bSimulate) }
+	}
+	#[inline]
+	pub fn SetSingleSampleShadowFromStationaryLights(&mut self, bNewSingleSampleShadowFromStationaryLights: bool){
+		unsafe{ UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvokerHandler.as_ref().unwrap()(self.inner, bNewSingleSampleShadowFromStationaryLights) }
+	}
+	#[inline]
+	pub fn SetTranslucencySortDistanceOffset(&mut self, NewTranslucencySortDistanceOffset: f32){
+		unsafe{ UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvokerHandler.as_ref().unwrap()(self.inner, NewTranslucencySortDistanceOffset) }
+	}
+	#[inline]
+	pub fn SetTranslucentSortPriority(&mut self, NewTranslucentSortPriority: i32){
+		unsafe{ UPrimitiveComponent_SetTranslucentSortPriorityInvokerHandler.as_ref().unwrap()(self.inner, NewTranslucentSortPriority) }
+	}
+	#[inline]
+	pub fn SetUseCCD(&mut self, InUseCCD: bool, BoneName: UName){
+		unsafe{ UPrimitiveComponent_SetUseCCDInvokerHandler.as_ref().unwrap()(self.inner, InUseCCD, BoneName) }
 	}
 	#[inline]
 	pub fn SetVectorParameterForCustomPrimitiveData(&mut self, ParameterName: UName, Value: Vector4){
@@ -5252,8 +6715,92 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveDataInvokerHandler.as_ref().unwrap()(self.inner, ParameterName, Value) }
 	}
 	#[inline]
+	pub fn SetVisibleInRayTracing(&mut self, bNewVisibleInRayTracing: bool){
+		unsafe{ UPrimitiveComponent_SetVisibleInRayTracingInvokerHandler.as_ref().unwrap()(self.inner, bNewVisibleInRayTracing) }
+	}
+	#[inline]
+	pub fn SetVisibleInSceneCaptureOnly(&mut self, bValue: bool){
+		unsafe{ UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvokerHandler.as_ref().unwrap()(self.inner, bValue) }
+	}
+	#[inline]
+	pub fn ShouldComponentAddToScene(&self) -> bool{
+		unsafe{ UPrimitiveComponent_ShouldComponentAddToSceneInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ShouldCreatePhysicsState(&self) -> bool{
+		unsafe{ UPrimitiveComponent_ShouldCreatePhysicsStateInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ShouldGenerateAutoLOD(&self, HierarchicalLevelIndex: i32) -> bool{
+		unsafe{ UPrimitiveComponent_ShouldGenerateAutoLODInvokerHandler.as_ref().unwrap()(self.inner, HierarchicalLevelIndex) }
+	}
+	#[inline]
+	pub fn ShouldRecreateProxyOnUpdateTransform(&self) -> bool{
+		unsafe{ UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn ShouldRenderSelected(&self) -> bool{
+		unsafe{ UPrimitiveComponent_ShouldRenderSelectedInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SupportsWorldPositionOffsetVelocity(&self) -> bool{
+		unsafe{ UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn SyncComponentToRBPhysics(&mut self){
+		unsafe{ UPrimitiveComponent_SyncComponentToRBPhysicsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UnWeldChildren(&mut self){
+		unsafe{ UPrimitiveComponent_UnWeldChildrenInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UnWeldFromParent(&mut self){
+		unsafe{ UPrimitiveComponent_UnWeldFromParentInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateBounds(&mut self){
+		unsafe{ UPrimitiveComponent_UpdateBoundsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateCollisionProfile(&mut self){
+		unsafe{ UPrimitiveComponent_UpdateCollisionProfileInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn UpdateOcclusionBoundsSlack(&mut self, NewSlack: f32){
+		unsafe{ UPrimitiveComponent_UpdateOcclusionBoundsSlackInvokerHandler.as_ref().unwrap()(self.inner, NewSlack) }
+	}
+	#[inline]
+	pub fn UpdateOverlapsImpl(&mut self, NewPendingOverlaps: *mut TOverlapArrayViewOpaque, bDoNotifies: bool, OverlapsAtEndLocation: *mut TOverlapArrayViewOpaque) -> bool{
+		unsafe{ UPrimitiveComponent_UpdateOverlapsImplInvokerHandler.as_ref().unwrap()(self.inner, NewPendingOverlaps, bDoNotifies, OverlapsAtEndLocation) }
+	}
+	#[inline]
+	pub fn UpdatePhysicsVolume(&mut self, bTriggerNotifiers: bool){
+		unsafe{ UPrimitiveComponent_UpdatePhysicsVolumeInvokerHandler.as_ref().unwrap()(self.inner, bTriggerNotifiers) }
+	}
+	#[inline]
+	pub fn UsesOnlyUnlitMaterials(&self) -> bool{
+		unsafe{ UPrimitiveComponent_UsesOnlyUnlitMaterialsInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn WakeAllRigidBodies(&mut self){
+		unsafe{ UPrimitiveComponent_WakeAllRigidBodiesInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
+	pub fn WakeRigidBody(&mut self, BoneName: UName){
+		unsafe{ UPrimitiveComponent_WakeRigidBodyInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
+	}
+	#[inline]
 	pub fn WasRecentlyRendered(&self, Tolerance: f32) -> bool{
 		unsafe{ UPrimitiveComponent_WasRecentlyRenderedInvokerHandler.as_ref().unwrap()(self.inner, Tolerance) }
+	}
+	#[inline]
+	pub fn WeldTo(&mut self, InParent: &mut USceneComponent, InSocketName: UName){
+		unsafe{ UPrimitiveComponent_WeldToInvokerHandler.as_ref().unwrap()(self.inner, InParent.inner(), InSocketName) }
+	}
+	#[inline]
+	pub fn WeldToImplementation(&mut self, InParent: &mut USceneComponent, ParentSocketName: UName, bWeldSimulatedChild: bool) -> bool{
+		unsafe{ UPrimitiveComponent_WeldToImplementationInvokerHandler.as_ref().unwrap()(self.inner, InParent.inner(), ParentSocketName, bWeldSimulatedChild) }
 	}
 }
 pub struct UAnimInstance{
@@ -15605,11 +17152,1642 @@ mod ffis{
         unsafe{ UActorComponent_UnregisterComponentInvokerHandler = Some(handler) };
     }
 
+    type UWorld_AddControllerInvoker = unsafe extern "C" fn(*mut c_void, *mut AControllerOpaque);
+    pub(super) static mut UWorld_AddControllerInvokerHandler: Option<UWorld_AddControllerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddController_handler(handler: UWorld_AddControllerInvoker){
+        unsafe{ UWorld_AddControllerInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> bool;
+    pub(super) static mut UWorld_AddLevelInvokerHandler: Option<UWorld_AddLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddLevel_handler(handler: UWorld_AddLevelInvoker){
+        unsafe{ UWorld_AddLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddNetworkActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque);
+    pub(super) static mut UWorld_AddNetworkActorInvokerHandler: Option<UWorld_AddNetworkActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddNetworkActor_handler(handler: UWorld_AddNetworkActorInvoker){
+        unsafe{ UWorld_AddNetworkActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddParameterCollectionInstanceInvoker = unsafe extern "C" fn(*mut c_void, *mut UMaterialParameterCollectionOpaque, bool);
+    pub(super) static mut UWorld_AddParameterCollectionInstanceInvokerHandler: Option<UWorld_AddParameterCollectionInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddParameterCollectionInstance_handler(handler: UWorld_AddParameterCollectionInstanceInvoker){
+        unsafe{ UWorld_AddParameterCollectionInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddPhysicsVolumeInvoker = unsafe extern "C" fn(*mut c_void, *mut APhysicsVolumeOpaque);
+    pub(super) static mut UWorld_AddPhysicsVolumeInvokerHandler: Option<UWorld_AddPhysicsVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddPhysicsVolume_handler(handler: UWorld_AddPhysicsVolumeInvoker){
+        unsafe{ UWorld_AddPhysicsVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddPostProcessingSettingsInvoker = unsafe extern "C" fn(*mut c_void, Vector3, *mut FSceneViewOpaque);
+    pub(super) static mut UWorld_AddPostProcessingSettingsInvokerHandler: Option<UWorld_AddPostProcessingSettingsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddPostProcessingSettings_handler(handler: UWorld_AddPostProcessingSettingsInvoker){
+        unsafe{ UWorld_AddPostProcessingSettingsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddStreamingLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque);
+    pub(super) static mut UWorld_AddStreamingLevelInvokerHandler: Option<UWorld_AddStreamingLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddStreamingLevel_handler(handler: UWorld_AddStreamingLevelInvoker){
+        unsafe{ UWorld_AddStreamingLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AddUniqueStreamingLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque);
+    pub(super) static mut UWorld_AddUniqueStreamingLevelInvokerHandler: Option<UWorld_AddUniqueStreamingLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AddUniqueStreamingLevel_handler(handler: UWorld_AddUniqueStreamingLevelInvoker){
+        unsafe{ UWorld_AddUniqueStreamingLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AllowAudioPlaybackInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_AllowAudioPlaybackInvokerHandler: Option<UWorld_AllowAudioPlaybackInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AllowAudioPlayback_handler(handler: UWorld_AllowAudioPlaybackInvoker){
+        unsafe{ UWorld_AllowAudioPlaybackInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AllowLevelLoadRequestsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_AllowLevelLoadRequestsInvokerHandler: Option<UWorld_AllowLevelLoadRequestsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AllowLevelLoadRequests_handler(handler: UWorld_AllowLevelLoadRequestsInvoker){
+        unsafe{ UWorld_AllowLevelLoadRequestsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AreActorsInitializedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_AreActorsInitializedInvokerHandler: Option<UWorld_AreActorsInitializedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AreActorsInitialized_handler(handler: UWorld_AreActorsInitializedInvoker){
+        unsafe{ UWorld_AreActorsInitializedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AreAlwaysLoadedLevelsLoadedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_AreAlwaysLoadedLevelsLoadedInvokerHandler: Option<UWorld_AreAlwaysLoadedLevelsLoadedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AreAlwaysLoadedLevelsLoaded_handler(handler: UWorld_AreAlwaysLoadedLevelsLoadedInvoker){
+        unsafe{ UWorld_AreAlwaysLoadedLevelsLoadedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvokerHandler: Option<UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel_handler(handler: UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvoker){
+        unsafe{ UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BeginDestroyInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_BeginDestroyInvokerHandler: Option<UWorld_BeginDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BeginDestroy_handler(handler: UWorld_BeginDestroyInvoker){
+        unsafe{ UWorld_BeginDestroyInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BeginPlayInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_BeginPlayInvokerHandler: Option<UWorld_BeginPlayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BeginPlay_handler(handler: UWorld_BeginPlayInvoker){
+        unsafe{ UWorld_BeginPlayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BeginTearingDownInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_BeginTearingDownInvokerHandler: Option<UWorld_BeginTearingDownInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BeginTearingDown_handler(handler: UWorld_BeginTearingDownInvoker){
+        unsafe{ UWorld_BeginTearingDownInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BlockTillLevelStreamingCompletedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_BlockTillLevelStreamingCompletedInvokerHandler: Option<UWorld_BlockTillLevelStreamingCompletedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BlockTillLevelStreamingCompleted_handler(handler: UWorld_BlockTillLevelStreamingCompletedInvoker){
+        unsafe{ UWorld_BlockTillLevelStreamingCompletedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BroadcastLevelsChangedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_BroadcastLevelsChangedInvokerHandler: Option<UWorld_BroadcastLevelsChangedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BroadcastLevelsChanged_handler(handler: UWorld_BroadcastLevelsChangedInvoker){
+        unsafe{ UWorld_BroadcastLevelsChangedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_BuildPIEPackagePrefixInvoker = unsafe extern "C" fn(i32) -> *const std::os::raw::c_char;
+    pub(super) static mut UWorld_BuildPIEPackagePrefixInvokerHandler: Option<UWorld_BuildPIEPackagePrefixInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_BuildPIEPackagePrefix_handler(handler: UWorld_BuildPIEPackagePrefixInvoker){
+        unsafe{ UWorld_BuildPIEPackagePrefixInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CancelPendingMapChangeInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_CancelPendingMapChangeInvokerHandler: Option<UWorld_CancelPendingMapChangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CancelPendingMapChange_handler(handler: UWorld_CancelPendingMapChangeInvoker){
+        unsafe{ UWorld_CancelPendingMapChangeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CleanupActorsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_CleanupActorsInvokerHandler: Option<UWorld_CleanupActorsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CleanupActors_handler(handler: UWorld_CleanupActorsInvoker){
+        unsafe{ UWorld_CleanupActorsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CleanupWorldInvoker = unsafe extern "C" fn(*mut c_void, bool, bool, *mut UWorldOpaque);
+    pub(super) static mut UWorld_CleanupWorldInvokerHandler: Option<UWorld_CleanupWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CleanupWorld_handler(handler: UWorld_CleanupWorldInvoker){
+        unsafe{ UWorld_CleanupWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ClearActorComponentEndOfFrameUpdateInvoker = unsafe extern "C" fn(*mut c_void, *mut UActorComponentOpaque);
+    pub(super) static mut UWorld_ClearActorComponentEndOfFrameUpdateInvokerHandler: Option<UWorld_ClearActorComponentEndOfFrameUpdateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ClearActorComponentEndOfFrameUpdate_handler(handler: UWorld_ClearActorComponentEndOfFrameUpdateInvoker){
+        unsafe{ UWorld_ClearActorComponentEndOfFrameUpdateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ClearDemoNetDriverInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ClearDemoNetDriverInvokerHandler: Option<UWorld_ClearDemoNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ClearDemoNetDriver_handler(handler: UWorld_ClearDemoNetDriverInvoker){
+        unsafe{ UWorld_ClearDemoNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ClearNetDriverInvoker = unsafe extern "C" fn(*mut c_void, *mut UNetDriverOpaque);
+    pub(super) static mut UWorld_ClearNetDriverInvokerHandler: Option<UWorld_ClearNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ClearNetDriver_handler(handler: UWorld_ClearNetDriverInvoker){
+        unsafe{ UWorld_ClearNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ClearStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ClearStreamingLevelsInvokerHandler: Option<UWorld_ClearStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ClearStreamingLevels_handler(handler: UWorld_ClearStreamingLevelsInvoker){
+        unsafe{ UWorld_ClearStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ClearWorldComponentsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ClearWorldComponentsInvokerHandler: Option<UWorld_ClearWorldComponentsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ClearWorldComponents_handler(handler: UWorld_ClearWorldComponentsInvoker){
+        unsafe{ UWorld_ClearWorldComponentsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CommitMapChangeInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_CommitMapChangeInvokerHandler: Option<UWorld_CommitMapChangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CommitMapChange_handler(handler: UWorld_CommitMapChangeInvoker){
+        unsafe{ UWorld_CommitMapChangeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CommitModelSurfacesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_CommitModelSurfacesInvokerHandler: Option<UWorld_CommitModelSurfacesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CommitModelSurfaces_handler(handler: UWorld_CommitModelSurfacesInvoker){
+        unsafe{ UWorld_CommitModelSurfacesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ConditionallyBuildStreamingDataInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ConditionallyBuildStreamingDataInvokerHandler: Option<UWorld_ConditionallyBuildStreamingDataInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ConditionallyBuildStreamingData_handler(handler: UWorld_ConditionallyBuildStreamingDataInvoker){
+        unsafe{ UWorld_ConditionallyBuildStreamingDataInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ContainsActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque) -> bool;
+    pub(super) static mut UWorld_ContainsActorInvokerHandler: Option<UWorld_ContainsActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ContainsActor_handler(handler: UWorld_ContainsActorInvoker){
+        unsafe{ UWorld_ContainsActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ContainsLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> bool;
+    pub(super) static mut UWorld_ContainsLevelInvokerHandler: Option<UWorld_ContainsLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ContainsLevel_handler(handler: UWorld_ContainsLevelInvoker){
+        unsafe{ UWorld_ContainsLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CopyGameStateInvoker = unsafe extern "C" fn(*mut c_void, *mut AGameModeBaseOpaque, *mut AGameStateBaseOpaque);
+    pub(super) static mut UWorld_CopyGameStateInvokerHandler: Option<UWorld_CopyGameStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CopyGameState_handler(handler: UWorld_CopyGameStateInvoker){
+        unsafe{ UWorld_CopyGameStateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CreateAISystemInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UAISystemBaseOpaque;
+    pub(super) static mut UWorld_CreateAISystemInvokerHandler: Option<UWorld_CreateAISystemInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CreateAISystem_handler(handler: UWorld_CreateAISystemInvoker){
+        unsafe{ UWorld_CreateAISystemInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CreateFXSystemInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_CreateFXSystemInvokerHandler: Option<UWorld_CreateFXSystemInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CreateFXSystem_handler(handler: UWorld_CreateFXSystemInvoker){
+        unsafe{ UWorld_CreateFXSystemInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_CreatePhysicsSceneInvoker = unsafe extern "C" fn(*mut c_void, *mut AWorldSettingsOpaque);
+    pub(super) static mut UWorld_CreatePhysicsSceneInvokerHandler: Option<UWorld_CreatePhysicsSceneInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_CreatePhysicsScene_handler(handler: UWorld_CreatePhysicsSceneInvoker){
+        unsafe{ UWorld_CreatePhysicsSceneInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DeSelectLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque);
+    pub(super) static mut UWorld_DeSelectLevelInvokerHandler: Option<UWorld_DeSelectLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DeSelectLevel_handler(handler: UWorld_DeSelectLevelInvoker){
+        unsafe{ UWorld_DeSelectLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DelayStreamingVolumeUpdatesInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut UWorld_DelayStreamingVolumeUpdatesInvokerHandler: Option<UWorld_DelayStreamingVolumeUpdatesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DelayStreamingVolumeUpdates_handler(handler: UWorld_DelayStreamingVolumeUpdatesInvoker){
+        unsafe{ UWorld_DelayStreamingVolumeUpdatesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DestroyActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, bool, bool) -> bool;
+    pub(super) static mut UWorld_DestroyActorInvokerHandler: Option<UWorld_DestroyActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DestroyActor_handler(handler: UWorld_DestroyActorInvoker){
+        unsafe{ UWorld_DestroyActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DestroyDemoNetDriverInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_DestroyDemoNetDriverInvokerHandler: Option<UWorld_DestroyDemoNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DestroyDemoNetDriver_handler(handler: UWorld_DestroyDemoNetDriverInvoker){
+        unsafe{ UWorld_DestroyDemoNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DestroySwappedPCInvoker = unsafe extern "C" fn(*mut c_void, *mut UNetConnectionOpaque) -> bool;
+    pub(super) static mut UWorld_DestroySwappedPCInvokerHandler: Option<UWorld_DestroySwappedPCInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DestroySwappedPC_handler(handler: UWorld_DestroySwappedPCInvoker){
+        unsafe{ UWorld_DestroySwappedPCInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DestroyWorldInvoker = unsafe extern "C" fn(*mut c_void, bool, *mut UWorldOpaque);
+    pub(super) static mut UWorld_DestroyWorldInvokerHandler: Option<UWorld_DestroyWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DestroyWorld_handler(handler: UWorld_DestroyWorldInvoker){
+        unsafe{ UWorld_DestroyWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_DuplicateRequestedLevelsInvoker = unsafe extern "C" fn(*mut c_void, UName);
+    pub(super) static mut UWorld_DuplicateRequestedLevelsInvokerHandler: Option<UWorld_DuplicateRequestedLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_DuplicateRequestedLevels_handler(handler: UWorld_DuplicateRequestedLevelsInvoker){
+        unsafe{ UWorld_DuplicateRequestedLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_EditorDestroyActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, bool) -> bool;
+    pub(super) static mut UWorld_EditorDestroyActorInvokerHandler: Option<UWorld_EditorDestroyActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_EditorDestroyActor_handler(handler: UWorld_EditorDestroyActorInvoker){
+        unsafe{ UWorld_EditorDestroyActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_EncroachingBlockingGeometryInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, Vector3, Rotator, *mut Vector3) -> bool;
+    pub(super) static mut UWorld_EncroachingBlockingGeometryInvokerHandler: Option<UWorld_EncroachingBlockingGeometryInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_EncroachingBlockingGeometry_handler(handler: UWorld_EncroachingBlockingGeometryInvoker){
+        unsafe{ UWorld_EncroachingBlockingGeometryInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_EnsureCollisionTreeIsBuiltInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_EnsureCollisionTreeIsBuiltInvokerHandler: Option<UWorld_EnsureCollisionTreeIsBuiltInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_EnsureCollisionTreeIsBuilt_handler(handler: UWorld_EnsureCollisionTreeIsBuiltInvoker){
+        unsafe{ UWorld_EnsureCollisionTreeIsBuiltInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_FindWorldInPackageInvoker = unsafe extern "C" fn(*mut UPackageOpaque) -> *mut UWorldOpaque;
+    pub(super) static mut UWorld_FindWorldInPackageInvokerHandler: Option<UWorld_FindWorldInPackageInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_FindWorldInPackage_handler(handler: UWorld_FindWorldInPackageInvoker){
+        unsafe{ UWorld_FindWorldInPackageInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_FinishDestroyInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_FinishDestroyInvokerHandler: Option<UWorld_FinishDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_FinishDestroy_handler(handler: UWorld_FinishDestroyInvoker){
+        unsafe{ UWorld_FinishDestroyInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_FinishPhysicsSimInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_FinishPhysicsSimInvokerHandler: Option<UWorld_FinishPhysicsSimInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_FinishPhysicsSim_handler(handler: UWorld_FinishPhysicsSimInvoker){
+        unsafe{ UWorld_FinishPhysicsSimInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvokerHandler: Option<UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_FlushDeferredParameterCollectionInstanceUpdates_handler(handler: UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvoker){
+        unsafe{ UWorld_FlushDeferredParameterCollectionInstanceUpdatesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_FollowWorldRedirectorInPackageInvoker = unsafe extern "C" fn(*mut UPackageOpaque, *mut UObjectRedirectorOpaque) -> *mut UWorldOpaque;
+    pub(super) static mut UWorld_FollowWorldRedirectorInPackageInvokerHandler: Option<UWorld_FollowWorldRedirectorInPackageInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_FollowWorldRedirectorInPackage_handler(handler: UWorld_FollowWorldRedirectorInPackageInvoker){
+        unsafe{ UWorld_FollowWorldRedirectorInPackageInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAISystemInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UAISystemBaseOpaque;
+    pub(super) static mut UWorld_GetAISystemInvokerHandler: Option<UWorld_GetAISystemInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAISystem_handler(handler: UWorld_GetAISystemInvoker){
+        unsafe{ UWorld_GetAISystemInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetActiveLevelCollectionInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FLevelCollectionOpaque;
+    pub(super) static mut UWorld_GetActiveLevelCollectionInvokerHandler: Option<UWorld_GetActiveLevelCollectionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetActiveLevelCollection_handler(handler: UWorld_GetActiveLevelCollectionInvoker){
+        unsafe{ UWorld_GetActiveLevelCollectionInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetActiveLevelCollectionIndexInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetActiveLevelCollectionIndexInvokerHandler: Option<UWorld_GetActiveLevelCollectionIndexInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetActiveLevelCollectionIndex_handler(handler: UWorld_GetActiveLevelCollectionIndexInvoker){
+        unsafe{ UWorld_GetActiveLevelCollectionIndexInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetActiveLightingScenarioInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetActiveLightingScenarioInvokerHandler: Option<UWorld_GetActiveLightingScenarioInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetActiveLightingScenario_handler(handler: UWorld_GetActiveLightingScenarioInvoker){
+        unsafe{ UWorld_GetActiveLightingScenarioInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetActorCountInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetActorCountInvokerHandler: Option<UWorld_GetActorCountInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetActorCount_handler(handler: UWorld_GetActorCountInvoker){
+        unsafe{ UWorld_GetActorCountInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAddressURLInvoker = unsafe extern "C" fn(*mut c_void) -> *const std::os::raw::c_char;
+    pub(super) static mut UWorld_GetAddressURLInvokerHandler: Option<UWorld_GetAddressURLInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAddressURL_handler(handler: UWorld_GetAddressURLInvoker){
+        unsafe{ UWorld_GetAddressURLInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAllowDeferredPhysicsStateCreationInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_GetAllowDeferredPhysicsStateCreationInvokerHandler: Option<UWorld_GetAllowDeferredPhysicsStateCreationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAllowDeferredPhysicsStateCreation_handler(handler: UWorld_GetAllowDeferredPhysicsStateCreationInvoker){
+        unsafe{ UWorld_GetAllowDeferredPhysicsStateCreationInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAudioDeviceRawInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FAudioDeviceOpaque;
+    pub(super) static mut UWorld_GetAudioDeviceRawInvokerHandler: Option<UWorld_GetAudioDeviceRawInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAudioDeviceRaw_handler(handler: UWorld_GetAudioDeviceRawInvoker){
+        unsafe{ UWorld_GetAudioDeviceRawInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAudioTimeSecondsInvoker = unsafe extern "C" fn(*mut c_void) -> f64;
+    pub(super) static mut UWorld_GetAudioTimeSecondsInvokerHandler: Option<UWorld_GetAudioTimeSecondsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAudioTimeSeconds_handler(handler: UWorld_GetAudioTimeSecondsInvoker){
+        unsafe{ UWorld_GetAudioTimeSecondsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetAvoidanceManagerInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UAvoidanceManagerOpaque;
+    pub(super) static mut UWorld_GetAvoidanceManagerInvokerHandler: Option<UWorld_GetAvoidanceManagerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetAvoidanceManager_handler(handler: UWorld_GetAvoidanceManagerInvoker){
+        unsafe{ UWorld_GetAvoidanceManagerInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetBlockTillLevelStreamingCompletedEpochInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetBlockTillLevelStreamingCompletedEpochInvokerHandler: Option<UWorld_GetBlockTillLevelStreamingCompletedEpochInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetBlockTillLevelStreamingCompletedEpoch_handler(handler: UWorld_GetBlockTillLevelStreamingCompletedEpochInvoker){
+        unsafe{ UWorld_GetBlockTillLevelStreamingCompletedEpochInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetCanvasForDrawMaterialToRenderTargetInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UCanvasOpaque;
+    pub(super) static mut UWorld_GetCanvasForDrawMaterialToRenderTargetInvokerHandler: Option<UWorld_GetCanvasForDrawMaterialToRenderTargetInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetCanvasForDrawMaterialToRenderTarget_handler(handler: UWorld_GetCanvasForDrawMaterialToRenderTargetInvoker){
+        unsafe{ UWorld_GetCanvasForDrawMaterialToRenderTargetInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetCanvasForRenderingToTargetInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UCanvasOpaque;
+    pub(super) static mut UWorld_GetCanvasForRenderingToTargetInvokerHandler: Option<UWorld_GetCanvasForRenderingToTargetInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetCanvasForRenderingToTarget_handler(handler: UWorld_GetCanvasForRenderingToTargetInvoker){
+        unsafe{ UWorld_GetCanvasForRenderingToTargetInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetCurrentLevelInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetCurrentLevelInvokerHandler: Option<UWorld_GetCurrentLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetCurrentLevel_handler(handler: UWorld_GetCurrentLevelInvoker){
+        unsafe{ UWorld_GetCurrentLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetCurrentLevelPendingInvisibilityInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetCurrentLevelPendingInvisibilityInvokerHandler: Option<UWorld_GetCurrentLevelPendingInvisibilityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetCurrentLevelPendingInvisibility_handler(handler: UWorld_GetCurrentLevelPendingInvisibilityInvoker){
+        unsafe{ UWorld_GetCurrentLevelPendingInvisibilityInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetCurrentLevelPendingVisibilityInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetCurrentLevelPendingVisibilityInvokerHandler: Option<UWorld_GetCurrentLevelPendingVisibilityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetCurrentLevelPendingVisibility_handler(handler: UWorld_GetCurrentLevelPendingVisibilityInvoker){
+        unsafe{ UWorld_GetCurrentLevelPendingVisibilityInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDebugDisplayNameInvoker = unsafe extern "C" fn(*mut c_void) -> *const std::os::raw::c_char;
+    pub(super) static mut UWorld_GetDebugDisplayNameInvokerHandler: Option<UWorld_GetDebugDisplayNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDebugDisplayName_handler(handler: UWorld_GetDebugDisplayNameInvoker){
+        unsafe{ UWorld_GetDebugDisplayNameInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDefaultBrushInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ABrushOpaque;
+    pub(super) static mut UWorld_GetDefaultBrushInvokerHandler: Option<UWorld_GetDefaultBrushInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDefaultBrush_handler(handler: UWorld_GetDefaultBrushInvoker){
+        unsafe{ UWorld_GetDefaultBrushInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDefaultGravityZInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UWorld_GetDefaultGravityZInvokerHandler: Option<UWorld_GetDefaultGravityZInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDefaultGravityZ_handler(handler: UWorld_GetDefaultGravityZInvoker){
+        unsafe{ UWorld_GetDefaultGravityZInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDefaultPhysicsVolumeInvoker = unsafe extern "C" fn(*mut c_void) -> *mut APhysicsVolumeOpaque;
+    pub(super) static mut UWorld_GetDefaultPhysicsVolumeInvokerHandler: Option<UWorld_GetDefaultPhysicsVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDefaultPhysicsVolume_handler(handler: UWorld_GetDefaultPhysicsVolumeInvoker){
+        unsafe{ UWorld_GetDefaultPhysicsVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDeltaSecondsInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UWorld_GetDeltaSecondsInvokerHandler: Option<UWorld_GetDeltaSecondsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDeltaSeconds_handler(handler: UWorld_GetDeltaSecondsInvoker){
+        unsafe{ UWorld_GetDeltaSecondsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDemoNetDriverInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UDemoNetDriverOpaque;
+    pub(super) static mut UWorld_GetDemoNetDriverInvokerHandler: Option<UWorld_GetDemoNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDemoNetDriver_handler(handler: UWorld_GetDemoNetDriverInvoker){
+        unsafe{ UWorld_GetDemoNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDetailModeInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetDetailModeInvokerHandler: Option<UWorld_GetDetailModeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDetailMode_handler(handler: UWorld_GetDetailModeInvoker){
+        unsafe{ UWorld_GetDetailModeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetDuplicatedWorldForPIEInvoker = unsafe extern "C" fn(*mut UWorldOpaque, *mut UPackageOpaque, i32) -> *mut UWorldOpaque;
+    pub(super) static mut UWorld_GetDuplicatedWorldForPIEInvokerHandler: Option<UWorld_GetDuplicatedWorldForPIEInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetDuplicatedWorldForPIE_handler(handler: UWorld_GetDuplicatedWorldForPIEInvoker){
+        unsafe{ UWorld_GetDuplicatedWorldForPIEInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetFirstLocalPlayerFromControllerInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ULocalPlayerOpaque;
+    pub(super) static mut UWorld_GetFirstLocalPlayerFromControllerInvokerHandler: Option<UWorld_GetFirstLocalPlayerFromControllerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetFirstLocalPlayerFromController_handler(handler: UWorld_GetFirstLocalPlayerFromControllerInvoker){
+        unsafe{ UWorld_GetFirstLocalPlayerFromControllerInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetFirstPlayerControllerInvoker = unsafe extern "C" fn(*mut c_void) -> *mut APlayerControllerOpaque;
+    pub(super) static mut UWorld_GetFirstPlayerControllerInvokerHandler: Option<UWorld_GetFirstPlayerControllerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetFirstPlayerController_handler(handler: UWorld_GetFirstPlayerControllerInvoker){
+        unsafe{ UWorld_GetFirstPlayerControllerInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetGameInstanceInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UGameInstanceOpaque;
+    pub(super) static mut UWorld_GetGameInstanceInvokerHandler: Option<UWorld_GetGameInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetGameInstance_handler(handler: UWorld_GetGameInstanceInvoker){
+        unsafe{ UWorld_GetGameInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetGameStateInvoker = unsafe extern "C" fn(*mut c_void) -> *mut AGameStateBaseOpaque;
+    pub(super) static mut UWorld_GetGameStateInvokerHandler: Option<UWorld_GetGameStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetGameState_handler(handler: UWorld_GetGameStateInvoker){
+        unsafe{ UWorld_GetGameStateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetGameViewportInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UGameViewportClientOpaque;
+    pub(super) static mut UWorld_GetGameViewportInvokerHandler: Option<UWorld_GetGameViewportInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetGameViewport_handler(handler: UWorld_GetGameViewportInvoker){
+        unsafe{ UWorld_GetGameViewportInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetGravityZInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UWorld_GetGravityZInvokerHandler: Option<UWorld_GetGravityZInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetGravityZ_handler(handler: UWorld_GetGravityZInvoker){
+        unsafe{ UWorld_GetGravityZInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetIsInBlockTillLevelStreamingCompletedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_GetIsInBlockTillLevelStreamingCompletedInvokerHandler: Option<UWorld_GetIsInBlockTillLevelStreamingCompletedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetIsInBlockTillLevelStreamingCompleted_handler(handler: UWorld_GetIsInBlockTillLevelStreamingCompletedInvoker){
+        unsafe{ UWorld_GetIsInBlockTillLevelStreamingCompletedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetLevelInvoker = unsafe extern "C" fn(*mut c_void, i32) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetLevelInvokerHandler: Option<UWorld_GetLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetLevel_handler(handler: UWorld_GetLevelInvoker){
+        unsafe{ UWorld_GetLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetLevelScriptActorInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> *mut ALevelScriptActorOpaque;
+    pub(super) static mut UWorld_GetLevelScriptActorInvokerHandler: Option<UWorld_GetLevelScriptActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetLevelScriptActor_handler(handler: UWorld_GetLevelScriptActorInvoker){
+        unsafe{ UWorld_GetLevelScriptActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetLevelStreamingForPackageNameInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut ULevelStreamingOpaque;
+    pub(super) static mut UWorld_GetLevelStreamingForPackageNameInvokerHandler: Option<UWorld_GetLevelStreamingForPackageNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetLevelStreamingForPackageName_handler(handler: UWorld_GetLevelStreamingForPackageNameInvoker){
+        unsafe{ UWorld_GetLevelStreamingForPackageNameInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetLocalURLInvoker = unsafe extern "C" fn(*mut c_void) -> *const std::os::raw::c_char;
+    pub(super) static mut UWorld_GetLocalURLInvokerHandler: Option<UWorld_GetLocalURLInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetLocalURL_handler(handler: UWorld_GetLocalURLInvoker){
+        unsafe{ UWorld_GetLocalURLInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetMapNameInvoker = unsafe extern "C" fn(*mut c_void) -> *const std::os::raw::c_char;
+    pub(super) static mut UWorld_GetMapNameInvokerHandler: Option<UWorld_GetMapNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetMapName_handler(handler: UWorld_GetMapNameInvoker){
+        unsafe{ UWorld_GetMapNameInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNetDriverInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UNetDriverOpaque;
+    pub(super) static mut UWorld_GetNetDriverInvokerHandler: Option<UWorld_GetNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNetDriver_handler(handler: UWorld_GetNetDriverInvoker){
+        unsafe{ UWorld_GetNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNonDefaultPhysicsVolumeCountInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetNonDefaultPhysicsVolumeCountInvokerHandler: Option<UWorld_GetNonDefaultPhysicsVolumeCountInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNonDefaultPhysicsVolumeCount_handler(handler: UWorld_GetNonDefaultPhysicsVolumeCountInvoker){
+        unsafe{ UWorld_GetNonDefaultPhysicsVolumeCountInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNumControllersInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetNumControllersInvokerHandler: Option<UWorld_GetNumControllersInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNumControllers_handler(handler: UWorld_GetNumControllersInvoker){
+        unsafe{ UWorld_GetNumControllersInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNumLevelsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetNumLevelsInvokerHandler: Option<UWorld_GetNumLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNumLevels_handler(handler: UWorld_GetNumLevelsInvoker){
+        unsafe{ UWorld_GetNumLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNumPlayerControllersInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetNumPlayerControllersInvokerHandler: Option<UWorld_GetNumPlayerControllersInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNumPlayerControllers_handler(handler: UWorld_GetNumPlayerControllersInvoker){
+        unsafe{ UWorld_GetNumPlayerControllersInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetNumSelectedLevelsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetNumSelectedLevelsInvokerHandler: Option<UWorld_GetNumSelectedLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetNumSelectedLevels_handler(handler: UWorld_GetNumSelectedLevelsInvoker){
+        unsafe{ UWorld_GetNumSelectedLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetParameterCollectionInstanceInvoker = unsafe extern "C" fn(*mut c_void, *mut UMaterialParameterCollectionOpaque) -> *mut UMaterialParameterCollectionInstanceOpaque;
+    pub(super) static mut UWorld_GetParameterCollectionInstanceInvokerHandler: Option<UWorld_GetParameterCollectionInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetParameterCollectionInstance_handler(handler: UWorld_GetParameterCollectionInstanceInvoker){
+        unsafe{ UWorld_GetParameterCollectionInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetPhysicsSceneInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FPhysSceneOpaque;
+    pub(super) static mut UWorld_GetPhysicsSceneInvokerHandler: Option<UWorld_GetPhysicsSceneInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetPhysicsScene_handler(handler: UWorld_GetPhysicsSceneInvoker){
+        unsafe{ UWorld_GetPhysicsSceneInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetProgressDenominatorInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UWorld_GetProgressDenominatorInvokerHandler: Option<UWorld_GetProgressDenominatorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetProgressDenominator_handler(handler: UWorld_GetProgressDenominatorInvoker){
+        unsafe{ UWorld_GetProgressDenominatorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetRealTimeSecondsInvoker = unsafe extern "C" fn(*mut c_void) -> f64;
+    pub(super) static mut UWorld_GetRealTimeSecondsInvokerHandler: Option<UWorld_GetRealTimeSecondsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetRealTimeSeconds_handler(handler: UWorld_GetRealTimeSecondsInvoker){
+        unsafe{ UWorld_GetRealTimeSecondsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetSelectedLevelInvoker = unsafe extern "C" fn(*mut c_void, i32) -> *mut ULevelOpaque;
+    pub(super) static mut UWorld_GetSelectedLevelInvokerHandler: Option<UWorld_GetSelectedLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetSelectedLevel_handler(handler: UWorld_GetSelectedLevelInvoker){
+        unsafe{ UWorld_GetSelectedLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetServerStreamingLevelsVisibilityInvoker = unsafe extern "C" fn(*mut c_void) -> *mut AServerStreamingLevelsVisibilityOpaque;
+    pub(super) static mut UWorld_GetServerStreamingLevelsVisibilityInvokerHandler: Option<UWorld_GetServerStreamingLevelsVisibilityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetServerStreamingLevelsVisibility_handler(handler: UWorld_GetServerStreamingLevelsVisibilityInvoker){
+        unsafe{ UWorld_GetServerStreamingLevelsVisibilityInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetShouldForceUnloadStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_GetShouldForceUnloadStreamingLevelsInvokerHandler: Option<UWorld_GetShouldForceUnloadStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetShouldForceUnloadStreamingLevels_handler(handler: UWorld_GetShouldForceUnloadStreamingLevelsInvoker){
+        unsafe{ UWorld_GetShouldForceUnloadStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetShouldForceVisibleStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_GetShouldForceVisibleStreamingLevelsInvokerHandler: Option<UWorld_GetShouldForceVisibleStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetShouldForceVisibleStreamingLevels_handler(handler: UWorld_GetShouldForceVisibleStreamingLevelsInvoker){
+        unsafe{ UWorld_GetShouldForceVisibleStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetTimeSecondsInvoker = unsafe extern "C" fn(*mut c_void) -> f64;
+    pub(super) static mut UWorld_GetTimeSecondsInvokerHandler: Option<UWorld_GetTimeSecondsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetTimeSeconds_handler(handler: UWorld_GetTimeSecondsInvoker){
+        unsafe{ UWorld_GetTimeSecondsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetUnpausedTimeSecondsInvoker = unsafe extern "C" fn(*mut c_void) -> f64;
+    pub(super) static mut UWorld_GetUnpausedTimeSecondsInvokerHandler: Option<UWorld_GetUnpausedTimeSecondsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetUnpausedTimeSeconds_handler(handler: UWorld_GetUnpausedTimeSecondsInvoker){
+        unsafe{ UWorld_GetUnpausedTimeSecondsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetWorldInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UWorldOpaque;
+    pub(super) static mut UWorld_GetWorldInvokerHandler: Option<UWorld_GetWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetWorld_handler(handler: UWorld_GetWorldInvoker){
+        unsafe{ UWorld_GetWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetWorldPartitionInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UWorldPartitionOpaque;
+    pub(super) static mut UWorld_GetWorldPartitionInvokerHandler: Option<UWorld_GetWorldPartitionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetWorldPartition_handler(handler: UWorld_GetWorldPartitionInvoker){
+        unsafe{ UWorld_GetWorldPartitionInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_GetWorldSettingsInvoker = unsafe extern "C" fn(*mut c_void, bool, bool) -> *mut AWorldSettingsOpaque;
+    pub(super) static mut UWorld_GetWorldSettingsInvokerHandler: Option<UWorld_GetWorldSettingsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_GetWorldSettings_handler(handler: UWorld_GetWorldSettingsInvoker){
+        unsafe{ UWorld_GetWorldSettingsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HandleTimelineScrubbedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_HandleTimelineScrubbedInvokerHandler: Option<UWorld_HandleTimelineScrubbedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HandleTimelineScrubbed_handler(handler: UWorld_HandleTimelineScrubbedInvoker){
+        unsafe{ UWorld_HandleTimelineScrubbedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasBegunPlayInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasBegunPlayInvokerHandler: Option<UWorld_HasBegunPlayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasBegunPlay_handler(handler: UWorld_HasBegunPlayInvoker){
+        unsafe{ UWorld_HasBegunPlayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasDefaultPhysicsVolumeInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasDefaultPhysicsVolumeInvokerHandler: Option<UWorld_HasDefaultPhysicsVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasDefaultPhysicsVolume_handler(handler: UWorld_HasDefaultPhysicsVolumeInvoker){
+        unsafe{ UWorld_HasDefaultPhysicsVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasEndOfFrameUpdatesInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasEndOfFrameUpdatesInvokerHandler: Option<UWorld_HasEndOfFrameUpdatesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasEndOfFrameUpdates_handler(handler: UWorld_HasEndOfFrameUpdatesInvoker){
+        unsafe{ UWorld_HasEndOfFrameUpdatesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasEverBeenInitializedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasEverBeenInitializedInvokerHandler: Option<UWorld_HasEverBeenInitializedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasEverBeenInitialized_handler(handler: UWorld_HasEverBeenInitializedInvoker){
+        unsafe{ UWorld_HasEverBeenInitializedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasMarkedObjectsPendingKillInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasMarkedObjectsPendingKillInvokerHandler: Option<UWorld_HasMarkedObjectsPendingKillInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasMarkedObjectsPendingKill_handler(handler: UWorld_HasMarkedObjectsPendingKillInvoker){
+        unsafe{ UWorld_HasMarkedObjectsPendingKillInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_HasStreamingLevelsToConsiderInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_HasStreamingLevelsToConsiderInvokerHandler: Option<UWorld_HasStreamingLevelsToConsiderInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_HasStreamingLevelsToConsider_handler(handler: UWorld_HasStreamingLevelsToConsiderInvoker){
+        unsafe{ UWorld_HasStreamingLevelsToConsiderInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_InitializeSubsystemsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_InitializeSubsystemsInvokerHandler: Option<UWorld_InitializeSubsystemsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_InitializeSubsystems_handler(handler: UWorld_InitializeSubsystemsInvoker){
+        unsafe{ UWorld_InitializeSubsystemsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_InsertPostProcessVolumeInvoker = unsafe extern "C" fn(*mut c_void, *mut IInterface_PostProcessVolumeOpaque);
+    pub(super) static mut UWorld_InsertPostProcessVolumeInvokerHandler: Option<UWorld_InsertPostProcessVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_InsertPostProcessVolume_handler(handler: UWorld_InsertPostProcessVolumeInvoker){
+        unsafe{ UWorld_InsertPostProcessVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_InvalidateAllSkyCapturesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_InvalidateAllSkyCapturesInvokerHandler: Option<UWorld_InvalidateAllSkyCapturesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_InvalidateAllSkyCaptures_handler(handler: UWorld_InvalidateAllSkyCapturesInvoker){
+        unsafe{ UWorld_InvalidateAllSkyCapturesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_InvalidateModelGeometryInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque);
+    pub(super) static mut UWorld_InvalidateModelGeometryInvokerHandler: Option<UWorld_InvalidateModelGeometryInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_InvalidateModelGeometry_handler(handler: UWorld_InvalidateModelGeometryInvoker){
+        unsafe{ UWorld_InvalidateModelGeometryInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_InvalidateModelSurfaceInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_InvalidateModelSurfaceInvokerHandler: Option<UWorld_InvalidateModelSurfaceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_InvalidateModelSurface_handler(handler: UWorld_InvalidateModelSurfaceInvoker){
+        unsafe{ UWorld_InvalidateModelSurfaceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsCameraMoveableInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsCameraMoveableInvokerHandler: Option<UWorld_IsCameraMoveableInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsCameraMoveable_handler(handler: UWorld_IsCameraMoveableInvoker){
+        unsafe{ UWorld_IsCameraMoveableInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsEditorWorldInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsEditorWorldInvokerHandler: Option<UWorld_IsEditorWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsEditorWorld_handler(handler: UWorld_IsEditorWorldInvoker){
+        unsafe{ UWorld_IsEditorWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsGameWorldInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsGameWorldInvokerHandler: Option<UWorld_IsGameWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsGameWorld_handler(handler: UWorld_IsGameWorldInvoker){
+        unsafe{ UWorld_IsGameWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsInSeamlessTravelInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsInSeamlessTravelInvokerHandler: Option<UWorld_IsInSeamlessTravelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsInSeamlessTravel_handler(handler: UWorld_IsInSeamlessTravelInvoker){
+        unsafe{ UWorld_IsInSeamlessTravelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsInitializedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsInitializedInvokerHandler: Option<UWorld_IsInitializedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsInitialized_handler(handler: UWorld_IsInitializedInvoker){
+        unsafe{ UWorld_IsInitializedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsInstancedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsInstancedInvokerHandler: Option<UWorld_IsInstancedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsInstanced_handler(handler: UWorld_IsInstancedInvoker){
+        unsafe{ UWorld_IsInstancedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsLevelSelectedInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> bool;
+    pub(super) static mut UWorld_IsLevelSelectedInvokerHandler: Option<UWorld_IsLevelSelectedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsLevelSelected_handler(handler: UWorld_IsLevelSelectedInvoker){
+        unsafe{ UWorld_IsLevelSelectedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsMapChangeReadyInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsMapChangeReadyInvokerHandler: Option<UWorld_IsMapChangeReadyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsMapChangeReady_handler(handler: UWorld_IsMapChangeReadyInvoker){
+        unsafe{ UWorld_IsMapChangeReadyInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsMovieSceneSequenceTickHandlerBoundInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsMovieSceneSequenceTickHandlerBoundInvokerHandler: Option<UWorld_IsMovieSceneSequenceTickHandlerBoundInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsMovieSceneSequenceTickHandlerBound_handler(handler: UWorld_IsMovieSceneSequenceTickHandlerBoundInvoker){
+        unsafe{ UWorld_IsMovieSceneSequenceTickHandlerBoundInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsNameStableForNetworkingInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsNameStableForNetworkingInvokerHandler: Option<UWorld_IsNameStableForNetworkingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsNameStableForNetworking_handler(handler: UWorld_IsNameStableForNetworkingInvoker){
+        unsafe{ UWorld_IsNameStableForNetworkingInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsNavigationRebuiltInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsNavigationRebuiltInvokerHandler: Option<UWorld_IsNavigationRebuiltInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsNavigationRebuilt_handler(handler: UWorld_IsNavigationRebuiltInvoker){
+        unsafe{ UWorld_IsNavigationRebuiltInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPartitionedWorldInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPartitionedWorldInvokerHandler: Option<UWorld_IsPartitionedWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPartitionedWorld_handler(handler: UWorld_IsPartitionedWorldInvoker){
+        unsafe{ UWorld_IsPartitionedWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPartitionedWorld2Invoker = unsafe extern "C" fn(*mut UWorldOpaque) -> bool;
+    pub(super) static mut UWorld_IsPartitionedWorld2InvokerHandler: Option<UWorld_IsPartitionedWorld2Invoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPartitionedWorld2_handler(handler: UWorld_IsPartitionedWorld2Invoker){
+        unsafe{ UWorld_IsPartitionedWorld2InvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPausedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPausedInvokerHandler: Option<UWorld_IsPausedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPaused_handler(handler: UWorld_IsPausedInvoker){
+        unsafe{ UWorld_IsPausedInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayInEditorInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayInEditorInvokerHandler: Option<UWorld_IsPlayInEditorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayInEditor_handler(handler: UWorld_IsPlayInEditorInvoker){
+        unsafe{ UWorld_IsPlayInEditorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayInMobilePreviewInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayInMobilePreviewInvokerHandler: Option<UWorld_IsPlayInMobilePreviewInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayInMobilePreview_handler(handler: UWorld_IsPlayInMobilePreviewInvoker){
+        unsafe{ UWorld_IsPlayInMobilePreviewInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayInPreviewInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayInPreviewInvokerHandler: Option<UWorld_IsPlayInPreviewInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayInPreview_handler(handler: UWorld_IsPlayInPreviewInvoker){
+        unsafe{ UWorld_IsPlayInPreviewInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayInVulkanPreviewInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayInVulkanPreviewInvokerHandler: Option<UWorld_IsPlayInVulkanPreviewInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayInVulkanPreview_handler(handler: UWorld_IsPlayInVulkanPreviewInvoker){
+        unsafe{ UWorld_IsPlayInVulkanPreviewInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayingClientReplayInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayingClientReplayInvokerHandler: Option<UWorld_IsPlayingClientReplayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayingClientReplay_handler(handler: UWorld_IsPlayingClientReplayInvoker){
+        unsafe{ UWorld_IsPlayingClientReplayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPlayingReplayInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPlayingReplayInvokerHandler: Option<UWorld_IsPlayingReplayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPlayingReplay_handler(handler: UWorld_IsPlayingReplayInvoker){
+        unsafe{ UWorld_IsPlayingReplayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPreparingMapChangeInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPreparingMapChangeInvokerHandler: Option<UWorld_IsPreparingMapChangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPreparingMapChange_handler(handler: UWorld_IsPreparingMapChangeInvoker){
+        unsafe{ UWorld_IsPreparingMapChangeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsPreviewWorldInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsPreviewWorldInvokerHandler: Option<UWorld_IsPreviewWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsPreviewWorld_handler(handler: UWorld_IsPreviewWorldInvoker){
+        unsafe{ UWorld_IsPreviewWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsReadyForFinishDestroyInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsReadyForFinishDestroyInvokerHandler: Option<UWorld_IsReadyForFinishDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsReadyForFinishDestroy_handler(handler: UWorld_IsReadyForFinishDestroyInvoker){
+        unsafe{ UWorld_IsReadyForFinishDestroyInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsRecordingClientReplayInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsRecordingClientReplayInvokerHandler: Option<UWorld_IsRecordingClientReplayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsRecordingClientReplay_handler(handler: UWorld_IsRecordingClientReplayInvoker){
+        unsafe{ UWorld_IsRecordingClientReplayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsRecordingReplayInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsRecordingReplayInvokerHandler: Option<UWorld_IsRecordingReplayInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsRecordingReplay_handler(handler: UWorld_IsRecordingReplayInvoker){
+        unsafe{ UWorld_IsRecordingReplayInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsRefreshingStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsRefreshingStreamingLevelsInvokerHandler: Option<UWorld_IsRefreshingStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsRefreshingStreamingLevels_handler(handler: UWorld_IsRefreshingStreamingLevelsInvoker){
+        unsafe{ UWorld_IsRefreshingStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsStreamingLevelBeingConsideredInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque) -> bool;
+    pub(super) static mut UWorld_IsStreamingLevelBeingConsideredInvokerHandler: Option<UWorld_IsStreamingLevelBeingConsideredInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsStreamingLevelBeingConsidered_handler(handler: UWorld_IsStreamingLevelBeingConsideredInvoker){
+        unsafe{ UWorld_IsStreamingLevelBeingConsideredInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsVisibilityRequestPendingInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_IsVisibilityRequestPendingInvokerHandler: Option<UWorld_IsVisibilityRequestPendingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsVisibilityRequestPending_handler(handler: UWorld_IsVisibilityRequestPendingInvoker){
+        unsafe{ UWorld_IsVisibilityRequestPendingInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IsWorldOrExternalActorPackageInvoker = unsafe extern "C" fn(*mut UPackageOpaque) -> bool;
+    pub(super) static mut UWorld_IsWorldOrExternalActorPackageInvokerHandler: Option<UWorld_IsWorldOrExternalActorPackageInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IsWorldOrExternalActorPackage_handler(handler: UWorld_IsWorldOrExternalActorPackageInvoker){
+        unsafe{ UWorld_IsWorldOrExternalActorPackageInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_IssueEditorLoadWarningsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_IssueEditorLoadWarningsInvokerHandler: Option<UWorld_IssueEditorLoadWarningsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_IssueEditorLoadWarnings_handler(handler: UWorld_IssueEditorLoadWarningsInvoker){
+        unsafe{ UWorld_IssueEditorLoadWarningsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_K2_GetWorldSettingsInvoker = unsafe extern "C" fn(*mut c_void) -> *mut AWorldSettingsOpaque;
+    pub(super) static mut UWorld_K2_GetWorldSettingsInvokerHandler: Option<UWorld_K2_GetWorldSettingsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_K2_GetWorldSettings_handler(handler: UWorld_K2_GetWorldSettingsInvoker){
+        unsafe{ UWorld_K2_GetWorldSettingsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvoker = unsafe extern "C" fn(*mut c_void, *mut UActorComponentOpaque, bool);
+    pub(super) static mut UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvokerHandler: Option<UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_MarkActorComponentForNeededEndOfFrameUpdate_handler(handler: UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvoker){
+        unsafe{ UWorld_MarkActorComponentForNeededEndOfFrameUpdateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_MarkObjectsPendingKillInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_MarkObjectsPendingKillInvokerHandler: Option<UWorld_MarkObjectsPendingKillInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_MarkObjectsPendingKill_handler(handler: UWorld_MarkObjectsPendingKillInvoker){
+        unsafe{ UWorld_MarkObjectsPendingKillInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ModifyLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque);
+    pub(super) static mut UWorld_ModifyLevelInvokerHandler: Option<UWorld_ModifyLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ModifyLevel_handler(handler: UWorld_ModifyLevelInvoker){
+        unsafe{ UWorld_ModifyLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_NotifyAcceptedConnectionInvoker = unsafe extern "C" fn(*mut c_void, *mut UNetConnectionOpaque);
+    pub(super) static mut UWorld_NotifyAcceptedConnectionInvokerHandler: Option<UWorld_NotifyAcceptedConnectionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_NotifyAcceptedConnection_handler(handler: UWorld_NotifyAcceptedConnectionInvoker){
+        unsafe{ UWorld_NotifyAcceptedConnectionInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_NotifyAcceptingChannelInvoker = unsafe extern "C" fn(*mut c_void, *mut UChannelOpaque) -> bool;
+    pub(super) static mut UWorld_NotifyAcceptingChannelInvokerHandler: Option<UWorld_NotifyAcceptingChannelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_NotifyAcceptingChannel_handler(handler: UWorld_NotifyAcceptingChannelInvoker){
+        unsafe{ UWorld_NotifyAcceptingChannelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_NotifyOfBlueprintDebuggingAssociationInvoker = unsafe extern "C" fn(*mut c_void, *mut UBlueprintOpaque, *mut UObjectOpaque);
+    pub(super) static mut UWorld_NotifyOfBlueprintDebuggingAssociationInvokerHandler: Option<UWorld_NotifyOfBlueprintDebuggingAssociationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_NotifyOfBlueprintDebuggingAssociation_handler(handler: UWorld_NotifyOfBlueprintDebuggingAssociationInvoker){
+        unsafe{ UWorld_NotifyOfBlueprintDebuggingAssociationInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_PopulateStreamingLevelsToConsiderInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_PopulateStreamingLevelsToConsiderInvokerHandler: Option<UWorld_PopulateStreamingLevelsToConsiderInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_PopulateStreamingLevelsToConsider_handler(handler: UWorld_PopulateStreamingLevelsToConsiderInvoker){
+        unsafe{ UWorld_PopulateStreamingLevelsToConsiderInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_PostDuplicateInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_PostDuplicateInvokerHandler: Option<UWorld_PostDuplicateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_PostDuplicate_handler(handler: UWorld_PostDuplicateInvoker){
+        unsafe{ UWorld_PostDuplicateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_PostInitializeSubsystemsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_PostInitializeSubsystemsInvokerHandler: Option<UWorld_PostInitializeSubsystemsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_PostInitializeSubsystems_handler(handler: UWorld_PostInitializeSubsystemsInvoker){
+        unsafe{ UWorld_PostInitializeSubsystemsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_PostLoadInvokerHandler: Option<UWorld_PostLoadInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_PostLoad_handler(handler: UWorld_PostLoadInvoker){
+        unsafe{ UWorld_PostLoadInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ProcessLevelStreamingVolumesInvoker = unsafe extern "C" fn(*mut c_void, *mut Vector3);
+    pub(super) static mut UWorld_ProcessLevelStreamingVolumesInvokerHandler: Option<UWorld_ProcessLevelStreamingVolumesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ProcessLevelStreamingVolumes_handler(handler: UWorld_ProcessLevelStreamingVolumesInvoker){
+        unsafe{ UWorld_ProcessLevelStreamingVolumesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_PropagateLightingScenarioChangeInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_PropagateLightingScenarioChangeInvokerHandler: Option<UWorld_PropagateLightingScenarioChangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_PropagateLightingScenarioChange_handler(handler: UWorld_PropagateLightingScenarioChangeInvoker){
+        unsafe{ UWorld_PropagateLightingScenarioChangeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RefreshStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_RefreshStreamingLevelsInvokerHandler: Option<UWorld_RefreshStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RefreshStreamingLevels_handler(handler: UWorld_RefreshStreamingLevelsInvoker){
+        unsafe{ UWorld_RefreshStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RegisterAutoActivateCameraInvoker = unsafe extern "C" fn(*mut c_void, *mut ACameraActorOpaque, i32);
+    pub(super) static mut UWorld_RegisterAutoActivateCameraInvokerHandler: Option<UWorld_RegisterAutoActivateCameraInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RegisterAutoActivateCamera_handler(handler: UWorld_RegisterAutoActivateCameraInvoker){
+        unsafe{ UWorld_RegisterAutoActivateCameraInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ReleasePhysicsSceneInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ReleasePhysicsSceneInvokerHandler: Option<UWorld_ReleasePhysicsSceneInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ReleasePhysicsScene_handler(handler: UWorld_ReleasePhysicsSceneInvoker){
+        unsafe{ UWorld_ReleasePhysicsSceneInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, bool);
+    pub(super) static mut UWorld_RemoveActorInvokerHandler: Option<UWorld_RemoveActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveActor_handler(handler: UWorld_RemoveActorInvoker){
+        unsafe{ UWorld_RemoveActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveControllerInvoker = unsafe extern "C" fn(*mut c_void, *mut AControllerOpaque);
+    pub(super) static mut UWorld_RemoveControllerInvokerHandler: Option<UWorld_RemoveControllerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveController_handler(handler: UWorld_RemoveControllerInvoker){
+        unsafe{ UWorld_RemoveControllerInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> bool;
+    pub(super) static mut UWorld_RemoveLevelInvokerHandler: Option<UWorld_RemoveLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveLevel_handler(handler: UWorld_RemoveLevelInvoker){
+        unsafe{ UWorld_RemoveLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveNetworkActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque);
+    pub(super) static mut UWorld_RemoveNetworkActorInvokerHandler: Option<UWorld_RemoveNetworkActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveNetworkActor_handler(handler: UWorld_RemoveNetworkActorInvoker){
+        unsafe{ UWorld_RemoveNetworkActorInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemovePhysicsVolumeInvoker = unsafe extern "C" fn(*mut c_void, *mut APhysicsVolumeOpaque);
+    pub(super) static mut UWorld_RemovePhysicsVolumeInvokerHandler: Option<UWorld_RemovePhysicsVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemovePhysicsVolume_handler(handler: UWorld_RemovePhysicsVolumeInvoker){
+        unsafe{ UWorld_RemovePhysicsVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemovePostProcessVolumeInvoker = unsafe extern "C" fn(*mut c_void, *mut IInterface_PostProcessVolumeOpaque);
+    pub(super) static mut UWorld_RemovePostProcessVolumeInvokerHandler: Option<UWorld_RemovePostProcessVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemovePostProcessVolume_handler(handler: UWorld_RemovePostProcessVolumeInvoker){
+        unsafe{ UWorld_RemovePostProcessVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveStreamingLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque) -> bool;
+    pub(super) static mut UWorld_RemoveStreamingLevelInvokerHandler: Option<UWorld_RemoveStreamingLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveStreamingLevel_handler(handler: UWorld_RemoveStreamingLevelInvoker){
+        unsafe{ UWorld_RemoveStreamingLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RemoveStreamingLevelAtInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
+    pub(super) static mut UWorld_RemoveStreamingLevelAtInvokerHandler: Option<UWorld_RemoveStreamingLevelAtInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RemoveStreamingLevelAt_handler(handler: UWorld_RemoveStreamingLevelAtInvoker){
+        unsafe{ UWorld_RemoveStreamingLevelAtInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RenameToPIEWorldInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut UWorld_RenameToPIEWorldInvokerHandler: Option<UWorld_RenameToPIEWorldInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RenameToPIEWorld_handler(handler: UWorld_RenameToPIEWorldInvoker){
+        unsafe{ UWorld_RenameToPIEWorldInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_RequiresHitProxiesInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_RequiresHitProxiesInvokerHandler: Option<UWorld_RequiresHitProxiesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_RequiresHitProxies_handler(handler: UWorld_RequiresHitProxiesInvoker){
+        unsafe{ UWorld_RequiresHitProxiesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SelectLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque);
+    pub(super) static mut UWorld_SelectLevelInvokerHandler: Option<UWorld_SelectLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SelectLevel_handler(handler: UWorld_SelectLevelInvoker){
+        unsafe{ UWorld_SelectLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SendAllEndOfFrameUpdatesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_SendAllEndOfFrameUpdatesInvokerHandler: Option<UWorld_SendAllEndOfFrameUpdatesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SendAllEndOfFrameUpdates_handler(handler: UWorld_SendAllEndOfFrameUpdatesInvoker){
+        unsafe{ UWorld_SendAllEndOfFrameUpdatesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetActiveLevelCollectionInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut UWorld_SetActiveLevelCollectionInvokerHandler: Option<UWorld_SetActiveLevelCollectionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetActiveLevelCollection_handler(handler: UWorld_SetActiveLevelCollectionInvoker){
+        unsafe{ UWorld_SetActiveLevelCollectionInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetAllowDeferredPhysicsStateCreationInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_SetAllowDeferredPhysicsStateCreationInvokerHandler: Option<UWorld_SetAllowDeferredPhysicsStateCreationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetAllowDeferredPhysicsStateCreation_handler(handler: UWorld_SetAllowDeferredPhysicsStateCreationInvoker){
+        unsafe{ UWorld_SetAllowDeferredPhysicsStateCreationInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetCurrentLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelOpaque) -> bool;
+    pub(super) static mut UWorld_SetCurrentLevelInvokerHandler: Option<UWorld_SetCurrentLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetCurrentLevel_handler(handler: UWorld_SetCurrentLevelInvoker){
+        unsafe{ UWorld_SetCurrentLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetDemoNetDriverInvoker = unsafe extern "C" fn(*mut c_void, *mut UDemoNetDriverOpaque);
+    pub(super) static mut UWorld_SetDemoNetDriverInvokerHandler: Option<UWorld_SetDemoNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetDemoNetDriver_handler(handler: UWorld_SetDemoNetDriverInvoker){
+        unsafe{ UWorld_SetDemoNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetGameInstanceInvoker = unsafe extern "C" fn(*mut c_void, *mut UGameInstanceOpaque);
+    pub(super) static mut UWorld_SetGameInstanceInvokerHandler: Option<UWorld_SetGameInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetGameInstance_handler(handler: UWorld_SetGameInstanceInvoker){
+        unsafe{ UWorld_SetGameInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetGameStateInvoker = unsafe extern "C" fn(*mut c_void, *mut AGameStateBaseOpaque);
+    pub(super) static mut UWorld_SetGameStateInvokerHandler: Option<UWorld_SetGameStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetGameState_handler(handler: UWorld_SetGameStateInvoker){
+        unsafe{ UWorld_SetGameStateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetMapNeedsLightingFullyRebuiltInvoker = unsafe extern "C" fn(*mut c_void, i32, i32);
+    pub(super) static mut UWorld_SetMapNeedsLightingFullyRebuiltInvokerHandler: Option<UWorld_SetMapNeedsLightingFullyRebuiltInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetMapNeedsLightingFullyRebuilt_handler(handler: UWorld_SetMapNeedsLightingFullyRebuiltInvoker){
+        unsafe{ UWorld_SetMapNeedsLightingFullyRebuiltInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvokerHandler: Option<UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate_handler(handler: UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvoker){
+        unsafe{ UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetNavigationSystemInvoker = unsafe extern "C" fn(*mut c_void, *mut UNavigationSystemBaseOpaque);
+    pub(super) static mut UWorld_SetNavigationSystemInvokerHandler: Option<UWorld_SetNavigationSystemInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetNavigationSystem_handler(handler: UWorld_SetNavigationSystemInvoker){
+        unsafe{ UWorld_SetNavigationSystemInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetNetDriverInvoker = unsafe extern "C" fn(*mut c_void, *mut UNetDriverOpaque);
+    pub(super) static mut UWorld_SetNetDriverInvokerHandler: Option<UWorld_SetNetDriverInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetNetDriver_handler(handler: UWorld_SetNetDriverInvoker){
+        unsafe{ UWorld_SetNetDriverInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetPhysicsSceneInvoker = unsafe extern "C" fn(*mut c_void, *mut FPhysSceneOpaque);
+    pub(super) static mut UWorld_SetPhysicsSceneInvokerHandler: Option<UWorld_SetPhysicsSceneInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetPhysicsScene_handler(handler: UWorld_SetPhysicsSceneInvoker){
+        unsafe{ UWorld_SetPhysicsSceneInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetSeamlessTravelMidpointPauseInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_SetSeamlessTravelMidpointPauseInvokerHandler: Option<UWorld_SetSeamlessTravelMidpointPauseInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetSeamlessTravelMidpointPause_handler(handler: UWorld_SetSeamlessTravelMidpointPauseInvoker){
+        unsafe{ UWorld_SetSeamlessTravelMidpointPauseInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetShouldForceUnloadStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_SetShouldForceUnloadStreamingLevelsInvokerHandler: Option<UWorld_SetShouldForceUnloadStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetShouldForceUnloadStreamingLevels_handler(handler: UWorld_SetShouldForceUnloadStreamingLevelsInvoker){
+        unsafe{ UWorld_SetShouldForceUnloadStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetShouldForceVisibleStreamingLevelsInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_SetShouldForceVisibleStreamingLevelsInvokerHandler: Option<UWorld_SetShouldForceVisibleStreamingLevelsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetShouldForceVisibleStreamingLevels_handler(handler: UWorld_SetShouldForceVisibleStreamingLevelsInvoker){
+        unsafe{ UWorld_SetShouldForceVisibleStreamingLevelsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetShouldTickInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UWorld_SetShouldTickInvokerHandler: Option<UWorld_SetShouldTickInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetShouldTick_handler(handler: UWorld_SetShouldTickInvoker){
+        unsafe{ UWorld_SetShouldTickInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetWorldDataLayersInvoker = unsafe extern "C" fn(*mut c_void, *mut AWorldDataLayersOpaque);
+    pub(super) static mut UWorld_SetWorldDataLayersInvokerHandler: Option<UWorld_SetWorldDataLayersInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetWorldDataLayers_handler(handler: UWorld_SetWorldDataLayersInvoker){
+        unsafe{ UWorld_SetWorldDataLayersInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetupParameterCollectionInstancesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_SetupParameterCollectionInstancesInvokerHandler: Option<UWorld_SetupParameterCollectionInstancesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetupParameterCollectionInstances_handler(handler: UWorld_SetupParameterCollectionInstancesInvoker){
+        unsafe{ UWorld_SetupParameterCollectionInstancesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SetupPhysicsTickFunctionsInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UWorld_SetupPhysicsTickFunctionsInvokerHandler: Option<UWorld_SetupPhysicsTickFunctionsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SetupPhysicsTickFunctions_handler(handler: UWorld_SetupPhysicsTickFunctionsInvoker){
+        unsafe{ UWorld_SetupPhysicsTickFunctionsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ShouldTickInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_ShouldTickInvokerHandler: Option<UWorld_ShouldTickInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ShouldTick_handler(handler: UWorld_ShouldTickInvoker){
+        unsafe{ UWorld_ShouldTickInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_ShrinkLevelInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_ShrinkLevelInvokerHandler: Option<UWorld_ShrinkLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_ShrinkLevel_handler(handler: UWorld_ShrinkLevelInvoker){
+        unsafe{ UWorld_ShrinkLevelInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SpawnBrushInvoker = unsafe extern "C" fn(*mut c_void) -> *mut ABrushOpaque;
+    pub(super) static mut UWorld_SpawnBrushInvokerHandler: Option<UWorld_SpawnBrushInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SpawnBrush_handler(handler: UWorld_SpawnBrushInvoker){
+        unsafe{ UWorld_SpawnBrushInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_StartPhysicsSimInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_StartPhysicsSimInvokerHandler: Option<UWorld_StartPhysicsSimInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_StartPhysicsSim_handler(handler: UWorld_StartPhysicsSimInvoker){
+        unsafe{ UWorld_StartPhysicsSimInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_StoreIrisAndClearReferencesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_StoreIrisAndClearReferencesInvokerHandler: Option<UWorld_StoreIrisAndClearReferencesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_StoreIrisAndClearReferences_handler(handler: UWorld_StoreIrisAndClearReferencesInvoker){
+        unsafe{ UWorld_StoreIrisAndClearReferencesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SupportsMakingInvisibleTransactionRequestsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_SupportsMakingInvisibleTransactionRequestsInvokerHandler: Option<UWorld_SupportsMakingInvisibleTransactionRequestsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SupportsMakingInvisibleTransactionRequests_handler(handler: UWorld_SupportsMakingInvisibleTransactionRequestsInvoker){
+        unsafe{ UWorld_SupportsMakingInvisibleTransactionRequestsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_SupportsMakingVisibleTransactionRequestsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_SupportsMakingVisibleTransactionRequestsInvokerHandler: Option<UWorld_SupportsMakingVisibleTransactionRequestsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_SupportsMakingVisibleTransactionRequests_handler(handler: UWorld_SupportsMakingVisibleTransactionRequestsInvoker){
+        unsafe{ UWorld_SupportsMakingVisibleTransactionRequestsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_TickNetClientInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UWorld_TickNetClientInvokerHandler: Option<UWorld_TickNetClientInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_TickNetClient_handler(handler: UWorld_TickNetClientInvoker){
+        unsafe{ UWorld_TickNetClientInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_TimeSinceInvoker = unsafe extern "C" fn(*mut c_void, f64) -> f64;
+    pub(super) static mut UWorld_TimeSinceInvokerHandler: Option<UWorld_TimeSinceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_TimeSince_handler(handler: UWorld_TimeSinceInvoker){
+        unsafe{ UWorld_TimeSinceInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_TransferBlueprintDebugReferencesInvoker = unsafe extern "C" fn(*mut c_void, *mut UWorldOpaque);
+    pub(super) static mut UWorld_TransferBlueprintDebugReferencesInvokerHandler: Option<UWorld_TransferBlueprintDebugReferencesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_TransferBlueprintDebugReferences_handler(handler: UWorld_TransferBlueprintDebugReferencesInvoker){
+        unsafe{ UWorld_TransferBlueprintDebugReferencesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_TriggerStreamingDataRebuildInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_TriggerStreamingDataRebuildInvokerHandler: Option<UWorld_TriggerStreamingDataRebuildInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_TriggerStreamingDataRebuild_handler(handler: UWorld_TriggerStreamingDataRebuildInvoker){
+        unsafe{ UWorld_TriggerStreamingDataRebuildInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateActorComponentEndOfFrameUpdateStateInvoker = unsafe extern "C" fn(*mut c_void, *mut UActorComponentOpaque);
+    pub(super) static mut UWorld_UpdateActorComponentEndOfFrameUpdateStateInvokerHandler: Option<UWorld_UpdateActorComponentEndOfFrameUpdateStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateActorComponentEndOfFrameUpdateState_handler(handler: UWorld_UpdateActorComponentEndOfFrameUpdateStateInvoker){
+        unsafe{ UWorld_UpdateActorComponentEndOfFrameUpdateStateInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateAllSkyCapturesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_UpdateAllSkyCapturesInvokerHandler: Option<UWorld_UpdateAllSkyCapturesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateAllSkyCaptures_handler(handler: UWorld_UpdateAllSkyCapturesInvoker){
+        unsafe{ UWorld_UpdateAllSkyCapturesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateConstraintActorsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_UpdateConstraintActorsInvokerHandler: Option<UWorld_UpdateConstraintActorsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateConstraintActors_handler(handler: UWorld_UpdateConstraintActorsInvoker){
+        unsafe{ UWorld_UpdateConstraintActorsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateCullDistanceVolumesInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, *mut UPrimitiveComponentOpaque) -> bool;
+    pub(super) static mut UWorld_UpdateCullDistanceVolumesInvokerHandler: Option<UWorld_UpdateCullDistanceVolumesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateCullDistanceVolumes_handler(handler: UWorld_UpdateCullDistanceVolumesInvoker){
+        unsafe{ UWorld_UpdateCullDistanceVolumesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateLevelStreamingInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UWorld_UpdateLevelStreamingInvokerHandler: Option<UWorld_UpdateLevelStreamingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateLevelStreaming_handler(handler: UWorld_UpdateLevelStreamingInvoker){
+        unsafe{ UWorld_UpdateLevelStreamingInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateParameterCollectionInstancesInvoker = unsafe extern "C" fn(*mut c_void, bool, bool);
+    pub(super) static mut UWorld_UpdateParameterCollectionInstancesInvokerHandler: Option<UWorld_UpdateParameterCollectionInstancesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateParameterCollectionInstances_handler(handler: UWorld_UpdateParameterCollectionInstancesInvoker){
+        unsafe{ UWorld_UpdateParameterCollectionInstancesInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateStreamingLevelPriorityInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque);
+    pub(super) static mut UWorld_UpdateStreamingLevelPriorityInvokerHandler: Option<UWorld_UpdateStreamingLevelPriorityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateStreamingLevelPriority_handler(handler: UWorld_UpdateStreamingLevelPriorityInvoker){
+        unsafe{ UWorld_UpdateStreamingLevelPriorityInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateStreamingLevelShouldBeConsideredInvoker = unsafe extern "C" fn(*mut c_void, *mut ULevelStreamingOpaque);
+    pub(super) static mut UWorld_UpdateStreamingLevelShouldBeConsideredInvokerHandler: Option<UWorld_UpdateStreamingLevelShouldBeConsideredInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateStreamingLevelShouldBeConsidered_handler(handler: UWorld_UpdateStreamingLevelShouldBeConsideredInvoker){
+        unsafe{ UWorld_UpdateStreamingLevelShouldBeConsideredInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UpdateWorldComponentsInvoker = unsafe extern "C" fn(*mut c_void, bool, bool, *mut FRegisterComponentContextOpaque);
+    pub(super) static mut UWorld_UpdateWorldComponentsInvokerHandler: Option<UWorld_UpdateWorldComponentsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UpdateWorldComponents_handler(handler: UWorld_UpdateWorldComponentsInvoker){
+        unsafe{ UWorld_UpdateWorldComponentsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_UsesGameHiddenFlagsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UWorld_UsesGameHiddenFlagsInvokerHandler: Option<UWorld_UsesGameHiddenFlagsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_UsesGameHiddenFlags_handler(handler: UWorld_UsesGameHiddenFlagsInvoker){
+        unsafe{ UWorld_UsesGameHiddenFlagsInvokerHandler = Some(handler) };
+    }
+
+    type UWorld_WelcomePlayerInvoker = unsafe extern "C" fn(*mut c_void, *mut UNetConnectionOpaque);
+    pub(super) static mut UWorld_WelcomePlayerInvokerHandler: Option<UWorld_WelcomePlayerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UWorld_WelcomePlayer_handler(handler: UWorld_WelcomePlayerInvoker){
+        unsafe{ UWorld_WelcomePlayerInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddAngularImpulseInDegreesInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddAngularImpulseInDegreesInvokerHandler: Option<UPrimitiveComponent_AddAngularImpulseInDegreesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddAngularImpulseInDegrees_handler(handler: UPrimitiveComponent_AddAngularImpulseInDegreesInvoker){
+        unsafe{ UPrimitiveComponent_AddAngularImpulseInDegreesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddAngularImpulseInRadiansInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddAngularImpulseInRadiansInvokerHandler: Option<UPrimitiveComponent_AddAngularImpulseInRadiansInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddAngularImpulseInRadians_handler(handler: UPrimitiveComponent_AddAngularImpulseInRadiansInvoker){
+        unsafe{ UPrimitiveComponent_AddAngularImpulseInRadiansInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddForceInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddForceInvokerHandler: Option<UPrimitiveComponent_AddForceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddForce_handler(handler: UPrimitiveComponent_AddForceInvoker){
+        unsafe{ UPrimitiveComponent_AddForceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddForceAtLocationInvoker = unsafe extern "C" fn(*mut c_void, Vector3, Vector3, UName);
+    pub(super) static mut UPrimitiveComponent_AddForceAtLocationInvokerHandler: Option<UPrimitiveComponent_AddForceAtLocationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddForceAtLocation_handler(handler: UPrimitiveComponent_AddForceAtLocationInvoker){
+        unsafe{ UPrimitiveComponent_AddForceAtLocationInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddForceAtLocationLocalInvoker = unsafe extern "C" fn(*mut c_void, Vector3, Vector3, UName);
+    pub(super) static mut UPrimitiveComponent_AddForceAtLocationLocalInvokerHandler: Option<UPrimitiveComponent_AddForceAtLocationLocalInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddForceAtLocationLocal_handler(handler: UPrimitiveComponent_AddForceAtLocationLocalInvoker){
+        unsafe{ UPrimitiveComponent_AddForceAtLocationLocalInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddImpulseInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddImpulseInvokerHandler: Option<UPrimitiveComponent_AddImpulseInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddImpulse_handler(handler: UPrimitiveComponent_AddImpulseInvoker){
+        unsafe{ UPrimitiveComponent_AddImpulseInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddImpulseAtLocationInvoker = unsafe extern "C" fn(*mut c_void, Vector3, Vector3, UName);
+    pub(super) static mut UPrimitiveComponent_AddImpulseAtLocationInvokerHandler: Option<UPrimitiveComponent_AddImpulseAtLocationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddImpulseAtLocation_handler(handler: UPrimitiveComponent_AddImpulseAtLocationInvoker){
+        unsafe{ UPrimitiveComponent_AddImpulseAtLocationInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddTorqueInDegreesInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddTorqueInDegreesInvokerHandler: Option<UPrimitiveComponent_AddTorqueInDegreesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddTorqueInDegrees_handler(handler: UPrimitiveComponent_AddTorqueInDegreesInvoker){
+        unsafe{ UPrimitiveComponent_AddTorqueInDegreesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddTorqueInRadiansInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName, bool);
+    pub(super) static mut UPrimitiveComponent_AddTorqueInRadiansInvokerHandler: Option<UPrimitiveComponent_AddTorqueInRadiansInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddTorqueInRadians_handler(handler: UPrimitiveComponent_AddTorqueInRadiansInvoker){
+        unsafe{ UPrimitiveComponent_AddTorqueInRadiansInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvoker = unsafe extern "C" fn(*mut c_void, Vector3, Vector3, UName);
+    pub(super) static mut UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvokerHandler: Option<UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation_handler(handler: UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvoker){
+        unsafe{ UPrimitiveComponent_AddVelocityChangeImpulseAtLocationInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_BeginDestroyInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_BeginDestroyInvokerHandler: Option<UPrimitiveComponent_BeginDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_BeginDestroy_handler(handler: UPrimitiveComponent_BeginDestroyInvoker){
+        unsafe{ UPrimitiveComponent_BeginDestroyInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_BeginPlayInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut UPrimitiveComponent_BeginPlayInvokerHandler: Option<UPrimitiveComponent_BeginPlayInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_BeginPlay_handler(handler: UPrimitiveComponent_BeginPlayInvoker){
         unsafe{ UPrimitiveComponent_BeginPlayInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CalculateMassInvoker = unsafe extern "C" fn(*mut c_void, UName) -> f32;
+    pub(super) static mut UPrimitiveComponent_CalculateMassInvokerHandler: Option<UPrimitiveComponent_CalculateMassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CalculateMass_handler(handler: UPrimitiveComponent_CalculateMassInvoker){
+        unsafe{ UPrimitiveComponent_CalculateMassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CanCharacterStepUpInvoker = unsafe extern "C" fn(*mut c_void, *mut APawnOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_CanCharacterStepUpInvokerHandler: Option<UPrimitiveComponent_CanCharacterStepUpInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CanCharacterStepUp_handler(handler: UPrimitiveComponent_CanCharacterStepUpInvoker){
+        unsafe{ UPrimitiveComponent_CanCharacterStepUpInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CanEditChangeInvoker = unsafe extern "C" fn(*mut c_void, *mut FPropertyOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_CanEditChangeInvokerHandler: Option<UPrimitiveComponent_CanEditChangeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CanEditChange_handler(handler: UPrimitiveComponent_CanEditChangeInvoker){
+        unsafe{ UPrimitiveComponent_CanEditChangeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CanEditSimulatePhysicsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_CanEditSimulatePhysicsInvokerHandler: Option<UPrimitiveComponent_CanEditSimulatePhysicsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CanEditSimulatePhysics_handler(handler: UPrimitiveComponent_CanEditSimulatePhysicsInvoker){
+        unsafe{ UPrimitiveComponent_CanEditSimulatePhysicsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvokerHandler: Option<UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo_handler(handler: UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvoker){
+        unsafe{ UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CheckForErrorsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_CheckForErrorsInvokerHandler: Option<UPrimitiveComponent_CheckForErrorsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CheckForErrors_handler(handler: UPrimitiveComponent_CheckForErrorsInvoker){
+        unsafe{ UPrimitiveComponent_CheckForErrorsInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_ClearMoveIgnoreActorsInvoker = unsafe extern "C" fn(*mut c_void);
@@ -15626,6 +18804,111 @@ mod ffis{
         unsafe{ UPrimitiveComponent_ClearMoveIgnoreComponentsInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvoker = unsafe extern "C" fn(*mut c_void) -> u32;
+    pub(super) static mut UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvokerHandler: Option<UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData_handler(handler: UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvoker){
+        unsafe{ UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CreateRenderState_ConcurrentInvoker = unsafe extern "C" fn(*mut c_void, *mut FRegisterComponentContextOpaque);
+    pub(super) static mut UPrimitiveComponent_CreateRenderState_ConcurrentInvokerHandler: Option<UPrimitiveComponent_CreateRenderState_ConcurrentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CreateRenderState_Concurrent_handler(handler: UPrimitiveComponent_CreateRenderState_ConcurrentInvoker){
+        unsafe{ UPrimitiveComponent_CreateRenderState_ConcurrentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_CreateSceneProxyInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FPrimitiveSceneProxyOpaque;
+    pub(super) static mut UPrimitiveComponent_CreateSceneProxyInvokerHandler: Option<UPrimitiveComponent_CreateSceneProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_CreateSceneProxy_handler(handler: UPrimitiveComponent_CreateSceneProxyInvoker){
+        unsafe{ UPrimitiveComponent_CreateSceneProxyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_DestroyRenderState_ConcurrentInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_DestroyRenderState_ConcurrentInvokerHandler: Option<UPrimitiveComponent_DestroyRenderState_ConcurrentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_DestroyRenderState_Concurrent_handler(handler: UPrimitiveComponent_DestroyRenderState_ConcurrentInvoker){
+        unsafe{ UPrimitiveComponent_DestroyRenderState_ConcurrentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_DispatchMouseOverEventsInvoker = unsafe extern "C" fn(*mut UPrimitiveComponentOpaque, *mut UPrimitiveComponentOpaque);
+    pub(super) static mut UPrimitiveComponent_DispatchMouseOverEventsInvokerHandler: Option<UPrimitiveComponent_DispatchMouseOverEventsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_DispatchMouseOverEvents_handler(handler: UPrimitiveComponent_DispatchMouseOverEventsInvoker){
+        unsafe{ UPrimitiveComponent_DispatchMouseOverEventsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_FinishDestroyInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_FinishDestroyInvokerHandler: Option<UPrimitiveComponent_FinishDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_FinishDestroy_handler(handler: UPrimitiveComponent_FinishDestroyInvoker){
+        unsafe{ UPrimitiveComponent_FinishDestroyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetAngularDampingInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetAngularDampingInvokerHandler: Option<UPrimitiveComponent_GetAngularDampingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetAngularDamping_handler(handler: UPrimitiveComponent_GetAngularDampingInvoker){
+        unsafe{ UPrimitiveComponent_GetAngularDampingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetBodyInstanceInvoker = unsafe extern "C" fn(*mut c_void, UName, bool, i32) -> *mut FBodyInstanceOpaque;
+    pub(super) static mut UPrimitiveComponent_GetBodyInstanceInvokerHandler: Option<UPrimitiveComponent_GetBodyInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetBodyInstance_handler(handler: UPrimitiveComponent_GetBodyInstanceInvoker){
+        unsafe{ UPrimitiveComponent_GetBodyInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetBodySetupInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UBodySetupOpaque;
+    pub(super) static mut UPrimitiveComponent_GetBodySetupInvokerHandler: Option<UPrimitiveComponent_GetBodySetupInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetBodySetup_handler(handler: UPrimitiveComponent_GetBodySetupInvoker){
+        unsafe{ UPrimitiveComponent_GetBodySetupInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetCenterOfMassInvoker = unsafe extern "C" fn(*mut c_void, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetCenterOfMassInvokerHandler: Option<UPrimitiveComponent_GetCenterOfMassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetCenterOfMass_handler(handler: UPrimitiveComponent_GetCenterOfMassInvoker){
+        unsafe{ UPrimitiveComponent_GetCenterOfMassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionChannel;
+    pub(super) static mut UPrimitiveComponent_GetCollisionObjectTypeInvokerHandler: Option<UPrimitiveComponent_GetCollisionObjectTypeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetCollisionObjectType_handler(handler: UPrimitiveComponent_GetCollisionObjectTypeInvoker){
+        unsafe{ UPrimitiveComponent_GetCollisionObjectTypeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetCollisionProfileNameInvoker = unsafe extern "C" fn(*mut c_void) -> UName;
+    pub(super) static mut UPrimitiveComponent_GetCollisionProfileNameInvokerHandler: Option<UPrimitiveComponent_GetCollisionProfileNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetCollisionProfileName_handler(handler: UPrimitiveComponent_GetCollisionProfileNameInvoker){
+        unsafe{ UPrimitiveComponent_GetCollisionProfileNameInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetCollisionShapeInvoker = unsafe extern "C" fn(*mut c_void, f32) -> CollisionShape;
+    pub(super) static mut UPrimitiveComponent_GetCollisionShapeInvokerHandler: Option<UPrimitiveComponent_GetCollisionShapeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetCollisionShape_handler(handler: UPrimitiveComponent_GetCollisionShapeInvoker){
+        unsafe{ UPrimitiveComponent_GetCollisionShapeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvoker = unsafe extern "C" fn(*mut c_void, *mut FBodyInstanceOpaque) -> Transform;
+    pub(super) static mut UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvokerHandler: Option<UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetComponentTransformFromBodyInstance_handler(handler: UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvoker){
+        unsafe{ UPrimitiveComponent_GetComponentTransformFromBodyInstanceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetComponentVelocityInvoker = unsafe extern "C" fn(*mut c_void) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetComponentVelocityInvokerHandler: Option<UPrimitiveComponent_GetComponentVelocityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetComponentVelocity_handler(handler: UPrimitiveComponent_GetComponentVelocityInvoker){
+        unsafe{ UPrimitiveComponent_GetComponentVelocityInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterInvoker = unsafe extern "C" fn(*mut c_void, UName) -> i32;
     pub(super) static mut UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterInvokerHandler: Option<UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterInvoker> = None;
     #[no_mangle]
@@ -15640,11 +18923,53 @@ mod ffis{
         unsafe{ UPrimitiveComponent_GetCustomPrimitiveDataIndexForVectorParameterInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_GetDiffuseBoostInvoker = unsafe extern "C" fn(*mut c_void, i32) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetDiffuseBoostInvokerHandler: Option<UPrimitiveComponent_GetDiffuseBoostInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetDiffuseBoost_handler(handler: UPrimitiveComponent_GetDiffuseBoostInvoker){
+        unsafe{ UPrimitiveComponent_GetDiffuseBoostInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetEditorMaterialInvoker = unsafe extern "C" fn(*mut c_void, i32) -> *mut UMaterialInterfaceOpaque;
+    pub(super) static mut UPrimitiveComponent_GetEditorMaterialInvokerHandler: Option<UPrimitiveComponent_GetEditorMaterialInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetEditorMaterial_handler(handler: UPrimitiveComponent_GetEditorMaterialInvoker){
+        unsafe{ UPrimitiveComponent_GetEditorMaterialInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetEmissiveBoostInvoker = unsafe extern "C" fn(*mut c_void, i32) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetEmissiveBoostInvokerHandler: Option<UPrimitiveComponent_GetEmissiveBoostInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetEmissiveBoost_handler(handler: UPrimitiveComponent_GetEmissiveBoostInvoker){
+        unsafe{ UPrimitiveComponent_GetEmissiveBoostInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_GetGenerateOverlapEventsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
     pub(super) static mut UPrimitiveComponent_GetGenerateOverlapEventsInvokerHandler: Option<UPrimitiveComponent_GetGenerateOverlapEventsInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_GetGenerateOverlapEvents_handler(handler: UPrimitiveComponent_GetGenerateOverlapEventsInvoker){
         unsafe{ UPrimitiveComponent_GetGenerateOverlapEventsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetHiddenEditorViewsInvoker = unsafe extern "C" fn(*mut c_void) -> u64;
+    pub(super) static mut UPrimitiveComponent_GetHiddenEditorViewsInvokerHandler: Option<UPrimitiveComponent_GetHiddenEditorViewsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetHiddenEditorViews_handler(handler: UPrimitiveComponent_GetHiddenEditorViewsInvoker){
+        unsafe{ UPrimitiveComponent_GetHiddenEditorViewsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetInertiaTensorInvoker = unsafe extern "C" fn(*mut c_void, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetInertiaTensorInvokerHandler: Option<UPrimitiveComponent_GetInertiaTensorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetInertiaTensor_handler(handler: UPrimitiveComponent_GetInertiaTensorInvoker){
+        unsafe{ UPrimitiveComponent_GetInertiaTensorInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetLODParentPrimitiveInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UPrimitiveComponentOpaque;
+    pub(super) static mut UPrimitiveComponent_GetLODParentPrimitiveInvokerHandler: Option<UPrimitiveComponent_GetLODParentPrimitiveInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLODParentPrimitive_handler(handler: UPrimitiveComponent_GetLODParentPrimitiveInvoker){
+        unsafe{ UPrimitiveComponent_GetLODParentPrimitiveInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_GetLastRenderTimeInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
@@ -15661,11 +18986,137 @@ mod ffis{
         unsafe{ UPrimitiveComponent_GetLastRenderTimeOnScreenInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_GetLevelInstanceEditingStateInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_GetLevelInstanceEditingStateInvokerHandler: Option<UPrimitiveComponent_GetLevelInstanceEditingStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLevelInstanceEditingState_handler(handler: UPrimitiveComponent_GetLevelInstanceEditingStateInvoker){
+        unsafe{ UPrimitiveComponent_GetLevelInstanceEditingStateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvoker = unsafe extern "C" fn(*mut c_void, &mut i32, &mut i32);
+    pub(super) static mut UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvokerHandler: Option<UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage_handler(handler: UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvoker){
+        unsafe{ UPrimitiveComponent_GetLightAndShadowMapMemoryUsageInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetLightMapResolutionInvoker = unsafe extern "C" fn(*mut c_void, &mut i32, &mut i32) -> bool;
+    pub(super) static mut UPrimitiveComponent_GetLightMapResolutionInvokerHandler: Option<UPrimitiveComponent_GetLightMapResolutionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLightMapResolution_handler(handler: UPrimitiveComponent_GetLightMapResolutionInvoker){
+        unsafe{ UPrimitiveComponent_GetLightMapResolutionInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetLightingAttachmentRootInvoker = unsafe extern "C" fn(*mut c_void) -> *mut UPrimitiveComponentOpaque;
+    pub(super) static mut UPrimitiveComponent_GetLightingAttachmentRootInvokerHandler: Option<UPrimitiveComponent_GetLightingAttachmentRootInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLightingAttachmentRoot_handler(handler: UPrimitiveComponent_GetLightingAttachmentRootInvoker){
+        unsafe{ UPrimitiveComponent_GetLightingAttachmentRootInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetLinearDampingInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetLinearDampingInvokerHandler: Option<UPrimitiveComponent_GetLinearDampingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetLinearDamping_handler(handler: UPrimitiveComponent_GetLinearDampingInvoker){
+        unsafe{ UPrimitiveComponent_GetLinearDampingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetMassInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetMassInvokerHandler: Option<UPrimitiveComponent_GetMassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetMass_handler(handler: UPrimitiveComponent_GetMassInvoker){
+        unsafe{ UPrimitiveComponent_GetMassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetMassScaleInvoker = unsafe extern "C" fn(*mut c_void, UName) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetMassScaleInvokerHandler: Option<UPrimitiveComponent_GetMassScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetMassScale_handler(handler: UPrimitiveComponent_GetMassScaleInvoker){
+        unsafe{ UPrimitiveComponent_GetMassScaleInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetMaterialInvoker = unsafe extern "C" fn(*mut c_void, i32) -> *mut UMaterialInterfaceOpaque;
+    pub(super) static mut UPrimitiveComponent_GetMaterialInvokerHandler: Option<UPrimitiveComponent_GetMaterialInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetMaterial_handler(handler: UPrimitiveComponent_GetMaterialInvoker){
+        unsafe{ UPrimitiveComponent_GetMaterialInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvoker = unsafe extern "C" fn(*mut c_void, i32, &mut i32) -> *mut UMaterialInterfaceOpaque;
+    pub(super) static mut UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvokerHandler: Option<UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex_handler(handler: UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvoker){
+        unsafe{ UPrimitiveComponent_GetMaterialFromCollisionFaceIndexInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetNumMaterialsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UPrimitiveComponent_GetNumMaterialsInvokerHandler: Option<UPrimitiveComponent_GetNumMaterialsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetNumMaterials_handler(handler: UPrimitiveComponent_GetNumMaterialsInvoker){
+        unsafe{ UPrimitiveComponent_GetNumMaterialsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvokerHandler: Option<UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions_handler(handler: UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvoker){
+        unsafe{ UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvoker = unsafe extern "C" fn(*mut c_void, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvokerHandler: Option<UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees_handler(handler: UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvoker){
+        unsafe{ UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvoker = unsafe extern "C" fn(*mut c_void, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvokerHandler: Option<UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians_handler(handler: UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvoker){
+        unsafe{ UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetPhysicsLinearVelocityInvoker = unsafe extern "C" fn(*mut c_void, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetPhysicsLinearVelocityInvokerHandler: Option<UPrimitiveComponent_GetPhysicsLinearVelocityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetPhysicsLinearVelocity_handler(handler: UPrimitiveComponent_GetPhysicsLinearVelocityInvoker){
+        unsafe{ UPrimitiveComponent_GetPhysicsLinearVelocityInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvokerHandler: Option<UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint_handler(handler: UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvoker){
+        unsafe{ UPrimitiveComponent_GetPhysicsLinearVelocityAtPointInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_GetRayTracingGroupIdInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
     pub(super) static mut UPrimitiveComponent_GetRayTracingGroupIdInvokerHandler: Option<UPrimitiveComponent_GetRayTracingGroupIdInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_GetRayTracingGroupId_handler(handler: UPrimitiveComponent_GetRayTracingGroupIdInvoker){
         unsafe{ UPrimitiveComponent_GetRayTracingGroupIdInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetShadowIndirectOnlyInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_GetShadowIndirectOnlyInvokerHandler: Option<UPrimitiveComponent_GetShadowIndirectOnlyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetShadowIndirectOnly_handler(handler: UPrimitiveComponent_GetShadowIndirectOnlyInvoker){
+        unsafe{ UPrimitiveComponent_GetShadowIndirectOnlyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetStaticLightMapResolutionInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
+    pub(super) static mut UPrimitiveComponent_GetStaticLightMapResolutionInvokerHandler: Option<UPrimitiveComponent_GetStaticLightMapResolutionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetStaticLightMapResolution_handler(handler: UPrimitiveComponent_GetStaticLightMapResolutionInvoker){
+        unsafe{ UPrimitiveComponent_GetStaticLightMapResolutionInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_GetStreamingScaleInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
+    pub(super) static mut UPrimitiveComponent_GetStreamingScaleInvokerHandler: Option<UPrimitiveComponent_GetStreamingScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetStreamingScale_handler(handler: UPrimitiveComponent_GetStreamingScaleInvoker){
+        unsafe{ UPrimitiveComponent_GetStreamingScaleInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistanceInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
@@ -15675,11 +19126,39 @@ mod ffis{
         unsafe{ UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistanceInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_HasStaticLightingInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_HasStaticLightingInvokerHandler: Option<UPrimitiveComponent_HasStaticLightingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_HasStaticLighting_handler(handler: UPrimitiveComponent_HasStaticLightingInvoker){
+        unsafe{ UPrimitiveComponent_HasStaticLightingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_HasValidPhysicsStateInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_HasValidPhysicsStateInvokerHandler: Option<UPrimitiveComponent_HasValidPhysicsStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_HasValidPhysicsState_handler(handler: UPrimitiveComponent_HasValidPhysicsStateInvoker){
+        unsafe{ UPrimitiveComponent_HasValidPhysicsStateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_HasValidSettingsForStaticLightingInvoker = unsafe extern "C" fn(*mut c_void, bool) -> bool;
+    pub(super) static mut UPrimitiveComponent_HasValidSettingsForStaticLightingInvokerHandler: Option<UPrimitiveComponent_HasValidSettingsForStaticLightingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_HasValidSettingsForStaticLighting_handler(handler: UPrimitiveComponent_HasValidSettingsForStaticLightingInvoker){
+        unsafe{ UPrimitiveComponent_HasValidSettingsForStaticLightingInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_IgnoreActorWhenMovingInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque, bool);
     pub(super) static mut UPrimitiveComponent_IgnoreActorWhenMovingInvokerHandler: Option<UPrimitiveComponent_IgnoreActorWhenMovingInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_IgnoreActorWhenMoving_handler(handler: UPrimitiveComponent_IgnoreActorWhenMovingInvoker){
         unsafe{ UPrimitiveComponent_IgnoreActorWhenMovingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IgnoreBoundsForEditorFocusInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IgnoreBoundsForEditorFocusInvokerHandler: Option<UPrimitiveComponent_IgnoreBoundsForEditorFocusInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IgnoreBoundsForEditorFocus_handler(handler: UPrimitiveComponent_IgnoreBoundsForEditorFocusInvoker){
+        unsafe{ UPrimitiveComponent_IgnoreBoundsForEditorFocusInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_IgnoreComponentWhenMovingInvoker = unsafe extern "C" fn(*mut c_void, *mut UPrimitiveComponentOpaque, bool);
@@ -15689,6 +19168,13 @@ mod ffis{
         unsafe{ UPrimitiveComponent_IgnoreComponentWhenMovingInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_InvalidateLightingCacheDetailedInvoker = unsafe extern "C" fn(*mut c_void, bool, bool);
+    pub(super) static mut UPrimitiveComponent_InvalidateLightingCacheDetailedInvokerHandler: Option<UPrimitiveComponent_InvalidateLightingCacheDetailedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_InvalidateLightingCacheDetailed_handler(handler: UPrimitiveComponent_InvalidateLightingCacheDetailedInvoker){
+        unsafe{ UPrimitiveComponent_InvalidateLightingCacheDetailedInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_InvalidateLumenSurfaceCacheInvoker = unsafe extern "C" fn(*mut c_void);
     pub(super) static mut UPrimitiveComponent_InvalidateLumenSurfaceCacheInvokerHandler: Option<UPrimitiveComponent_InvalidateLumenSurfaceCacheInvoker> = None;
     #[no_mangle]
@@ -15696,11 +19182,396 @@ mod ffis{
         unsafe{ UPrimitiveComponent_InvalidateLumenSurfaceCacheInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_IsAnyRigidBodyAwakeInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsAnyRigidBodyAwakeInvokerHandler: Option<UPrimitiveComponent_IsAnyRigidBodyAwakeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsAnyRigidBodyAwake_handler(handler: UPrimitiveComponent_IsAnyRigidBodyAwakeInvoker){
+        unsafe{ UPrimitiveComponent_IsAnyRigidBodyAwakeInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_IsAttachedToStreamingManagerInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
     pub(super) static mut UPrimitiveComponent_IsAttachedToStreamingManagerInvokerHandler: Option<UPrimitiveComponent_IsAttachedToStreamingManagerInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_IsAttachedToStreamingManager_handler(handler: UPrimitiveComponent_IsAttachedToStreamingManagerInvoker){
         unsafe{ UPrimitiveComponent_IsAttachedToStreamingManagerInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsCompilingInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsCompilingInvokerHandler: Option<UPrimitiveComponent_IsCompilingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsCompiling_handler(handler: UPrimitiveComponent_IsCompilingInvoker){
+        unsafe{ UPrimitiveComponent_IsCompilingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsComponentIndividuallySelectedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsComponentIndividuallySelectedInvokerHandler: Option<UPrimitiveComponent_IsComponentIndividuallySelectedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsComponentIndividuallySelected_handler(handler: UPrimitiveComponent_IsComponentIndividuallySelectedInvoker){
+        unsafe{ UPrimitiveComponent_IsComponentIndividuallySelectedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsEditorOnlyInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsEditorOnlyInvokerHandler: Option<UPrimitiveComponent_IsEditorOnlyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsEditorOnly_handler(handler: UPrimitiveComponent_IsEditorOnlyInvoker){
+        unsafe{ UPrimitiveComponent_IsEditorOnlyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsGravityEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsGravityEnabledInvokerHandler: Option<UPrimitiveComponent_IsGravityEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsGravityEnabled_handler(handler: UPrimitiveComponent_IsGravityEnabledInvoker){
+        unsafe{ UPrimitiveComponent_IsGravityEnabledInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsNavigationRelevantInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsNavigationRelevantInvokerHandler: Option<UPrimitiveComponent_IsNavigationRelevantInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsNavigationRelevant_handler(handler: UPrimitiveComponent_IsNavigationRelevantInvoker){
+        unsafe{ UPrimitiveComponent_IsNavigationRelevantInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsOverlappingActorInvoker = unsafe extern "C" fn(*mut c_void, *mut AActorOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsOverlappingActorInvokerHandler: Option<UPrimitiveComponent_IsOverlappingActorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsOverlappingActor_handler(handler: UPrimitiveComponent_IsOverlappingActorInvoker){
+        unsafe{ UPrimitiveComponent_IsOverlappingActorInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsOverlappingComponentInvoker = unsafe extern "C" fn(*mut c_void, *mut UPrimitiveComponentOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsOverlappingComponentInvokerHandler: Option<UPrimitiveComponent_IsOverlappingComponentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsOverlappingComponent_handler(handler: UPrimitiveComponent_IsOverlappingComponentInvoker){
+        unsafe{ UPrimitiveComponent_IsOverlappingComponentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsReadyForFinishDestroyInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsReadyForFinishDestroyInvokerHandler: Option<UPrimitiveComponent_IsReadyForFinishDestroyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsReadyForFinishDestroy_handler(handler: UPrimitiveComponent_IsReadyForFinishDestroyInvoker){
+        unsafe{ UPrimitiveComponent_IsReadyForFinishDestroyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsSimulatingPhysicsInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsSimulatingPhysicsInvokerHandler: Option<UPrimitiveComponent_IsSimulatingPhysicsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsSimulatingPhysics_handler(handler: UPrimitiveComponent_IsSimulatingPhysicsInvoker){
+        unsafe{ UPrimitiveComponent_IsSimulatingPhysicsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsWeldedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsWeldedInvokerHandler: Option<UPrimitiveComponent_IsWeldedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsWelded_handler(handler: UPrimitiveComponent_IsWeldedInvoker){
+        unsafe{ UPrimitiveComponent_IsWeldedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsWorldGeometryInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsWorldGeometryInvokerHandler: Option<UPrimitiveComponent_IsWorldGeometryInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsWorldGeometry_handler(handler: UPrimitiveComponent_IsWorldGeometryInvoker){
+        unsafe{ UPrimitiveComponent_IsWorldGeometryInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_IsZeroExtentInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_IsZeroExtentInvokerHandler: Option<UPrimitiveComponent_IsZeroExtentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_IsZeroExtent_handler(handler: UPrimitiveComponent_IsZeroExtentInvoker){
+        unsafe{ UPrimitiveComponent_IsZeroExtentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_K2_IsCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_K2_IsCollisionEnabledInvokerHandler: Option<UPrimitiveComponent_K2_IsCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_K2_IsCollisionEnabled_handler(handler: UPrimitiveComponent_K2_IsCollisionEnabledInvoker){
+        unsafe{ UPrimitiveComponent_K2_IsCollisionEnabledInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvokerHandler: Option<UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled_handler(handler: UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvoker){
+        unsafe{ UPrimitiveComponent_K2_IsPhysicsCollisionEnabledInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_K2_IsQueryCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_K2_IsQueryCollisionEnabledInvokerHandler: Option<UPrimitiveComponent_K2_IsQueryCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_K2_IsQueryCollisionEnabled_handler(handler: UPrimitiveComponent_K2_IsQueryCollisionEnabledInvoker){
+        unsafe{ UPrimitiveComponent_K2_IsQueryCollisionEnabledInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_NeedsLoadForClientInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_NeedsLoadForClientInvokerHandler: Option<UPrimitiveComponent_NeedsLoadForClientInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_NeedsLoadForClient_handler(handler: UPrimitiveComponent_NeedsLoadForClientInvoker){
+        unsafe{ UPrimitiveComponent_NeedsLoadForClientInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_NeedsLoadForServerInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_NeedsLoadForServerInvokerHandler: Option<UPrimitiveComponent_NeedsLoadForServerInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_NeedsLoadForServer_handler(handler: UPrimitiveComponent_NeedsLoadForServerInvoker){
+        unsafe{ UPrimitiveComponent_NeedsLoadForServerInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnActorEnableCollisionChangedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnActorEnableCollisionChangedInvokerHandler: Option<UPrimitiveComponent_OnActorEnableCollisionChangedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnActorEnableCollisionChanged_handler(handler: UPrimitiveComponent_OnActorEnableCollisionChangedInvoker){
+        unsafe{ UPrimitiveComponent_OnActorEnableCollisionChangedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnAttachmentChangedInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnAttachmentChangedInvokerHandler: Option<UPrimitiveComponent_OnAttachmentChangedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnAttachmentChanged_handler(handler: UPrimitiveComponent_OnAttachmentChangedInvoker){
+        unsafe{ UPrimitiveComponent_OnAttachmentChangedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnComponentDestroyedInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_OnComponentDestroyedInvokerHandler: Option<UPrimitiveComponent_OnComponentDestroyedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnComponentDestroyed_handler(handler: UPrimitiveComponent_OnComponentDestroyedInvoker){
+        unsafe{ UPrimitiveComponent_OnComponentDestroyedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnCreatePhysicsStateInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnCreatePhysicsStateInvokerHandler: Option<UPrimitiveComponent_OnCreatePhysicsStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnCreatePhysicsState_handler(handler: UPrimitiveComponent_OnCreatePhysicsStateInvoker){
+        unsafe{ UPrimitiveComponent_OnCreatePhysicsStateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnDestroyPhysicsStateInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnDestroyPhysicsStateInvokerHandler: Option<UPrimitiveComponent_OnDestroyPhysicsStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnDestroyPhysicsState_handler(handler: UPrimitiveComponent_OnDestroyPhysicsStateInvoker){
+        unsafe{ UPrimitiveComponent_OnDestroyPhysicsStateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnRegisterInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnRegisterInvokerHandler: Option<UPrimitiveComponent_OnRegisterInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnRegister_handler(handler: UPrimitiveComponent_OnRegisterInvoker){
+        unsafe{ UPrimitiveComponent_OnRegisterInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_OnUnregisterInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_OnUnregisterInvokerHandler: Option<UPrimitiveComponent_OnUnregisterInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_OnUnregister_handler(handler: UPrimitiveComponent_OnUnregisterInvoker){
+        unsafe{ UPrimitiveComponent_OnUnregisterInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PostDuplicateInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_PostDuplicateInvokerHandler: Option<UPrimitiveComponent_PostDuplicateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PostDuplicate_handler(handler: UPrimitiveComponent_PostDuplicateInvoker){
+        unsafe{ UPrimitiveComponent_PostDuplicateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PostEditImportInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_PostEditImportInvokerHandler: Option<UPrimitiveComponent_PostEditImportInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PostEditImport_handler(handler: UPrimitiveComponent_PostEditImportInvoker){
+        unsafe{ UPrimitiveComponent_PostEditImportInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PostInitPropertiesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_PostInitPropertiesInvokerHandler: Option<UPrimitiveComponent_PostInitPropertiesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PostInitProperties_handler(handler: UPrimitiveComponent_PostInitPropertiesInvoker){
+        unsafe{ UPrimitiveComponent_PostInitPropertiesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_PostLoadInvokerHandler: Option<UPrimitiveComponent_PostLoadInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PostLoad_handler(handler: UPrimitiveComponent_PostLoadInvoker){
+        unsafe{ UPrimitiveComponent_PostLoadInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PushEditorVisibilityToProxyInvoker = unsafe extern "C" fn(*mut c_void, u64);
+    pub(super) static mut UPrimitiveComponent_PushEditorVisibilityToProxyInvokerHandler: Option<UPrimitiveComponent_PushEditorVisibilityToProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PushEditorVisibilityToProxy_handler(handler: UPrimitiveComponent_PushEditorVisibilityToProxyInvoker){
+        unsafe{ UPrimitiveComponent_PushEditorVisibilityToProxyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PushHoveredToProxyInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_PushHoveredToProxyInvokerHandler: Option<UPrimitiveComponent_PushHoveredToProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PushHoveredToProxy_handler(handler: UPrimitiveComponent_PushHoveredToProxyInvoker){
+        unsafe{ UPrimitiveComponent_PushHoveredToProxyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvokerHandler: Option<UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy_handler(handler: UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvoker){
+        unsafe{ UPrimitiveComponent_PushLevelInstanceEditingStateToProxyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PushSelectionToProxyInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_PushSelectionToProxyInvokerHandler: Option<UPrimitiveComponent_PushSelectionToProxyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PushSelectionToProxy_handler(handler: UPrimitiveComponent_PushSelectionToProxyInvoker){
+        unsafe{ UPrimitiveComponent_PushSelectionToProxyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PutAllRigidBodiesToSleepInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_PutAllRigidBodiesToSleepInvokerHandler: Option<UPrimitiveComponent_PutAllRigidBodiesToSleepInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PutAllRigidBodiesToSleep_handler(handler: UPrimitiveComponent_PutAllRigidBodiesToSleepInvoker){
+        unsafe{ UPrimitiveComponent_PutAllRigidBodiesToSleepInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_PutRigidBodyToSleepInvoker = unsafe extern "C" fn(*mut c_void, UName);
+    pub(super) static mut UPrimitiveComponent_PutRigidBodyToSleepInvokerHandler: Option<UPrimitiveComponent_PutRigidBodyToSleepInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_PutRigidBodyToSleep_handler(handler: UPrimitiveComponent_PutRigidBodyToSleepInvoker){
+        unsafe{ UPrimitiveComponent_PutRigidBodyToSleepInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvoker = unsafe extern "C" fn(*mut c_void, *mut UActorTextureStreamingBuildDataComponentOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvokerHandler: Option<UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel_handler(handler: UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvoker){
+        unsafe{ UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_RigidBodyIsAwakeInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
+    pub(super) static mut UPrimitiveComponent_RigidBodyIsAwakeInvokerHandler: Option<UPrimitiveComponent_RigidBodyIsAwakeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_RigidBodyIsAwake_handler(handler: UPrimitiveComponent_RigidBodyIsAwakeInvoker){
+        unsafe{ UPrimitiveComponent_RigidBodyIsAwakeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ScaleByMomentOfInertiaInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName) -> Vector3;
+    pub(super) static mut UPrimitiveComponent_ScaleByMomentOfInertiaInvokerHandler: Option<UPrimitiveComponent_ScaleByMomentOfInertiaInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ScaleByMomentOfInertia_handler(handler: UPrimitiveComponent_ScaleByMomentOfInertiaInvoker){
+        unsafe{ UPrimitiveComponent_ScaleByMomentOfInertiaInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SendRenderDebugPhysicsInvoker = unsafe extern "C" fn(*mut c_void, *mut FPrimitiveSceneProxyOpaque);
+    pub(super) static mut UPrimitiveComponent_SendRenderDebugPhysicsInvokerHandler: Option<UPrimitiveComponent_SendRenderDebugPhysicsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SendRenderDebugPhysics_handler(handler: UPrimitiveComponent_SendRenderDebugPhysicsInvoker){
+        unsafe{ UPrimitiveComponent_SendRenderDebugPhysicsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SendRenderTransform_ConcurrentInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_SendRenderTransform_ConcurrentInvokerHandler: Option<UPrimitiveComponent_SendRenderTransform_ConcurrentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SendRenderTransform_Concurrent_handler(handler: UPrimitiveComponent_SendRenderTransform_ConcurrentInvoker){
+        unsafe{ UPrimitiveComponent_SendRenderTransform_ConcurrentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAllMassScaleInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetAllMassScaleInvokerHandler: Option<UPrimitiveComponent_SetAllMassScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAllMassScale_handler(handler: UPrimitiveComponent_SetAllMassScaleInvoker){
+        unsafe{ UPrimitiveComponent_SetAllMassScaleInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAllPhysicsLinearVelocityInvoker = unsafe extern "C" fn(*mut c_void, Vector3, bool);
+    pub(super) static mut UPrimitiveComponent_SetAllPhysicsLinearVelocityInvokerHandler: Option<UPrimitiveComponent_SetAllPhysicsLinearVelocityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAllPhysicsLinearVelocity_handler(handler: UPrimitiveComponent_SetAllPhysicsLinearVelocityInvoker){
+        unsafe{ UPrimitiveComponent_SetAllPhysicsLinearVelocityInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAllPhysicsPositionInvoker = unsafe extern "C" fn(*mut c_void, Vector3);
+    pub(super) static mut UPrimitiveComponent_SetAllPhysicsPositionInvokerHandler: Option<UPrimitiveComponent_SetAllPhysicsPositionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAllPhysicsPosition_handler(handler: UPrimitiveComponent_SetAllPhysicsPositionInvoker){
+        unsafe{ UPrimitiveComponent_SetAllPhysicsPositionInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAllPhysicsRotationInvoker = unsafe extern "C" fn(*mut c_void, Rotator);
+    pub(super) static mut UPrimitiveComponent_SetAllPhysicsRotationInvokerHandler: Option<UPrimitiveComponent_SetAllPhysicsRotationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAllPhysicsRotation_handler(handler: UPrimitiveComponent_SetAllPhysicsRotationInvoker){
+        unsafe{ UPrimitiveComponent_SetAllPhysicsRotationInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAllUseCCDInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetAllUseCCDInvokerHandler: Option<UPrimitiveComponent_SetAllUseCCDInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAllUseCCD_handler(handler: UPrimitiveComponent_SetAllUseCCDInvoker){
+        unsafe{ UPrimitiveComponent_SetAllUseCCDInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetAngularDampingInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetAngularDampingInvokerHandler: Option<UPrimitiveComponent_SetAngularDampingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetAngularDamping_handler(handler: UPrimitiveComponent_SetAngularDampingInvoker){
+        unsafe{ UPrimitiveComponent_SetAngularDampingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetBoundsScaleInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetBoundsScaleInvokerHandler: Option<UPrimitiveComponent_SetBoundsScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetBoundsScale_handler(handler: UPrimitiveComponent_SetBoundsScaleInvoker){
+        unsafe{ UPrimitiveComponent_SetBoundsScaleInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCachedMaxDrawDistanceInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetCachedMaxDrawDistanceInvokerHandler: Option<UPrimitiveComponent_SetCachedMaxDrawDistanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCachedMaxDrawDistance_handler(handler: UPrimitiveComponent_SetCachedMaxDrawDistanceInvoker){
+        unsafe{ UPrimitiveComponent_SetCachedMaxDrawDistanceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCastHiddenShadowInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetCastHiddenShadowInvokerHandler: Option<UPrimitiveComponent_SetCastHiddenShadowInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCastHiddenShadow_handler(handler: UPrimitiveComponent_SetCastHiddenShadowInvoker){
+        unsafe{ UPrimitiveComponent_SetCastHiddenShadowInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCastShadowInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetCastShadowInvokerHandler: Option<UPrimitiveComponent_SetCastShadowInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCastShadow_handler(handler: UPrimitiveComponent_SetCastShadowInvoker){
+        unsafe{ UPrimitiveComponent_SetCastShadowInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCenterOfMassInvoker = unsafe extern "C" fn(*mut c_void, Vector3, UName);
+    pub(super) static mut UPrimitiveComponent_SetCenterOfMassInvokerHandler: Option<UPrimitiveComponent_SetCenterOfMassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCenterOfMass_handler(handler: UPrimitiveComponent_SetCenterOfMassInvoker){
+        unsafe{ UPrimitiveComponent_SetCenterOfMassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void, ECollisionChannel);
+    pub(super) static mut UPrimitiveComponent_SetCollisionObjectTypeInvokerHandler: Option<UPrimitiveComponent_SetCollisionObjectTypeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCollisionObjectType_handler(handler: UPrimitiveComponent_SetCollisionObjectTypeInvoker){
+        unsafe{ UPrimitiveComponent_SetCollisionObjectTypeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCollisionProfileNameInvoker = unsafe extern "C" fn(*mut c_void, UName, bool);
+    pub(super) static mut UPrimitiveComponent_SetCollisionProfileNameInvokerHandler: Option<UPrimitiveComponent_SetCollisionProfileNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCollisionProfileName_handler(handler: UPrimitiveComponent_SetCollisionProfileNameInvoker){
+        unsafe{ UPrimitiveComponent_SetCollisionProfileNameInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCullDistanceInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetCullDistanceInvokerHandler: Option<UPrimitiveComponent_SetCullDistanceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCullDistance_handler(handler: UPrimitiveComponent_SetCullDistanceInvoker){
+        unsafe{ UPrimitiveComponent_SetCullDistanceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCustomDepthStencilValueInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut UPrimitiveComponent_SetCustomDepthStencilValueInvokerHandler: Option<UPrimitiveComponent_SetCustomDepthStencilValueInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCustomDepthStencilValue_handler(handler: UPrimitiveComponent_SetCustomDepthStencilValueInvoker){
+        unsafe{ UPrimitiveComponent_SetCustomDepthStencilValueInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_SetCustomPrimitiveDataFloatInvoker = unsafe extern "C" fn(*mut c_void, i32, f32);
@@ -15759,11 +19630,53 @@ mod ffis{
         unsafe{ UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4InvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_SetEmissiveLightSourceInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetEmissiveLightSourceInvokerHandler: Option<UPrimitiveComponent_SetEmissiveLightSourceInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetEmissiveLightSource_handler(handler: UPrimitiveComponent_SetEmissiveLightSourceInvoker){
+        unsafe{ UPrimitiveComponent_SetEmissiveLightSourceInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetEnableGravityInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetEnableGravityInvokerHandler: Option<UPrimitiveComponent_SetEnableGravityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetEnableGravity_handler(handler: UPrimitiveComponent_SetEnableGravityInvoker){
+        unsafe{ UPrimitiveComponent_SetEnableGravityInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_SetGenerateOverlapEventsInvoker = unsafe extern "C" fn(*mut c_void, bool);
     pub(super) static mut UPrimitiveComponent_SetGenerateOverlapEventsInvokerHandler: Option<UPrimitiveComponent_SetGenerateOverlapEventsInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_SetGenerateOverlapEvents_handler(handler: UPrimitiveComponent_SetGenerateOverlapEventsInvoker){
         unsafe{ UPrimitiveComponent_SetGenerateOverlapEventsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetHiddenInSceneCaptureInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetHiddenInSceneCaptureInvokerHandler: Option<UPrimitiveComponent_SetHiddenInSceneCaptureInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetHiddenInSceneCapture_handler(handler: UPrimitiveComponent_SetHiddenInSceneCaptureInvoker){
+        unsafe{ UPrimitiveComponent_SetHiddenInSceneCaptureInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvokerHandler: Option<UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus_handler(handler: UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvoker){
+        unsafe{ UPrimitiveComponent_SetIgnoreBoundsForEditorFocusInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetIsBeingMovedByEditorInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetIsBeingMovedByEditorInvokerHandler: Option<UPrimitiveComponent_SetIsBeingMovedByEditorInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetIsBeingMovedByEditor_handler(handler: UPrimitiveComponent_SetIsBeingMovedByEditorInvoker){
+        unsafe{ UPrimitiveComponent_SetIsBeingMovedByEditorInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetLODParentPrimitiveInvoker = unsafe extern "C" fn(*mut c_void, *mut UPrimitiveComponentOpaque);
+    pub(super) static mut UPrimitiveComponent_SetLODParentPrimitiveInvokerHandler: Option<UPrimitiveComponent_SetLODParentPrimitiveInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetLODParentPrimitive_handler(handler: UPrimitiveComponent_SetLODParentPrimitiveInvoker){
+        unsafe{ UPrimitiveComponent_SetLODParentPrimitiveInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_SetLastRenderTimeInvoker = unsafe extern "C" fn(*mut c_void, f32);
@@ -15780,6 +19693,132 @@ mod ffis{
         unsafe{ UPrimitiveComponent_SetLightingChannelsInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_SetLinearDampingInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetLinearDampingInvokerHandler: Option<UPrimitiveComponent_SetLinearDampingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetLinearDamping_handler(handler: UPrimitiveComponent_SetLinearDampingInvoker){
+        unsafe{ UPrimitiveComponent_SetLinearDampingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetMassOverrideInKgInvoker = unsafe extern "C" fn(*mut c_void, UName, f32, bool);
+    pub(super) static mut UPrimitiveComponent_SetMassOverrideInKgInvokerHandler: Option<UPrimitiveComponent_SetMassOverrideInKgInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetMassOverrideInKg_handler(handler: UPrimitiveComponent_SetMassOverrideInKgInvoker){
+        unsafe{ UPrimitiveComponent_SetMassOverrideInKgInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetMassScaleInvoker = unsafe extern "C" fn(*mut c_void, UName, f32);
+    pub(super) static mut UPrimitiveComponent_SetMassScaleInvokerHandler: Option<UPrimitiveComponent_SetMassScaleInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetMassScale_handler(handler: UPrimitiveComponent_SetMassScaleInvoker){
+        unsafe{ UPrimitiveComponent_SetMassScaleInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetMaterialInvoker = unsafe extern "C" fn(*mut c_void, i32, *mut UMaterialInterfaceOpaque);
+    pub(super) static mut UPrimitiveComponent_SetMaterialInvokerHandler: Option<UPrimitiveComponent_SetMaterialInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetMaterial_handler(handler: UPrimitiveComponent_SetMaterialInvoker){
+        unsafe{ UPrimitiveComponent_SetMaterialInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetMaterialByNameInvoker = unsafe extern "C" fn(*mut c_void, UName, *mut UMaterialInterfaceOpaque);
+    pub(super) static mut UPrimitiveComponent_SetMaterialByNameInvokerHandler: Option<UPrimitiveComponent_SetMaterialByNameInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetMaterialByName_handler(handler: UPrimitiveComponent_SetMaterialByNameInvoker){
+        unsafe{ UPrimitiveComponent_SetMaterialByNameInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetNotifyRigidBodyCollisionInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetNotifyRigidBodyCollisionInvokerHandler: Option<UPrimitiveComponent_SetNotifyRigidBodyCollisionInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetNotifyRigidBodyCollision_handler(handler: UPrimitiveComponent_SetNotifyRigidBodyCollisionInvoker){
+        unsafe{ UPrimitiveComponent_SetNotifyRigidBodyCollisionInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetOnlyOwnerSeeInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetOnlyOwnerSeeInvokerHandler: Option<UPrimitiveComponent_SetOnlyOwnerSeeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetOnlyOwnerSee_handler(handler: UPrimitiveComponent_SetOnlyOwnerSeeInvoker){
+        unsafe{ UPrimitiveComponent_SetOnlyOwnerSeeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetOwnerNoSeeInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetOwnerNoSeeInvokerHandler: Option<UPrimitiveComponent_SetOwnerNoSeeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetOwnerNoSee_handler(handler: UPrimitiveComponent_SetOwnerNoSeeInvoker){
+        unsafe{ UPrimitiveComponent_SetOwnerNoSeeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysMaterialOverrideInvoker = unsafe extern "C" fn(*mut c_void, *mut UPhysicalMaterialOpaque);
+    pub(super) static mut UPrimitiveComponent_SetPhysMaterialOverrideInvokerHandler: Option<UPrimitiveComponent_SetPhysMaterialOverrideInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysMaterialOverride_handler(handler: UPrimitiveComponent_SetPhysMaterialOverrideInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysMaterialOverrideInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvoker = unsafe extern "C" fn(*mut c_void, Vector3, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvokerHandler: Option<UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees_handler(handler: UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvoker = unsafe extern "C" fn(*mut c_void, Vector3, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvokerHandler: Option<UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians_handler(handler: UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysicsLinearVelocityInvoker = unsafe extern "C" fn(*mut c_void, Vector3, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetPhysicsLinearVelocityInvokerHandler: Option<UPrimitiveComponent_SetPhysicsLinearVelocityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysicsLinearVelocity_handler(handler: UPrimitiveComponent_SetPhysicsLinearVelocityInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysicsLinearVelocityInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvoker = unsafe extern "C" fn(*mut c_void, f32, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvokerHandler: Option<UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees_handler(handler: UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvoker = unsafe extern "C" fn(*mut c_void, f32, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvokerHandler: Option<UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians_handler(handler: UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvoker){
+        unsafe{ UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetReceivesDecalsInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetReceivesDecalsInvokerHandler: Option<UPrimitiveComponent_SetReceivesDecalsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetReceivesDecals_handler(handler: UPrimitiveComponent_SetReceivesDecalsInvoker){
+        unsafe{ UPrimitiveComponent_SetReceivesDecalsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetRenderCustomDepthInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetRenderCustomDepthInvokerHandler: Option<UPrimitiveComponent_SetRenderCustomDepthInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetRenderCustomDepth_handler(handler: UPrimitiveComponent_SetRenderCustomDepthInvoker){
+        unsafe{ UPrimitiveComponent_SetRenderCustomDepthInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetRenderInDepthPassInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetRenderInDepthPassInvokerHandler: Option<UPrimitiveComponent_SetRenderInDepthPassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetRenderInDepthPass_handler(handler: UPrimitiveComponent_SetRenderInDepthPassInvoker){
+        unsafe{ UPrimitiveComponent_SetRenderInDepthPassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetRenderInMainPassInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetRenderInMainPassInvokerHandler: Option<UPrimitiveComponent_SetRenderInMainPassInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetRenderInMainPass_handler(handler: UPrimitiveComponent_SetRenderInMainPassInvoker){
+        unsafe{ UPrimitiveComponent_SetRenderInMainPassInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataInvoker = unsafe extern "C" fn(*mut c_void, UName, f32);
     pub(super) static mut UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataInvokerHandler: Option<UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataInvoker> = None;
     #[no_mangle]
@@ -15792,6 +19831,41 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData_handler(handler: UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveDataInvoker){
         unsafe{ UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveDataInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetSimulatePhysicsInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetSimulatePhysicsInvokerHandler: Option<UPrimitiveComponent_SetSimulatePhysicsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetSimulatePhysics_handler(handler: UPrimitiveComponent_SetSimulatePhysicsInvoker){
+        unsafe{ UPrimitiveComponent_SetSimulatePhysicsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvokerHandler: Option<UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights_handler(handler: UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvoker){
+        unsafe{ UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvokerHandler: Option<UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetTranslucencySortDistanceOffset_handler(handler: UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvoker){
+        unsafe{ UPrimitiveComponent_SetTranslucencySortDistanceOffsetInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetTranslucentSortPriorityInvoker = unsafe extern "C" fn(*mut c_void, i32);
+    pub(super) static mut UPrimitiveComponent_SetTranslucentSortPriorityInvokerHandler: Option<UPrimitiveComponent_SetTranslucentSortPriorityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetTranslucentSortPriority_handler(handler: UPrimitiveComponent_SetTranslucentSortPriorityInvoker){
+        unsafe{ UPrimitiveComponent_SetTranslucentSortPriorityInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetUseCCDInvoker = unsafe extern "C" fn(*mut c_void, bool, UName);
+    pub(super) static mut UPrimitiveComponent_SetUseCCDInvokerHandler: Option<UPrimitiveComponent_SetUseCCDInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetUseCCD_handler(handler: UPrimitiveComponent_SetUseCCDInvoker){
+        unsafe{ UPrimitiveComponent_SetUseCCDInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_SetVectorParameterForCustomPrimitiveDataInvoker = unsafe extern "C" fn(*mut c_void, UName, Vector4);
@@ -15808,11 +19882,158 @@ mod ffis{
         unsafe{ UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveDataInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_SetVisibleInRayTracingInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetVisibleInRayTracingInvokerHandler: Option<UPrimitiveComponent_SetVisibleInRayTracingInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetVisibleInRayTracing_handler(handler: UPrimitiveComponent_SetVisibleInRayTracingInvoker){
+        unsafe{ UPrimitiveComponent_SetVisibleInRayTracingInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvokerHandler: Option<UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetVisibleInSceneCaptureOnly_handler(handler: UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvoker){
+        unsafe{ UPrimitiveComponent_SetVisibleInSceneCaptureOnlyInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ShouldComponentAddToSceneInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_ShouldComponentAddToSceneInvokerHandler: Option<UPrimitiveComponent_ShouldComponentAddToSceneInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ShouldComponentAddToScene_handler(handler: UPrimitiveComponent_ShouldComponentAddToSceneInvoker){
+        unsafe{ UPrimitiveComponent_ShouldComponentAddToSceneInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ShouldCreatePhysicsStateInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_ShouldCreatePhysicsStateInvokerHandler: Option<UPrimitiveComponent_ShouldCreatePhysicsStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ShouldCreatePhysicsState_handler(handler: UPrimitiveComponent_ShouldCreatePhysicsStateInvoker){
+        unsafe{ UPrimitiveComponent_ShouldCreatePhysicsStateInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ShouldGenerateAutoLODInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
+    pub(super) static mut UPrimitiveComponent_ShouldGenerateAutoLODInvokerHandler: Option<UPrimitiveComponent_ShouldGenerateAutoLODInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ShouldGenerateAutoLOD_handler(handler: UPrimitiveComponent_ShouldGenerateAutoLODInvoker){
+        unsafe{ UPrimitiveComponent_ShouldGenerateAutoLODInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvokerHandler: Option<UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform_handler(handler: UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvoker){
+        unsafe{ UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_ShouldRenderSelectedInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_ShouldRenderSelectedInvokerHandler: Option<UPrimitiveComponent_ShouldRenderSelectedInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_ShouldRenderSelected_handler(handler: UPrimitiveComponent_ShouldRenderSelectedInvoker){
+        unsafe{ UPrimitiveComponent_ShouldRenderSelectedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvokerHandler: Option<UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity_handler(handler: UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvoker){
+        unsafe{ UPrimitiveComponent_SupportsWorldPositionOffsetVelocityInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SyncComponentToRBPhysicsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_SyncComponentToRBPhysicsInvokerHandler: Option<UPrimitiveComponent_SyncComponentToRBPhysicsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SyncComponentToRBPhysics_handler(handler: UPrimitiveComponent_SyncComponentToRBPhysicsInvoker){
+        unsafe{ UPrimitiveComponent_SyncComponentToRBPhysicsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UnWeldChildrenInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_UnWeldChildrenInvokerHandler: Option<UPrimitiveComponent_UnWeldChildrenInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UnWeldChildren_handler(handler: UPrimitiveComponent_UnWeldChildrenInvoker){
+        unsafe{ UPrimitiveComponent_UnWeldChildrenInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UnWeldFromParentInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_UnWeldFromParentInvokerHandler: Option<UPrimitiveComponent_UnWeldFromParentInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UnWeldFromParent_handler(handler: UPrimitiveComponent_UnWeldFromParentInvoker){
+        unsafe{ UPrimitiveComponent_UnWeldFromParentInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UpdateBoundsInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_UpdateBoundsInvokerHandler: Option<UPrimitiveComponent_UpdateBoundsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UpdateBounds_handler(handler: UPrimitiveComponent_UpdateBoundsInvoker){
+        unsafe{ UPrimitiveComponent_UpdateBoundsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UpdateCollisionProfileInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_UpdateCollisionProfileInvokerHandler: Option<UPrimitiveComponent_UpdateCollisionProfileInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UpdateCollisionProfile_handler(handler: UPrimitiveComponent_UpdateCollisionProfileInvoker){
+        unsafe{ UPrimitiveComponent_UpdateCollisionProfileInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UpdateOcclusionBoundsSlackInvoker = unsafe extern "C" fn(*mut c_void, f32);
+    pub(super) static mut UPrimitiveComponent_UpdateOcclusionBoundsSlackInvokerHandler: Option<UPrimitiveComponent_UpdateOcclusionBoundsSlackInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UpdateOcclusionBoundsSlack_handler(handler: UPrimitiveComponent_UpdateOcclusionBoundsSlackInvoker){
+        unsafe{ UPrimitiveComponent_UpdateOcclusionBoundsSlackInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UpdateOverlapsImplInvoker = unsafe extern "C" fn(*mut c_void, *mut TOverlapArrayViewOpaque, bool, *mut TOverlapArrayViewOpaque) -> bool;
+    pub(super) static mut UPrimitiveComponent_UpdateOverlapsImplInvokerHandler: Option<UPrimitiveComponent_UpdateOverlapsImplInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UpdateOverlapsImpl_handler(handler: UPrimitiveComponent_UpdateOverlapsImplInvoker){
+        unsafe{ UPrimitiveComponent_UpdateOverlapsImplInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UpdatePhysicsVolumeInvoker = unsafe extern "C" fn(*mut c_void, bool);
+    pub(super) static mut UPrimitiveComponent_UpdatePhysicsVolumeInvokerHandler: Option<UPrimitiveComponent_UpdatePhysicsVolumeInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UpdatePhysicsVolume_handler(handler: UPrimitiveComponent_UpdatePhysicsVolumeInvoker){
+        unsafe{ UPrimitiveComponent_UpdatePhysicsVolumeInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_UsesOnlyUnlitMaterialsInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
+    pub(super) static mut UPrimitiveComponent_UsesOnlyUnlitMaterialsInvokerHandler: Option<UPrimitiveComponent_UsesOnlyUnlitMaterialsInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_UsesOnlyUnlitMaterials_handler(handler: UPrimitiveComponent_UsesOnlyUnlitMaterialsInvoker){
+        unsafe{ UPrimitiveComponent_UsesOnlyUnlitMaterialsInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_WakeAllRigidBodiesInvoker = unsafe extern "C" fn(*mut c_void);
+    pub(super) static mut UPrimitiveComponent_WakeAllRigidBodiesInvokerHandler: Option<UPrimitiveComponent_WakeAllRigidBodiesInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_WakeAllRigidBodies_handler(handler: UPrimitiveComponent_WakeAllRigidBodiesInvoker){
+        unsafe{ UPrimitiveComponent_WakeAllRigidBodiesInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_WakeRigidBodyInvoker = unsafe extern "C" fn(*mut c_void, UName);
+    pub(super) static mut UPrimitiveComponent_WakeRigidBodyInvokerHandler: Option<UPrimitiveComponent_WakeRigidBodyInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_WakeRigidBody_handler(handler: UPrimitiveComponent_WakeRigidBodyInvoker){
+        unsafe{ UPrimitiveComponent_WakeRigidBodyInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_WasRecentlyRenderedInvoker = unsafe extern "C" fn(*mut c_void, f32) -> bool;
     pub(super) static mut UPrimitiveComponent_WasRecentlyRenderedInvokerHandler: Option<UPrimitiveComponent_WasRecentlyRenderedInvoker> = None;
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_WasRecentlyRendered_handler(handler: UPrimitiveComponent_WasRecentlyRenderedInvoker){
         unsafe{ UPrimitiveComponent_WasRecentlyRenderedInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_WeldToInvoker = unsafe extern "C" fn(*mut c_void, *mut USceneComponentOpaque, UName);
+    pub(super) static mut UPrimitiveComponent_WeldToInvokerHandler: Option<UPrimitiveComponent_WeldToInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_WeldTo_handler(handler: UPrimitiveComponent_WeldToInvoker){
+        unsafe{ UPrimitiveComponent_WeldToInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_WeldToImplementationInvoker = unsafe extern "C" fn(*mut c_void, *mut USceneComponentOpaque, UName, bool) -> bool;
+    pub(super) static mut UPrimitiveComponent_WeldToImplementationInvokerHandler: Option<UPrimitiveComponent_WeldToImplementationInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_WeldToImplementation_handler(handler: UPrimitiveComponent_WeldToImplementationInvoker){
+        unsafe{ UPrimitiveComponent_WeldToImplementationInvokerHandler = Some(handler) };
     }
 
     type UAnimInstance_AddExternalNotifyHandlerInvoker = unsafe extern "C" fn(*mut c_void, *mut UObjectOpaque, UName);

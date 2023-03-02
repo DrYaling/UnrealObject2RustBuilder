@@ -264,7 +264,7 @@ fn remove_comment_and_mic(lines: &mut Vec<String>){
 ///移除泛型
 fn remove_templates(lines: &mut Vec<String>){    
     let mut read_line = 0usize;
-    while read_line < lines.len() {
+    'main: while read_line < lines.len() {
         let line = lines[read_line].trim().to_owned();
         if line.contains("template"){
             let mut brace_count = 0;
@@ -273,20 +273,42 @@ fn remove_templates(lines: &mut Vec<String>){
                 let rl = read_line;
                 let line = lines.remove(rl);
                 if line.contains("{"){
+                    brace_count = 1;
+                    //template brace end
+                    if line.contains("}"){
+                        continue 'main;
+                    }
+                }
+                //no function block
+                if !line.contains("("){
+                    continue;
+                }
+                //no brace this line
+                break;
+            }
+            //check next line or more got brace
+            while read_line < lines.len() {
+                let line = lines[read_line].trim().to_string();
+                let mut remove = false;
+                for c in line.chars() {
+                    if c == '{'{
+                        brace_count += 1;
+                        remove = true;
+                    }
+                    else if c == '}'{
+                        brace_count -= 1;
+                        remove = true;
+                    }
+                }
+                //no brace block left
+                if brace_count <= 0{
+                    if remove{
+                        lines.remove(read_line);
+                    }
                     break;
                 }
-            }
-            while read_line < lines.len() {
-                let line = lines.remove(read_line);
-                if line.contains("{"){
-                    brace_count += 1;
-                }
-                if line.contains("}"){
-                    //template class ignored
-                    if brace_count == 0{
-                        break;
-                    }
-                    brace_count -= 1;
+                else{
+                    lines.remove(read_line);
                 }
             }
             continue;

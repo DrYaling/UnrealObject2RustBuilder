@@ -85,7 +85,8 @@
             "fields": ["Ignore"]
         },
         {
-            "class_name": "UWorld"
+            "class_name": "UWorld",
+            "fields":["Ignore"]
         },
         {
             "class_name": "UPrimitiveComponent",

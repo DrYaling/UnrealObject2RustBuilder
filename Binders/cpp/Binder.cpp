@@ -11,6 +11,7 @@
 #include "Engine/Classes/GameFramework/GameModeBase.h"
 #include "Engine/Classes/Components/SceneComponent.h"
 #include "Engine/Classes/Components/ActorComponent.h"
+#include "Engine/Classes/Engine/World.h"
 #include "Engine/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Classes/Animation/AnimInstance.h"
 #include "Engine/Classes/Kismet/KismetSystemLibrary.h"
@@ -3951,14 +3952,893 @@ extern "C"{
 	void uapi_UActorComponent_UnregisterComponent(void* target){	
 		((UActorComponent*)target)->UnregisterComponent();	
 	}
+	void uapi_UWorld_AddController(void* target, AController* Controller){	
+		((UWorld*)target)->AddController(Controller);	
+	}
+	bool uapi_UWorld_AddLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->AddLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_AddNetworkActor(void* target, AActor* Actor){	
+		((UWorld*)target)->AddNetworkActor(Actor);	
+	}
+	void uapi_UWorld_AddParameterCollectionInstance(void* target, UMaterialParameterCollection* Collection, bool bUpdateScene){	
+		((UWorld*)target)->AddParameterCollectionInstance(Collection, bUpdateScene);	
+	}
+	void uapi_UWorld_AddPhysicsVolume(void* target, APhysicsVolume* Volume){	
+		((UWorld*)target)->AddPhysicsVolume(Volume);	
+	}
+	void uapi_UWorld_AddPostProcessingSettings(void* target, Vector3 ViewLocation, FSceneView* SceneView){	
+		((UWorld*)target)->AddPostProcessingSettings(ToFVector(ViewLocation), SceneView);	
+	}
+	void uapi_UWorld_AddStreamingLevel(void* target, ULevelStreaming* StreamingLevelToAdd){	
+		((UWorld*)target)->AddStreamingLevel(StreamingLevelToAdd);	
+	}
+	void uapi_UWorld_AddUniqueStreamingLevel(void* target, ULevelStreaming* StreamingLevelToAdd){	
+		((UWorld*)target)->AddUniqueStreamingLevel(StreamingLevelToAdd);	
+	}
+	bool uapi_UWorld_AllowAudioPlayback(void* target){	
+		auto result = ((UWorld*)target)->AllowAudioPlayback();	
+		return result;	
+	}
+	bool uapi_UWorld_AllowLevelLoadRequests(void* target){	
+		auto result = ((UWorld*)target)->AllowLevelLoadRequests();	
+		return result;	
+	}
+	bool uapi_UWorld_AreActorsInitialized(void* target){	
+		auto result = ((UWorld*)target)->AreActorsInitialized();	
+		return result;	
+	}
+	bool uapi_UWorld_AreAlwaysLoadedLevelsLoaded(void* target){	
+		auto result = ((UWorld*)target)->AreAlwaysLoadedLevelsLoaded();	
+		return result;	
+	}
+	void uapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel(void* target){	
+		((UWorld*)target)->AsyncLoadAlwaysLoadedLevelsForSeamlessTravel();	
+	}
+	void uapi_UWorld_BeginDestroy(void* target){	
+		((UWorld*)target)->BeginDestroy();	
+	}
+	void uapi_UWorld_BeginPlay(void* target){	
+		((UWorld*)target)->BeginPlay();	
+	}
+	void uapi_UWorld_BeginTearingDown(void* target){	
+		((UWorld*)target)->BeginTearingDown();	
+	}
+	void uapi_UWorld_BlockTillLevelStreamingCompleted(void* target){	
+		((UWorld*)target)->BlockTillLevelStreamingCompleted();	
+	}
+	void uapi_UWorld_BroadcastLevelsChanged(void* target){	
+		((UWorld*)target)->BroadcastLevelsChanged();	
+	}
+	const char* uapi_UWorld_BuildPIEPackagePrefix(int32 PIEInstanceID){	
+		auto result = FString2Utf8((UWorld::BuildPIEPackagePrefix(PIEInstanceID)));	
+		return result;	
+	}
+	void uapi_UWorld_CancelPendingMapChange(void* target){	
+		((UWorld*)target)->CancelPendingMapChange();	
+	}
+	void uapi_UWorld_CleanupActors(void* target){	
+		((UWorld*)target)->CleanupActors();	
+	}
+	void uapi_UWorld_CleanupWorld(void* target, bool bSessionEnded, bool bCleanupResources, UWorld* NewWorld){	
+		((UWorld*)target)->CleanupWorld(bSessionEnded, bCleanupResources, NewWorld);	
+	}
+	void uapi_UWorld_ClearActorComponentEndOfFrameUpdate(void* target, UActorComponent* Component){	
+		((UWorld*)target)->ClearActorComponentEndOfFrameUpdate(Component);	
+	}
+	void uapi_UWorld_ClearDemoNetDriver(void* target){	
+		((UWorld*)target)->ClearDemoNetDriver();	
+	}
+	void uapi_UWorld_ClearNetDriver(void* target, UNetDriver* Driver){	
+		((UWorld*)target)->ClearNetDriver(Driver);	
+	}
+	void uapi_UWorld_ClearStreamingLevels(void* target){	
+		((UWorld*)target)->ClearStreamingLevels();	
+	}
+	void uapi_UWorld_ClearWorldComponents(void* target){	
+		((UWorld*)target)->ClearWorldComponents();	
+	}
+	void uapi_UWorld_CommitMapChange(void* target){	
+		((UWorld*)target)->CommitMapChange();	
+	}
+	void uapi_UWorld_CommitModelSurfaces(void* target){	
+		((UWorld*)target)->CommitModelSurfaces();	
+	}
+	void uapi_UWorld_ConditionallyBuildStreamingData(void* target){	
+		((UWorld*)target)->ConditionallyBuildStreamingData();	
+	}
+	bool uapi_UWorld_ContainsActor(void* target, AActor* Actor){	
+		auto result = ((UWorld*)target)->ContainsActor(Actor);	
+		return result;	
+	}
+	bool uapi_UWorld_ContainsLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->ContainsLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_CopyGameState(void* target, AGameModeBase* FromGameMode, AGameStateBase* FromGameState){	
+		((UWorld*)target)->CopyGameState(FromGameMode, FromGameState);	
+	}
+	void* uapi_UWorld_CreateAISystem(void* target){	
+		auto result = (void*)((UWorld*)target)->CreateAISystem();	
+		return result;	
+	}
+	void uapi_UWorld_CreateFXSystem(void* target){	
+		((UWorld*)target)->CreateFXSystem();	
+	}
+	void uapi_UWorld_CreatePhysicsScene(void* target, AWorldSettings* Settings){	
+		((UWorld*)target)->CreatePhysicsScene(Settings);	
+	}
+	void uapi_UWorld_DeSelectLevel(void* target, ULevel* InLevel){	
+		((UWorld*)target)->DeSelectLevel(InLevel);	
+	}
+	void uapi_UWorld_DelayStreamingVolumeUpdates(void* target, int32 InFrameDelay){	
+		((UWorld*)target)->DelayStreamingVolumeUpdates(InFrameDelay);	
+	}
+	bool uapi_UWorld_DestroyActor(void* target, AActor* Actor, bool bNetForce, bool bShouldModifyLevel){	
+		auto result = ((UWorld*)target)->DestroyActor(Actor, bNetForce, bShouldModifyLevel);	
+		return result;	
+	}
+	void uapi_UWorld_DestroyDemoNetDriver(void* target){	
+		((UWorld*)target)->DestroyDemoNetDriver();	
+	}
+	bool uapi_UWorld_DestroySwappedPC(void* target, UNetConnection* Connection){	
+		auto result = ((UWorld*)target)->DestroySwappedPC(Connection);	
+		return result;	
+	}
+	void uapi_UWorld_DestroyWorld(void* target, bool bInformEngineOfWorld, UWorld* NewWorld){	
+		((UWorld*)target)->DestroyWorld(bInformEngineOfWorld, NewWorld);	
+	}
+	void uapi_UWorld_DuplicateRequestedLevels(void* target, UName MapName){	
+		((UWorld*)target)->DuplicateRequestedLevels(ToFName(MapName));	
+	}
+	bool uapi_UWorld_EditorDestroyActor(void* target, AActor* Actor, bool bShouldModifyLevel){	
+		auto result = ((UWorld*)target)->EditorDestroyActor(Actor, bShouldModifyLevel);	
+		return result;	
+	}
+	bool uapi_UWorld_EncroachingBlockingGeometry(void* target, AActor* TestActor, Vector3 TestLocation, Rotator TestRotation, Vector3* ProposedAdjustment){	
+		auto result = ((UWorld*)target)->EncroachingBlockingGeometry(TestActor, ToFVector(TestLocation), ToFRotator(TestRotation), ToFVector(*ProposedAdjustment));	
+		return result;	
+	}
+	void uapi_UWorld_EnsureCollisionTreeIsBuilt(void* target){	
+		((UWorld*)target)->EnsureCollisionTreeIsBuilt();	
+	}
+	void* uapi_UWorld_FindWorldInPackage(UPackage* Package){	
+		auto result = (void*)(UWorld::FindWorldInPackage(Package));	
+		return result;	
+	}
+	void uapi_UWorld_FinishDestroy(void* target){	
+		((UWorld*)target)->FinishDestroy();	
+	}
+	void uapi_UWorld_FinishPhysicsSim(void* target){	
+		((UWorld*)target)->FinishPhysicsSim();	
+	}
+	void uapi_UWorld_FlushDeferredParameterCollectionInstanceUpdates(void* target){	
+		((UWorld*)target)->FlushDeferredParameterCollectionInstanceUpdates();	
+	}
+	void* uapi_UWorld_FollowWorldRedirectorInPackage(UPackage* Package, UObjectRedirector* OptionalOutRedirector){	
+		auto result = (void*)(UWorld::FollowWorldRedirectorInPackage(Package, OptionalOutRedirector));	
+		return result;	
+	}
+	void* uapi_UWorld_GetAISystem(void* target){	
+		auto result = (void*)((UWorld*)target)->GetAISystem();	
+		return result;	
+	}
+	void* uapi_UWorld_GetActiveLevelCollection(void* target){	
+		auto result = (void*)((UWorld*)target)->GetActiveLevelCollection();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetActiveLevelCollectionIndex(void* target){	
+		auto result = ((UWorld*)target)->GetActiveLevelCollectionIndex();	
+		return result;	
+	}
+	void* uapi_UWorld_GetActiveLightingScenario(void* target){	
+		auto result = (void*)((UWorld*)target)->GetActiveLightingScenario();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetActorCount(void* target){	
+		auto result = ((UWorld*)target)->GetActorCount();	
+		return result;	
+	}
+	const char* uapi_UWorld_GetAddressURL(void* target){	
+		auto result = FString2Utf8(((UWorld*)target)->GetAddressURL());	
+		return result;	
+	}
+	bool uapi_UWorld_GetAllowDeferredPhysicsStateCreation(void* target){	
+		auto result = ((UWorld*)target)->GetAllowDeferredPhysicsStateCreation();	
+		return result;	
+	}
+	void* uapi_UWorld_GetAudioDeviceRaw(void* target){	
+		auto result = (void*)((UWorld*)target)->GetAudioDeviceRaw();	
+		return result;	
+	}
+	double uapi_UWorld_GetAudioTimeSeconds(void* target){	
+		auto result = ((UWorld*)target)->GetAudioTimeSeconds();	
+		return result;	
+	}
+	void* uapi_UWorld_GetAvoidanceManager(void* target){	
+		auto result = (void*)((UWorld*)target)->GetAvoidanceManager();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetBlockTillLevelStreamingCompletedEpoch(void* target){	
+		auto result = ((UWorld*)target)->GetBlockTillLevelStreamingCompletedEpoch();	
+		return result;	
+	}
+	void* uapi_UWorld_GetCanvasForDrawMaterialToRenderTarget(void* target){	
+		auto result = (void*)((UWorld*)target)->GetCanvasForDrawMaterialToRenderTarget();	
+		return result;	
+	}
+	void* uapi_UWorld_GetCanvasForRenderingToTarget(void* target){	
+		auto result = (void*)((UWorld*)target)->GetCanvasForRenderingToTarget();	
+		return result;	
+	}
+	void* uapi_UWorld_GetCurrentLevel(void* target){	
+		auto result = (void*)((UWorld*)target)->GetCurrentLevel();	
+		return result;	
+	}
+	void* uapi_UWorld_GetCurrentLevelPendingInvisibility(void* target){	
+		auto result = (void*)((UWorld*)target)->GetCurrentLevelPendingInvisibility();	
+		return result;	
+	}
+	void* uapi_UWorld_GetCurrentLevelPendingVisibility(void* target){	
+		auto result = (void*)((UWorld*)target)->GetCurrentLevelPendingVisibility();	
+		return result;	
+	}
+	const char* uapi_UWorld_GetDebugDisplayName(void* target){	
+		auto result = FString2Utf8(((UWorld*)target)->GetDebugDisplayName());	
+		return result;	
+	}
+	void* uapi_UWorld_GetDefaultBrush(void* target){	
+		auto result = (void*)((UWorld*)target)->GetDefaultBrush();	
+		return result;	
+	}
+	float uapi_UWorld_GetDefaultGravityZ(void* target){	
+		auto result = ((UWorld*)target)->GetDefaultGravityZ();	
+		return result;	
+	}
+	void* uapi_UWorld_GetDefaultPhysicsVolume(void* target){	
+		auto result = (void*)((UWorld*)target)->GetDefaultPhysicsVolume();	
+		return result;	
+	}
+	float uapi_UWorld_GetDeltaSeconds(void* target){	
+		auto result = ((UWorld*)target)->GetDeltaSeconds();	
+		return result;	
+	}
+	void* uapi_UWorld_GetDemoNetDriver(void* target){	
+		auto result = (void*)((UWorld*)target)->GetDemoNetDriver();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetDetailMode(void* target){	
+		auto result = ((UWorld*)target)->GetDetailMode();	
+		return result;	
+	}
+	void* uapi_UWorld_GetDuplicatedWorldForPIE(UWorld* InWorld, UPackage* InPIEackage, int32 PIEInstanceID){	
+		auto result = (void*)(UWorld::GetDuplicatedWorldForPIE(InWorld, InPIEackage, PIEInstanceID));	
+		return result;	
+	}
+	void* uapi_UWorld_GetFirstLocalPlayerFromController(void* target){	
+		auto result = (void*)((UWorld*)target)->GetFirstLocalPlayerFromController();	
+		return result;	
+	}
+	void* uapi_UWorld_GetFirstPlayerController(void* target){	
+		auto result = (void*)((UWorld*)target)->GetFirstPlayerController();	
+		return result;	
+	}
+	void* uapi_UWorld_GetGameInstance(void* target){	
+		auto result = (void*)((UWorld*)target)->GetGameInstance();	
+		return result;	
+	}
+	void* uapi_UWorld_GetGameState(void* target){	
+		auto result = (void*)((UWorld*)target)->GetGameState();	
+		return result;	
+	}
+	void* uapi_UWorld_GetGameViewport(void* target){	
+		auto result = (void*)((UWorld*)target)->GetGameViewport();	
+		return result;	
+	}
+	float uapi_UWorld_GetGravityZ(void* target){	
+		auto result = ((UWorld*)target)->GetGravityZ();	
+		return result;	
+	}
+	bool uapi_UWorld_GetIsInBlockTillLevelStreamingCompleted(void* target){	
+		auto result = ((UWorld*)target)->GetIsInBlockTillLevelStreamingCompleted();	
+		return result;	
+	}
+	void* uapi_UWorld_GetLevel(void* target, int32 InLevelIndex){	
+		auto result = (void*)((UWorld*)target)->GetLevel(InLevelIndex);	
+		return result;	
+	}
+	void* uapi_UWorld_GetLevelScriptActor(void* target, ULevel* OwnerLevel){	
+		auto result = (void*)((UWorld*)target)->GetLevelScriptActor(OwnerLevel);	
+		return result;	
+	}
+	void* uapi_UWorld_GetLevelStreamingForPackageName(void* target, UName PackageName){	
+		auto result = (void*)((UWorld*)target)->GetLevelStreamingForPackageName(ToFName(PackageName));	
+		return result;	
+	}
+	const char* uapi_UWorld_GetLocalURL(void* target){	
+		auto result = FString2Utf8(((UWorld*)target)->GetLocalURL());	
+		return result;	
+	}
+	const char* uapi_UWorld_GetMapName(void* target){	
+		auto result = FString2Utf8(((UWorld*)target)->GetMapName());	
+		return result;	
+	}
+	void* uapi_UWorld_GetNetDriver(void* target){	
+		auto result = (void*)((UWorld*)target)->GetNetDriver();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetNonDefaultPhysicsVolumeCount(void* target){	
+		auto result = ((UWorld*)target)->GetNonDefaultPhysicsVolumeCount();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetNumControllers(void* target){	
+		auto result = ((UWorld*)target)->GetNumControllers();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetNumLevels(void* target){	
+		auto result = ((UWorld*)target)->GetNumLevels();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetNumPlayerControllers(void* target){	
+		auto result = ((UWorld*)target)->GetNumPlayerControllers();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetNumSelectedLevels(void* target){	
+		auto result = ((UWorld*)target)->GetNumSelectedLevels();	
+		return result;	
+	}
+	void* uapi_UWorld_GetParameterCollectionInstance(void* target, UMaterialParameterCollection* Collection){	
+		auto result = (void*)((UWorld*)target)->GetParameterCollectionInstance(Collection);	
+		return result;	
+	}
+	void* uapi_UWorld_GetPhysicsScene(void* target){	
+		auto result = (void*)((UWorld*)target)->GetPhysicsScene();	
+		return result;	
+	}
+	int32 uapi_UWorld_GetProgressDenominator(void* target){	
+		auto result = ((UWorld*)target)->GetProgressDenominator();	
+		return result;	
+	}
+	double uapi_UWorld_GetRealTimeSeconds(void* target){	
+		auto result = ((UWorld*)target)->GetRealTimeSeconds();	
+		return result;	
+	}
+	void* uapi_UWorld_GetSelectedLevel(void* target, int32 InLevelIndex){	
+		auto result = (void*)((UWorld*)target)->GetSelectedLevel(InLevelIndex);	
+		return result;	
+	}
+	void* uapi_UWorld_GetServerStreamingLevelsVisibility(void* target){	
+		auto result = (void*)((UWorld*)target)->GetServerStreamingLevelsVisibility();	
+		return result;	
+	}
+	bool uapi_UWorld_GetShouldForceUnloadStreamingLevels(void* target){	
+		auto result = ((UWorld*)target)->GetShouldForceUnloadStreamingLevels();	
+		return result;	
+	}
+	bool uapi_UWorld_GetShouldForceVisibleStreamingLevels(void* target){	
+		auto result = ((UWorld*)target)->GetShouldForceVisibleStreamingLevels();	
+		return result;	
+	}
+	double uapi_UWorld_GetTimeSeconds(void* target){	
+		auto result = ((UWorld*)target)->GetTimeSeconds();	
+		return result;	
+	}
+	double uapi_UWorld_GetUnpausedTimeSeconds(void* target){	
+		auto result = ((UWorld*)target)->GetUnpausedTimeSeconds();	
+		return result;	
+	}
+	void* uapi_UWorld_GetWorld(void* target){	
+		auto result = (void*)((UWorld*)target)->GetWorld();	
+		return result;	
+	}
+	void* uapi_UWorld_GetWorldPartition(void* target){	
+		auto result = (void*)((UWorld*)target)->GetWorldPartition();	
+		return result;	
+	}
+	void* uapi_UWorld_GetWorldSettings(void* target, bool bCheckStreamingPersistent, bool bChecked){	
+		auto result = (void*)((UWorld*)target)->GetWorldSettings(bCheckStreamingPersistent, bChecked);	
+		return result;	
+	}
+	void uapi_UWorld_HandleTimelineScrubbed(void* target){	
+		((UWorld*)target)->HandleTimelineScrubbed();	
+	}
+	bool uapi_UWorld_HasBegunPlay(void* target){	
+		auto result = ((UWorld*)target)->HasBegunPlay();	
+		return result;	
+	}
+	bool uapi_UWorld_HasDefaultPhysicsVolume(void* target){	
+		auto result = ((UWorld*)target)->HasDefaultPhysicsVolume();	
+		return result;	
+	}
+	bool uapi_UWorld_HasEndOfFrameUpdates(void* target){	
+		auto result = ((UWorld*)target)->HasEndOfFrameUpdates();	
+		return result;	
+	}
+	bool uapi_UWorld_HasEverBeenInitialized(void* target){	
+		auto result = ((UWorld*)target)->HasEverBeenInitialized();	
+		return result;	
+	}
+	bool uapi_UWorld_HasMarkedObjectsPendingKill(void* target){	
+		auto result = ((UWorld*)target)->HasMarkedObjectsPendingKill();	
+		return result;	
+	}
+	bool uapi_UWorld_HasStreamingLevelsToConsider(void* target){	
+		auto result = ((UWorld*)target)->HasStreamingLevelsToConsider();	
+		return result;	
+	}
+	void uapi_UWorld_InitializeSubsystems(void* target){	
+		((UWorld*)target)->InitializeSubsystems();	
+	}
+	void uapi_UWorld_InsertPostProcessVolume(void* target, IInterface_PostProcessVolume* InVolume){	
+		((UWorld*)target)->InsertPostProcessVolume(InVolume);	
+	}
+	void uapi_UWorld_InvalidateAllSkyCaptures(void* target){	
+		((UWorld*)target)->InvalidateAllSkyCaptures();	
+	}
+	void uapi_UWorld_InvalidateModelGeometry(void* target, ULevel* InLevel){	
+		((UWorld*)target)->InvalidateModelGeometry(InLevel);	
+	}
+	void uapi_UWorld_InvalidateModelSurface(void* target, bool bCurrentLevelOnly){	
+		((UWorld*)target)->InvalidateModelSurface(bCurrentLevelOnly);	
+	}
+	bool uapi_UWorld_IsCameraMoveable(void* target){	
+		auto result = ((UWorld*)target)->IsCameraMoveable();	
+		return result;	
+	}
+	bool uapi_UWorld_IsEditorWorld(void* target){	
+		auto result = ((UWorld*)target)->IsEditorWorld();	
+		return result;	
+	}
+	bool uapi_UWorld_IsGameWorld(void* target){	
+		auto result = ((UWorld*)target)->IsGameWorld();	
+		return result;	
+	}
+	bool uapi_UWorld_IsInSeamlessTravel(void* target){	
+		auto result = ((UWorld*)target)->IsInSeamlessTravel();	
+		return result;	
+	}
+	bool uapi_UWorld_IsInitialized(void* target){	
+		auto result = ((UWorld*)target)->IsInitialized();	
+		return result;	
+	}
+	bool uapi_UWorld_IsInstanced(void* target){	
+		auto result = ((UWorld*)target)->IsInstanced();	
+		return result;	
+	}
+	bool uapi_UWorld_IsLevelSelected(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->IsLevelSelected(InLevel);	
+		return result;	
+	}
+	bool uapi_UWorld_IsMapChangeReady(void* target){	
+		auto result = ((UWorld*)target)->IsMapChangeReady();	
+		return result;	
+	}
+	bool uapi_UWorld_IsMovieSceneSequenceTickHandlerBound(void* target){	
+		auto result = ((UWorld*)target)->IsMovieSceneSequenceTickHandlerBound();	
+		return result;	
+	}
+	bool uapi_UWorld_IsNameStableForNetworking(void* target){	
+		auto result = ((UWorld*)target)->IsNameStableForNetworking();	
+		return result;	
+	}
+	bool uapi_UWorld_IsNavigationRebuilt(void* target){	
+		auto result = ((UWorld*)target)->IsNavigationRebuilt();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPartitionedWorld(void* target){	
+		auto result = ((UWorld*)target)->IsPartitionedWorld();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPartitionedWorld2(UWorld* InWorld){	
+		auto result = (UWorld::IsPartitionedWorld(InWorld));	
+		return result;	
+	}
+	bool uapi_UWorld_IsPaused(void* target){	
+		auto result = ((UWorld*)target)->IsPaused();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayInEditor(void* target){	
+		auto result = ((UWorld*)target)->IsPlayInEditor();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayInMobilePreview(void* target){	
+		auto result = ((UWorld*)target)->IsPlayInMobilePreview();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayInPreview(void* target){	
+		auto result = ((UWorld*)target)->IsPlayInPreview();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayInVulkanPreview(void* target){	
+		auto result = ((UWorld*)target)->IsPlayInVulkanPreview();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayingClientReplay(void* target){	
+		auto result = ((UWorld*)target)->IsPlayingClientReplay();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPlayingReplay(void* target){	
+		auto result = ((UWorld*)target)->IsPlayingReplay();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPreparingMapChange(void* target){	
+		auto result = ((UWorld*)target)->IsPreparingMapChange();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPreviewWorld(void* target){	
+		auto result = ((UWorld*)target)->IsPreviewWorld();	
+		return result;	
+	}
+	bool uapi_UWorld_IsReadyForFinishDestroy(void* target){	
+		auto result = ((UWorld*)target)->IsReadyForFinishDestroy();	
+		return result;	
+	}
+	bool uapi_UWorld_IsRecordingClientReplay(void* target){	
+		auto result = ((UWorld*)target)->IsRecordingClientReplay();	
+		return result;	
+	}
+	bool uapi_UWorld_IsRecordingReplay(void* target){	
+		auto result = ((UWorld*)target)->IsRecordingReplay();	
+		return result;	
+	}
+	bool uapi_UWorld_IsRefreshingStreamingLevels(void* target){	
+		auto result = ((UWorld*)target)->IsRefreshingStreamingLevels();	
+		return result;	
+	}
+	bool uapi_UWorld_IsStreamingLevelBeingConsidered(void* target, ULevelStreaming* StreamingLevel){	
+		auto result = ((UWorld*)target)->IsStreamingLevelBeingConsidered(StreamingLevel);	
+		return result;	
+	}
+	bool uapi_UWorld_IsVisibilityRequestPending(void* target){	
+		auto result = ((UWorld*)target)->IsVisibilityRequestPending();	
+		return result;	
+	}
+	bool uapi_UWorld_IsWorldOrExternalActorPackage(UPackage* Package){	
+		auto result = (UWorld::IsWorldOrExternalActorPackage(Package));	
+		return result;	
+	}
+	void uapi_UWorld_IssueEditorLoadWarnings(void* target){	
+		((UWorld*)target)->IssueEditorLoadWarnings();	
+	}
+	void* uapi_UWorld_K2_GetWorldSettings(void* target){	
+		auto result = (void*)((UWorld*)target)->K2_GetWorldSettings();	
+		return result;	
+	}
+	void uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate(void* target, UActorComponent* Component, bool bForceGameThread){	
+		((UWorld*)target)->MarkActorComponentForNeededEndOfFrameUpdate(Component, bForceGameThread);	
+	}
+	void uapi_UWorld_MarkObjectsPendingKill(void* target){	
+		((UWorld*)target)->MarkObjectsPendingKill();	
+	}
+	void uapi_UWorld_ModifyLevel(void* target, ULevel* Level){	
+		((UWorld*)target)->ModifyLevel(Level);	
+	}
+	void uapi_UWorld_NotifyAcceptedConnection(void* target, UNetConnection* Connection){	
+		((UWorld*)target)->NotifyAcceptedConnection(Connection);	
+	}
+	bool uapi_UWorld_NotifyAcceptingChannel(void* target, UChannel* Channel){	
+		auto result = ((UWorld*)target)->NotifyAcceptingChannel(Channel);	
+		return result;	
+	}
+	void uapi_UWorld_NotifyOfBlueprintDebuggingAssociation(void* target, UBlueprint* Blueprint, UObject* DebugObject){	
+		((UWorld*)target)->NotifyOfBlueprintDebuggingAssociation(Blueprint, DebugObject);	
+	}
+	void uapi_UWorld_PopulateStreamingLevelsToConsider(void* target){	
+		((UWorld*)target)->PopulateStreamingLevelsToConsider();	
+	}
+	void uapi_UWorld_PostDuplicate(void* target, bool bDuplicateForPIE){	
+		((UWorld*)target)->PostDuplicate(bDuplicateForPIE);	
+	}
+	void uapi_UWorld_PostInitializeSubsystems(void* target){	
+		((UWorld*)target)->PostInitializeSubsystems();	
+	}
+	void uapi_UWorld_PostLoad(void* target){	
+		((UWorld*)target)->PostLoad();	
+	}
+	void uapi_UWorld_ProcessLevelStreamingVolumes(void* target, Vector3* OverrideViewLocation){	
+		((UWorld*)target)->ProcessLevelStreamingVolumes(ToFVector(*OverrideViewLocation));	
+	}
+	void uapi_UWorld_PropagateLightingScenarioChange(void* target){	
+		((UWorld*)target)->PropagateLightingScenarioChange();	
+	}
+	void uapi_UWorld_RefreshStreamingLevels(void* target){	
+		((UWorld*)target)->RefreshStreamingLevels();	
+	}
+	void uapi_UWorld_RegisterAutoActivateCamera(void* target, ACameraActor* CameraActor, int32 PlayerIndex){	
+		((UWorld*)target)->RegisterAutoActivateCamera(CameraActor, PlayerIndex);	
+	}
+	void uapi_UWorld_ReleasePhysicsScene(void* target){	
+		((UWorld*)target)->ReleasePhysicsScene();	
+	}
+	void uapi_UWorld_RemoveActor(void* target, AActor* Actor, bool bShouldModifyLevel){	
+		((UWorld*)target)->RemoveActor(Actor, bShouldModifyLevel);	
+	}
+	void uapi_UWorld_RemoveController(void* target, AController* Controller){	
+		((UWorld*)target)->RemoveController(Controller);	
+	}
+	bool uapi_UWorld_RemoveLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->RemoveLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_RemoveNetworkActor(void* target, AActor* Actor){	
+		((UWorld*)target)->RemoveNetworkActor(Actor);	
+	}
+	void uapi_UWorld_RemovePhysicsVolume(void* target, APhysicsVolume* Volume){	
+		((UWorld*)target)->RemovePhysicsVolume(Volume);	
+	}
+	void uapi_UWorld_RemovePostProcessVolume(void* target, IInterface_PostProcessVolume* InVolume){	
+		((UWorld*)target)->RemovePostProcessVolume(InVolume);	
+	}
+	bool uapi_UWorld_RemoveStreamingLevel(void* target, ULevelStreaming* StreamingLevelToRemove){	
+		auto result = ((UWorld*)target)->RemoveStreamingLevel(StreamingLevelToRemove);	
+		return result;	
+	}
+	bool uapi_UWorld_RemoveStreamingLevelAt(void* target, int32 IndexToRemove){	
+		auto result = ((UWorld*)target)->RemoveStreamingLevelAt(IndexToRemove);	
+		return result;	
+	}
+	void uapi_UWorld_RenameToPIEWorld(void* target, int32 PIEInstanceID){	
+		((UWorld*)target)->RenameToPIEWorld(PIEInstanceID);	
+	}
+	bool uapi_UWorld_RequiresHitProxies(void* target){	
+		auto result = ((UWorld*)target)->RequiresHitProxies();	
+		return result;	
+	}
+	void uapi_UWorld_SelectLevel(void* target, ULevel* InLevel){	
+		((UWorld*)target)->SelectLevel(InLevel);	
+	}
+	void uapi_UWorld_SendAllEndOfFrameUpdates(void* target){	
+		((UWorld*)target)->SendAllEndOfFrameUpdates();	
+	}
+	void uapi_UWorld_SetActiveLevelCollection(void* target, int32 LevelCollectionIndex){	
+		((UWorld*)target)->SetActiveLevelCollection(LevelCollectionIndex);	
+	}
+	void uapi_UWorld_SetAllowDeferredPhysicsStateCreation(void* target, bool bAllow){	
+		((UWorld*)target)->SetAllowDeferredPhysicsStateCreation(bAllow);	
+	}
+	bool uapi_UWorld_SetCurrentLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->SetCurrentLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_SetDemoNetDriver(void* target, UDemoNetDriver* InDemoNetDriver){	
+		((UWorld*)target)->SetDemoNetDriver(InDemoNetDriver);	
+	}
+	void uapi_UWorld_SetGameInstance(void* target, UGameInstance* NewGI){	
+		((UWorld*)target)->SetGameInstance(NewGI);	
+	}
+	void uapi_UWorld_SetGameState(void* target, AGameStateBase* NewGameState){	
+		((UWorld*)target)->SetGameState(NewGameState);	
+	}
+	void uapi_UWorld_SetMapNeedsLightingFullyRebuilt(void* target, int32 InNumLightingUnbuiltObjects, int32 InNumUnbuiltReflectionCaptures){	
+		((UWorld*)target)->SetMapNeedsLightingFullyRebuilt(InNumLightingUnbuiltObjects, InNumUnbuiltReflectionCaptures);	
+	}
+	void uapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate(void* target){	
+		((UWorld*)target)->SetMaterialParameterCollectionInstanceNeedsUpdate();	
+	}
+	void uapi_UWorld_SetNavigationSystem(void* target, UNavigationSystemBase* InNavigationSystem){	
+		((UWorld*)target)->SetNavigationSystem(InNavigationSystem);	
+	}
+	void uapi_UWorld_SetNetDriver(void* target, UNetDriver* NewDriver){	
+		((UWorld*)target)->SetNetDriver(NewDriver);	
+	}
+	void uapi_UWorld_SetPhysicsScene(void* target, FPhysScene* InScene){	
+		((UWorld*)target)->SetPhysicsScene(InScene);	
+	}
+	void uapi_UWorld_SetSeamlessTravelMidpointPause(void* target, bool bNowPaused){	
+		((UWorld*)target)->SetSeamlessTravelMidpointPause(bNowPaused);	
+	}
+	void uapi_UWorld_SetShouldForceUnloadStreamingLevels(void* target, bool bInShouldForceUnloadStreamingLevels){	
+		((UWorld*)target)->SetShouldForceUnloadStreamingLevels(bInShouldForceUnloadStreamingLevels);	
+	}
+	void uapi_UWorld_SetShouldForceVisibleStreamingLevels(void* target, bool bInShouldForceVisibleStreamingLevels){	
+		((UWorld*)target)->SetShouldForceVisibleStreamingLevels(bInShouldForceVisibleStreamingLevels);	
+	}
+	void uapi_UWorld_SetShouldTick(void* target, bool bInShouldTick){	
+		((UWorld*)target)->SetShouldTick(bInShouldTick);	
+	}
+	void uapi_UWorld_SetWorldDataLayers(void* target, AWorldDataLayers* NewWorldDataLayers){	
+		((UWorld*)target)->SetWorldDataLayers(NewWorldDataLayers);	
+	}
+	void uapi_UWorld_SetupParameterCollectionInstances(void* target){	
+		((UWorld*)target)->SetupParameterCollectionInstances();	
+	}
+	void uapi_UWorld_SetupPhysicsTickFunctions(void* target, float DeltaSeconds){	
+		((UWorld*)target)->SetupPhysicsTickFunctions(DeltaSeconds);	
+	}
+	bool uapi_UWorld_ShouldTick(void* target){	
+		auto result = ((UWorld*)target)->ShouldTick();	
+		return result;	
+	}
+	void uapi_UWorld_ShrinkLevel(void* target){	
+		((UWorld*)target)->ShrinkLevel();	
+	}
+	void* uapi_UWorld_SpawnBrush(void* target){	
+		auto result = (void*)((UWorld*)target)->SpawnBrush();	
+		return result;	
+	}
+	void uapi_UWorld_StartPhysicsSim(void* target){	
+		((UWorld*)target)->StartPhysicsSim();	
+	}
+	void uapi_UWorld_StoreIrisAndClearReferences(void* target){	
+		((UWorld*)target)->StoreIrisAndClearReferences();	
+	}
+	bool uapi_UWorld_SupportsMakingInvisibleTransactionRequests(void* target){	
+		auto result = ((UWorld*)target)->SupportsMakingInvisibleTransactionRequests();	
+		return result;	
+	}
+	bool uapi_UWorld_SupportsMakingVisibleTransactionRequests(void* target){	
+		auto result = ((UWorld*)target)->SupportsMakingVisibleTransactionRequests();	
+		return result;	
+	}
+	void uapi_UWorld_TickNetClient(void* target, float DeltaSeconds){	
+		((UWorld*)target)->TickNetClient(DeltaSeconds);	
+	}
+	double uapi_UWorld_TimeSince(void* target, double Time){	
+		auto result = ((UWorld*)target)->TimeSince(Time);	
+		return result;	
+	}
+	void uapi_UWorld_TransferBlueprintDebugReferences(void* target, UWorld* NewWorld){	
+		((UWorld*)target)->TransferBlueprintDebugReferences(NewWorld);	
+	}
+	void uapi_UWorld_TriggerStreamingDataRebuild(void* target){	
+		((UWorld*)target)->TriggerStreamingDataRebuild();	
+	}
+	void uapi_UWorld_UpdateActorComponentEndOfFrameUpdateState(void* target, UActorComponent* Component){	
+		((UWorld*)target)->UpdateActorComponentEndOfFrameUpdateState(Component);	
+	}
+	void uapi_UWorld_UpdateAllSkyCaptures(void* target){	
+		((UWorld*)target)->UpdateAllSkyCaptures();	
+	}
+	void uapi_UWorld_UpdateConstraintActors(void* target){	
+		((UWorld*)target)->UpdateConstraintActors();	
+	}
+	bool uapi_UWorld_UpdateCullDistanceVolumes(void* target, AActor* ActorToUpdate, UPrimitiveComponent* ComponentToUpdate){	
+		auto result = ((UWorld*)target)->UpdateCullDistanceVolumes(ActorToUpdate, ComponentToUpdate);	
+		return result;	
+	}
+	void uapi_UWorld_UpdateLevelStreaming(void* target){	
+		((UWorld*)target)->UpdateLevelStreaming();	
+	}
+	void uapi_UWorld_UpdateParameterCollectionInstances(void* target, bool bUpdateInstanceUniformBuffers, bool bRecreateUniformBuffer){	
+		((UWorld*)target)->UpdateParameterCollectionInstances(bUpdateInstanceUniformBuffers, bRecreateUniformBuffer);	
+	}
+	void uapi_UWorld_UpdateStreamingLevelPriority(void* target, ULevelStreaming* StreamingLevel){	
+		((UWorld*)target)->UpdateStreamingLevelPriority(StreamingLevel);	
+	}
+	void uapi_UWorld_UpdateStreamingLevelShouldBeConsidered(void* target, ULevelStreaming* StreamingLevelToConsider){	
+		((UWorld*)target)->UpdateStreamingLevelShouldBeConsidered(StreamingLevelToConsider);	
+	}
+	void uapi_UWorld_UpdateWorldComponents(void* target, bool bRerunConstructionScripts, bool bCurrentLevelOnly, FRegisterComponentContext* Context){	
+		((UWorld*)target)->UpdateWorldComponents(bRerunConstructionScripts, bCurrentLevelOnly, Context);	
+	}
+	bool uapi_UWorld_UsesGameHiddenFlags(void* target){	
+		auto result = ((UWorld*)target)->UsesGameHiddenFlags();	
+		return result;	
+	}
+	void uapi_UWorld_WelcomePlayer(void* target, UNetConnection* Connection){	
+		((UWorld*)target)->WelcomePlayer(Connection);	
+	}
+	void uapi_UPrimitiveComponent_AddAngularImpulseInDegrees(void* target, Vector3 Impulse, UName BoneName, bool bVelChange){	
+		((UPrimitiveComponent*)target)->AddAngularImpulseInDegrees(ToFVector(Impulse), ToFName(BoneName), bVelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddAngularImpulseInRadians(void* target, Vector3 Impulse, UName BoneName, bool bVelChange){	
+		((UPrimitiveComponent*)target)->AddAngularImpulseInRadians(ToFVector(Impulse), ToFName(BoneName), bVelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddForce(void* target, Vector3 Force, UName BoneName, bool bAccelChange){	
+		((UPrimitiveComponent*)target)->AddForce(ToFVector(Force), ToFName(BoneName), bAccelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddForceAtLocation(void* target, Vector3 Force, Vector3 Location, UName BoneName){	
+		((UPrimitiveComponent*)target)->AddForceAtLocation(ToFVector(Force), ToFVector(Location), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_AddForceAtLocationLocal(void* target, Vector3 Force, Vector3 Location, UName BoneName){	
+		((UPrimitiveComponent*)target)->AddForceAtLocationLocal(ToFVector(Force), ToFVector(Location), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_AddImpulse(void* target, Vector3 Impulse, UName BoneName, bool bVelChange){	
+		((UPrimitiveComponent*)target)->AddImpulse(ToFVector(Impulse), ToFName(BoneName), bVelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddImpulseAtLocation(void* target, Vector3 Impulse, Vector3 Location, UName BoneName){	
+		((UPrimitiveComponent*)target)->AddImpulseAtLocation(ToFVector(Impulse), ToFVector(Location), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_AddTorqueInDegrees(void* target, Vector3 Torque, UName BoneName, bool bAccelChange){	
+		((UPrimitiveComponent*)target)->AddTorqueInDegrees(ToFVector(Torque), ToFName(BoneName), bAccelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddTorqueInRadians(void* target, Vector3 Torque, UName BoneName, bool bAccelChange){	
+		((UPrimitiveComponent*)target)->AddTorqueInRadians(ToFVector(Torque), ToFName(BoneName), bAccelChange);	
+	}
+	void uapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation(void* target, Vector3 Impulse, Vector3 Location, UName BoneName){	
+		((UPrimitiveComponent*)target)->AddVelocityChangeImpulseAtLocation(ToFVector(Impulse), ToFVector(Location), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_BeginDestroy(void* target){	
+		((UPrimitiveComponent*)target)->BeginDestroy();	
+	}
 	void uapi_UPrimitiveComponent_BeginPlay(void* target){	
 		((UPrimitiveComponent*)target)->BeginPlay();	
+	}
+	float uapi_UPrimitiveComponent_CalculateMass(void* target, UName BoneName){	
+		auto result = ((UPrimitiveComponent*)target)->CalculateMass(ToFName(BoneName));	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_CanCharacterStepUp(void* target, APawn* Pawn){	
+		auto result = ((UPrimitiveComponent*)target)->CanCharacterStepUp(Pawn);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_CanEditChange(void* target, FProperty* InProperty){	
+		auto result = ((UPrimitiveComponent*)target)->CanEditChange(InProperty);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_CanEditSimulatePhysics(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->CanEditSimulatePhysics();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->CanSkipGetTextureStreamingRenderAssetInfo();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_CheckForErrors(void* target){	
+		((UPrimitiveComponent*)target)->CheckForErrors();	
 	}
 	void uapi_UPrimitiveComponent_ClearMoveIgnoreActors(void* target){	
 		((UPrimitiveComponent*)target)->ClearMoveIgnoreActors();	
 	}
 	void uapi_UPrimitiveComponent_ClearMoveIgnoreComponents(void* target){	
 		((UPrimitiveComponent*)target)->ClearMoveIgnoreComponents();	
+	}
+	uint32 uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->ComputeHashTextureStreamingBuiltData();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_CreateRenderState_Concurrent(void* target, FRegisterComponentContext* Context){	
+		((UPrimitiveComponent*)target)->CreateRenderState_Concurrent(Context);	
+	}
+	void* uapi_UPrimitiveComponent_CreateSceneProxy(void* target){	
+		auto result = (void*)((UPrimitiveComponent*)target)->CreateSceneProxy();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_DestroyRenderState_Concurrent(void* target){	
+		((UPrimitiveComponent*)target)->DestroyRenderState_Concurrent();	
+	}
+	void uapi_UPrimitiveComponent_DispatchMouseOverEvents(UPrimitiveComponent* CurrentComponent, UPrimitiveComponent* NewComponent){	
+		(UPrimitiveComponent::DispatchMouseOverEvents(CurrentComponent, NewComponent));	
+	}
+	void uapi_UPrimitiveComponent_FinishDestroy(void* target){	
+		((UPrimitiveComponent*)target)->FinishDestroy();	
+	}
+	float uapi_UPrimitiveComponent_GetAngularDamping(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetAngularDamping();	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetBodyInstance(void* target, UName BoneName, bool bGetWelded, int32 Index){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetBodyInstance(ToFName(BoneName), bGetWelded, Index);	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetBodySetup(void* target){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetBodySetup();	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetCenterOfMass(void* target, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetCenterOfMass(ToFName(BoneName)));	
+		return result;	
+	}
+	ECollisionChannel uapi_UPrimitiveComponent_GetCollisionObjectType(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetCollisionObjectType();	
+		return result;	
+	}
+	UName uapi_UPrimitiveComponent_GetCollisionProfileName(void* target){	
+		auto result = ToUName(((UPrimitiveComponent*)target)->GetCollisionProfileName());	
+		return result;	
+	}
+	CollisionShape uapi_UPrimitiveComponent_GetCollisionShape(void* target, float Inflation){	
+		auto result = ToCollisionShape(((UPrimitiveComponent*)target)->GetCollisionShape(Inflation));	
+		return result;	
+	}
+	Transform uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance(void* target, FBodyInstance* UseBI){	
+		auto result = ToTransform(((UPrimitiveComponent*)target)->GetComponentTransformFromBodyInstance(UseBI));	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetComponentVelocity(void* target){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetComponentVelocity());	
+		return result;	
 	}
 	int32 uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter(void* target, UName ParameterName){	
 		auto result = ((UPrimitiveComponent*)target)->GetCustomPrimitiveDataIndexForScalarParameter(ToFName(ParameterName));	
@@ -3968,8 +4848,32 @@ extern "C"{
 		auto result = ((UPrimitiveComponent*)target)->GetCustomPrimitiveDataIndexForVectorParameter(ToFName(ParameterName));	
 		return result;	
 	}
+	float uapi_UPrimitiveComponent_GetDiffuseBoost(void* target, int32 ElementIndex){	
+		auto result = ((UPrimitiveComponent*)target)->GetDiffuseBoost(ElementIndex);	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetEditorMaterial(void* target, int32 ElementIndex){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetEditorMaterial(ElementIndex);	
+		return result;	
+	}
+	float uapi_UPrimitiveComponent_GetEmissiveBoost(void* target, int32 ElementIndex){	
+		auto result = ((UPrimitiveComponent*)target)->GetEmissiveBoost(ElementIndex);	
+		return result;	
+	}
 	bool uapi_UPrimitiveComponent_GetGenerateOverlapEvents(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->GetGenerateOverlapEvents();	
+		return result;	
+	}
+	uint64 uapi_UPrimitiveComponent_GetHiddenEditorViews(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetHiddenEditorViews();	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetInertiaTensor(void* target, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetInertiaTensor(ToFName(BoneName)));	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetLODParentPrimitive(void* target){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetLODParentPrimitive();	
 		return result;	
 	}
 	float uapi_UPrimitiveComponent_GetLastRenderTime(void* target){	
@@ -3980,26 +4884,302 @@ extern "C"{
 		auto result = ((UPrimitiveComponent*)target)->GetLastRenderTimeOnScreen();	
 		return result;	
 	}
+	bool uapi_UPrimitiveComponent_GetLevelInstanceEditingState(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetLevelInstanceEditingState();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage(void* target, int32& LightMapMemoryUsage, int32& ShadowMapMemoryUsage){	
+		((UPrimitiveComponent*)target)->GetLightAndShadowMapMemoryUsage(LightMapMemoryUsage, ShadowMapMemoryUsage);	
+	}
+	bool uapi_UPrimitiveComponent_GetLightMapResolution(void* target, int32& Width, int32& Height){	
+		auto result = ((UPrimitiveComponent*)target)->GetLightMapResolution(Width, Height);	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetLightingAttachmentRoot(void* target){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetLightingAttachmentRoot();	
+		return result;	
+	}
+	float uapi_UPrimitiveComponent_GetLinearDamping(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetLinearDamping();	
+		return result;	
+	}
+	float uapi_UPrimitiveComponent_GetMass(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetMass();	
+		return result;	
+	}
+	float uapi_UPrimitiveComponent_GetMassScale(void* target, UName BoneName){	
+		auto result = ((UPrimitiveComponent*)target)->GetMassScale(ToFName(BoneName));	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetMaterial(void* target, int32 ElementIndex){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetMaterial(ElementIndex);	
+		return result;	
+	}
+	void* uapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex(void* target, int32 FaceIndex, int32& SectionIndex){	
+		auto result = (void*)((UPrimitiveComponent*)target)->GetMaterialFromCollisionFaceIndex(FaceIndex, SectionIndex);	
+		return result;	
+	}
+	int32 uapi_UPrimitiveComponent_GetNumMaterials(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetNumMaterials();	
+		return result;	
+	}
+	int32 uapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetNumUncachedStaticLightingInteractions();	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees(void* target, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetPhysicsAngularVelocityInDegrees(ToFName(BoneName)));	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians(void* target, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetPhysicsAngularVelocityInRadians(ToFName(BoneName)));	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetPhysicsLinearVelocity(void* target, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetPhysicsLinearVelocity(ToFName(BoneName)));	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint(void* target, Vector3 Point, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->GetPhysicsLinearVelocityAtPoint(ToFVector(Point), ToFName(BoneName)));	
+		return result;	
+	}
 	int32 uapi_UPrimitiveComponent_GetRayTracingGroupId(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->GetRayTracingGroupId();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_GetShadowIndirectOnly(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetShadowIndirectOnly();	
+		return result;	
+	}
+	int32 uapi_UPrimitiveComponent_GetStaticLightMapResolution(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetStaticLightMapResolution();	
+		return result;	
+	}
+	float uapi_UPrimitiveComponent_GetStreamingScale(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetStreamingScale();	
 		return result;	
 	}
 	float uapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistance(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->GetVirtualTextureMainPassMaxDrawDistance();	
 		return result;	
 	}
+	bool uapi_UPrimitiveComponent_HasStaticLighting(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->HasStaticLighting();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_HasValidPhysicsState(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->HasValidPhysicsState();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_HasValidSettingsForStaticLighting(void* target, bool bOverlookInvalidComponents){	
+		auto result = ((UPrimitiveComponent*)target)->HasValidSettingsForStaticLighting(bOverlookInvalidComponents);	
+		return result;	
+	}
 	void uapi_UPrimitiveComponent_IgnoreActorWhenMoving(void* target, AActor* Actor, bool bShouldIgnore){	
 		((UPrimitiveComponent*)target)->IgnoreActorWhenMoving(Actor, bShouldIgnore);	
+	}
+	bool uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IgnoreBoundsForEditorFocus();	
+		return result;	
 	}
 	void uapi_UPrimitiveComponent_IgnoreComponentWhenMoving(void* target, UPrimitiveComponent* Component, bool bShouldIgnore){	
 		((UPrimitiveComponent*)target)->IgnoreComponentWhenMoving(Component, bShouldIgnore);	
 	}
+	void uapi_UPrimitiveComponent_InvalidateLightingCacheDetailed(void* target, bool bInvalidateBuildEnqueuedLighting, bool bTranslationOnly){	
+		((UPrimitiveComponent*)target)->InvalidateLightingCacheDetailed(bInvalidateBuildEnqueuedLighting, bTranslationOnly);	
+	}
 	void uapi_UPrimitiveComponent_InvalidateLumenSurfaceCache(void* target){	
 		((UPrimitiveComponent*)target)->InvalidateLumenSurfaceCache();	
+	}
+	bool uapi_UPrimitiveComponent_IsAnyRigidBodyAwake(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsAnyRigidBodyAwake();	
+		return result;	
 	}
 	bool uapi_UPrimitiveComponent_IsAttachedToStreamingManager(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->IsAttachedToStreamingManager();	
 		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsCompiling(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsCompiling();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsComponentIndividuallySelected(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsComponentIndividuallySelected();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsEditorOnly(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsEditorOnly();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsGravityEnabled(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsGravityEnabled();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsNavigationRelevant(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsNavigationRelevant();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsOverlappingActor(void* target, AActor* Other){	
+		auto result = ((UPrimitiveComponent*)target)->IsOverlappingActor(Other);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsOverlappingComponent(void* target, UPrimitiveComponent* OtherComp){	
+		auto result = ((UPrimitiveComponent*)target)->IsOverlappingComponent(OtherComp);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsReadyForFinishDestroy(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsReadyForFinishDestroy();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsSimulatingPhysics(void* target, UName BoneName){	
+		auto result = ((UPrimitiveComponent*)target)->IsSimulatingPhysics(ToFName(BoneName));	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsWelded(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsWelded();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsWorldGeometry(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsWorldGeometry();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsZeroExtent(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->IsZeroExtent();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_K2_IsCollisionEnabled(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->K2_IsCollisionEnabled();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->K2_IsPhysicsCollisionEnabled();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_K2_IsQueryCollisionEnabled(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->K2_IsQueryCollisionEnabled();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_NeedsLoadForClient(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->NeedsLoadForClient();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_NeedsLoadForServer(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->NeedsLoadForServer();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_OnActorEnableCollisionChanged(void* target){	
+		((UPrimitiveComponent*)target)->OnActorEnableCollisionChanged();	
+	}
+	void uapi_UPrimitiveComponent_OnAttachmentChanged(void* target){	
+		((UPrimitiveComponent*)target)->OnAttachmentChanged();	
+	}
+	void uapi_UPrimitiveComponent_OnComponentDestroyed(void* target, bool bDestroyingHierarchy){	
+		((UPrimitiveComponent*)target)->OnComponentDestroyed(bDestroyingHierarchy);	
+	}
+	void uapi_UPrimitiveComponent_OnCreatePhysicsState(void* target){	
+		((UPrimitiveComponent*)target)->OnCreatePhysicsState();	
+	}
+	void uapi_UPrimitiveComponent_OnDestroyPhysicsState(void* target){	
+		((UPrimitiveComponent*)target)->OnDestroyPhysicsState();	
+	}
+	void uapi_UPrimitiveComponent_OnRegister(void* target){	
+		((UPrimitiveComponent*)target)->OnRegister();	
+	}
+	void uapi_UPrimitiveComponent_OnUnregister(void* target){	
+		((UPrimitiveComponent*)target)->OnUnregister();	
+	}
+	void uapi_UPrimitiveComponent_PostDuplicate(void* target, bool bDuplicateForPIE){	
+		((UPrimitiveComponent*)target)->PostDuplicate(bDuplicateForPIE);	
+	}
+	void uapi_UPrimitiveComponent_PostEditImport(void* target){	
+		((UPrimitiveComponent*)target)->PostEditImport();	
+	}
+	void uapi_UPrimitiveComponent_PostInitProperties(void* target){	
+		((UPrimitiveComponent*)target)->PostInitProperties();	
+	}
+	void uapi_UPrimitiveComponent_PostLoad(void* target){	
+		((UPrimitiveComponent*)target)->PostLoad();	
+	}
+	void uapi_UPrimitiveComponent_PushEditorVisibilityToProxy(void* target, uint64 InVisibility){	
+		((UPrimitiveComponent*)target)->PushEditorVisibilityToProxy(InVisibility);	
+	}
+	void uapi_UPrimitiveComponent_PushHoveredToProxy(void* target, bool bInHovered){	
+		((UPrimitiveComponent*)target)->PushHoveredToProxy(bInHovered);	
+	}
+	void uapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy(void* target, bool bInEditingState){	
+		((UPrimitiveComponent*)target)->PushLevelInstanceEditingStateToProxy(bInEditingState);	
+	}
+	void uapi_UPrimitiveComponent_PushSelectionToProxy(void* target){	
+		((UPrimitiveComponent*)target)->PushSelectionToProxy();	
+	}
+	void uapi_UPrimitiveComponent_PutAllRigidBodiesToSleep(void* target){	
+		((UPrimitiveComponent*)target)->PutAllRigidBodiesToSleep();	
+	}
+	void uapi_UPrimitiveComponent_PutRigidBodyToSleep(void* target, UName BoneName){	
+		((UPrimitiveComponent*)target)->PutRigidBodyToSleep(ToFName(BoneName));	
+	}
+	bool uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel(void* target, UActorTextureStreamingBuildDataComponent* InActorTextureBuildData){	
+		auto result = ((UPrimitiveComponent*)target)->RemapActorTextureStreamingBuiltDataToLevel(InActorTextureBuildData);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_RigidBodyIsAwake(void* target, UName BoneName){	
+		auto result = ((UPrimitiveComponent*)target)->RigidBodyIsAwake(ToFName(BoneName));	
+		return result;	
+	}
+	Vector3 uapi_UPrimitiveComponent_ScaleByMomentOfInertia(void* target, Vector3 InputVector, UName BoneName){	
+		auto result = ToVector3(((UPrimitiveComponent*)target)->ScaleByMomentOfInertia(ToFVector(InputVector), ToFName(BoneName)));	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_SendRenderDebugPhysics(void* target, FPrimitiveSceneProxy* OverrideSceneProxy){	
+		((UPrimitiveComponent*)target)->SendRenderDebugPhysics(OverrideSceneProxy);	
+	}
+	void uapi_UPrimitiveComponent_SendRenderTransform_Concurrent(void* target){	
+		((UPrimitiveComponent*)target)->SendRenderTransform_Concurrent();	
+	}
+	void uapi_UPrimitiveComponent_SetAllMassScale(void* target, float InMassScale){	
+		((UPrimitiveComponent*)target)->SetAllMassScale(InMassScale);	
+	}
+	void uapi_UPrimitiveComponent_SetAllPhysicsLinearVelocity(void* target, Vector3 NewVel, bool bAddToCurrent){	
+		((UPrimitiveComponent*)target)->SetAllPhysicsLinearVelocity(ToFVector(NewVel), bAddToCurrent);	
+	}
+	void uapi_UPrimitiveComponent_SetAllPhysicsPosition(void* target, Vector3 NewPos){	
+		((UPrimitiveComponent*)target)->SetAllPhysicsPosition(ToFVector(NewPos));	
+	}
+	void uapi_UPrimitiveComponent_SetAllPhysicsRotation(void* target, Rotator NewRot){	
+		((UPrimitiveComponent*)target)->SetAllPhysicsRotation(ToFRotator(NewRot));	
+	}
+	void uapi_UPrimitiveComponent_SetAllUseCCD(void* target, bool InUseCCD){	
+		((UPrimitiveComponent*)target)->SetAllUseCCD(InUseCCD);	
+	}
+	void uapi_UPrimitiveComponent_SetAngularDamping(void* target, float InDamping){	
+		((UPrimitiveComponent*)target)->SetAngularDamping(InDamping);	
+	}
+	void uapi_UPrimitiveComponent_SetBoundsScale(void* target, float NewBoundsScale){	
+		((UPrimitiveComponent*)target)->SetBoundsScale(NewBoundsScale);	
+	}
+	void uapi_UPrimitiveComponent_SetCachedMaxDrawDistance(void* target, float NewCachedMaxDrawDistance){	
+		((UPrimitiveComponent*)target)->SetCachedMaxDrawDistance(NewCachedMaxDrawDistance);	
+	}
+	void uapi_UPrimitiveComponent_SetCastHiddenShadow(void* target, bool NewCastHiddenShadow){	
+		((UPrimitiveComponent*)target)->SetCastHiddenShadow(NewCastHiddenShadow);	
+	}
+	void uapi_UPrimitiveComponent_SetCastShadow(void* target, bool NewCastShadow){	
+		((UPrimitiveComponent*)target)->SetCastShadow(NewCastShadow);	
+	}
+	void uapi_UPrimitiveComponent_SetCenterOfMass(void* target, Vector3 CenterOfMassOffset, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetCenterOfMass(ToFVector(CenterOfMassOffset), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetCollisionObjectType(void* target, ECollisionChannel Channel){	
+		((UPrimitiveComponent*)target)->SetCollisionObjectType(Channel);	
+	}
+	void uapi_UPrimitiveComponent_SetCollisionProfileName(void* target, UName InCollisionProfileName, bool bUpdateOverlaps){	
+		((UPrimitiveComponent*)target)->SetCollisionProfileName(ToFName(InCollisionProfileName), bUpdateOverlaps);	
+	}
+	void uapi_UPrimitiveComponent_SetCullDistance(void* target, float NewCullDistance){	
+		((UPrimitiveComponent*)target)->SetCullDistance(NewCullDistance);	
+	}
+	void uapi_UPrimitiveComponent_SetCustomDepthStencilValue(void* target, int32 Value){	
+		((UPrimitiveComponent*)target)->SetCustomDepthStencilValue(Value);	
 	}
 	void uapi_UPrimitiveComponent_SetCustomPrimitiveDataFloat(void* target, int32 DataIndex, float Value){	
 		((UPrimitiveComponent*)target)->SetCustomPrimitiveDataFloat(DataIndex, Value);	
@@ -4025,8 +5205,26 @@ extern "C"{
 	void uapi_UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4(void* target, int32 DataIndex, Vector4 Value){	
 		((UPrimitiveComponent*)target)->SetDefaultCustomPrimitiveDataVector4(DataIndex, ToFVector4(Value));	
 	}
+	void uapi_UPrimitiveComponent_SetEmissiveLightSource(void* target, bool NewEmissiveLightSource){	
+		((UPrimitiveComponent*)target)->SetEmissiveLightSource(NewEmissiveLightSource);	
+	}
+	void uapi_UPrimitiveComponent_SetEnableGravity(void* target, bool bGravityEnabled){	
+		((UPrimitiveComponent*)target)->SetEnableGravity(bGravityEnabled);	
+	}
 	void uapi_UPrimitiveComponent_SetGenerateOverlapEvents(void* target, bool bInGenerateOverlapEvents){	
 		((UPrimitiveComponent*)target)->SetGenerateOverlapEvents(bInGenerateOverlapEvents);	
+	}
+	void uapi_UPrimitiveComponent_SetHiddenInSceneCapture(void* target, bool bValue){	
+		((UPrimitiveComponent*)target)->SetHiddenInSceneCapture(bValue);	
+	}
+	void uapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus(void* target, bool bIgnore){	
+		((UPrimitiveComponent*)target)->SetIgnoreBoundsForEditorFocus(bIgnore);	
+	}
+	void uapi_UPrimitiveComponent_SetIsBeingMovedByEditor(void* target, bool bNewIsBeingMoved){	
+		((UPrimitiveComponent*)target)->SetIsBeingMovedByEditor(bNewIsBeingMoved);	
+	}
+	void uapi_UPrimitiveComponent_SetLODParentPrimitive(void* target, UPrimitiveComponent* InLODParentPrimitive){	
+		((UPrimitiveComponent*)target)->SetLODParentPrimitive(InLODParentPrimitive);	
 	}
 	void uapi_UPrimitiveComponent_SetLastRenderTime(void* target, float InLastRenderTime){	
 		((UPrimitiveComponent*)target)->SetLastRenderTime(InLastRenderTime);	
@@ -4034,11 +5232,80 @@ extern "C"{
 	void uapi_UPrimitiveComponent_SetLightingChannels(void* target, bool bChannel0, bool bChannel1, bool bChannel2){	
 		((UPrimitiveComponent*)target)->SetLightingChannels(bChannel0, bChannel1, bChannel2);	
 	}
+	void uapi_UPrimitiveComponent_SetLinearDamping(void* target, float InDamping){	
+		((UPrimitiveComponent*)target)->SetLinearDamping(InDamping);	
+	}
+	void uapi_UPrimitiveComponent_SetMassOverrideInKg(void* target, UName BoneName, float MassInKg, bool bOverrideMass){	
+		((UPrimitiveComponent*)target)->SetMassOverrideInKg(ToFName(BoneName), MassInKg, bOverrideMass);	
+	}
+	void uapi_UPrimitiveComponent_SetMassScale(void* target, UName BoneName, float InMassScale){	
+		((UPrimitiveComponent*)target)->SetMassScale(ToFName(BoneName), InMassScale);	
+	}
+	void uapi_UPrimitiveComponent_SetMaterial(void* target, int32 ElementIndex, UMaterialInterface* Material){	
+		((UPrimitiveComponent*)target)->SetMaterial(ElementIndex, Material);	
+	}
+	void uapi_UPrimitiveComponent_SetMaterialByName(void* target, UName MaterialSlotName, UMaterialInterface* Material){	
+		((UPrimitiveComponent*)target)->SetMaterialByName(ToFName(MaterialSlotName), Material);	
+	}
+	void uapi_UPrimitiveComponent_SetNotifyRigidBodyCollision(void* target, bool bNewNotifyRigidBodyCollision){	
+		((UPrimitiveComponent*)target)->SetNotifyRigidBodyCollision(bNewNotifyRigidBodyCollision);	
+	}
+	void uapi_UPrimitiveComponent_SetOnlyOwnerSee(void* target, bool bNewOnlyOwnerSee){	
+		((UPrimitiveComponent*)target)->SetOnlyOwnerSee(bNewOnlyOwnerSee);	
+	}
+	void uapi_UPrimitiveComponent_SetOwnerNoSee(void* target, bool bNewOwnerNoSee){	
+		((UPrimitiveComponent*)target)->SetOwnerNoSee(bNewOwnerNoSee);	
+	}
+	void uapi_UPrimitiveComponent_SetPhysMaterialOverride(void* target, UPhysicalMaterial* NewPhysMaterial){	
+		((UPrimitiveComponent*)target)->SetPhysMaterialOverride(NewPhysMaterial);	
+	}
+	void uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees(void* target, Vector3 NewAngVel, bool bAddToCurrent, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetPhysicsAngularVelocityInDegrees(ToFVector(NewAngVel), bAddToCurrent, ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians(void* target, Vector3 NewAngVel, bool bAddToCurrent, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetPhysicsAngularVelocityInRadians(ToFVector(NewAngVel), bAddToCurrent, ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetPhysicsLinearVelocity(void* target, Vector3 NewVel, bool bAddToCurrent, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetPhysicsLinearVelocity(ToFVector(NewVel), bAddToCurrent, ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees(void* target, float NewMaxAngVel, bool bAddToCurrent, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetPhysicsMaxAngularVelocityInDegrees(NewMaxAngVel, bAddToCurrent, ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians(void* target, float NewMaxAngVel, bool bAddToCurrent, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetPhysicsMaxAngularVelocityInRadians(NewMaxAngVel, bAddToCurrent, ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetReceivesDecals(void* target, bool bNewReceivesDecals){	
+		((UPrimitiveComponent*)target)->SetReceivesDecals(bNewReceivesDecals);	
+	}
+	void uapi_UPrimitiveComponent_SetRenderCustomDepth(void* target, bool bValue){	
+		((UPrimitiveComponent*)target)->SetRenderCustomDepth(bValue);	
+	}
+	void uapi_UPrimitiveComponent_SetRenderInDepthPass(void* target, bool bValue){	
+		((UPrimitiveComponent*)target)->SetRenderInDepthPass(bValue);	
+	}
+	void uapi_UPrimitiveComponent_SetRenderInMainPass(void* target, bool bValue){	
+		((UPrimitiveComponent*)target)->SetRenderInMainPass(bValue);	
+	}
 	void uapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData(void* target, UName ParameterName, float Value){	
 		((UPrimitiveComponent*)target)->SetScalarParameterForCustomPrimitiveData(ToFName(ParameterName), Value);	
 	}
 	void uapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData(void* target, UName ParameterName, float Value){	
 		((UPrimitiveComponent*)target)->SetScalarParameterForDefaultCustomPrimitiveData(ToFName(ParameterName), Value);	
+	}
+	void uapi_UPrimitiveComponent_SetSimulatePhysics(void* target, bool bSimulate){	
+		((UPrimitiveComponent*)target)->SetSimulatePhysics(bSimulate);	
+	}
+	void uapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights(void* target, bool bNewSingleSampleShadowFromStationaryLights){	
+		((UPrimitiveComponent*)target)->SetSingleSampleShadowFromStationaryLights(bNewSingleSampleShadowFromStationaryLights);	
+	}
+	void uapi_UPrimitiveComponent_SetTranslucencySortDistanceOffset(void* target, float NewTranslucencySortDistanceOffset){	
+		((UPrimitiveComponent*)target)->SetTranslucencySortDistanceOffset(NewTranslucencySortDistanceOffset);	
+	}
+	void uapi_UPrimitiveComponent_SetTranslucentSortPriority(void* target, int32 NewTranslucentSortPriority){	
+		((UPrimitiveComponent*)target)->SetTranslucentSortPriority(NewTranslucentSortPriority);	
+	}
+	void uapi_UPrimitiveComponent_SetUseCCD(void* target, bool InUseCCD, UName BoneName){	
+		((UPrimitiveComponent*)target)->SetUseCCD(InUseCCD, ToFName(BoneName));	
 	}
 	void uapi_UPrimitiveComponent_SetVectorParameterForCustomPrimitiveData(void* target, UName ParameterName, Vector4 Value){	
 		((UPrimitiveComponent*)target)->SetVectorParameterForCustomPrimitiveData(ToFName(ParameterName), ToFVector4(Value));	
@@ -4046,8 +5313,80 @@ extern "C"{
 	void uapi_UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveData(void* target, UName ParameterName, Vector4 Value){	
 		((UPrimitiveComponent*)target)->SetVectorParameterForDefaultCustomPrimitiveData(ToFName(ParameterName), ToFVector4(Value));	
 	}
+	void uapi_UPrimitiveComponent_SetVisibleInRayTracing(void* target, bool bNewVisibleInRayTracing){	
+		((UPrimitiveComponent*)target)->SetVisibleInRayTracing(bNewVisibleInRayTracing);	
+	}
+	void uapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnly(void* target, bool bValue){	
+		((UPrimitiveComponent*)target)->SetVisibleInSceneCaptureOnly(bValue);	
+	}
+	bool uapi_UPrimitiveComponent_ShouldComponentAddToScene(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->ShouldComponentAddToScene();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_ShouldCreatePhysicsState(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->ShouldCreatePhysicsState();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_ShouldGenerateAutoLOD(void* target, int32 HierarchicalLevelIndex){	
+		auto result = ((UPrimitiveComponent*)target)->ShouldGenerateAutoLOD(HierarchicalLevelIndex);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->ShouldRecreateProxyOnUpdateTransform();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_ShouldRenderSelected(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->ShouldRenderSelected();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->SupportsWorldPositionOffsetVelocity();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_SyncComponentToRBPhysics(void* target){	
+		((UPrimitiveComponent*)target)->SyncComponentToRBPhysics();	
+	}
+	void uapi_UPrimitiveComponent_UnWeldChildren(void* target){	
+		((UPrimitiveComponent*)target)->UnWeldChildren();	
+	}
+	void uapi_UPrimitiveComponent_UnWeldFromParent(void* target){	
+		((UPrimitiveComponent*)target)->UnWeldFromParent();	
+	}
+	void uapi_UPrimitiveComponent_UpdateBounds(void* target){	
+		((UPrimitiveComponent*)target)->UpdateBounds();	
+	}
+	void uapi_UPrimitiveComponent_UpdateCollisionProfile(void* target){	
+		((UPrimitiveComponent*)target)->UpdateCollisionProfile();	
+	}
+	void uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack(void* target, float NewSlack){	
+		((UPrimitiveComponent*)target)->UpdateOcclusionBoundsSlack(NewSlack);	
+	}
+	bool uapi_UPrimitiveComponent_UpdateOverlapsImpl(void* target, TOverlapArrayView* NewPendingOverlaps, bool bDoNotifies, TOverlapArrayView* OverlapsAtEndLocation){	
+		auto result = ((UPrimitiveComponent*)target)->UpdateOverlapsImpl(NewPendingOverlaps, bDoNotifies, OverlapsAtEndLocation);	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_UpdatePhysicsVolume(void* target, bool bTriggerNotifiers){	
+		((UPrimitiveComponent*)target)->UpdatePhysicsVolume(bTriggerNotifiers);	
+	}
+	bool uapi_UPrimitiveComponent_UsesOnlyUnlitMaterials(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->UsesOnlyUnlitMaterials();	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_WakeAllRigidBodies(void* target){	
+		((UPrimitiveComponent*)target)->WakeAllRigidBodies();	
+	}
+	void uapi_UPrimitiveComponent_WakeRigidBody(void* target, UName BoneName){	
+		((UPrimitiveComponent*)target)->WakeRigidBody(ToFName(BoneName));	
+	}
 	bool uapi_UPrimitiveComponent_WasRecentlyRendered(void* target, float Tolerance){	
 		auto result = ((UPrimitiveComponent*)target)->WasRecentlyRendered(Tolerance);	
+		return result;	
+	}
+	void uapi_UPrimitiveComponent_WeldTo(void* target, USceneComponent* InParent, UName InSocketName){	
+		((UPrimitiveComponent*)target)->WeldTo(InParent, ToFName(InSocketName));	
+	}
+	bool uapi_UPrimitiveComponent_WeldToImplementation(void* target, USceneComponent* InParent, UName ParentSocketName, bool bWeldSimulatedChild){	
+		auto result = ((UPrimitiveComponent*)target)->WeldToImplementation(InParent, ToFName(ParentSocketName), bWeldSimulatedChild);	
 		return result;	
 	}
 	void uapi_UAnimInstance_AddExternalNotifyHandler(void* target, UObject* ExternalHandlerObject, UName NotifyEventName){	
@@ -8441,33 +9780,697 @@ using uapi_UActorComponent_UninitializeComponentFn = void(*)(void(*)(void* targe
 
 using uapi_UActorComponent_UnregisterComponentFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_AddControllerFn = void(*)(void(*)(void* target,AController* Controller));
+
+using uapi_UWorld_AddLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_AddNetworkActorFn = void(*)(void(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_AddParameterCollectionInstanceFn = void(*)(void(*)(void* target,UMaterialParameterCollection* Collection,bool bUpdateScene));
+
+using uapi_UWorld_AddPhysicsVolumeFn = void(*)(void(*)(void* target,APhysicsVolume* Volume));
+
+using uapi_UWorld_AddPostProcessingSettingsFn = void(*)(void(*)(void* target,Vector3 ViewLocation,FSceneView* SceneView));
+
+using uapi_UWorld_AddStreamingLevelFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToAdd));
+
+using uapi_UWorld_AddUniqueStreamingLevelFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToAdd));
+
+using uapi_UWorld_AllowAudioPlaybackFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_AllowLevelLoadRequestsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_AreActorsInitializedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_AreAlwaysLoadedLevelsLoadedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BeginDestroyFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BeginPlayFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BeginTearingDownFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BlockTillLevelStreamingCompletedFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BroadcastLevelsChangedFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_BuildPIEPackagePrefixFn = void(*)(const char*(*)(int32 PIEInstanceID));
+
+using uapi_UWorld_CancelPendingMapChangeFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_CleanupActorsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_CleanupWorldFn = void(*)(void(*)(void* target,bool bSessionEnded,bool bCleanupResources,UWorld* NewWorld));
+
+using uapi_UWorld_ClearActorComponentEndOfFrameUpdateFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_UWorld_ClearDemoNetDriverFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ClearNetDriverFn = void(*)(void(*)(void* target,UNetDriver* Driver));
+
+using uapi_UWorld_ClearStreamingLevelsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ClearWorldComponentsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_CommitMapChangeFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_CommitModelSurfacesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ConditionallyBuildStreamingDataFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ContainsActorFn = void(*)(bool(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_ContainsLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_CopyGameStateFn = void(*)(void(*)(void* target,AGameModeBase* FromGameMode,AGameStateBase* FromGameState));
+
+using uapi_UWorld_CreateAISystemFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_CreateFXSystemFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_CreatePhysicsSceneFn = void(*)(void(*)(void* target,AWorldSettings* Settings));
+
+using uapi_UWorld_DeSelectLevelFn = void(*)(void(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_DelayStreamingVolumeUpdatesFn = void(*)(void(*)(void* target,int32 InFrameDelay));
+
+using uapi_UWorld_DestroyActorFn = void(*)(bool(*)(void* target,AActor* Actor,bool bNetForce,bool bShouldModifyLevel));
+
+using uapi_UWorld_DestroyDemoNetDriverFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_DestroySwappedPCFn = void(*)(bool(*)(void* target,UNetConnection* Connection));
+
+using uapi_UWorld_DestroyWorldFn = void(*)(void(*)(void* target,bool bInformEngineOfWorld,UWorld* NewWorld));
+
+using uapi_UWorld_DuplicateRequestedLevelsFn = void(*)(void(*)(void* target,UName MapName));
+
+using uapi_UWorld_EditorDestroyActorFn = void(*)(bool(*)(void* target,AActor* Actor,bool bShouldModifyLevel));
+
+using uapi_UWorld_EncroachingBlockingGeometryFn = void(*)(bool(*)(void* target,AActor* TestActor,Vector3 TestLocation,Rotator TestRotation,Vector3* ProposedAdjustment));
+
+using uapi_UWorld_EnsureCollisionTreeIsBuiltFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_FindWorldInPackageFn = void(*)(void*(*)(UPackage* Package));
+
+using uapi_UWorld_FinishDestroyFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_FinishPhysicsSimFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_FlushDeferredParameterCollectionInstanceUpdatesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_FollowWorldRedirectorInPackageFn = void(*)(void*(*)(UPackage* Package,UObjectRedirector* OptionalOutRedirector));
+
+using uapi_UWorld_GetAISystemFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetActiveLevelCollectionFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetActiveLevelCollectionIndexFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetActiveLightingScenarioFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetActorCountFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetAddressURLFn = void(*)(const char*(*)(void* target));
+
+using uapi_UWorld_GetAllowDeferredPhysicsStateCreationFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_GetAudioDeviceRawFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetAudioTimeSecondsFn = void(*)(double(*)(void* target));
+
+using uapi_UWorld_GetAvoidanceManagerFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetBlockTillLevelStreamingCompletedEpochFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetCanvasForDrawMaterialToRenderTargetFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetCanvasForRenderingToTargetFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetCurrentLevelFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetCurrentLevelPendingInvisibilityFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetCurrentLevelPendingVisibilityFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetDebugDisplayNameFn = void(*)(const char*(*)(void* target));
+
+using uapi_UWorld_GetDefaultBrushFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetDefaultGravityZFn = void(*)(float(*)(void* target));
+
+using uapi_UWorld_GetDefaultPhysicsVolumeFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetDeltaSecondsFn = void(*)(float(*)(void* target));
+
+using uapi_UWorld_GetDemoNetDriverFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetDetailModeFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetDuplicatedWorldForPIEFn = void(*)(void*(*)(UWorld* InWorld,UPackage* InPIEackage,int32 PIEInstanceID));
+
+using uapi_UWorld_GetFirstLocalPlayerFromControllerFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetFirstPlayerControllerFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetGameInstanceFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetGameStateFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetGameViewportFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetGravityZFn = void(*)(float(*)(void* target));
+
+using uapi_UWorld_GetIsInBlockTillLevelStreamingCompletedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_GetLevelFn = void(*)(void*(*)(void* target,int32 InLevelIndex));
+
+using uapi_UWorld_GetLevelScriptActorFn = void(*)(void*(*)(void* target,ULevel* OwnerLevel));
+
+using uapi_UWorld_GetLevelStreamingForPackageNameFn = void(*)(void*(*)(void* target,UName PackageName));
+
+using uapi_UWorld_GetLocalURLFn = void(*)(const char*(*)(void* target));
+
+using uapi_UWorld_GetMapNameFn = void(*)(const char*(*)(void* target));
+
+using uapi_UWorld_GetNetDriverFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetNonDefaultPhysicsVolumeCountFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetNumControllersFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetNumLevelsFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetNumPlayerControllersFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetNumSelectedLevelsFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetParameterCollectionInstanceFn = void(*)(void*(*)(void* target,UMaterialParameterCollection* Collection));
+
+using uapi_UWorld_GetPhysicsSceneFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetProgressDenominatorFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetRealTimeSecondsFn = void(*)(double(*)(void* target));
+
+using uapi_UWorld_GetSelectedLevelFn = void(*)(void*(*)(void* target,int32 InLevelIndex));
+
+using uapi_UWorld_GetServerStreamingLevelsVisibilityFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetShouldForceUnloadStreamingLevelsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_GetShouldForceVisibleStreamingLevelsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_GetTimeSecondsFn = void(*)(double(*)(void* target));
+
+using uapi_UWorld_GetUnpausedTimeSecondsFn = void(*)(double(*)(void* target));
+
+using uapi_UWorld_GetWorldFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetWorldPartitionFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_GetWorldSettingsFn = void(*)(void*(*)(void* target,bool bCheckStreamingPersistent,bool bChecked));
+
+using uapi_UWorld_HandleTimelineScrubbedFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_HasBegunPlayFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_HasDefaultPhysicsVolumeFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_HasEndOfFrameUpdatesFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_HasEverBeenInitializedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_HasMarkedObjectsPendingKillFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_HasStreamingLevelsToConsiderFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_InitializeSubsystemsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_InsertPostProcessVolumeFn = void(*)(void(*)(void* target,IInterface_PostProcessVolume* InVolume));
+
+using uapi_UWorld_InvalidateAllSkyCapturesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_InvalidateModelGeometryFn = void(*)(void(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_InvalidateModelSurfaceFn = void(*)(void(*)(void* target,bool bCurrentLevelOnly));
+
+using uapi_UWorld_IsCameraMoveableFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsEditorWorldFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsGameWorldFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsInSeamlessTravelFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsInitializedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsInstancedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsLevelSelectedFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_IsMapChangeReadyFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsMovieSceneSequenceTickHandlerBoundFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsNameStableForNetworkingFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsNavigationRebuiltFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPartitionedWorldFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPartitionedWorld2Fn = void(*)(bool(*)(UWorld* InWorld));
+
+using uapi_UWorld_IsPausedFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayInEditorFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayInMobilePreviewFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayInPreviewFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayInVulkanPreviewFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayingClientReplayFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPlayingReplayFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPreparingMapChangeFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPreviewWorldFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsReadyForFinishDestroyFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsRecordingClientReplayFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsRecordingReplayFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsRefreshingStreamingLevelsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsStreamingLevelBeingConsideredFn = void(*)(bool(*)(void* target,ULevelStreaming* StreamingLevel));
+
+using uapi_UWorld_IsVisibilityRequestPendingFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsWorldOrExternalActorPackageFn = void(*)(bool(*)(UPackage* Package));
+
+using uapi_UWorld_IssueEditorLoadWarningsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_K2_GetWorldSettingsFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdateFn = void(*)(void(*)(void* target,UActorComponent* Component,bool bForceGameThread));
+
+using uapi_UWorld_MarkObjectsPendingKillFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ModifyLevelFn = void(*)(void(*)(void* target,ULevel* Level));
+
+using uapi_UWorld_NotifyAcceptedConnectionFn = void(*)(void(*)(void* target,UNetConnection* Connection));
+
+using uapi_UWorld_NotifyAcceptingChannelFn = void(*)(bool(*)(void* target,UChannel* Channel));
+
+using uapi_UWorld_NotifyOfBlueprintDebuggingAssociationFn = void(*)(void(*)(void* target,UBlueprint* Blueprint,UObject* DebugObject));
+
+using uapi_UWorld_PopulateStreamingLevelsToConsiderFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_PostDuplicateFn = void(*)(void(*)(void* target,bool bDuplicateForPIE));
+
+using uapi_UWorld_PostInitializeSubsystemsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ProcessLevelStreamingVolumesFn = void(*)(void(*)(void* target,Vector3* OverrideViewLocation));
+
+using uapi_UWorld_PropagateLightingScenarioChangeFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_RefreshStreamingLevelsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_RegisterAutoActivateCameraFn = void(*)(void(*)(void* target,ACameraActor* CameraActor,int32 PlayerIndex));
+
+using uapi_UWorld_ReleasePhysicsSceneFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_RemoveActorFn = void(*)(void(*)(void* target,AActor* Actor,bool bShouldModifyLevel));
+
+using uapi_UWorld_RemoveControllerFn = void(*)(void(*)(void* target,AController* Controller));
+
+using uapi_UWorld_RemoveLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_RemoveNetworkActorFn = void(*)(void(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_RemovePhysicsVolumeFn = void(*)(void(*)(void* target,APhysicsVolume* Volume));
+
+using uapi_UWorld_RemovePostProcessVolumeFn = void(*)(void(*)(void* target,IInterface_PostProcessVolume* InVolume));
+
+using uapi_UWorld_RemoveStreamingLevelFn = void(*)(bool(*)(void* target,ULevelStreaming* StreamingLevelToRemove));
+
+using uapi_UWorld_RemoveStreamingLevelAtFn = void(*)(bool(*)(void* target,int32 IndexToRemove));
+
+using uapi_UWorld_RenameToPIEWorldFn = void(*)(void(*)(void* target,int32 PIEInstanceID));
+
+using uapi_UWorld_RequiresHitProxiesFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_SelectLevelFn = void(*)(void(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_SendAllEndOfFrameUpdatesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_SetActiveLevelCollectionFn = void(*)(void(*)(void* target,int32 LevelCollectionIndex));
+
+using uapi_UWorld_SetAllowDeferredPhysicsStateCreationFn = void(*)(void(*)(void* target,bool bAllow));
+
+using uapi_UWorld_SetCurrentLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_SetDemoNetDriverFn = void(*)(void(*)(void* target,UDemoNetDriver* InDemoNetDriver));
+
+using uapi_UWorld_SetGameInstanceFn = void(*)(void(*)(void* target,UGameInstance* NewGI));
+
+using uapi_UWorld_SetGameStateFn = void(*)(void(*)(void* target,AGameStateBase* NewGameState));
+
+using uapi_UWorld_SetMapNeedsLightingFullyRebuiltFn = void(*)(void(*)(void* target,int32 InNumLightingUnbuiltObjects,int32 InNumUnbuiltReflectionCaptures));
+
+using uapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_SetNavigationSystemFn = void(*)(void(*)(void* target,UNavigationSystemBase* InNavigationSystem));
+
+using uapi_UWorld_SetNetDriverFn = void(*)(void(*)(void* target,UNetDriver* NewDriver));
+
+using uapi_UWorld_SetPhysicsSceneFn = void(*)(void(*)(void* target,FPhysScene* InScene));
+
+using uapi_UWorld_SetSeamlessTravelMidpointPauseFn = void(*)(void(*)(void* target,bool bNowPaused));
+
+using uapi_UWorld_SetShouldForceUnloadStreamingLevelsFn = void(*)(void(*)(void* target,bool bInShouldForceUnloadStreamingLevels));
+
+using uapi_UWorld_SetShouldForceVisibleStreamingLevelsFn = void(*)(void(*)(void* target,bool bInShouldForceVisibleStreamingLevels));
+
+using uapi_UWorld_SetShouldTickFn = void(*)(void(*)(void* target,bool bInShouldTick));
+
+using uapi_UWorld_SetWorldDataLayersFn = void(*)(void(*)(void* target,AWorldDataLayers* NewWorldDataLayers));
+
+using uapi_UWorld_SetupParameterCollectionInstancesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_SetupPhysicsTickFunctionsFn = void(*)(void(*)(void* target,float DeltaSeconds));
+
+using uapi_UWorld_ShouldTickFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_ShrinkLevelFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_SpawnBrushFn = void(*)(void*(*)(void* target));
+
+using uapi_UWorld_StartPhysicsSimFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_StoreIrisAndClearReferencesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_SupportsMakingInvisibleTransactionRequestsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_SupportsMakingVisibleTransactionRequestsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_TickNetClientFn = void(*)(void(*)(void* target,float DeltaSeconds));
+
+using uapi_UWorld_TimeSinceFn = void(*)(double(*)(void* target,double Time));
+
+using uapi_UWorld_TransferBlueprintDebugReferencesFn = void(*)(void(*)(void* target,UWorld* NewWorld));
+
+using uapi_UWorld_TriggerStreamingDataRebuildFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_UpdateActorComponentEndOfFrameUpdateStateFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_UWorld_UpdateAllSkyCapturesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_UpdateConstraintActorsFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_UpdateCullDistanceVolumesFn = void(*)(bool(*)(void* target,AActor* ActorToUpdate,UPrimitiveComponent* ComponentToUpdate));
+
+using uapi_UWorld_UpdateLevelStreamingFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_UpdateParameterCollectionInstancesFn = void(*)(void(*)(void* target,bool bUpdateInstanceUniformBuffers,bool bRecreateUniformBuffer));
+
+using uapi_UWorld_UpdateStreamingLevelPriorityFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevel));
+
+using uapi_UWorld_UpdateStreamingLevelShouldBeConsideredFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToConsider));
+
+using uapi_UWorld_UpdateWorldComponentsFn = void(*)(void(*)(void* target,bool bRerunConstructionScripts,bool bCurrentLevelOnly,FRegisterComponentContext* Context));
+
+using uapi_UWorld_UsesGameHiddenFlagsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_WelcomePlayerFn = void(*)(void(*)(void* target,UNetConnection* Connection));
+
+using uapi_UPrimitiveComponent_AddAngularImpulseInDegreesFn = void(*)(void(*)(void* target,Vector3 Impulse,UName BoneName,bool bVelChange));
+
+using uapi_UPrimitiveComponent_AddAngularImpulseInRadiansFn = void(*)(void(*)(void* target,Vector3 Impulse,UName BoneName,bool bVelChange));
+
+using uapi_UPrimitiveComponent_AddForceFn = void(*)(void(*)(void* target,Vector3 Force,UName BoneName,bool bAccelChange));
+
+using uapi_UPrimitiveComponent_AddForceAtLocationFn = void(*)(void(*)(void* target,Vector3 Force,Vector3 Location,UName BoneName));
+
+using uapi_UPrimitiveComponent_AddForceAtLocationLocalFn = void(*)(void(*)(void* target,Vector3 Force,Vector3 Location,UName BoneName));
+
+using uapi_UPrimitiveComponent_AddImpulseFn = void(*)(void(*)(void* target,Vector3 Impulse,UName BoneName,bool bVelChange));
+
+using uapi_UPrimitiveComponent_AddImpulseAtLocationFn = void(*)(void(*)(void* target,Vector3 Impulse,Vector3 Location,UName BoneName));
+
+using uapi_UPrimitiveComponent_AddTorqueInDegreesFn = void(*)(void(*)(void* target,Vector3 Torque,UName BoneName,bool bAccelChange));
+
+using uapi_UPrimitiveComponent_AddTorqueInRadiansFn = void(*)(void(*)(void* target,Vector3 Torque,UName BoneName,bool bAccelChange));
+
+using uapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocationFn = void(*)(void(*)(void* target,Vector3 Impulse,Vector3 Location,UName BoneName));
+
+using uapi_UPrimitiveComponent_BeginDestroyFn = void(*)(void(*)(void* target));
+
 using uapi_UPrimitiveComponent_BeginPlayFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_CalculateMassFn = void(*)(float(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_CanCharacterStepUpFn = void(*)(bool(*)(void* target,APawn* Pawn));
+
+using uapi_UPrimitiveComponent_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* InProperty));
+
+using uapi_UPrimitiveComponent_CanEditSimulatePhysicsFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_CheckForErrorsFn = void(*)(void(*)(void* target));
 
 using uapi_UPrimitiveComponent_ClearMoveIgnoreActorsFn = void(*)(void(*)(void* target));
 
 using uapi_UPrimitiveComponent_ClearMoveIgnoreComponentsFn = void(*)(void(*)(void* target));
 
+using uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataFn = void(*)(uint32(*)(void* target));
+
+using uapi_UPrimitiveComponent_CreateRenderState_ConcurrentFn = void(*)(void(*)(void* target,FRegisterComponentContext* Context));
+
+using uapi_UPrimitiveComponent_CreateSceneProxyFn = void(*)(void*(*)(void* target));
+
+using uapi_UPrimitiveComponent_DestroyRenderState_ConcurrentFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_DispatchMouseOverEventsFn = void(*)(void(*)(UPrimitiveComponent* CurrentComponent,UPrimitiveComponent* NewComponent));
+
+using uapi_UPrimitiveComponent_FinishDestroyFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetAngularDampingFn = void(*)(float(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetBodyInstanceFn = void(*)(void*(*)(void* target,UName BoneName,bool bGetWelded,int32 Index));
+
+using uapi_UPrimitiveComponent_GetBodySetupFn = void(*)(void*(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetCenterOfMassFn = void(*)(Vector3(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetCollisionObjectTypeFn = void(*)(ECollisionChannel(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetCollisionProfileNameFn = void(*)(UName(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetCollisionShapeFn = void(*)(CollisionShape(*)(void* target,float Inflation));
+
+using uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstanceFn = void(*)(Transform(*)(void* target,FBodyInstance* UseBI));
+
+using uapi_UPrimitiveComponent_GetComponentVelocityFn = void(*)(Vector3(*)(void* target));
+
 using uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterFn = void(*)(int32(*)(void* target,UName ParameterName));
 
 using uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForVectorParameterFn = void(*)(int32(*)(void* target,UName ParameterName));
 
+using uapi_UPrimitiveComponent_GetDiffuseBoostFn = void(*)(float(*)(void* target,int32 ElementIndex));
+
+using uapi_UPrimitiveComponent_GetEditorMaterialFn = void(*)(void*(*)(void* target,int32 ElementIndex));
+
+using uapi_UPrimitiveComponent_GetEmissiveBoostFn = void(*)(float(*)(void* target,int32 ElementIndex));
+
 using uapi_UPrimitiveComponent_GetGenerateOverlapEventsFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetHiddenEditorViewsFn = void(*)(uint64(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetInertiaTensorFn = void(*)(Vector3(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetLODParentPrimitiveFn = void(*)(void*(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetLastRenderTimeFn = void(*)(float(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetLastRenderTimeOnScreenFn = void(*)(float(*)(void* target));
 
+using uapi_UPrimitiveComponent_GetLevelInstanceEditingStateFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsageFn = void(*)(void(*)(void* target,int32& LightMapMemoryUsage,int32& ShadowMapMemoryUsage));
+
+using uapi_UPrimitiveComponent_GetLightMapResolutionFn = void(*)(bool(*)(void* target,int32& Width,int32& Height));
+
+using uapi_UPrimitiveComponent_GetLightingAttachmentRootFn = void(*)(void*(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetLinearDampingFn = void(*)(float(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetMassFn = void(*)(float(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetMassScaleFn = void(*)(float(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetMaterialFn = void(*)(void*(*)(void* target,int32 ElementIndex));
+
+using uapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndexFn = void(*)(void*(*)(void* target,int32 FaceIndex,int32& SectionIndex));
+
+using uapi_UPrimitiveComponent_GetNumMaterialsFn = void(*)(int32(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsFn = void(*)(int32(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesFn = void(*)(Vector3(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansFn = void(*)(Vector3(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetPhysicsLinearVelocityFn = void(*)(Vector3(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPointFn = void(*)(Vector3(*)(void* target,Vector3 Point,UName BoneName));
+
 using uapi_UPrimitiveComponent_GetRayTracingGroupIdFn = void(*)(int32(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetShadowIndirectOnlyFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetStaticLightMapResolutionFn = void(*)(int32(*)(void* target));
+
+using uapi_UPrimitiveComponent_GetStreamingScaleFn = void(*)(float(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistanceFn = void(*)(float(*)(void* target));
 
+using uapi_UPrimitiveComponent_HasStaticLightingFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_HasValidPhysicsStateFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_HasValidSettingsForStaticLightingFn = void(*)(bool(*)(void* target,bool bOverlookInvalidComponents));
+
 using uapi_UPrimitiveComponent_IgnoreActorWhenMovingFn = void(*)(void(*)(void* target,AActor* Actor,bool bShouldIgnore));
+
+using uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocusFn = void(*)(bool(*)(void* target));
 
 using uapi_UPrimitiveComponent_IgnoreComponentWhenMovingFn = void(*)(void(*)(void* target,UPrimitiveComponent* Component,bool bShouldIgnore));
 
+using uapi_UPrimitiveComponent_InvalidateLightingCacheDetailedFn = void(*)(void(*)(void* target,bool bInvalidateBuildEnqueuedLighting,bool bTranslationOnly));
+
 using uapi_UPrimitiveComponent_InvalidateLumenSurfaceCacheFn = void(*)(void(*)(void* target));
 
+using uapi_UPrimitiveComponent_IsAnyRigidBodyAwakeFn = void(*)(bool(*)(void* target));
+
 using uapi_UPrimitiveComponent_IsAttachedToStreamingManagerFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsCompilingFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsComponentIndividuallySelectedFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsEditorOnlyFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsGravityEnabledFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsNavigationRelevantFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsOverlappingActorFn = void(*)(bool(*)(void* target,AActor* Other));
+
+using uapi_UPrimitiveComponent_IsOverlappingComponentFn = void(*)(bool(*)(void* target,UPrimitiveComponent* OtherComp));
+
+using uapi_UPrimitiveComponent_IsReadyForFinishDestroyFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsSimulatingPhysicsFn = void(*)(bool(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_IsWeldedFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsWorldGeometryFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsZeroExtentFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_K2_IsCollisionEnabledFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabledFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_K2_IsQueryCollisionEnabledFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_NeedsLoadForClientFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_NeedsLoadForServerFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnActorEnableCollisionChangedFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnAttachmentChangedFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnComponentDestroyedFn = void(*)(void(*)(void* target,bool bDestroyingHierarchy));
+
+using uapi_UPrimitiveComponent_OnCreatePhysicsStateFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnDestroyPhysicsStateFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnRegisterFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_OnUnregisterFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PostDuplicateFn = void(*)(void(*)(void* target,bool bDuplicateForPIE));
+
+using uapi_UPrimitiveComponent_PostEditImportFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PostInitPropertiesFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PushEditorVisibilityToProxyFn = void(*)(void(*)(void* target,uint64 InVisibility));
+
+using uapi_UPrimitiveComponent_PushHoveredToProxyFn = void(*)(void(*)(void* target,bool bInHovered));
+
+using uapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxyFn = void(*)(void(*)(void* target,bool bInEditingState));
+
+using uapi_UPrimitiveComponent_PushSelectionToProxyFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PutAllRigidBodiesToSleepFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_PutRigidBodyToSleepFn = void(*)(void(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelFn = void(*)(bool(*)(void* target,UActorTextureStreamingBuildDataComponent* InActorTextureBuildData));
+
+using uapi_UPrimitiveComponent_RigidBodyIsAwakeFn = void(*)(bool(*)(void* target,UName BoneName));
+
+using uapi_UPrimitiveComponent_ScaleByMomentOfInertiaFn = void(*)(Vector3(*)(void* target,Vector3 InputVector,UName BoneName));
+
+using uapi_UPrimitiveComponent_SendRenderDebugPhysicsFn = void(*)(void(*)(void* target,FPrimitiveSceneProxy* OverrideSceneProxy));
+
+using uapi_UPrimitiveComponent_SendRenderTransform_ConcurrentFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_SetAllMassScaleFn = void(*)(void(*)(void* target,float InMassScale));
+
+using uapi_UPrimitiveComponent_SetAllPhysicsLinearVelocityFn = void(*)(void(*)(void* target,Vector3 NewVel,bool bAddToCurrent));
+
+using uapi_UPrimitiveComponent_SetAllPhysicsPositionFn = void(*)(void(*)(void* target,Vector3 NewPos));
+
+using uapi_UPrimitiveComponent_SetAllPhysicsRotationFn = void(*)(void(*)(void* target,Rotator NewRot));
+
+using uapi_UPrimitiveComponent_SetAllUseCCDFn = void(*)(void(*)(void* target,bool InUseCCD));
+
+using uapi_UPrimitiveComponent_SetAngularDampingFn = void(*)(void(*)(void* target,float InDamping));
+
+using uapi_UPrimitiveComponent_SetBoundsScaleFn = void(*)(void(*)(void* target,float NewBoundsScale));
+
+using uapi_UPrimitiveComponent_SetCachedMaxDrawDistanceFn = void(*)(void(*)(void* target,float NewCachedMaxDrawDistance));
+
+using uapi_UPrimitiveComponent_SetCastHiddenShadowFn = void(*)(void(*)(void* target,bool NewCastHiddenShadow));
+
+using uapi_UPrimitiveComponent_SetCastShadowFn = void(*)(void(*)(void* target,bool NewCastShadow));
+
+using uapi_UPrimitiveComponent_SetCenterOfMassFn = void(*)(void(*)(void* target,Vector3 CenterOfMassOffset,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetCollisionObjectTypeFn = void(*)(void(*)(void* target,ECollisionChannel Channel));
+
+using uapi_UPrimitiveComponent_SetCollisionProfileNameFn = void(*)(void(*)(void* target,UName InCollisionProfileName,bool bUpdateOverlaps));
+
+using uapi_UPrimitiveComponent_SetCullDistanceFn = void(*)(void(*)(void* target,float NewCullDistance));
+
+using uapi_UPrimitiveComponent_SetCustomDepthStencilValueFn = void(*)(void(*)(void* target,int32 Value));
 
 using uapi_UPrimitiveComponent_SetCustomPrimitiveDataFloatFn = void(*)(void(*)(void* target,int32 DataIndex,float Value));
 
@@ -8485,21 +10488,121 @@ using uapi_UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector3Fn = void(*)(
 
 using uapi_UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4Fn = void(*)(void(*)(void* target,int32 DataIndex,Vector4 Value));
 
+using uapi_UPrimitiveComponent_SetEmissiveLightSourceFn = void(*)(void(*)(void* target,bool NewEmissiveLightSource));
+
+using uapi_UPrimitiveComponent_SetEnableGravityFn = void(*)(void(*)(void* target,bool bGravityEnabled));
+
 using uapi_UPrimitiveComponent_SetGenerateOverlapEventsFn = void(*)(void(*)(void* target,bool bInGenerateOverlapEvents));
+
+using uapi_UPrimitiveComponent_SetHiddenInSceneCaptureFn = void(*)(void(*)(void* target,bool bValue));
+
+using uapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocusFn = void(*)(void(*)(void* target,bool bIgnore));
+
+using uapi_UPrimitiveComponent_SetIsBeingMovedByEditorFn = void(*)(void(*)(void* target,bool bNewIsBeingMoved));
+
+using uapi_UPrimitiveComponent_SetLODParentPrimitiveFn = void(*)(void(*)(void* target,UPrimitiveComponent* InLODParentPrimitive));
 
 using uapi_UPrimitiveComponent_SetLastRenderTimeFn = void(*)(void(*)(void* target,float InLastRenderTime));
 
 using uapi_UPrimitiveComponent_SetLightingChannelsFn = void(*)(void(*)(void* target,bool bChannel0,bool bChannel1,bool bChannel2));
 
+using uapi_UPrimitiveComponent_SetLinearDampingFn = void(*)(void(*)(void* target,float InDamping));
+
+using uapi_UPrimitiveComponent_SetMassOverrideInKgFn = void(*)(void(*)(void* target,UName BoneName,float MassInKg,bool bOverrideMass));
+
+using uapi_UPrimitiveComponent_SetMassScaleFn = void(*)(void(*)(void* target,UName BoneName,float InMassScale));
+
+using uapi_UPrimitiveComponent_SetMaterialFn = void(*)(void(*)(void* target,int32 ElementIndex,UMaterialInterface* Material));
+
+using uapi_UPrimitiveComponent_SetMaterialByNameFn = void(*)(void(*)(void* target,UName MaterialSlotName,UMaterialInterface* Material));
+
+using uapi_UPrimitiveComponent_SetNotifyRigidBodyCollisionFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision));
+
+using uapi_UPrimitiveComponent_SetOnlyOwnerSeeFn = void(*)(void(*)(void* target,bool bNewOnlyOwnerSee));
+
+using uapi_UPrimitiveComponent_SetOwnerNoSeeFn = void(*)(void(*)(void* target,bool bNewOwnerNoSee));
+
+using uapi_UPrimitiveComponent_SetPhysMaterialOverrideFn = void(*)(void(*)(void* target,UPhysicalMaterial* NewPhysMaterial));
+
+using uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesFn = void(*)(void(*)(void* target,Vector3 NewAngVel,bool bAddToCurrent,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansFn = void(*)(void(*)(void* target,Vector3 NewAngVel,bool bAddToCurrent,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetPhysicsLinearVelocityFn = void(*)(void(*)(void* target,Vector3 NewVel,bool bAddToCurrent,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesFn = void(*)(void(*)(void* target,float NewMaxAngVel,bool bAddToCurrent,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansFn = void(*)(void(*)(void* target,float NewMaxAngVel,bool bAddToCurrent,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetReceivesDecalsFn = void(*)(void(*)(void* target,bool bNewReceivesDecals));
+
+using uapi_UPrimitiveComponent_SetRenderCustomDepthFn = void(*)(void(*)(void* target,bool bValue));
+
+using uapi_UPrimitiveComponent_SetRenderInDepthPassFn = void(*)(void(*)(void* target,bool bValue));
+
+using uapi_UPrimitiveComponent_SetRenderInMainPassFn = void(*)(void(*)(void* target,bool bValue));
+
 using uapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataFn = void(*)(void(*)(void* target,UName ParameterName,float Value));
 
 using uapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveDataFn = void(*)(void(*)(void* target,UName ParameterName,float Value));
+
+using uapi_UPrimitiveComponent_SetSimulatePhysicsFn = void(*)(void(*)(void* target,bool bSimulate));
+
+using uapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsFn = void(*)(void(*)(void* target,bool bNewSingleSampleShadowFromStationaryLights));
+
+using uapi_UPrimitiveComponent_SetTranslucencySortDistanceOffsetFn = void(*)(void(*)(void* target,float NewTranslucencySortDistanceOffset));
+
+using uapi_UPrimitiveComponent_SetTranslucentSortPriorityFn = void(*)(void(*)(void* target,int32 NewTranslucentSortPriority));
+
+using uapi_UPrimitiveComponent_SetUseCCDFn = void(*)(void(*)(void* target,bool InUseCCD,UName BoneName));
 
 using uapi_UPrimitiveComponent_SetVectorParameterForCustomPrimitiveDataFn = void(*)(void(*)(void* target,UName ParameterName,Vector4 Value));
 
 using uapi_UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveDataFn = void(*)(void(*)(void* target,UName ParameterName,Vector4 Value));
 
+using uapi_UPrimitiveComponent_SetVisibleInRayTracingFn = void(*)(void(*)(void* target,bool bNewVisibleInRayTracing));
+
+using uapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnlyFn = void(*)(void(*)(void* target,bool bValue));
+
+using uapi_UPrimitiveComponent_ShouldComponentAddToSceneFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_ShouldCreatePhysicsStateFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_ShouldGenerateAutoLODFn = void(*)(bool(*)(void* target,int32 HierarchicalLevelIndex));
+
+using uapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_ShouldRenderSelectedFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocityFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_SyncComponentToRBPhysicsFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_UnWeldChildrenFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_UnWeldFromParentFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_UpdateBoundsFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_UpdateCollisionProfileFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlackFn = void(*)(void(*)(void* target,float NewSlack));
+
+using uapi_UPrimitiveComponent_UpdateOverlapsImplFn = void(*)(bool(*)(void* target,TOverlapArrayView* NewPendingOverlaps,bool bDoNotifies,TOverlapArrayView* OverlapsAtEndLocation));
+
+using uapi_UPrimitiveComponent_UpdatePhysicsVolumeFn = void(*)(void(*)(void* target,bool bTriggerNotifiers));
+
+using uapi_UPrimitiveComponent_UsesOnlyUnlitMaterialsFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_WakeAllRigidBodiesFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_WakeRigidBodyFn = void(*)(void(*)(void* target,UName BoneName));
+
 using uapi_UPrimitiveComponent_WasRecentlyRenderedFn = void(*)(bool(*)(void* target,float Tolerance));
+
+using uapi_UPrimitiveComponent_WeldToFn = void(*)(void(*)(void* target,USceneComponent* InParent,UName InSocketName));
+
+using uapi_UPrimitiveComponent_WeldToImplementationFn = void(*)(bool(*)(void* target,USceneComponent* InParent,UName ParentSocketName,bool bWeldSimulatedChild));
 
 using uapi_UAnimInstance_AddExternalNotifyHandlerFn = void(*)(void(*)(void* target,UObject* ExternalHandlerObject,UName NotifyEventName));
 
@@ -15297,9 +17400,1174 @@ void register_all(Plugin* plugin){
         apiuapi_UActorComponent_UnregisterComponent(&uapi_UActorComponent_UnregisterComponent);
     }
 
+    auto const apiuapi_UWorld_AddController = (uapi_UWorld_AddControllerFn)plugin->GetDllExport(TEXT("set_UWorld_AddController_handler\0"));
+    if(apiuapi_UWorld_AddController){
+        apiuapi_UWorld_AddController(&uapi_UWorld_AddController);
+    }
+
+    auto const apiuapi_UWorld_AddLevel = (uapi_UWorld_AddLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddLevel_handler\0"));
+    if(apiuapi_UWorld_AddLevel){
+        apiuapi_UWorld_AddLevel(&uapi_UWorld_AddLevel);
+    }
+
+    auto const apiuapi_UWorld_AddNetworkActor = (uapi_UWorld_AddNetworkActorFn)plugin->GetDllExport(TEXT("set_UWorld_AddNetworkActor_handler\0"));
+    if(apiuapi_UWorld_AddNetworkActor){
+        apiuapi_UWorld_AddNetworkActor(&uapi_UWorld_AddNetworkActor);
+    }
+
+    auto const apiuapi_UWorld_AddParameterCollectionInstance = (uapi_UWorld_AddParameterCollectionInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_AddParameterCollectionInstance_handler\0"));
+    if(apiuapi_UWorld_AddParameterCollectionInstance){
+        apiuapi_UWorld_AddParameterCollectionInstance(&uapi_UWorld_AddParameterCollectionInstance);
+    }
+
+    auto const apiuapi_UWorld_AddPhysicsVolume = (uapi_UWorld_AddPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_AddPhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_AddPhysicsVolume){
+        apiuapi_UWorld_AddPhysicsVolume(&uapi_UWorld_AddPhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_AddPostProcessingSettings = (uapi_UWorld_AddPostProcessingSettingsFn)plugin->GetDllExport(TEXT("set_UWorld_AddPostProcessingSettings_handler\0"));
+    if(apiuapi_UWorld_AddPostProcessingSettings){
+        apiuapi_UWorld_AddPostProcessingSettings(&uapi_UWorld_AddPostProcessingSettings);
+    }
+
+    auto const apiuapi_UWorld_AddStreamingLevel = (uapi_UWorld_AddStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_AddStreamingLevel){
+        apiuapi_UWorld_AddStreamingLevel(&uapi_UWorld_AddStreamingLevel);
+    }
+
+    auto const apiuapi_UWorld_AddUniqueStreamingLevel = (uapi_UWorld_AddUniqueStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddUniqueStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_AddUniqueStreamingLevel){
+        apiuapi_UWorld_AddUniqueStreamingLevel(&uapi_UWorld_AddUniqueStreamingLevel);
+    }
+
+    auto const apiuapi_UWorld_AllowAudioPlayback = (uapi_UWorld_AllowAudioPlaybackFn)plugin->GetDllExport(TEXT("set_UWorld_AllowAudioPlayback_handler\0"));
+    if(apiuapi_UWorld_AllowAudioPlayback){
+        apiuapi_UWorld_AllowAudioPlayback(&uapi_UWorld_AllowAudioPlayback);
+    }
+
+    auto const apiuapi_UWorld_AllowLevelLoadRequests = (uapi_UWorld_AllowLevelLoadRequestsFn)plugin->GetDllExport(TEXT("set_UWorld_AllowLevelLoadRequests_handler\0"));
+    if(apiuapi_UWorld_AllowLevelLoadRequests){
+        apiuapi_UWorld_AllowLevelLoadRequests(&uapi_UWorld_AllowLevelLoadRequests);
+    }
+
+    auto const apiuapi_UWorld_AreActorsInitialized = (uapi_UWorld_AreActorsInitializedFn)plugin->GetDllExport(TEXT("set_UWorld_AreActorsInitialized_handler\0"));
+    if(apiuapi_UWorld_AreActorsInitialized){
+        apiuapi_UWorld_AreActorsInitialized(&uapi_UWorld_AreActorsInitialized);
+    }
+
+    auto const apiuapi_UWorld_AreAlwaysLoadedLevelsLoaded = (uapi_UWorld_AreAlwaysLoadedLevelsLoadedFn)plugin->GetDllExport(TEXT("set_UWorld_AreAlwaysLoadedLevelsLoaded_handler\0"));
+    if(apiuapi_UWorld_AreAlwaysLoadedLevelsLoaded){
+        apiuapi_UWorld_AreAlwaysLoadedLevelsLoaded(&uapi_UWorld_AreAlwaysLoadedLevelsLoaded);
+    }
+
+    auto const apiuapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel = (uapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravelFn)plugin->GetDllExport(TEXT("set_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel_handler\0"));
+    if(apiuapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel){
+        apiuapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel(&uapi_UWorld_AsyncLoadAlwaysLoadedLevelsForSeamlessTravel);
+    }
+
+    auto const apiuapi_UWorld_BeginDestroy = (uapi_UWorld_BeginDestroyFn)plugin->GetDllExport(TEXT("set_UWorld_BeginDestroy_handler\0"));
+    if(apiuapi_UWorld_BeginDestroy){
+        apiuapi_UWorld_BeginDestroy(&uapi_UWorld_BeginDestroy);
+    }
+
+    auto const apiuapi_UWorld_BeginPlay = (uapi_UWorld_BeginPlayFn)plugin->GetDllExport(TEXT("set_UWorld_BeginPlay_handler\0"));
+    if(apiuapi_UWorld_BeginPlay){
+        apiuapi_UWorld_BeginPlay(&uapi_UWorld_BeginPlay);
+    }
+
+    auto const apiuapi_UWorld_BeginTearingDown = (uapi_UWorld_BeginTearingDownFn)plugin->GetDllExport(TEXT("set_UWorld_BeginTearingDown_handler\0"));
+    if(apiuapi_UWorld_BeginTearingDown){
+        apiuapi_UWorld_BeginTearingDown(&uapi_UWorld_BeginTearingDown);
+    }
+
+    auto const apiuapi_UWorld_BlockTillLevelStreamingCompleted = (uapi_UWorld_BlockTillLevelStreamingCompletedFn)plugin->GetDllExport(TEXT("set_UWorld_BlockTillLevelStreamingCompleted_handler\0"));
+    if(apiuapi_UWorld_BlockTillLevelStreamingCompleted){
+        apiuapi_UWorld_BlockTillLevelStreamingCompleted(&uapi_UWorld_BlockTillLevelStreamingCompleted);
+    }
+
+    auto const apiuapi_UWorld_BroadcastLevelsChanged = (uapi_UWorld_BroadcastLevelsChangedFn)plugin->GetDllExport(TEXT("set_UWorld_BroadcastLevelsChanged_handler\0"));
+    if(apiuapi_UWorld_BroadcastLevelsChanged){
+        apiuapi_UWorld_BroadcastLevelsChanged(&uapi_UWorld_BroadcastLevelsChanged);
+    }
+
+    auto const apiuapi_UWorld_BuildPIEPackagePrefix = (uapi_UWorld_BuildPIEPackagePrefixFn)plugin->GetDllExport(TEXT("set_UWorld_BuildPIEPackagePrefix_handler\0"));
+    if(apiuapi_UWorld_BuildPIEPackagePrefix){
+        apiuapi_UWorld_BuildPIEPackagePrefix(&uapi_UWorld_BuildPIEPackagePrefix);
+    }
+
+    auto const apiuapi_UWorld_CancelPendingMapChange = (uapi_UWorld_CancelPendingMapChangeFn)plugin->GetDllExport(TEXT("set_UWorld_CancelPendingMapChange_handler\0"));
+    if(apiuapi_UWorld_CancelPendingMapChange){
+        apiuapi_UWorld_CancelPendingMapChange(&uapi_UWorld_CancelPendingMapChange);
+    }
+
+    auto const apiuapi_UWorld_CleanupActors = (uapi_UWorld_CleanupActorsFn)plugin->GetDllExport(TEXT("set_UWorld_CleanupActors_handler\0"));
+    if(apiuapi_UWorld_CleanupActors){
+        apiuapi_UWorld_CleanupActors(&uapi_UWorld_CleanupActors);
+    }
+
+    auto const apiuapi_UWorld_CleanupWorld = (uapi_UWorld_CleanupWorldFn)plugin->GetDllExport(TEXT("set_UWorld_CleanupWorld_handler\0"));
+    if(apiuapi_UWorld_CleanupWorld){
+        apiuapi_UWorld_CleanupWorld(&uapi_UWorld_CleanupWorld);
+    }
+
+    auto const apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate = (uapi_UWorld_ClearActorComponentEndOfFrameUpdateFn)plugin->GetDllExport(TEXT("set_UWorld_ClearActorComponentEndOfFrameUpdate_handler\0"));
+    if(apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate){
+        apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate(&uapi_UWorld_ClearActorComponentEndOfFrameUpdate);
+    }
+
+    auto const apiuapi_UWorld_ClearDemoNetDriver = (uapi_UWorld_ClearDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_ClearDemoNetDriver_handler\0"));
+    if(apiuapi_UWorld_ClearDemoNetDriver){
+        apiuapi_UWorld_ClearDemoNetDriver(&uapi_UWorld_ClearDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_ClearNetDriver = (uapi_UWorld_ClearNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_ClearNetDriver_handler\0"));
+    if(apiuapi_UWorld_ClearNetDriver){
+        apiuapi_UWorld_ClearNetDriver(&uapi_UWorld_ClearNetDriver);
+    }
+
+    auto const apiuapi_UWorld_ClearStreamingLevels = (uapi_UWorld_ClearStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_ClearStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_ClearStreamingLevels){
+        apiuapi_UWorld_ClearStreamingLevels(&uapi_UWorld_ClearStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_ClearWorldComponents = (uapi_UWorld_ClearWorldComponentsFn)plugin->GetDllExport(TEXT("set_UWorld_ClearWorldComponents_handler\0"));
+    if(apiuapi_UWorld_ClearWorldComponents){
+        apiuapi_UWorld_ClearWorldComponents(&uapi_UWorld_ClearWorldComponents);
+    }
+
+    auto const apiuapi_UWorld_CommitMapChange = (uapi_UWorld_CommitMapChangeFn)plugin->GetDllExport(TEXT("set_UWorld_CommitMapChange_handler\0"));
+    if(apiuapi_UWorld_CommitMapChange){
+        apiuapi_UWorld_CommitMapChange(&uapi_UWorld_CommitMapChange);
+    }
+
+    auto const apiuapi_UWorld_CommitModelSurfaces = (uapi_UWorld_CommitModelSurfacesFn)plugin->GetDllExport(TEXT("set_UWorld_CommitModelSurfaces_handler\0"));
+    if(apiuapi_UWorld_CommitModelSurfaces){
+        apiuapi_UWorld_CommitModelSurfaces(&uapi_UWorld_CommitModelSurfaces);
+    }
+
+    auto const apiuapi_UWorld_ConditionallyBuildStreamingData = (uapi_UWorld_ConditionallyBuildStreamingDataFn)plugin->GetDllExport(TEXT("set_UWorld_ConditionallyBuildStreamingData_handler\0"));
+    if(apiuapi_UWorld_ConditionallyBuildStreamingData){
+        apiuapi_UWorld_ConditionallyBuildStreamingData(&uapi_UWorld_ConditionallyBuildStreamingData);
+    }
+
+    auto const apiuapi_UWorld_ContainsActor = (uapi_UWorld_ContainsActorFn)plugin->GetDllExport(TEXT("set_UWorld_ContainsActor_handler\0"));
+    if(apiuapi_UWorld_ContainsActor){
+        apiuapi_UWorld_ContainsActor(&uapi_UWorld_ContainsActor);
+    }
+
+    auto const apiuapi_UWorld_ContainsLevel = (uapi_UWorld_ContainsLevelFn)plugin->GetDllExport(TEXT("set_UWorld_ContainsLevel_handler\0"));
+    if(apiuapi_UWorld_ContainsLevel){
+        apiuapi_UWorld_ContainsLevel(&uapi_UWorld_ContainsLevel);
+    }
+
+    auto const apiuapi_UWorld_CopyGameState = (uapi_UWorld_CopyGameStateFn)plugin->GetDllExport(TEXT("set_UWorld_CopyGameState_handler\0"));
+    if(apiuapi_UWorld_CopyGameState){
+        apiuapi_UWorld_CopyGameState(&uapi_UWorld_CopyGameState);
+    }
+
+    auto const apiuapi_UWorld_CreateAISystem = (uapi_UWorld_CreateAISystemFn)plugin->GetDllExport(TEXT("set_UWorld_CreateAISystem_handler\0"));
+    if(apiuapi_UWorld_CreateAISystem){
+        apiuapi_UWorld_CreateAISystem(&uapi_UWorld_CreateAISystem);
+    }
+
+    auto const apiuapi_UWorld_CreateFXSystem = (uapi_UWorld_CreateFXSystemFn)plugin->GetDllExport(TEXT("set_UWorld_CreateFXSystem_handler\0"));
+    if(apiuapi_UWorld_CreateFXSystem){
+        apiuapi_UWorld_CreateFXSystem(&uapi_UWorld_CreateFXSystem);
+    }
+
+    auto const apiuapi_UWorld_CreatePhysicsScene = (uapi_UWorld_CreatePhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_CreatePhysicsScene_handler\0"));
+    if(apiuapi_UWorld_CreatePhysicsScene){
+        apiuapi_UWorld_CreatePhysicsScene(&uapi_UWorld_CreatePhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_DeSelectLevel = (uapi_UWorld_DeSelectLevelFn)plugin->GetDllExport(TEXT("set_UWorld_DeSelectLevel_handler\0"));
+    if(apiuapi_UWorld_DeSelectLevel){
+        apiuapi_UWorld_DeSelectLevel(&uapi_UWorld_DeSelectLevel);
+    }
+
+    auto const apiuapi_UWorld_DelayStreamingVolumeUpdates = (uapi_UWorld_DelayStreamingVolumeUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_DelayStreamingVolumeUpdates_handler\0"));
+    if(apiuapi_UWorld_DelayStreamingVolumeUpdates){
+        apiuapi_UWorld_DelayStreamingVolumeUpdates(&uapi_UWorld_DelayStreamingVolumeUpdates);
+    }
+
+    auto const apiuapi_UWorld_DestroyActor = (uapi_UWorld_DestroyActorFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyActor_handler\0"));
+    if(apiuapi_UWorld_DestroyActor){
+        apiuapi_UWorld_DestroyActor(&uapi_UWorld_DestroyActor);
+    }
+
+    auto const apiuapi_UWorld_DestroyDemoNetDriver = (uapi_UWorld_DestroyDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyDemoNetDriver_handler\0"));
+    if(apiuapi_UWorld_DestroyDemoNetDriver){
+        apiuapi_UWorld_DestroyDemoNetDriver(&uapi_UWorld_DestroyDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_DestroySwappedPC = (uapi_UWorld_DestroySwappedPCFn)plugin->GetDllExport(TEXT("set_UWorld_DestroySwappedPC_handler\0"));
+    if(apiuapi_UWorld_DestroySwappedPC){
+        apiuapi_UWorld_DestroySwappedPC(&uapi_UWorld_DestroySwappedPC);
+    }
+
+    auto const apiuapi_UWorld_DestroyWorld = (uapi_UWorld_DestroyWorldFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyWorld_handler\0"));
+    if(apiuapi_UWorld_DestroyWorld){
+        apiuapi_UWorld_DestroyWorld(&uapi_UWorld_DestroyWorld);
+    }
+
+    auto const apiuapi_UWorld_DuplicateRequestedLevels = (uapi_UWorld_DuplicateRequestedLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_DuplicateRequestedLevels_handler\0"));
+    if(apiuapi_UWorld_DuplicateRequestedLevels){
+        apiuapi_UWorld_DuplicateRequestedLevels(&uapi_UWorld_DuplicateRequestedLevels);
+    }
+
+    auto const apiuapi_UWorld_EditorDestroyActor = (uapi_UWorld_EditorDestroyActorFn)plugin->GetDllExport(TEXT("set_UWorld_EditorDestroyActor_handler\0"));
+    if(apiuapi_UWorld_EditorDestroyActor){
+        apiuapi_UWorld_EditorDestroyActor(&uapi_UWorld_EditorDestroyActor);
+    }
+
+    auto const apiuapi_UWorld_EncroachingBlockingGeometry = (uapi_UWorld_EncroachingBlockingGeometryFn)plugin->GetDllExport(TEXT("set_UWorld_EncroachingBlockingGeometry_handler\0"));
+    if(apiuapi_UWorld_EncroachingBlockingGeometry){
+        apiuapi_UWorld_EncroachingBlockingGeometry(&uapi_UWorld_EncroachingBlockingGeometry);
+    }
+
+    auto const apiuapi_UWorld_EnsureCollisionTreeIsBuilt = (uapi_UWorld_EnsureCollisionTreeIsBuiltFn)plugin->GetDllExport(TEXT("set_UWorld_EnsureCollisionTreeIsBuilt_handler\0"));
+    if(apiuapi_UWorld_EnsureCollisionTreeIsBuilt){
+        apiuapi_UWorld_EnsureCollisionTreeIsBuilt(&uapi_UWorld_EnsureCollisionTreeIsBuilt);
+    }
+
+    auto const apiuapi_UWorld_FindWorldInPackage = (uapi_UWorld_FindWorldInPackageFn)plugin->GetDllExport(TEXT("set_UWorld_FindWorldInPackage_handler\0"));
+    if(apiuapi_UWorld_FindWorldInPackage){
+        apiuapi_UWorld_FindWorldInPackage(&uapi_UWorld_FindWorldInPackage);
+    }
+
+    auto const apiuapi_UWorld_FinishDestroy = (uapi_UWorld_FinishDestroyFn)plugin->GetDllExport(TEXT("set_UWorld_FinishDestroy_handler\0"));
+    if(apiuapi_UWorld_FinishDestroy){
+        apiuapi_UWorld_FinishDestroy(&uapi_UWorld_FinishDestroy);
+    }
+
+    auto const apiuapi_UWorld_FinishPhysicsSim = (uapi_UWorld_FinishPhysicsSimFn)plugin->GetDllExport(TEXT("set_UWorld_FinishPhysicsSim_handler\0"));
+    if(apiuapi_UWorld_FinishPhysicsSim){
+        apiuapi_UWorld_FinishPhysicsSim(&uapi_UWorld_FinishPhysicsSim);
+    }
+
+    auto const apiuapi_UWorld_FlushDeferredParameterCollectionInstanceUpdates = (uapi_UWorld_FlushDeferredParameterCollectionInstanceUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_FlushDeferredParameterCollectionInstanceUpdates_handler\0"));
+    if(apiuapi_UWorld_FlushDeferredParameterCollectionInstanceUpdates){
+        apiuapi_UWorld_FlushDeferredParameterCollectionInstanceUpdates(&uapi_UWorld_FlushDeferredParameterCollectionInstanceUpdates);
+    }
+
+    auto const apiuapi_UWorld_FollowWorldRedirectorInPackage = (uapi_UWorld_FollowWorldRedirectorInPackageFn)plugin->GetDllExport(TEXT("set_UWorld_FollowWorldRedirectorInPackage_handler\0"));
+    if(apiuapi_UWorld_FollowWorldRedirectorInPackage){
+        apiuapi_UWorld_FollowWorldRedirectorInPackage(&uapi_UWorld_FollowWorldRedirectorInPackage);
+    }
+
+    auto const apiuapi_UWorld_GetAISystem = (uapi_UWorld_GetAISystemFn)plugin->GetDllExport(TEXT("set_UWorld_GetAISystem_handler\0"));
+    if(apiuapi_UWorld_GetAISystem){
+        apiuapi_UWorld_GetAISystem(&uapi_UWorld_GetAISystem);
+    }
+
+    auto const apiuapi_UWorld_GetActiveLevelCollection = (uapi_UWorld_GetActiveLevelCollectionFn)plugin->GetDllExport(TEXT("set_UWorld_GetActiveLevelCollection_handler\0"));
+    if(apiuapi_UWorld_GetActiveLevelCollection){
+        apiuapi_UWorld_GetActiveLevelCollection(&uapi_UWorld_GetActiveLevelCollection);
+    }
+
+    auto const apiuapi_UWorld_GetActiveLevelCollectionIndex = (uapi_UWorld_GetActiveLevelCollectionIndexFn)plugin->GetDllExport(TEXT("set_UWorld_GetActiveLevelCollectionIndex_handler\0"));
+    if(apiuapi_UWorld_GetActiveLevelCollectionIndex){
+        apiuapi_UWorld_GetActiveLevelCollectionIndex(&uapi_UWorld_GetActiveLevelCollectionIndex);
+    }
+
+    auto const apiuapi_UWorld_GetActiveLightingScenario = (uapi_UWorld_GetActiveLightingScenarioFn)plugin->GetDllExport(TEXT("set_UWorld_GetActiveLightingScenario_handler\0"));
+    if(apiuapi_UWorld_GetActiveLightingScenario){
+        apiuapi_UWorld_GetActiveLightingScenario(&uapi_UWorld_GetActiveLightingScenario);
+    }
+
+    auto const apiuapi_UWorld_GetActorCount = (uapi_UWorld_GetActorCountFn)plugin->GetDllExport(TEXT("set_UWorld_GetActorCount_handler\0"));
+    if(apiuapi_UWorld_GetActorCount){
+        apiuapi_UWorld_GetActorCount(&uapi_UWorld_GetActorCount);
+    }
+
+    auto const apiuapi_UWorld_GetAddressURL = (uapi_UWorld_GetAddressURLFn)plugin->GetDllExport(TEXT("set_UWorld_GetAddressURL_handler\0"));
+    if(apiuapi_UWorld_GetAddressURL){
+        apiuapi_UWorld_GetAddressURL(&uapi_UWorld_GetAddressURL);
+    }
+
+    auto const apiuapi_UWorld_GetAllowDeferredPhysicsStateCreation = (uapi_UWorld_GetAllowDeferredPhysicsStateCreationFn)plugin->GetDllExport(TEXT("set_UWorld_GetAllowDeferredPhysicsStateCreation_handler\0"));
+    if(apiuapi_UWorld_GetAllowDeferredPhysicsStateCreation){
+        apiuapi_UWorld_GetAllowDeferredPhysicsStateCreation(&uapi_UWorld_GetAllowDeferredPhysicsStateCreation);
+    }
+
+    auto const apiuapi_UWorld_GetAudioDeviceRaw = (uapi_UWorld_GetAudioDeviceRawFn)plugin->GetDllExport(TEXT("set_UWorld_GetAudioDeviceRaw_handler\0"));
+    if(apiuapi_UWorld_GetAudioDeviceRaw){
+        apiuapi_UWorld_GetAudioDeviceRaw(&uapi_UWorld_GetAudioDeviceRaw);
+    }
+
+    auto const apiuapi_UWorld_GetAudioTimeSeconds = (uapi_UWorld_GetAudioTimeSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetAudioTimeSeconds_handler\0"));
+    if(apiuapi_UWorld_GetAudioTimeSeconds){
+        apiuapi_UWorld_GetAudioTimeSeconds(&uapi_UWorld_GetAudioTimeSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetAvoidanceManager = (uapi_UWorld_GetAvoidanceManagerFn)plugin->GetDllExport(TEXT("set_UWorld_GetAvoidanceManager_handler\0"));
+    if(apiuapi_UWorld_GetAvoidanceManager){
+        apiuapi_UWorld_GetAvoidanceManager(&uapi_UWorld_GetAvoidanceManager);
+    }
+
+    auto const apiuapi_UWorld_GetBlockTillLevelStreamingCompletedEpoch = (uapi_UWorld_GetBlockTillLevelStreamingCompletedEpochFn)plugin->GetDllExport(TEXT("set_UWorld_GetBlockTillLevelStreamingCompletedEpoch_handler\0"));
+    if(apiuapi_UWorld_GetBlockTillLevelStreamingCompletedEpoch){
+        apiuapi_UWorld_GetBlockTillLevelStreamingCompletedEpoch(&uapi_UWorld_GetBlockTillLevelStreamingCompletedEpoch);
+    }
+
+    auto const apiuapi_UWorld_GetCanvasForDrawMaterialToRenderTarget = (uapi_UWorld_GetCanvasForDrawMaterialToRenderTargetFn)plugin->GetDllExport(TEXT("set_UWorld_GetCanvasForDrawMaterialToRenderTarget_handler\0"));
+    if(apiuapi_UWorld_GetCanvasForDrawMaterialToRenderTarget){
+        apiuapi_UWorld_GetCanvasForDrawMaterialToRenderTarget(&uapi_UWorld_GetCanvasForDrawMaterialToRenderTarget);
+    }
+
+    auto const apiuapi_UWorld_GetCanvasForRenderingToTarget = (uapi_UWorld_GetCanvasForRenderingToTargetFn)plugin->GetDllExport(TEXT("set_UWorld_GetCanvasForRenderingToTarget_handler\0"));
+    if(apiuapi_UWorld_GetCanvasForRenderingToTarget){
+        apiuapi_UWorld_GetCanvasForRenderingToTarget(&uapi_UWorld_GetCanvasForRenderingToTarget);
+    }
+
+    auto const apiuapi_UWorld_GetCurrentLevel = (uapi_UWorld_GetCurrentLevelFn)plugin->GetDllExport(TEXT("set_UWorld_GetCurrentLevel_handler\0"));
+    if(apiuapi_UWorld_GetCurrentLevel){
+        apiuapi_UWorld_GetCurrentLevel(&uapi_UWorld_GetCurrentLevel);
+    }
+
+    auto const apiuapi_UWorld_GetCurrentLevelPendingInvisibility = (uapi_UWorld_GetCurrentLevelPendingInvisibilityFn)plugin->GetDllExport(TEXT("set_UWorld_GetCurrentLevelPendingInvisibility_handler\0"));
+    if(apiuapi_UWorld_GetCurrentLevelPendingInvisibility){
+        apiuapi_UWorld_GetCurrentLevelPendingInvisibility(&uapi_UWorld_GetCurrentLevelPendingInvisibility);
+    }
+
+    auto const apiuapi_UWorld_GetCurrentLevelPendingVisibility = (uapi_UWorld_GetCurrentLevelPendingVisibilityFn)plugin->GetDllExport(TEXT("set_UWorld_GetCurrentLevelPendingVisibility_handler\0"));
+    if(apiuapi_UWorld_GetCurrentLevelPendingVisibility){
+        apiuapi_UWorld_GetCurrentLevelPendingVisibility(&uapi_UWorld_GetCurrentLevelPendingVisibility);
+    }
+
+    auto const apiuapi_UWorld_GetDebugDisplayName = (uapi_UWorld_GetDebugDisplayNameFn)plugin->GetDllExport(TEXT("set_UWorld_GetDebugDisplayName_handler\0"));
+    if(apiuapi_UWorld_GetDebugDisplayName){
+        apiuapi_UWorld_GetDebugDisplayName(&uapi_UWorld_GetDebugDisplayName);
+    }
+
+    auto const apiuapi_UWorld_GetDefaultBrush = (uapi_UWorld_GetDefaultBrushFn)plugin->GetDllExport(TEXT("set_UWorld_GetDefaultBrush_handler\0"));
+    if(apiuapi_UWorld_GetDefaultBrush){
+        apiuapi_UWorld_GetDefaultBrush(&uapi_UWorld_GetDefaultBrush);
+    }
+
+    auto const apiuapi_UWorld_GetDefaultGravityZ = (uapi_UWorld_GetDefaultGravityZFn)plugin->GetDllExport(TEXT("set_UWorld_GetDefaultGravityZ_handler\0"));
+    if(apiuapi_UWorld_GetDefaultGravityZ){
+        apiuapi_UWorld_GetDefaultGravityZ(&uapi_UWorld_GetDefaultGravityZ);
+    }
+
+    auto const apiuapi_UWorld_GetDefaultPhysicsVolume = (uapi_UWorld_GetDefaultPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_GetDefaultPhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_GetDefaultPhysicsVolume){
+        apiuapi_UWorld_GetDefaultPhysicsVolume(&uapi_UWorld_GetDefaultPhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_GetDeltaSeconds = (uapi_UWorld_GetDeltaSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetDeltaSeconds_handler\0"));
+    if(apiuapi_UWorld_GetDeltaSeconds){
+        apiuapi_UWorld_GetDeltaSeconds(&uapi_UWorld_GetDeltaSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetDemoNetDriver = (uapi_UWorld_GetDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_GetDemoNetDriver_handler\0"));
+    if(apiuapi_UWorld_GetDemoNetDriver){
+        apiuapi_UWorld_GetDemoNetDriver(&uapi_UWorld_GetDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_GetDetailMode = (uapi_UWorld_GetDetailModeFn)plugin->GetDllExport(TEXT("set_UWorld_GetDetailMode_handler\0"));
+    if(apiuapi_UWorld_GetDetailMode){
+        apiuapi_UWorld_GetDetailMode(&uapi_UWorld_GetDetailMode);
+    }
+
+    auto const apiuapi_UWorld_GetDuplicatedWorldForPIE = (uapi_UWorld_GetDuplicatedWorldForPIEFn)plugin->GetDllExport(TEXT("set_UWorld_GetDuplicatedWorldForPIE_handler\0"));
+    if(apiuapi_UWorld_GetDuplicatedWorldForPIE){
+        apiuapi_UWorld_GetDuplicatedWorldForPIE(&uapi_UWorld_GetDuplicatedWorldForPIE);
+    }
+
+    auto const apiuapi_UWorld_GetFirstLocalPlayerFromController = (uapi_UWorld_GetFirstLocalPlayerFromControllerFn)plugin->GetDllExport(TEXT("set_UWorld_GetFirstLocalPlayerFromController_handler\0"));
+    if(apiuapi_UWorld_GetFirstLocalPlayerFromController){
+        apiuapi_UWorld_GetFirstLocalPlayerFromController(&uapi_UWorld_GetFirstLocalPlayerFromController);
+    }
+
+    auto const apiuapi_UWorld_GetFirstPlayerController = (uapi_UWorld_GetFirstPlayerControllerFn)plugin->GetDllExport(TEXT("set_UWorld_GetFirstPlayerController_handler\0"));
+    if(apiuapi_UWorld_GetFirstPlayerController){
+        apiuapi_UWorld_GetFirstPlayerController(&uapi_UWorld_GetFirstPlayerController);
+    }
+
+    auto const apiuapi_UWorld_GetGameInstance = (uapi_UWorld_GetGameInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_GetGameInstance_handler\0"));
+    if(apiuapi_UWorld_GetGameInstance){
+        apiuapi_UWorld_GetGameInstance(&uapi_UWorld_GetGameInstance);
+    }
+
+    auto const apiuapi_UWorld_GetGameState = (uapi_UWorld_GetGameStateFn)plugin->GetDllExport(TEXT("set_UWorld_GetGameState_handler\0"));
+    if(apiuapi_UWorld_GetGameState){
+        apiuapi_UWorld_GetGameState(&uapi_UWorld_GetGameState);
+    }
+
+    auto const apiuapi_UWorld_GetGameViewport = (uapi_UWorld_GetGameViewportFn)plugin->GetDllExport(TEXT("set_UWorld_GetGameViewport_handler\0"));
+    if(apiuapi_UWorld_GetGameViewport){
+        apiuapi_UWorld_GetGameViewport(&uapi_UWorld_GetGameViewport);
+    }
+
+    auto const apiuapi_UWorld_GetGravityZ = (uapi_UWorld_GetGravityZFn)plugin->GetDllExport(TEXT("set_UWorld_GetGravityZ_handler\0"));
+    if(apiuapi_UWorld_GetGravityZ){
+        apiuapi_UWorld_GetGravityZ(&uapi_UWorld_GetGravityZ);
+    }
+
+    auto const apiuapi_UWorld_GetIsInBlockTillLevelStreamingCompleted = (uapi_UWorld_GetIsInBlockTillLevelStreamingCompletedFn)plugin->GetDllExport(TEXT("set_UWorld_GetIsInBlockTillLevelStreamingCompleted_handler\0"));
+    if(apiuapi_UWorld_GetIsInBlockTillLevelStreamingCompleted){
+        apiuapi_UWorld_GetIsInBlockTillLevelStreamingCompleted(&uapi_UWorld_GetIsInBlockTillLevelStreamingCompleted);
+    }
+
+    auto const apiuapi_UWorld_GetLevel = (uapi_UWorld_GetLevelFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevel_handler\0"));
+    if(apiuapi_UWorld_GetLevel){
+        apiuapi_UWorld_GetLevel(&uapi_UWorld_GetLevel);
+    }
+
+    auto const apiuapi_UWorld_GetLevelScriptActor = (uapi_UWorld_GetLevelScriptActorFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevelScriptActor_handler\0"));
+    if(apiuapi_UWorld_GetLevelScriptActor){
+        apiuapi_UWorld_GetLevelScriptActor(&uapi_UWorld_GetLevelScriptActor);
+    }
+
+    auto const apiuapi_UWorld_GetLevelStreamingForPackageName = (uapi_UWorld_GetLevelStreamingForPackageNameFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevelStreamingForPackageName_handler\0"));
+    if(apiuapi_UWorld_GetLevelStreamingForPackageName){
+        apiuapi_UWorld_GetLevelStreamingForPackageName(&uapi_UWorld_GetLevelStreamingForPackageName);
+    }
+
+    auto const apiuapi_UWorld_GetLocalURL = (uapi_UWorld_GetLocalURLFn)plugin->GetDllExport(TEXT("set_UWorld_GetLocalURL_handler\0"));
+    if(apiuapi_UWorld_GetLocalURL){
+        apiuapi_UWorld_GetLocalURL(&uapi_UWorld_GetLocalURL);
+    }
+
+    auto const apiuapi_UWorld_GetMapName = (uapi_UWorld_GetMapNameFn)plugin->GetDllExport(TEXT("set_UWorld_GetMapName_handler\0"));
+    if(apiuapi_UWorld_GetMapName){
+        apiuapi_UWorld_GetMapName(&uapi_UWorld_GetMapName);
+    }
+
+    auto const apiuapi_UWorld_GetNetDriver = (uapi_UWorld_GetNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_GetNetDriver_handler\0"));
+    if(apiuapi_UWorld_GetNetDriver){
+        apiuapi_UWorld_GetNetDriver(&uapi_UWorld_GetNetDriver);
+    }
+
+    auto const apiuapi_UWorld_GetNonDefaultPhysicsVolumeCount = (uapi_UWorld_GetNonDefaultPhysicsVolumeCountFn)plugin->GetDllExport(TEXT("set_UWorld_GetNonDefaultPhysicsVolumeCount_handler\0"));
+    if(apiuapi_UWorld_GetNonDefaultPhysicsVolumeCount){
+        apiuapi_UWorld_GetNonDefaultPhysicsVolumeCount(&uapi_UWorld_GetNonDefaultPhysicsVolumeCount);
+    }
+
+    auto const apiuapi_UWorld_GetNumControllers = (uapi_UWorld_GetNumControllersFn)plugin->GetDllExport(TEXT("set_UWorld_GetNumControllers_handler\0"));
+    if(apiuapi_UWorld_GetNumControllers){
+        apiuapi_UWorld_GetNumControllers(&uapi_UWorld_GetNumControllers);
+    }
+
+    auto const apiuapi_UWorld_GetNumLevels = (uapi_UWorld_GetNumLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_GetNumLevels_handler\0"));
+    if(apiuapi_UWorld_GetNumLevels){
+        apiuapi_UWorld_GetNumLevels(&uapi_UWorld_GetNumLevels);
+    }
+
+    auto const apiuapi_UWorld_GetNumPlayerControllers = (uapi_UWorld_GetNumPlayerControllersFn)plugin->GetDllExport(TEXT("set_UWorld_GetNumPlayerControllers_handler\0"));
+    if(apiuapi_UWorld_GetNumPlayerControllers){
+        apiuapi_UWorld_GetNumPlayerControllers(&uapi_UWorld_GetNumPlayerControllers);
+    }
+
+    auto const apiuapi_UWorld_GetNumSelectedLevels = (uapi_UWorld_GetNumSelectedLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_GetNumSelectedLevels_handler\0"));
+    if(apiuapi_UWorld_GetNumSelectedLevels){
+        apiuapi_UWorld_GetNumSelectedLevels(&uapi_UWorld_GetNumSelectedLevels);
+    }
+
+    auto const apiuapi_UWorld_GetParameterCollectionInstance = (uapi_UWorld_GetParameterCollectionInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_GetParameterCollectionInstance_handler\0"));
+    if(apiuapi_UWorld_GetParameterCollectionInstance){
+        apiuapi_UWorld_GetParameterCollectionInstance(&uapi_UWorld_GetParameterCollectionInstance);
+    }
+
+    auto const apiuapi_UWorld_GetPhysicsScene = (uapi_UWorld_GetPhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_GetPhysicsScene_handler\0"));
+    if(apiuapi_UWorld_GetPhysicsScene){
+        apiuapi_UWorld_GetPhysicsScene(&uapi_UWorld_GetPhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_GetProgressDenominator = (uapi_UWorld_GetProgressDenominatorFn)plugin->GetDllExport(TEXT("set_UWorld_GetProgressDenominator_handler\0"));
+    if(apiuapi_UWorld_GetProgressDenominator){
+        apiuapi_UWorld_GetProgressDenominator(&uapi_UWorld_GetProgressDenominator);
+    }
+
+    auto const apiuapi_UWorld_GetRealTimeSeconds = (uapi_UWorld_GetRealTimeSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetRealTimeSeconds_handler\0"));
+    if(apiuapi_UWorld_GetRealTimeSeconds){
+        apiuapi_UWorld_GetRealTimeSeconds(&uapi_UWorld_GetRealTimeSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetSelectedLevel = (uapi_UWorld_GetSelectedLevelFn)plugin->GetDllExport(TEXT("set_UWorld_GetSelectedLevel_handler\0"));
+    if(apiuapi_UWorld_GetSelectedLevel){
+        apiuapi_UWorld_GetSelectedLevel(&uapi_UWorld_GetSelectedLevel);
+    }
+
+    auto const apiuapi_UWorld_GetServerStreamingLevelsVisibility = (uapi_UWorld_GetServerStreamingLevelsVisibilityFn)plugin->GetDllExport(TEXT("set_UWorld_GetServerStreamingLevelsVisibility_handler\0"));
+    if(apiuapi_UWorld_GetServerStreamingLevelsVisibility){
+        apiuapi_UWorld_GetServerStreamingLevelsVisibility(&uapi_UWorld_GetServerStreamingLevelsVisibility);
+    }
+
+    auto const apiuapi_UWorld_GetShouldForceUnloadStreamingLevels = (uapi_UWorld_GetShouldForceUnloadStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_GetShouldForceUnloadStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_GetShouldForceUnloadStreamingLevels){
+        apiuapi_UWorld_GetShouldForceUnloadStreamingLevels(&uapi_UWorld_GetShouldForceUnloadStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_GetShouldForceVisibleStreamingLevels = (uapi_UWorld_GetShouldForceVisibleStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_GetShouldForceVisibleStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_GetShouldForceVisibleStreamingLevels){
+        apiuapi_UWorld_GetShouldForceVisibleStreamingLevels(&uapi_UWorld_GetShouldForceVisibleStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_GetTimeSeconds = (uapi_UWorld_GetTimeSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetTimeSeconds_handler\0"));
+    if(apiuapi_UWorld_GetTimeSeconds){
+        apiuapi_UWorld_GetTimeSeconds(&uapi_UWorld_GetTimeSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetUnpausedTimeSeconds = (uapi_UWorld_GetUnpausedTimeSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetUnpausedTimeSeconds_handler\0"));
+    if(apiuapi_UWorld_GetUnpausedTimeSeconds){
+        apiuapi_UWorld_GetUnpausedTimeSeconds(&uapi_UWorld_GetUnpausedTimeSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetWorld = (uapi_UWorld_GetWorldFn)plugin->GetDllExport(TEXT("set_UWorld_GetWorld_handler\0"));
+    if(apiuapi_UWorld_GetWorld){
+        apiuapi_UWorld_GetWorld(&uapi_UWorld_GetWorld);
+    }
+
+    auto const apiuapi_UWorld_GetWorldPartition = (uapi_UWorld_GetWorldPartitionFn)plugin->GetDllExport(TEXT("set_UWorld_GetWorldPartition_handler\0"));
+    if(apiuapi_UWorld_GetWorldPartition){
+        apiuapi_UWorld_GetWorldPartition(&uapi_UWorld_GetWorldPartition);
+    }
+
+    auto const apiuapi_UWorld_GetWorldSettings = (uapi_UWorld_GetWorldSettingsFn)plugin->GetDllExport(TEXT("set_UWorld_GetWorldSettings_handler\0"));
+    if(apiuapi_UWorld_GetWorldSettings){
+        apiuapi_UWorld_GetWorldSettings(&uapi_UWorld_GetWorldSettings);
+    }
+
+    auto const apiuapi_UWorld_HandleTimelineScrubbed = (uapi_UWorld_HandleTimelineScrubbedFn)plugin->GetDllExport(TEXT("set_UWorld_HandleTimelineScrubbed_handler\0"));
+    if(apiuapi_UWorld_HandleTimelineScrubbed){
+        apiuapi_UWorld_HandleTimelineScrubbed(&uapi_UWorld_HandleTimelineScrubbed);
+    }
+
+    auto const apiuapi_UWorld_HasBegunPlay = (uapi_UWorld_HasBegunPlayFn)plugin->GetDllExport(TEXT("set_UWorld_HasBegunPlay_handler\0"));
+    if(apiuapi_UWorld_HasBegunPlay){
+        apiuapi_UWorld_HasBegunPlay(&uapi_UWorld_HasBegunPlay);
+    }
+
+    auto const apiuapi_UWorld_HasDefaultPhysicsVolume = (uapi_UWorld_HasDefaultPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_HasDefaultPhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_HasDefaultPhysicsVolume){
+        apiuapi_UWorld_HasDefaultPhysicsVolume(&uapi_UWorld_HasDefaultPhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_HasEndOfFrameUpdates = (uapi_UWorld_HasEndOfFrameUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_HasEndOfFrameUpdates_handler\0"));
+    if(apiuapi_UWorld_HasEndOfFrameUpdates){
+        apiuapi_UWorld_HasEndOfFrameUpdates(&uapi_UWorld_HasEndOfFrameUpdates);
+    }
+
+    auto const apiuapi_UWorld_HasEverBeenInitialized = (uapi_UWorld_HasEverBeenInitializedFn)plugin->GetDllExport(TEXT("set_UWorld_HasEverBeenInitialized_handler\0"));
+    if(apiuapi_UWorld_HasEverBeenInitialized){
+        apiuapi_UWorld_HasEverBeenInitialized(&uapi_UWorld_HasEverBeenInitialized);
+    }
+
+    auto const apiuapi_UWorld_HasMarkedObjectsPendingKill = (uapi_UWorld_HasMarkedObjectsPendingKillFn)plugin->GetDllExport(TEXT("set_UWorld_HasMarkedObjectsPendingKill_handler\0"));
+    if(apiuapi_UWorld_HasMarkedObjectsPendingKill){
+        apiuapi_UWorld_HasMarkedObjectsPendingKill(&uapi_UWorld_HasMarkedObjectsPendingKill);
+    }
+
+    auto const apiuapi_UWorld_HasStreamingLevelsToConsider = (uapi_UWorld_HasStreamingLevelsToConsiderFn)plugin->GetDllExport(TEXT("set_UWorld_HasStreamingLevelsToConsider_handler\0"));
+    if(apiuapi_UWorld_HasStreamingLevelsToConsider){
+        apiuapi_UWorld_HasStreamingLevelsToConsider(&uapi_UWorld_HasStreamingLevelsToConsider);
+    }
+
+    auto const apiuapi_UWorld_InitializeSubsystems = (uapi_UWorld_InitializeSubsystemsFn)plugin->GetDllExport(TEXT("set_UWorld_InitializeSubsystems_handler\0"));
+    if(apiuapi_UWorld_InitializeSubsystems){
+        apiuapi_UWorld_InitializeSubsystems(&uapi_UWorld_InitializeSubsystems);
+    }
+
+    auto const apiuapi_UWorld_InsertPostProcessVolume = (uapi_UWorld_InsertPostProcessVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_InsertPostProcessVolume_handler\0"));
+    if(apiuapi_UWorld_InsertPostProcessVolume){
+        apiuapi_UWorld_InsertPostProcessVolume(&uapi_UWorld_InsertPostProcessVolume);
+    }
+
+    auto const apiuapi_UWorld_InvalidateAllSkyCaptures = (uapi_UWorld_InvalidateAllSkyCapturesFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateAllSkyCaptures_handler\0"));
+    if(apiuapi_UWorld_InvalidateAllSkyCaptures){
+        apiuapi_UWorld_InvalidateAllSkyCaptures(&uapi_UWorld_InvalidateAllSkyCaptures);
+    }
+
+    auto const apiuapi_UWorld_InvalidateModelGeometry = (uapi_UWorld_InvalidateModelGeometryFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateModelGeometry_handler\0"));
+    if(apiuapi_UWorld_InvalidateModelGeometry){
+        apiuapi_UWorld_InvalidateModelGeometry(&uapi_UWorld_InvalidateModelGeometry);
+    }
+
+    auto const apiuapi_UWorld_InvalidateModelSurface = (uapi_UWorld_InvalidateModelSurfaceFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateModelSurface_handler\0"));
+    if(apiuapi_UWorld_InvalidateModelSurface){
+        apiuapi_UWorld_InvalidateModelSurface(&uapi_UWorld_InvalidateModelSurface);
+    }
+
+    auto const apiuapi_UWorld_IsCameraMoveable = (uapi_UWorld_IsCameraMoveableFn)plugin->GetDllExport(TEXT("set_UWorld_IsCameraMoveable_handler\0"));
+    if(apiuapi_UWorld_IsCameraMoveable){
+        apiuapi_UWorld_IsCameraMoveable(&uapi_UWorld_IsCameraMoveable);
+    }
+
+    auto const apiuapi_UWorld_IsEditorWorld = (uapi_UWorld_IsEditorWorldFn)plugin->GetDllExport(TEXT("set_UWorld_IsEditorWorld_handler\0"));
+    if(apiuapi_UWorld_IsEditorWorld){
+        apiuapi_UWorld_IsEditorWorld(&uapi_UWorld_IsEditorWorld);
+    }
+
+    auto const apiuapi_UWorld_IsGameWorld = (uapi_UWorld_IsGameWorldFn)plugin->GetDllExport(TEXT("set_UWorld_IsGameWorld_handler\0"));
+    if(apiuapi_UWorld_IsGameWorld){
+        apiuapi_UWorld_IsGameWorld(&uapi_UWorld_IsGameWorld);
+    }
+
+    auto const apiuapi_UWorld_IsInSeamlessTravel = (uapi_UWorld_IsInSeamlessTravelFn)plugin->GetDllExport(TEXT("set_UWorld_IsInSeamlessTravel_handler\0"));
+    if(apiuapi_UWorld_IsInSeamlessTravel){
+        apiuapi_UWorld_IsInSeamlessTravel(&uapi_UWorld_IsInSeamlessTravel);
+    }
+
+    auto const apiuapi_UWorld_IsInitialized = (uapi_UWorld_IsInitializedFn)plugin->GetDllExport(TEXT("set_UWorld_IsInitialized_handler\0"));
+    if(apiuapi_UWorld_IsInitialized){
+        apiuapi_UWorld_IsInitialized(&uapi_UWorld_IsInitialized);
+    }
+
+    auto const apiuapi_UWorld_IsInstanced = (uapi_UWorld_IsInstancedFn)plugin->GetDllExport(TEXT("set_UWorld_IsInstanced_handler\0"));
+    if(apiuapi_UWorld_IsInstanced){
+        apiuapi_UWorld_IsInstanced(&uapi_UWorld_IsInstanced);
+    }
+
+    auto const apiuapi_UWorld_IsLevelSelected = (uapi_UWorld_IsLevelSelectedFn)plugin->GetDllExport(TEXT("set_UWorld_IsLevelSelected_handler\0"));
+    if(apiuapi_UWorld_IsLevelSelected){
+        apiuapi_UWorld_IsLevelSelected(&uapi_UWorld_IsLevelSelected);
+    }
+
+    auto const apiuapi_UWorld_IsMapChangeReady = (uapi_UWorld_IsMapChangeReadyFn)plugin->GetDllExport(TEXT("set_UWorld_IsMapChangeReady_handler\0"));
+    if(apiuapi_UWorld_IsMapChangeReady){
+        apiuapi_UWorld_IsMapChangeReady(&uapi_UWorld_IsMapChangeReady);
+    }
+
+    auto const apiuapi_UWorld_IsMovieSceneSequenceTickHandlerBound = (uapi_UWorld_IsMovieSceneSequenceTickHandlerBoundFn)plugin->GetDllExport(TEXT("set_UWorld_IsMovieSceneSequenceTickHandlerBound_handler\0"));
+    if(apiuapi_UWorld_IsMovieSceneSequenceTickHandlerBound){
+        apiuapi_UWorld_IsMovieSceneSequenceTickHandlerBound(&uapi_UWorld_IsMovieSceneSequenceTickHandlerBound);
+    }
+
+    auto const apiuapi_UWorld_IsNameStableForNetworking = (uapi_UWorld_IsNameStableForNetworkingFn)plugin->GetDllExport(TEXT("set_UWorld_IsNameStableForNetworking_handler\0"));
+    if(apiuapi_UWorld_IsNameStableForNetworking){
+        apiuapi_UWorld_IsNameStableForNetworking(&uapi_UWorld_IsNameStableForNetworking);
+    }
+
+    auto const apiuapi_UWorld_IsNavigationRebuilt = (uapi_UWorld_IsNavigationRebuiltFn)plugin->GetDllExport(TEXT("set_UWorld_IsNavigationRebuilt_handler\0"));
+    if(apiuapi_UWorld_IsNavigationRebuilt){
+        apiuapi_UWorld_IsNavigationRebuilt(&uapi_UWorld_IsNavigationRebuilt);
+    }
+
+    auto const apiuapi_UWorld_IsPartitionedWorld = (uapi_UWorld_IsPartitionedWorldFn)plugin->GetDllExport(TEXT("set_UWorld_IsPartitionedWorld_handler\0"));
+    if(apiuapi_UWorld_IsPartitionedWorld){
+        apiuapi_UWorld_IsPartitionedWorld(&uapi_UWorld_IsPartitionedWorld);
+    }
+
+    auto const apiuapi_UWorld_IsPartitionedWorld2 = (uapi_UWorld_IsPartitionedWorld2Fn)plugin->GetDllExport(TEXT("set_UWorld_IsPartitionedWorld2_handler\0"));
+    if(apiuapi_UWorld_IsPartitionedWorld2){
+        apiuapi_UWorld_IsPartitionedWorld2(&uapi_UWorld_IsPartitionedWorld2);
+    }
+
+    auto const apiuapi_UWorld_IsPaused = (uapi_UWorld_IsPausedFn)plugin->GetDllExport(TEXT("set_UWorld_IsPaused_handler\0"));
+    if(apiuapi_UWorld_IsPaused){
+        apiuapi_UWorld_IsPaused(&uapi_UWorld_IsPaused);
+    }
+
+    auto const apiuapi_UWorld_IsPlayInEditor = (uapi_UWorld_IsPlayInEditorFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayInEditor_handler\0"));
+    if(apiuapi_UWorld_IsPlayInEditor){
+        apiuapi_UWorld_IsPlayInEditor(&uapi_UWorld_IsPlayInEditor);
+    }
+
+    auto const apiuapi_UWorld_IsPlayInMobilePreview = (uapi_UWorld_IsPlayInMobilePreviewFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayInMobilePreview_handler\0"));
+    if(apiuapi_UWorld_IsPlayInMobilePreview){
+        apiuapi_UWorld_IsPlayInMobilePreview(&uapi_UWorld_IsPlayInMobilePreview);
+    }
+
+    auto const apiuapi_UWorld_IsPlayInPreview = (uapi_UWorld_IsPlayInPreviewFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayInPreview_handler\0"));
+    if(apiuapi_UWorld_IsPlayInPreview){
+        apiuapi_UWorld_IsPlayInPreview(&uapi_UWorld_IsPlayInPreview);
+    }
+
+    auto const apiuapi_UWorld_IsPlayInVulkanPreview = (uapi_UWorld_IsPlayInVulkanPreviewFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayInVulkanPreview_handler\0"));
+    if(apiuapi_UWorld_IsPlayInVulkanPreview){
+        apiuapi_UWorld_IsPlayInVulkanPreview(&uapi_UWorld_IsPlayInVulkanPreview);
+    }
+
+    auto const apiuapi_UWorld_IsPlayingClientReplay = (uapi_UWorld_IsPlayingClientReplayFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayingClientReplay_handler\0"));
+    if(apiuapi_UWorld_IsPlayingClientReplay){
+        apiuapi_UWorld_IsPlayingClientReplay(&uapi_UWorld_IsPlayingClientReplay);
+    }
+
+    auto const apiuapi_UWorld_IsPlayingReplay = (uapi_UWorld_IsPlayingReplayFn)plugin->GetDllExport(TEXT("set_UWorld_IsPlayingReplay_handler\0"));
+    if(apiuapi_UWorld_IsPlayingReplay){
+        apiuapi_UWorld_IsPlayingReplay(&uapi_UWorld_IsPlayingReplay);
+    }
+
+    auto const apiuapi_UWorld_IsPreparingMapChange = (uapi_UWorld_IsPreparingMapChangeFn)plugin->GetDllExport(TEXT("set_UWorld_IsPreparingMapChange_handler\0"));
+    if(apiuapi_UWorld_IsPreparingMapChange){
+        apiuapi_UWorld_IsPreparingMapChange(&uapi_UWorld_IsPreparingMapChange);
+    }
+
+    auto const apiuapi_UWorld_IsPreviewWorld = (uapi_UWorld_IsPreviewWorldFn)plugin->GetDllExport(TEXT("set_UWorld_IsPreviewWorld_handler\0"));
+    if(apiuapi_UWorld_IsPreviewWorld){
+        apiuapi_UWorld_IsPreviewWorld(&uapi_UWorld_IsPreviewWorld);
+    }
+
+    auto const apiuapi_UWorld_IsReadyForFinishDestroy = (uapi_UWorld_IsReadyForFinishDestroyFn)plugin->GetDllExport(TEXT("set_UWorld_IsReadyForFinishDestroy_handler\0"));
+    if(apiuapi_UWorld_IsReadyForFinishDestroy){
+        apiuapi_UWorld_IsReadyForFinishDestroy(&uapi_UWorld_IsReadyForFinishDestroy);
+    }
+
+    auto const apiuapi_UWorld_IsRecordingClientReplay = (uapi_UWorld_IsRecordingClientReplayFn)plugin->GetDllExport(TEXT("set_UWorld_IsRecordingClientReplay_handler\0"));
+    if(apiuapi_UWorld_IsRecordingClientReplay){
+        apiuapi_UWorld_IsRecordingClientReplay(&uapi_UWorld_IsRecordingClientReplay);
+    }
+
+    auto const apiuapi_UWorld_IsRecordingReplay = (uapi_UWorld_IsRecordingReplayFn)plugin->GetDllExport(TEXT("set_UWorld_IsRecordingReplay_handler\0"));
+    if(apiuapi_UWorld_IsRecordingReplay){
+        apiuapi_UWorld_IsRecordingReplay(&uapi_UWorld_IsRecordingReplay);
+    }
+
+    auto const apiuapi_UWorld_IsRefreshingStreamingLevels = (uapi_UWorld_IsRefreshingStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_IsRefreshingStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_IsRefreshingStreamingLevels){
+        apiuapi_UWorld_IsRefreshingStreamingLevels(&uapi_UWorld_IsRefreshingStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_IsStreamingLevelBeingConsidered = (uapi_UWorld_IsStreamingLevelBeingConsideredFn)plugin->GetDllExport(TEXT("set_UWorld_IsStreamingLevelBeingConsidered_handler\0"));
+    if(apiuapi_UWorld_IsStreamingLevelBeingConsidered){
+        apiuapi_UWorld_IsStreamingLevelBeingConsidered(&uapi_UWorld_IsStreamingLevelBeingConsidered);
+    }
+
+    auto const apiuapi_UWorld_IsVisibilityRequestPending = (uapi_UWorld_IsVisibilityRequestPendingFn)plugin->GetDllExport(TEXT("set_UWorld_IsVisibilityRequestPending_handler\0"));
+    if(apiuapi_UWorld_IsVisibilityRequestPending){
+        apiuapi_UWorld_IsVisibilityRequestPending(&uapi_UWorld_IsVisibilityRequestPending);
+    }
+
+    auto const apiuapi_UWorld_IsWorldOrExternalActorPackage = (uapi_UWorld_IsWorldOrExternalActorPackageFn)plugin->GetDllExport(TEXT("set_UWorld_IsWorldOrExternalActorPackage_handler\0"));
+    if(apiuapi_UWorld_IsWorldOrExternalActorPackage){
+        apiuapi_UWorld_IsWorldOrExternalActorPackage(&uapi_UWorld_IsWorldOrExternalActorPackage);
+    }
+
+    auto const apiuapi_UWorld_IssueEditorLoadWarnings = (uapi_UWorld_IssueEditorLoadWarningsFn)plugin->GetDllExport(TEXT("set_UWorld_IssueEditorLoadWarnings_handler\0"));
+    if(apiuapi_UWorld_IssueEditorLoadWarnings){
+        apiuapi_UWorld_IssueEditorLoadWarnings(&uapi_UWorld_IssueEditorLoadWarnings);
+    }
+
+    auto const apiuapi_UWorld_K2_GetWorldSettings = (uapi_UWorld_K2_GetWorldSettingsFn)plugin->GetDllExport(TEXT("set_UWorld_K2_GetWorldSettings_handler\0"));
+    if(apiuapi_UWorld_K2_GetWorldSettings){
+        apiuapi_UWorld_K2_GetWorldSettings(&uapi_UWorld_K2_GetWorldSettings);
+    }
+
+    auto const apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate = (uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdateFn)plugin->GetDllExport(TEXT("set_UWorld_MarkActorComponentForNeededEndOfFrameUpdate_handler\0"));
+    if(apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate){
+        apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate(&uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate);
+    }
+
+    auto const apiuapi_UWorld_MarkObjectsPendingKill = (uapi_UWorld_MarkObjectsPendingKillFn)plugin->GetDllExport(TEXT("set_UWorld_MarkObjectsPendingKill_handler\0"));
+    if(apiuapi_UWorld_MarkObjectsPendingKill){
+        apiuapi_UWorld_MarkObjectsPendingKill(&uapi_UWorld_MarkObjectsPendingKill);
+    }
+
+    auto const apiuapi_UWorld_ModifyLevel = (uapi_UWorld_ModifyLevelFn)plugin->GetDllExport(TEXT("set_UWorld_ModifyLevel_handler\0"));
+    if(apiuapi_UWorld_ModifyLevel){
+        apiuapi_UWorld_ModifyLevel(&uapi_UWorld_ModifyLevel);
+    }
+
+    auto const apiuapi_UWorld_NotifyAcceptedConnection = (uapi_UWorld_NotifyAcceptedConnectionFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyAcceptedConnection_handler\0"));
+    if(apiuapi_UWorld_NotifyAcceptedConnection){
+        apiuapi_UWorld_NotifyAcceptedConnection(&uapi_UWorld_NotifyAcceptedConnection);
+    }
+
+    auto const apiuapi_UWorld_NotifyAcceptingChannel = (uapi_UWorld_NotifyAcceptingChannelFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyAcceptingChannel_handler\0"));
+    if(apiuapi_UWorld_NotifyAcceptingChannel){
+        apiuapi_UWorld_NotifyAcceptingChannel(&uapi_UWorld_NotifyAcceptingChannel);
+    }
+
+    auto const apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation = (uapi_UWorld_NotifyOfBlueprintDebuggingAssociationFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyOfBlueprintDebuggingAssociation_handler\0"));
+    if(apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation){
+        apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation(&uapi_UWorld_NotifyOfBlueprintDebuggingAssociation);
+    }
+
+    auto const apiuapi_UWorld_PopulateStreamingLevelsToConsider = (uapi_UWorld_PopulateStreamingLevelsToConsiderFn)plugin->GetDllExport(TEXT("set_UWorld_PopulateStreamingLevelsToConsider_handler\0"));
+    if(apiuapi_UWorld_PopulateStreamingLevelsToConsider){
+        apiuapi_UWorld_PopulateStreamingLevelsToConsider(&uapi_UWorld_PopulateStreamingLevelsToConsider);
+    }
+
+    auto const apiuapi_UWorld_PostDuplicate = (uapi_UWorld_PostDuplicateFn)plugin->GetDllExport(TEXT("set_UWorld_PostDuplicate_handler\0"));
+    if(apiuapi_UWorld_PostDuplicate){
+        apiuapi_UWorld_PostDuplicate(&uapi_UWorld_PostDuplicate);
+    }
+
+    auto const apiuapi_UWorld_PostInitializeSubsystems = (uapi_UWorld_PostInitializeSubsystemsFn)plugin->GetDllExport(TEXT("set_UWorld_PostInitializeSubsystems_handler\0"));
+    if(apiuapi_UWorld_PostInitializeSubsystems){
+        apiuapi_UWorld_PostInitializeSubsystems(&uapi_UWorld_PostInitializeSubsystems);
+    }
+
+    auto const apiuapi_UWorld_PostLoad = (uapi_UWorld_PostLoadFn)plugin->GetDllExport(TEXT("set_UWorld_PostLoad_handler\0"));
+    if(apiuapi_UWorld_PostLoad){
+        apiuapi_UWorld_PostLoad(&uapi_UWorld_PostLoad);
+    }
+
+    auto const apiuapi_UWorld_ProcessLevelStreamingVolumes = (uapi_UWorld_ProcessLevelStreamingVolumesFn)plugin->GetDllExport(TEXT("set_UWorld_ProcessLevelStreamingVolumes_handler\0"));
+    if(apiuapi_UWorld_ProcessLevelStreamingVolumes){
+        apiuapi_UWorld_ProcessLevelStreamingVolumes(&uapi_UWorld_ProcessLevelStreamingVolumes);
+    }
+
+    auto const apiuapi_UWorld_PropagateLightingScenarioChange = (uapi_UWorld_PropagateLightingScenarioChangeFn)plugin->GetDllExport(TEXT("set_UWorld_PropagateLightingScenarioChange_handler\0"));
+    if(apiuapi_UWorld_PropagateLightingScenarioChange){
+        apiuapi_UWorld_PropagateLightingScenarioChange(&uapi_UWorld_PropagateLightingScenarioChange);
+    }
+
+    auto const apiuapi_UWorld_RefreshStreamingLevels = (uapi_UWorld_RefreshStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_RefreshStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_RefreshStreamingLevels){
+        apiuapi_UWorld_RefreshStreamingLevels(&uapi_UWorld_RefreshStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_RegisterAutoActivateCamera = (uapi_UWorld_RegisterAutoActivateCameraFn)plugin->GetDllExport(TEXT("set_UWorld_RegisterAutoActivateCamera_handler\0"));
+    if(apiuapi_UWorld_RegisterAutoActivateCamera){
+        apiuapi_UWorld_RegisterAutoActivateCamera(&uapi_UWorld_RegisterAutoActivateCamera);
+    }
+
+    auto const apiuapi_UWorld_ReleasePhysicsScene = (uapi_UWorld_ReleasePhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_ReleasePhysicsScene_handler\0"));
+    if(apiuapi_UWorld_ReleasePhysicsScene){
+        apiuapi_UWorld_ReleasePhysicsScene(&uapi_UWorld_ReleasePhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_RemoveActor = (uapi_UWorld_RemoveActorFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveActor_handler\0"));
+    if(apiuapi_UWorld_RemoveActor){
+        apiuapi_UWorld_RemoveActor(&uapi_UWorld_RemoveActor);
+    }
+
+    auto const apiuapi_UWorld_RemoveController = (uapi_UWorld_RemoveControllerFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveController_handler\0"));
+    if(apiuapi_UWorld_RemoveController){
+        apiuapi_UWorld_RemoveController(&uapi_UWorld_RemoveController);
+    }
+
+    auto const apiuapi_UWorld_RemoveLevel = (uapi_UWorld_RemoveLevelFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveLevel_handler\0"));
+    if(apiuapi_UWorld_RemoveLevel){
+        apiuapi_UWorld_RemoveLevel(&uapi_UWorld_RemoveLevel);
+    }
+
+    auto const apiuapi_UWorld_RemoveNetworkActor = (uapi_UWorld_RemoveNetworkActorFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveNetworkActor_handler\0"));
+    if(apiuapi_UWorld_RemoveNetworkActor){
+        apiuapi_UWorld_RemoveNetworkActor(&uapi_UWorld_RemoveNetworkActor);
+    }
+
+    auto const apiuapi_UWorld_RemovePhysicsVolume = (uapi_UWorld_RemovePhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_RemovePhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_RemovePhysicsVolume){
+        apiuapi_UWorld_RemovePhysicsVolume(&uapi_UWorld_RemovePhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_RemovePostProcessVolume = (uapi_UWorld_RemovePostProcessVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_RemovePostProcessVolume_handler\0"));
+    if(apiuapi_UWorld_RemovePostProcessVolume){
+        apiuapi_UWorld_RemovePostProcessVolume(&uapi_UWorld_RemovePostProcessVolume);
+    }
+
+    auto const apiuapi_UWorld_RemoveStreamingLevel = (uapi_UWorld_RemoveStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_RemoveStreamingLevel){
+        apiuapi_UWorld_RemoveStreamingLevel(&uapi_UWorld_RemoveStreamingLevel);
+    }
+
+    auto const apiuapi_UWorld_RemoveStreamingLevelAt = (uapi_UWorld_RemoveStreamingLevelAtFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveStreamingLevelAt_handler\0"));
+    if(apiuapi_UWorld_RemoveStreamingLevelAt){
+        apiuapi_UWorld_RemoveStreamingLevelAt(&uapi_UWorld_RemoveStreamingLevelAt);
+    }
+
+    auto const apiuapi_UWorld_RenameToPIEWorld = (uapi_UWorld_RenameToPIEWorldFn)plugin->GetDllExport(TEXT("set_UWorld_RenameToPIEWorld_handler\0"));
+    if(apiuapi_UWorld_RenameToPIEWorld){
+        apiuapi_UWorld_RenameToPIEWorld(&uapi_UWorld_RenameToPIEWorld);
+    }
+
+    auto const apiuapi_UWorld_RequiresHitProxies = (uapi_UWorld_RequiresHitProxiesFn)plugin->GetDllExport(TEXT("set_UWorld_RequiresHitProxies_handler\0"));
+    if(apiuapi_UWorld_RequiresHitProxies){
+        apiuapi_UWorld_RequiresHitProxies(&uapi_UWorld_RequiresHitProxies);
+    }
+
+    auto const apiuapi_UWorld_SelectLevel = (uapi_UWorld_SelectLevelFn)plugin->GetDllExport(TEXT("set_UWorld_SelectLevel_handler\0"));
+    if(apiuapi_UWorld_SelectLevel){
+        apiuapi_UWorld_SelectLevel(&uapi_UWorld_SelectLevel);
+    }
+
+    auto const apiuapi_UWorld_SendAllEndOfFrameUpdates = (uapi_UWorld_SendAllEndOfFrameUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_SendAllEndOfFrameUpdates_handler\0"));
+    if(apiuapi_UWorld_SendAllEndOfFrameUpdates){
+        apiuapi_UWorld_SendAllEndOfFrameUpdates(&uapi_UWorld_SendAllEndOfFrameUpdates);
+    }
+
+    auto const apiuapi_UWorld_SetActiveLevelCollection = (uapi_UWorld_SetActiveLevelCollectionFn)plugin->GetDllExport(TEXT("set_UWorld_SetActiveLevelCollection_handler\0"));
+    if(apiuapi_UWorld_SetActiveLevelCollection){
+        apiuapi_UWorld_SetActiveLevelCollection(&uapi_UWorld_SetActiveLevelCollection);
+    }
+
+    auto const apiuapi_UWorld_SetAllowDeferredPhysicsStateCreation = (uapi_UWorld_SetAllowDeferredPhysicsStateCreationFn)plugin->GetDllExport(TEXT("set_UWorld_SetAllowDeferredPhysicsStateCreation_handler\0"));
+    if(apiuapi_UWorld_SetAllowDeferredPhysicsStateCreation){
+        apiuapi_UWorld_SetAllowDeferredPhysicsStateCreation(&uapi_UWorld_SetAllowDeferredPhysicsStateCreation);
+    }
+
+    auto const apiuapi_UWorld_SetCurrentLevel = (uapi_UWorld_SetCurrentLevelFn)plugin->GetDllExport(TEXT("set_UWorld_SetCurrentLevel_handler\0"));
+    if(apiuapi_UWorld_SetCurrentLevel){
+        apiuapi_UWorld_SetCurrentLevel(&uapi_UWorld_SetCurrentLevel);
+    }
+
+    auto const apiuapi_UWorld_SetDemoNetDriver = (uapi_UWorld_SetDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_SetDemoNetDriver_handler\0"));
+    if(apiuapi_UWorld_SetDemoNetDriver){
+        apiuapi_UWorld_SetDemoNetDriver(&uapi_UWorld_SetDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_SetGameInstance = (uapi_UWorld_SetGameInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_SetGameInstance_handler\0"));
+    if(apiuapi_UWorld_SetGameInstance){
+        apiuapi_UWorld_SetGameInstance(&uapi_UWorld_SetGameInstance);
+    }
+
+    auto const apiuapi_UWorld_SetGameState = (uapi_UWorld_SetGameStateFn)plugin->GetDllExport(TEXT("set_UWorld_SetGameState_handler\0"));
+    if(apiuapi_UWorld_SetGameState){
+        apiuapi_UWorld_SetGameState(&uapi_UWorld_SetGameState);
+    }
+
+    auto const apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt = (uapi_UWorld_SetMapNeedsLightingFullyRebuiltFn)plugin->GetDllExport(TEXT("set_UWorld_SetMapNeedsLightingFullyRebuilt_handler\0"));
+    if(apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt){
+        apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt(&uapi_UWorld_SetMapNeedsLightingFullyRebuilt);
+    }
+
+    auto const apiuapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate = (uapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateFn)plugin->GetDllExport(TEXT("set_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate_handler\0"));
+    if(apiuapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate){
+        apiuapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate(&uapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdate);
+    }
+
+    auto const apiuapi_UWorld_SetNavigationSystem = (uapi_UWorld_SetNavigationSystemFn)plugin->GetDllExport(TEXT("set_UWorld_SetNavigationSystem_handler\0"));
+    if(apiuapi_UWorld_SetNavigationSystem){
+        apiuapi_UWorld_SetNavigationSystem(&uapi_UWorld_SetNavigationSystem);
+    }
+
+    auto const apiuapi_UWorld_SetNetDriver = (uapi_UWorld_SetNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_SetNetDriver_handler\0"));
+    if(apiuapi_UWorld_SetNetDriver){
+        apiuapi_UWorld_SetNetDriver(&uapi_UWorld_SetNetDriver);
+    }
+
+    auto const apiuapi_UWorld_SetPhysicsScene = (uapi_UWorld_SetPhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_SetPhysicsScene_handler\0"));
+    if(apiuapi_UWorld_SetPhysicsScene){
+        apiuapi_UWorld_SetPhysicsScene(&uapi_UWorld_SetPhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_SetSeamlessTravelMidpointPause = (uapi_UWorld_SetSeamlessTravelMidpointPauseFn)plugin->GetDllExport(TEXT("set_UWorld_SetSeamlessTravelMidpointPause_handler\0"));
+    if(apiuapi_UWorld_SetSeamlessTravelMidpointPause){
+        apiuapi_UWorld_SetSeamlessTravelMidpointPause(&uapi_UWorld_SetSeamlessTravelMidpointPause);
+    }
+
+    auto const apiuapi_UWorld_SetShouldForceUnloadStreamingLevels = (uapi_UWorld_SetShouldForceUnloadStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_SetShouldForceUnloadStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_SetShouldForceUnloadStreamingLevels){
+        apiuapi_UWorld_SetShouldForceUnloadStreamingLevels(&uapi_UWorld_SetShouldForceUnloadStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_SetShouldForceVisibleStreamingLevels = (uapi_UWorld_SetShouldForceVisibleStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_SetShouldForceVisibleStreamingLevels_handler\0"));
+    if(apiuapi_UWorld_SetShouldForceVisibleStreamingLevels){
+        apiuapi_UWorld_SetShouldForceVisibleStreamingLevels(&uapi_UWorld_SetShouldForceVisibleStreamingLevels);
+    }
+
+    auto const apiuapi_UWorld_SetShouldTick = (uapi_UWorld_SetShouldTickFn)plugin->GetDllExport(TEXT("set_UWorld_SetShouldTick_handler\0"));
+    if(apiuapi_UWorld_SetShouldTick){
+        apiuapi_UWorld_SetShouldTick(&uapi_UWorld_SetShouldTick);
+    }
+
+    auto const apiuapi_UWorld_SetWorldDataLayers = (uapi_UWorld_SetWorldDataLayersFn)plugin->GetDllExport(TEXT("set_UWorld_SetWorldDataLayers_handler\0"));
+    if(apiuapi_UWorld_SetWorldDataLayers){
+        apiuapi_UWorld_SetWorldDataLayers(&uapi_UWorld_SetWorldDataLayers);
+    }
+
+    auto const apiuapi_UWorld_SetupParameterCollectionInstances = (uapi_UWorld_SetupParameterCollectionInstancesFn)plugin->GetDllExport(TEXT("set_UWorld_SetupParameterCollectionInstances_handler\0"));
+    if(apiuapi_UWorld_SetupParameterCollectionInstances){
+        apiuapi_UWorld_SetupParameterCollectionInstances(&uapi_UWorld_SetupParameterCollectionInstances);
+    }
+
+    auto const apiuapi_UWorld_SetupPhysicsTickFunctions = (uapi_UWorld_SetupPhysicsTickFunctionsFn)plugin->GetDllExport(TEXT("set_UWorld_SetupPhysicsTickFunctions_handler\0"));
+    if(apiuapi_UWorld_SetupPhysicsTickFunctions){
+        apiuapi_UWorld_SetupPhysicsTickFunctions(&uapi_UWorld_SetupPhysicsTickFunctions);
+    }
+
+    auto const apiuapi_UWorld_ShouldTick = (uapi_UWorld_ShouldTickFn)plugin->GetDllExport(TEXT("set_UWorld_ShouldTick_handler\0"));
+    if(apiuapi_UWorld_ShouldTick){
+        apiuapi_UWorld_ShouldTick(&uapi_UWorld_ShouldTick);
+    }
+
+    auto const apiuapi_UWorld_ShrinkLevel = (uapi_UWorld_ShrinkLevelFn)plugin->GetDllExport(TEXT("set_UWorld_ShrinkLevel_handler\0"));
+    if(apiuapi_UWorld_ShrinkLevel){
+        apiuapi_UWorld_ShrinkLevel(&uapi_UWorld_ShrinkLevel);
+    }
+
+    auto const apiuapi_UWorld_SpawnBrush = (uapi_UWorld_SpawnBrushFn)plugin->GetDllExport(TEXT("set_UWorld_SpawnBrush_handler\0"));
+    if(apiuapi_UWorld_SpawnBrush){
+        apiuapi_UWorld_SpawnBrush(&uapi_UWorld_SpawnBrush);
+    }
+
+    auto const apiuapi_UWorld_StartPhysicsSim = (uapi_UWorld_StartPhysicsSimFn)plugin->GetDllExport(TEXT("set_UWorld_StartPhysicsSim_handler\0"));
+    if(apiuapi_UWorld_StartPhysicsSim){
+        apiuapi_UWorld_StartPhysicsSim(&uapi_UWorld_StartPhysicsSim);
+    }
+
+    auto const apiuapi_UWorld_StoreIrisAndClearReferences = (uapi_UWorld_StoreIrisAndClearReferencesFn)plugin->GetDllExport(TEXT("set_UWorld_StoreIrisAndClearReferences_handler\0"));
+    if(apiuapi_UWorld_StoreIrisAndClearReferences){
+        apiuapi_UWorld_StoreIrisAndClearReferences(&uapi_UWorld_StoreIrisAndClearReferences);
+    }
+
+    auto const apiuapi_UWorld_SupportsMakingInvisibleTransactionRequests = (uapi_UWorld_SupportsMakingInvisibleTransactionRequestsFn)plugin->GetDllExport(TEXT("set_UWorld_SupportsMakingInvisibleTransactionRequests_handler\0"));
+    if(apiuapi_UWorld_SupportsMakingInvisibleTransactionRequests){
+        apiuapi_UWorld_SupportsMakingInvisibleTransactionRequests(&uapi_UWorld_SupportsMakingInvisibleTransactionRequests);
+    }
+
+    auto const apiuapi_UWorld_SupportsMakingVisibleTransactionRequests = (uapi_UWorld_SupportsMakingVisibleTransactionRequestsFn)plugin->GetDllExport(TEXT("set_UWorld_SupportsMakingVisibleTransactionRequests_handler\0"));
+    if(apiuapi_UWorld_SupportsMakingVisibleTransactionRequests){
+        apiuapi_UWorld_SupportsMakingVisibleTransactionRequests(&uapi_UWorld_SupportsMakingVisibleTransactionRequests);
+    }
+
+    auto const apiuapi_UWorld_TickNetClient = (uapi_UWorld_TickNetClientFn)plugin->GetDllExport(TEXT("set_UWorld_TickNetClient_handler\0"));
+    if(apiuapi_UWorld_TickNetClient){
+        apiuapi_UWorld_TickNetClient(&uapi_UWorld_TickNetClient);
+    }
+
+    auto const apiuapi_UWorld_TimeSince = (uapi_UWorld_TimeSinceFn)plugin->GetDllExport(TEXT("set_UWorld_TimeSince_handler\0"));
+    if(apiuapi_UWorld_TimeSince){
+        apiuapi_UWorld_TimeSince(&uapi_UWorld_TimeSince);
+    }
+
+    auto const apiuapi_UWorld_TransferBlueprintDebugReferences = (uapi_UWorld_TransferBlueprintDebugReferencesFn)plugin->GetDllExport(TEXT("set_UWorld_TransferBlueprintDebugReferences_handler\0"));
+    if(apiuapi_UWorld_TransferBlueprintDebugReferences){
+        apiuapi_UWorld_TransferBlueprintDebugReferences(&uapi_UWorld_TransferBlueprintDebugReferences);
+    }
+
+    auto const apiuapi_UWorld_TriggerStreamingDataRebuild = (uapi_UWorld_TriggerStreamingDataRebuildFn)plugin->GetDllExport(TEXT("set_UWorld_TriggerStreamingDataRebuild_handler\0"));
+    if(apiuapi_UWorld_TriggerStreamingDataRebuild){
+        apiuapi_UWorld_TriggerStreamingDataRebuild(&uapi_UWorld_TriggerStreamingDataRebuild);
+    }
+
+    auto const apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState = (uapi_UWorld_UpdateActorComponentEndOfFrameUpdateStateFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateActorComponentEndOfFrameUpdateState_handler\0"));
+    if(apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState){
+        apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState(&uapi_UWorld_UpdateActorComponentEndOfFrameUpdateState);
+    }
+
+    auto const apiuapi_UWorld_UpdateAllSkyCaptures = (uapi_UWorld_UpdateAllSkyCapturesFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateAllSkyCaptures_handler\0"));
+    if(apiuapi_UWorld_UpdateAllSkyCaptures){
+        apiuapi_UWorld_UpdateAllSkyCaptures(&uapi_UWorld_UpdateAllSkyCaptures);
+    }
+
+    auto const apiuapi_UWorld_UpdateConstraintActors = (uapi_UWorld_UpdateConstraintActorsFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateConstraintActors_handler\0"));
+    if(apiuapi_UWorld_UpdateConstraintActors){
+        apiuapi_UWorld_UpdateConstraintActors(&uapi_UWorld_UpdateConstraintActors);
+    }
+
+    auto const apiuapi_UWorld_UpdateCullDistanceVolumes = (uapi_UWorld_UpdateCullDistanceVolumesFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateCullDistanceVolumes_handler\0"));
+    if(apiuapi_UWorld_UpdateCullDistanceVolumes){
+        apiuapi_UWorld_UpdateCullDistanceVolumes(&uapi_UWorld_UpdateCullDistanceVolumes);
+    }
+
+    auto const apiuapi_UWorld_UpdateLevelStreaming = (uapi_UWorld_UpdateLevelStreamingFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateLevelStreaming_handler\0"));
+    if(apiuapi_UWorld_UpdateLevelStreaming){
+        apiuapi_UWorld_UpdateLevelStreaming(&uapi_UWorld_UpdateLevelStreaming);
+    }
+
+    auto const apiuapi_UWorld_UpdateParameterCollectionInstances = (uapi_UWorld_UpdateParameterCollectionInstancesFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateParameterCollectionInstances_handler\0"));
+    if(apiuapi_UWorld_UpdateParameterCollectionInstances){
+        apiuapi_UWorld_UpdateParameterCollectionInstances(&uapi_UWorld_UpdateParameterCollectionInstances);
+    }
+
+    auto const apiuapi_UWorld_UpdateStreamingLevelPriority = (uapi_UWorld_UpdateStreamingLevelPriorityFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateStreamingLevelPriority_handler\0"));
+    if(apiuapi_UWorld_UpdateStreamingLevelPriority){
+        apiuapi_UWorld_UpdateStreamingLevelPriority(&uapi_UWorld_UpdateStreamingLevelPriority);
+    }
+
+    auto const apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered = (uapi_UWorld_UpdateStreamingLevelShouldBeConsideredFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateStreamingLevelShouldBeConsidered_handler\0"));
+    if(apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered){
+        apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered(&uapi_UWorld_UpdateStreamingLevelShouldBeConsidered);
+    }
+
+    auto const apiuapi_UWorld_UpdateWorldComponents = (uapi_UWorld_UpdateWorldComponentsFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateWorldComponents_handler\0"));
+    if(apiuapi_UWorld_UpdateWorldComponents){
+        apiuapi_UWorld_UpdateWorldComponents(&uapi_UWorld_UpdateWorldComponents);
+    }
+
+    auto const apiuapi_UWorld_UsesGameHiddenFlags = (uapi_UWorld_UsesGameHiddenFlagsFn)plugin->GetDllExport(TEXT("set_UWorld_UsesGameHiddenFlags_handler\0"));
+    if(apiuapi_UWorld_UsesGameHiddenFlags){
+        apiuapi_UWorld_UsesGameHiddenFlags(&uapi_UWorld_UsesGameHiddenFlags);
+    }
+
+    auto const apiuapi_UWorld_WelcomePlayer = (uapi_UWorld_WelcomePlayerFn)plugin->GetDllExport(TEXT("set_UWorld_WelcomePlayer_handler\0"));
+    if(apiuapi_UWorld_WelcomePlayer){
+        apiuapi_UWorld_WelcomePlayer(&uapi_UWorld_WelcomePlayer);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddAngularImpulseInDegrees = (uapi_UPrimitiveComponent_AddAngularImpulseInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddAngularImpulseInDegrees_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddAngularImpulseInDegrees){
+        apiuapi_UPrimitiveComponent_AddAngularImpulseInDegrees(&uapi_UPrimitiveComponent_AddAngularImpulseInDegrees);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddAngularImpulseInRadians = (uapi_UPrimitiveComponent_AddAngularImpulseInRadiansFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddAngularImpulseInRadians_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddAngularImpulseInRadians){
+        apiuapi_UPrimitiveComponent_AddAngularImpulseInRadians(&uapi_UPrimitiveComponent_AddAngularImpulseInRadians);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddForce = (uapi_UPrimitiveComponent_AddForceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddForce_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddForce){
+        apiuapi_UPrimitiveComponent_AddForce(&uapi_UPrimitiveComponent_AddForce);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddForceAtLocation = (uapi_UPrimitiveComponent_AddForceAtLocationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddForceAtLocation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddForceAtLocation){
+        apiuapi_UPrimitiveComponent_AddForceAtLocation(&uapi_UPrimitiveComponent_AddForceAtLocation);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddForceAtLocationLocal = (uapi_UPrimitiveComponent_AddForceAtLocationLocalFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddForceAtLocationLocal_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddForceAtLocationLocal){
+        apiuapi_UPrimitiveComponent_AddForceAtLocationLocal(&uapi_UPrimitiveComponent_AddForceAtLocationLocal);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddImpulse = (uapi_UPrimitiveComponent_AddImpulseFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddImpulse_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddImpulse){
+        apiuapi_UPrimitiveComponent_AddImpulse(&uapi_UPrimitiveComponent_AddImpulse);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddImpulseAtLocation = (uapi_UPrimitiveComponent_AddImpulseAtLocationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddImpulseAtLocation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddImpulseAtLocation){
+        apiuapi_UPrimitiveComponent_AddImpulseAtLocation(&uapi_UPrimitiveComponent_AddImpulseAtLocation);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddTorqueInDegrees = (uapi_UPrimitiveComponent_AddTorqueInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddTorqueInDegrees_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddTorqueInDegrees){
+        apiuapi_UPrimitiveComponent_AddTorqueInDegrees(&uapi_UPrimitiveComponent_AddTorqueInDegrees);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddTorqueInRadians = (uapi_UPrimitiveComponent_AddTorqueInRadiansFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddTorqueInRadians_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddTorqueInRadians){
+        apiuapi_UPrimitiveComponent_AddTorqueInRadians(&uapi_UPrimitiveComponent_AddTorqueInRadians);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation = (uapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation){
+        apiuapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation(&uapi_UPrimitiveComponent_AddVelocityChangeImpulseAtLocation);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_BeginDestroy = (uapi_UPrimitiveComponent_BeginDestroyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_BeginDestroy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_BeginDestroy){
+        apiuapi_UPrimitiveComponent_BeginDestroy(&uapi_UPrimitiveComponent_BeginDestroy);
+    }
+
     auto const apiuapi_UPrimitiveComponent_BeginPlay = (uapi_UPrimitiveComponent_BeginPlayFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_BeginPlay_handler\0"));
     if(apiuapi_UPrimitiveComponent_BeginPlay){
         apiuapi_UPrimitiveComponent_BeginPlay(&uapi_UPrimitiveComponent_BeginPlay);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CalculateMass = (uapi_UPrimitiveComponent_CalculateMassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CalculateMass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CalculateMass){
+        apiuapi_UPrimitiveComponent_CalculateMass(&uapi_UPrimitiveComponent_CalculateMass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CanCharacterStepUp = (uapi_UPrimitiveComponent_CanCharacterStepUpFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanCharacterStepUp_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanCharacterStepUp){
+        apiuapi_UPrimitiveComponent_CanCharacterStepUp(&uapi_UPrimitiveComponent_CanCharacterStepUp);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CanEditChange = (uapi_UPrimitiveComponent_CanEditChangeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanEditChange_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanEditChange){
+        apiuapi_UPrimitiveComponent_CanEditChange(&uapi_UPrimitiveComponent_CanEditChange);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CanEditSimulatePhysics = (uapi_UPrimitiveComponent_CanEditSimulatePhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanEditSimulatePhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanEditSimulatePhysics){
+        apiuapi_UPrimitiveComponent_CanEditSimulatePhysics(&uapi_UPrimitiveComponent_CanEditSimulatePhysics);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo = (uapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo){
+        apiuapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo(&uapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfo);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CheckForErrors = (uapi_UPrimitiveComponent_CheckForErrorsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CheckForErrors_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CheckForErrors){
+        apiuapi_UPrimitiveComponent_CheckForErrors(&uapi_UPrimitiveComponent_CheckForErrors);
     }
 
     auto const apiuapi_UPrimitiveComponent_ClearMoveIgnoreActors = (uapi_UPrimitiveComponent_ClearMoveIgnoreActorsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ClearMoveIgnoreActors_handler\0"));
@@ -15312,6 +18580,81 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_ClearMoveIgnoreComponents(&uapi_UPrimitiveComponent_ClearMoveIgnoreComponents);
     }
 
+    auto const apiuapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData = (uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData){
+        apiuapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData(&uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent = (uapi_UPrimitiveComponent_CreateRenderState_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CreateRenderState_Concurrent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent){
+        apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent(&uapi_UPrimitiveComponent_CreateRenderState_Concurrent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CreateSceneProxy = (uapi_UPrimitiveComponent_CreateSceneProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CreateSceneProxy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CreateSceneProxy){
+        apiuapi_UPrimitiveComponent_CreateSceneProxy(&uapi_UPrimitiveComponent_CreateSceneProxy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent = (uapi_UPrimitiveComponent_DestroyRenderState_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_DestroyRenderState_Concurrent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent){
+        apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent(&uapi_UPrimitiveComponent_DestroyRenderState_Concurrent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_DispatchMouseOverEvents = (uapi_UPrimitiveComponent_DispatchMouseOverEventsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_DispatchMouseOverEvents_handler\0"));
+    if(apiuapi_UPrimitiveComponent_DispatchMouseOverEvents){
+        apiuapi_UPrimitiveComponent_DispatchMouseOverEvents(&uapi_UPrimitiveComponent_DispatchMouseOverEvents);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_FinishDestroy = (uapi_UPrimitiveComponent_FinishDestroyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_FinishDestroy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_FinishDestroy){
+        apiuapi_UPrimitiveComponent_FinishDestroy(&uapi_UPrimitiveComponent_FinishDestroy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetAngularDamping = (uapi_UPrimitiveComponent_GetAngularDampingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetAngularDamping_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetAngularDamping){
+        apiuapi_UPrimitiveComponent_GetAngularDamping(&uapi_UPrimitiveComponent_GetAngularDamping);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetBodyInstance = (uapi_UPrimitiveComponent_GetBodyInstanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetBodyInstance_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetBodyInstance){
+        apiuapi_UPrimitiveComponent_GetBodyInstance(&uapi_UPrimitiveComponent_GetBodyInstance);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetBodySetup = (uapi_UPrimitiveComponent_GetBodySetupFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetBodySetup_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetBodySetup){
+        apiuapi_UPrimitiveComponent_GetBodySetup(&uapi_UPrimitiveComponent_GetBodySetup);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetCenterOfMass = (uapi_UPrimitiveComponent_GetCenterOfMassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCenterOfMass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetCenterOfMass){
+        apiuapi_UPrimitiveComponent_GetCenterOfMass(&uapi_UPrimitiveComponent_GetCenterOfMass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetCollisionObjectType = (uapi_UPrimitiveComponent_GetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionObjectType_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetCollisionObjectType){
+        apiuapi_UPrimitiveComponent_GetCollisionObjectType(&uapi_UPrimitiveComponent_GetCollisionObjectType);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetCollisionProfileName = (uapi_UPrimitiveComponent_GetCollisionProfileNameFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionProfileName_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetCollisionProfileName){
+        apiuapi_UPrimitiveComponent_GetCollisionProfileName(&uapi_UPrimitiveComponent_GetCollisionProfileName);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetCollisionShape = (uapi_UPrimitiveComponent_GetCollisionShapeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionShape_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetCollisionShape){
+        apiuapi_UPrimitiveComponent_GetCollisionShape(&uapi_UPrimitiveComponent_GetCollisionShape);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance = (uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetComponentTransformFromBodyInstance_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance){
+        apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance(&uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetComponentVelocity = (uapi_UPrimitiveComponent_GetComponentVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetComponentVelocity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetComponentVelocity){
+        apiuapi_UPrimitiveComponent_GetComponentVelocity(&uapi_UPrimitiveComponent_GetComponentVelocity);
+    }
+
     auto const apiuapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter = (uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameterFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter_handler\0"));
     if(apiuapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter){
         apiuapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter(&uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForScalarParameter);
@@ -15322,9 +18665,39 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForVectorParameter(&uapi_UPrimitiveComponent_GetCustomPrimitiveDataIndexForVectorParameter);
     }
 
+    auto const apiuapi_UPrimitiveComponent_GetDiffuseBoost = (uapi_UPrimitiveComponent_GetDiffuseBoostFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetDiffuseBoost_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetDiffuseBoost){
+        apiuapi_UPrimitiveComponent_GetDiffuseBoost(&uapi_UPrimitiveComponent_GetDiffuseBoost);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetEditorMaterial = (uapi_UPrimitiveComponent_GetEditorMaterialFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetEditorMaterial_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetEditorMaterial){
+        apiuapi_UPrimitiveComponent_GetEditorMaterial(&uapi_UPrimitiveComponent_GetEditorMaterial);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetEmissiveBoost = (uapi_UPrimitiveComponent_GetEmissiveBoostFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetEmissiveBoost_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetEmissiveBoost){
+        apiuapi_UPrimitiveComponent_GetEmissiveBoost(&uapi_UPrimitiveComponent_GetEmissiveBoost);
+    }
+
     auto const apiuapi_UPrimitiveComponent_GetGenerateOverlapEvents = (uapi_UPrimitiveComponent_GetGenerateOverlapEventsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetGenerateOverlapEvents_handler\0"));
     if(apiuapi_UPrimitiveComponent_GetGenerateOverlapEvents){
         apiuapi_UPrimitiveComponent_GetGenerateOverlapEvents(&uapi_UPrimitiveComponent_GetGenerateOverlapEvents);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetHiddenEditorViews = (uapi_UPrimitiveComponent_GetHiddenEditorViewsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetHiddenEditorViews_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetHiddenEditorViews){
+        apiuapi_UPrimitiveComponent_GetHiddenEditorViews(&uapi_UPrimitiveComponent_GetHiddenEditorViews);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetInertiaTensor = (uapi_UPrimitiveComponent_GetInertiaTensorFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetInertiaTensor_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetInertiaTensor){
+        apiuapi_UPrimitiveComponent_GetInertiaTensor(&uapi_UPrimitiveComponent_GetInertiaTensor);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetLODParentPrimitive = (uapi_UPrimitiveComponent_GetLODParentPrimitiveFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLODParentPrimitive_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLODParentPrimitive){
+        apiuapi_UPrimitiveComponent_GetLODParentPrimitive(&uapi_UPrimitiveComponent_GetLODParentPrimitive);
     }
 
     auto const apiuapi_UPrimitiveComponent_GetLastRenderTime = (uapi_UPrimitiveComponent_GetLastRenderTimeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLastRenderTime_handler\0"));
@@ -15337,9 +18710,99 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_GetLastRenderTimeOnScreen(&uapi_UPrimitiveComponent_GetLastRenderTimeOnScreen);
     }
 
+    auto const apiuapi_UPrimitiveComponent_GetLevelInstanceEditingState = (uapi_UPrimitiveComponent_GetLevelInstanceEditingStateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLevelInstanceEditingState_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLevelInstanceEditingState){
+        apiuapi_UPrimitiveComponent_GetLevelInstanceEditingState(&uapi_UPrimitiveComponent_GetLevelInstanceEditingState);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage = (uapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsageFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage){
+        apiuapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage(&uapi_UPrimitiveComponent_GetLightAndShadowMapMemoryUsage);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetLightMapResolution = (uapi_UPrimitiveComponent_GetLightMapResolutionFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLightMapResolution_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLightMapResolution){
+        apiuapi_UPrimitiveComponent_GetLightMapResolution(&uapi_UPrimitiveComponent_GetLightMapResolution);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetLightingAttachmentRoot = (uapi_UPrimitiveComponent_GetLightingAttachmentRootFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLightingAttachmentRoot_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLightingAttachmentRoot){
+        apiuapi_UPrimitiveComponent_GetLightingAttachmentRoot(&uapi_UPrimitiveComponent_GetLightingAttachmentRoot);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetLinearDamping = (uapi_UPrimitiveComponent_GetLinearDampingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetLinearDamping_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetLinearDamping){
+        apiuapi_UPrimitiveComponent_GetLinearDamping(&uapi_UPrimitiveComponent_GetLinearDamping);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetMass = (uapi_UPrimitiveComponent_GetMassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetMass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetMass){
+        apiuapi_UPrimitiveComponent_GetMass(&uapi_UPrimitiveComponent_GetMass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetMassScale = (uapi_UPrimitiveComponent_GetMassScaleFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetMassScale_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetMassScale){
+        apiuapi_UPrimitiveComponent_GetMassScale(&uapi_UPrimitiveComponent_GetMassScale);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetMaterial = (uapi_UPrimitiveComponent_GetMaterialFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetMaterial_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetMaterial){
+        apiuapi_UPrimitiveComponent_GetMaterial(&uapi_UPrimitiveComponent_GetMaterial);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex = (uapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndexFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex){
+        apiuapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex(&uapi_UPrimitiveComponent_GetMaterialFromCollisionFaceIndex);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetNumMaterials = (uapi_UPrimitiveComponent_GetNumMaterialsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetNumMaterials_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetNumMaterials){
+        apiuapi_UPrimitiveComponent_GetNumMaterials(&uapi_UPrimitiveComponent_GetNumMaterials);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions = (uapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractionsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions){
+        apiuapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions(&uapi_UPrimitiveComponent_GetNumUncachedStaticLightingInteractions);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees = (uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees){
+        apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees(&uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInDegrees);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians = (uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadiansFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians){
+        apiuapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians(&uapi_UPrimitiveComponent_GetPhysicsAngularVelocityInRadians);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocity = (uapi_UPrimitiveComponent_GetPhysicsLinearVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetPhysicsLinearVelocity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocity){
+        apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocity(&uapi_UPrimitiveComponent_GetPhysicsLinearVelocity);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint = (uapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPointFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint){
+        apiuapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint(&uapi_UPrimitiveComponent_GetPhysicsLinearVelocityAtPoint);
+    }
+
     auto const apiuapi_UPrimitiveComponent_GetRayTracingGroupId = (uapi_UPrimitiveComponent_GetRayTracingGroupIdFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetRayTracingGroupId_handler\0"));
     if(apiuapi_UPrimitiveComponent_GetRayTracingGroupId){
         apiuapi_UPrimitiveComponent_GetRayTracingGroupId(&uapi_UPrimitiveComponent_GetRayTracingGroupId);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetShadowIndirectOnly = (uapi_UPrimitiveComponent_GetShadowIndirectOnlyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetShadowIndirectOnly_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetShadowIndirectOnly){
+        apiuapi_UPrimitiveComponent_GetShadowIndirectOnly(&uapi_UPrimitiveComponent_GetShadowIndirectOnly);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetStaticLightMapResolution = (uapi_UPrimitiveComponent_GetStaticLightMapResolutionFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetStaticLightMapResolution_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetStaticLightMapResolution){
+        apiuapi_UPrimitiveComponent_GetStaticLightMapResolution(&uapi_UPrimitiveComponent_GetStaticLightMapResolution);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetStreamingScale = (uapi_UPrimitiveComponent_GetStreamingScaleFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetStreamingScale_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetStreamingScale){
+        apiuapi_UPrimitiveComponent_GetStreamingScale(&uapi_UPrimitiveComponent_GetStreamingScale);
     }
 
     auto const apiuapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistance = (uapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistance_handler\0"));
@@ -15347,9 +18810,29 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistance(&uapi_UPrimitiveComponent_GetVirtualTextureMainPassMaxDrawDistance);
     }
 
+    auto const apiuapi_UPrimitiveComponent_HasStaticLighting = (uapi_UPrimitiveComponent_HasStaticLightingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_HasStaticLighting_handler\0"));
+    if(apiuapi_UPrimitiveComponent_HasStaticLighting){
+        apiuapi_UPrimitiveComponent_HasStaticLighting(&uapi_UPrimitiveComponent_HasStaticLighting);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_HasValidPhysicsState = (uapi_UPrimitiveComponent_HasValidPhysicsStateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_HasValidPhysicsState_handler\0"));
+    if(apiuapi_UPrimitiveComponent_HasValidPhysicsState){
+        apiuapi_UPrimitiveComponent_HasValidPhysicsState(&uapi_UPrimitiveComponent_HasValidPhysicsState);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_HasValidSettingsForStaticLighting = (uapi_UPrimitiveComponent_HasValidSettingsForStaticLightingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_HasValidSettingsForStaticLighting_handler\0"));
+    if(apiuapi_UPrimitiveComponent_HasValidSettingsForStaticLighting){
+        apiuapi_UPrimitiveComponent_HasValidSettingsForStaticLighting(&uapi_UPrimitiveComponent_HasValidSettingsForStaticLighting);
+    }
+
     auto const apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving = (uapi_UPrimitiveComponent_IgnoreActorWhenMovingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreActorWhenMoving_handler\0"));
     if(apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving){
         apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving(&uapi_UPrimitiveComponent_IgnoreActorWhenMoving);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus = (uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocusFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreBoundsForEditorFocus_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus){
+        apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus(&uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus);
     }
 
     auto const apiuapi_UPrimitiveComponent_IgnoreComponentWhenMoving = (uapi_UPrimitiveComponent_IgnoreComponentWhenMovingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreComponentWhenMoving_handler\0"));
@@ -15357,14 +18840,294 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_IgnoreComponentWhenMoving(&uapi_UPrimitiveComponent_IgnoreComponentWhenMoving);
     }
 
+    auto const apiuapi_UPrimitiveComponent_InvalidateLightingCacheDetailed = (uapi_UPrimitiveComponent_InvalidateLightingCacheDetailedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_InvalidateLightingCacheDetailed_handler\0"));
+    if(apiuapi_UPrimitiveComponent_InvalidateLightingCacheDetailed){
+        apiuapi_UPrimitiveComponent_InvalidateLightingCacheDetailed(&uapi_UPrimitiveComponent_InvalidateLightingCacheDetailed);
+    }
+
     auto const apiuapi_UPrimitiveComponent_InvalidateLumenSurfaceCache = (uapi_UPrimitiveComponent_InvalidateLumenSurfaceCacheFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_InvalidateLumenSurfaceCache_handler\0"));
     if(apiuapi_UPrimitiveComponent_InvalidateLumenSurfaceCache){
         apiuapi_UPrimitiveComponent_InvalidateLumenSurfaceCache(&uapi_UPrimitiveComponent_InvalidateLumenSurfaceCache);
     }
 
+    auto const apiuapi_UPrimitiveComponent_IsAnyRigidBodyAwake = (uapi_UPrimitiveComponent_IsAnyRigidBodyAwakeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsAnyRigidBodyAwake_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsAnyRigidBodyAwake){
+        apiuapi_UPrimitiveComponent_IsAnyRigidBodyAwake(&uapi_UPrimitiveComponent_IsAnyRigidBodyAwake);
+    }
+
     auto const apiuapi_UPrimitiveComponent_IsAttachedToStreamingManager = (uapi_UPrimitiveComponent_IsAttachedToStreamingManagerFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsAttachedToStreamingManager_handler\0"));
     if(apiuapi_UPrimitiveComponent_IsAttachedToStreamingManager){
         apiuapi_UPrimitiveComponent_IsAttachedToStreamingManager(&uapi_UPrimitiveComponent_IsAttachedToStreamingManager);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsCompiling = (uapi_UPrimitiveComponent_IsCompilingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsCompiling_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsCompiling){
+        apiuapi_UPrimitiveComponent_IsCompiling(&uapi_UPrimitiveComponent_IsCompiling);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsComponentIndividuallySelected = (uapi_UPrimitiveComponent_IsComponentIndividuallySelectedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsComponentIndividuallySelected_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsComponentIndividuallySelected){
+        apiuapi_UPrimitiveComponent_IsComponentIndividuallySelected(&uapi_UPrimitiveComponent_IsComponentIndividuallySelected);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsEditorOnly = (uapi_UPrimitiveComponent_IsEditorOnlyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsEditorOnly_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsEditorOnly){
+        apiuapi_UPrimitiveComponent_IsEditorOnly(&uapi_UPrimitiveComponent_IsEditorOnly);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsGravityEnabled = (uapi_UPrimitiveComponent_IsGravityEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsGravityEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsGravityEnabled){
+        apiuapi_UPrimitiveComponent_IsGravityEnabled(&uapi_UPrimitiveComponent_IsGravityEnabled);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsNavigationRelevant = (uapi_UPrimitiveComponent_IsNavigationRelevantFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsNavigationRelevant_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsNavigationRelevant){
+        apiuapi_UPrimitiveComponent_IsNavigationRelevant(&uapi_UPrimitiveComponent_IsNavigationRelevant);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsOverlappingActor = (uapi_UPrimitiveComponent_IsOverlappingActorFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsOverlappingActor_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsOverlappingActor){
+        apiuapi_UPrimitiveComponent_IsOverlappingActor(&uapi_UPrimitiveComponent_IsOverlappingActor);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsOverlappingComponent = (uapi_UPrimitiveComponent_IsOverlappingComponentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsOverlappingComponent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsOverlappingComponent){
+        apiuapi_UPrimitiveComponent_IsOverlappingComponent(&uapi_UPrimitiveComponent_IsOverlappingComponent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsReadyForFinishDestroy = (uapi_UPrimitiveComponent_IsReadyForFinishDestroyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsReadyForFinishDestroy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsReadyForFinishDestroy){
+        apiuapi_UPrimitiveComponent_IsReadyForFinishDestroy(&uapi_UPrimitiveComponent_IsReadyForFinishDestroy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsSimulatingPhysics = (uapi_UPrimitiveComponent_IsSimulatingPhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsSimulatingPhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsSimulatingPhysics){
+        apiuapi_UPrimitiveComponent_IsSimulatingPhysics(&uapi_UPrimitiveComponent_IsSimulatingPhysics);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsWelded = (uapi_UPrimitiveComponent_IsWeldedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsWelded_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsWelded){
+        apiuapi_UPrimitiveComponent_IsWelded(&uapi_UPrimitiveComponent_IsWelded);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsWorldGeometry = (uapi_UPrimitiveComponent_IsWorldGeometryFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsWorldGeometry_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsWorldGeometry){
+        apiuapi_UPrimitiveComponent_IsWorldGeometry(&uapi_UPrimitiveComponent_IsWorldGeometry);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsZeroExtent = (uapi_UPrimitiveComponent_IsZeroExtentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsZeroExtent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsZeroExtent){
+        apiuapi_UPrimitiveComponent_IsZeroExtent(&uapi_UPrimitiveComponent_IsZeroExtent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_K2_IsCollisionEnabled = (uapi_UPrimitiveComponent_K2_IsCollisionEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_K2_IsCollisionEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_K2_IsCollisionEnabled){
+        apiuapi_UPrimitiveComponent_K2_IsCollisionEnabled(&uapi_UPrimitiveComponent_K2_IsCollisionEnabled);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled = (uapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled){
+        apiuapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled(&uapi_UPrimitiveComponent_K2_IsPhysicsCollisionEnabled);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_K2_IsQueryCollisionEnabled = (uapi_UPrimitiveComponent_K2_IsQueryCollisionEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_K2_IsQueryCollisionEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_K2_IsQueryCollisionEnabled){
+        apiuapi_UPrimitiveComponent_K2_IsQueryCollisionEnabled(&uapi_UPrimitiveComponent_K2_IsQueryCollisionEnabled);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_NeedsLoadForClient = (uapi_UPrimitiveComponent_NeedsLoadForClientFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_NeedsLoadForClient_handler\0"));
+    if(apiuapi_UPrimitiveComponent_NeedsLoadForClient){
+        apiuapi_UPrimitiveComponent_NeedsLoadForClient(&uapi_UPrimitiveComponent_NeedsLoadForClient);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_NeedsLoadForServer = (uapi_UPrimitiveComponent_NeedsLoadForServerFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_NeedsLoadForServer_handler\0"));
+    if(apiuapi_UPrimitiveComponent_NeedsLoadForServer){
+        apiuapi_UPrimitiveComponent_NeedsLoadForServer(&uapi_UPrimitiveComponent_NeedsLoadForServer);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnActorEnableCollisionChanged = (uapi_UPrimitiveComponent_OnActorEnableCollisionChangedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnActorEnableCollisionChanged_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnActorEnableCollisionChanged){
+        apiuapi_UPrimitiveComponent_OnActorEnableCollisionChanged(&uapi_UPrimitiveComponent_OnActorEnableCollisionChanged);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnAttachmentChanged = (uapi_UPrimitiveComponent_OnAttachmentChangedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnAttachmentChanged_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnAttachmentChanged){
+        apiuapi_UPrimitiveComponent_OnAttachmentChanged(&uapi_UPrimitiveComponent_OnAttachmentChanged);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnComponentDestroyed = (uapi_UPrimitiveComponent_OnComponentDestroyedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnComponentDestroyed_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnComponentDestroyed){
+        apiuapi_UPrimitiveComponent_OnComponentDestroyed(&uapi_UPrimitiveComponent_OnComponentDestroyed);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnCreatePhysicsState = (uapi_UPrimitiveComponent_OnCreatePhysicsStateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnCreatePhysicsState_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnCreatePhysicsState){
+        apiuapi_UPrimitiveComponent_OnCreatePhysicsState(&uapi_UPrimitiveComponent_OnCreatePhysicsState);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnDestroyPhysicsState = (uapi_UPrimitiveComponent_OnDestroyPhysicsStateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnDestroyPhysicsState_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnDestroyPhysicsState){
+        apiuapi_UPrimitiveComponent_OnDestroyPhysicsState(&uapi_UPrimitiveComponent_OnDestroyPhysicsState);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnRegister = (uapi_UPrimitiveComponent_OnRegisterFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnRegister_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnRegister){
+        apiuapi_UPrimitiveComponent_OnRegister(&uapi_UPrimitiveComponent_OnRegister);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_OnUnregister = (uapi_UPrimitiveComponent_OnUnregisterFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_OnUnregister_handler\0"));
+    if(apiuapi_UPrimitiveComponent_OnUnregister){
+        apiuapi_UPrimitiveComponent_OnUnregister(&uapi_UPrimitiveComponent_OnUnregister);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PostDuplicate = (uapi_UPrimitiveComponent_PostDuplicateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PostDuplicate_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PostDuplicate){
+        apiuapi_UPrimitiveComponent_PostDuplicate(&uapi_UPrimitiveComponent_PostDuplicate);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PostEditImport = (uapi_UPrimitiveComponent_PostEditImportFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PostEditImport_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PostEditImport){
+        apiuapi_UPrimitiveComponent_PostEditImport(&uapi_UPrimitiveComponent_PostEditImport);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PostInitProperties = (uapi_UPrimitiveComponent_PostInitPropertiesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PostInitProperties_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PostInitProperties){
+        apiuapi_UPrimitiveComponent_PostInitProperties(&uapi_UPrimitiveComponent_PostInitProperties);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PostLoad = (uapi_UPrimitiveComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PostLoad_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PostLoad){
+        apiuapi_UPrimitiveComponent_PostLoad(&uapi_UPrimitiveComponent_PostLoad);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PushEditorVisibilityToProxy = (uapi_UPrimitiveComponent_PushEditorVisibilityToProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PushEditorVisibilityToProxy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PushEditorVisibilityToProxy){
+        apiuapi_UPrimitiveComponent_PushEditorVisibilityToProxy(&uapi_UPrimitiveComponent_PushEditorVisibilityToProxy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PushHoveredToProxy = (uapi_UPrimitiveComponent_PushHoveredToProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PushHoveredToProxy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PushHoveredToProxy){
+        apiuapi_UPrimitiveComponent_PushHoveredToProxy(&uapi_UPrimitiveComponent_PushHoveredToProxy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy = (uapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy){
+        apiuapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy(&uapi_UPrimitiveComponent_PushLevelInstanceEditingStateToProxy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PushSelectionToProxy = (uapi_UPrimitiveComponent_PushSelectionToProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PushSelectionToProxy_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PushSelectionToProxy){
+        apiuapi_UPrimitiveComponent_PushSelectionToProxy(&uapi_UPrimitiveComponent_PushSelectionToProxy);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PutAllRigidBodiesToSleep = (uapi_UPrimitiveComponent_PutAllRigidBodiesToSleepFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PutAllRigidBodiesToSleep_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PutAllRigidBodiesToSleep){
+        apiuapi_UPrimitiveComponent_PutAllRigidBodiesToSleep(&uapi_UPrimitiveComponent_PutAllRigidBodiesToSleep);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_PutRigidBodyToSleep = (uapi_UPrimitiveComponent_PutRigidBodyToSleepFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_PutRigidBodyToSleep_handler\0"));
+    if(apiuapi_UPrimitiveComponent_PutRigidBodyToSleep){
+        apiuapi_UPrimitiveComponent_PutRigidBodyToSleep(&uapi_UPrimitiveComponent_PutRigidBodyToSleep);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel = (uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel_handler\0"));
+    if(apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel){
+        apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel(&uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_RigidBodyIsAwake = (uapi_UPrimitiveComponent_RigidBodyIsAwakeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_RigidBodyIsAwake_handler\0"));
+    if(apiuapi_UPrimitiveComponent_RigidBodyIsAwake){
+        apiuapi_UPrimitiveComponent_RigidBodyIsAwake(&uapi_UPrimitiveComponent_RigidBodyIsAwake);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia = (uapi_UPrimitiveComponent_ScaleByMomentOfInertiaFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ScaleByMomentOfInertia_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia){
+        apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia(&uapi_UPrimitiveComponent_ScaleByMomentOfInertia);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SendRenderDebugPhysics = (uapi_UPrimitiveComponent_SendRenderDebugPhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SendRenderDebugPhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SendRenderDebugPhysics){
+        apiuapi_UPrimitiveComponent_SendRenderDebugPhysics(&uapi_UPrimitiveComponent_SendRenderDebugPhysics);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SendRenderTransform_Concurrent = (uapi_UPrimitiveComponent_SendRenderTransform_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SendRenderTransform_Concurrent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SendRenderTransform_Concurrent){
+        apiuapi_UPrimitiveComponent_SendRenderTransform_Concurrent(&uapi_UPrimitiveComponent_SendRenderTransform_Concurrent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAllMassScale = (uapi_UPrimitiveComponent_SetAllMassScaleFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAllMassScale_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAllMassScale){
+        apiuapi_UPrimitiveComponent_SetAllMassScale(&uapi_UPrimitiveComponent_SetAllMassScale);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAllPhysicsLinearVelocity = (uapi_UPrimitiveComponent_SetAllPhysicsLinearVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAllPhysicsLinearVelocity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAllPhysicsLinearVelocity){
+        apiuapi_UPrimitiveComponent_SetAllPhysicsLinearVelocity(&uapi_UPrimitiveComponent_SetAllPhysicsLinearVelocity);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAllPhysicsPosition = (uapi_UPrimitiveComponent_SetAllPhysicsPositionFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAllPhysicsPosition_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAllPhysicsPosition){
+        apiuapi_UPrimitiveComponent_SetAllPhysicsPosition(&uapi_UPrimitiveComponent_SetAllPhysicsPosition);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAllPhysicsRotation = (uapi_UPrimitiveComponent_SetAllPhysicsRotationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAllPhysicsRotation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAllPhysicsRotation){
+        apiuapi_UPrimitiveComponent_SetAllPhysicsRotation(&uapi_UPrimitiveComponent_SetAllPhysicsRotation);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAllUseCCD = (uapi_UPrimitiveComponent_SetAllUseCCDFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAllUseCCD_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAllUseCCD){
+        apiuapi_UPrimitiveComponent_SetAllUseCCD(&uapi_UPrimitiveComponent_SetAllUseCCD);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetAngularDamping = (uapi_UPrimitiveComponent_SetAngularDampingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetAngularDamping_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetAngularDamping){
+        apiuapi_UPrimitiveComponent_SetAngularDamping(&uapi_UPrimitiveComponent_SetAngularDamping);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetBoundsScale = (uapi_UPrimitiveComponent_SetBoundsScaleFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetBoundsScale_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetBoundsScale){
+        apiuapi_UPrimitiveComponent_SetBoundsScale(&uapi_UPrimitiveComponent_SetBoundsScale);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCachedMaxDrawDistance = (uapi_UPrimitiveComponent_SetCachedMaxDrawDistanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCachedMaxDrawDistance_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCachedMaxDrawDistance){
+        apiuapi_UPrimitiveComponent_SetCachedMaxDrawDistance(&uapi_UPrimitiveComponent_SetCachedMaxDrawDistance);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCastHiddenShadow = (uapi_UPrimitiveComponent_SetCastHiddenShadowFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCastHiddenShadow_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCastHiddenShadow){
+        apiuapi_UPrimitiveComponent_SetCastHiddenShadow(&uapi_UPrimitiveComponent_SetCastHiddenShadow);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCastShadow = (uapi_UPrimitiveComponent_SetCastShadowFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCastShadow_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCastShadow){
+        apiuapi_UPrimitiveComponent_SetCastShadow(&uapi_UPrimitiveComponent_SetCastShadow);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCenterOfMass = (uapi_UPrimitiveComponent_SetCenterOfMassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCenterOfMass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCenterOfMass){
+        apiuapi_UPrimitiveComponent_SetCenterOfMass(&uapi_UPrimitiveComponent_SetCenterOfMass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCollisionObjectType = (uapi_UPrimitiveComponent_SetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCollisionObjectType_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCollisionObjectType){
+        apiuapi_UPrimitiveComponent_SetCollisionObjectType(&uapi_UPrimitiveComponent_SetCollisionObjectType);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCollisionProfileName = (uapi_UPrimitiveComponent_SetCollisionProfileNameFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCollisionProfileName_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCollisionProfileName){
+        apiuapi_UPrimitiveComponent_SetCollisionProfileName(&uapi_UPrimitiveComponent_SetCollisionProfileName);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCullDistance = (uapi_UPrimitiveComponent_SetCullDistanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCullDistance_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCullDistance){
+        apiuapi_UPrimitiveComponent_SetCullDistance(&uapi_UPrimitiveComponent_SetCullDistance);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCustomDepthStencilValue = (uapi_UPrimitiveComponent_SetCustomDepthStencilValueFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCustomDepthStencilValue_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCustomDepthStencilValue){
+        apiuapi_UPrimitiveComponent_SetCustomDepthStencilValue(&uapi_UPrimitiveComponent_SetCustomDepthStencilValue);
     }
 
     auto const apiuapi_UPrimitiveComponent_SetCustomPrimitiveDataFloat = (uapi_UPrimitiveComponent_SetCustomPrimitiveDataFloatFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCustomPrimitiveDataFloat_handler\0"));
@@ -15407,9 +19170,39 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4(&uapi_UPrimitiveComponent_SetDefaultCustomPrimitiveDataVector4);
     }
 
+    auto const apiuapi_UPrimitiveComponent_SetEmissiveLightSource = (uapi_UPrimitiveComponent_SetEmissiveLightSourceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetEmissiveLightSource_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetEmissiveLightSource){
+        apiuapi_UPrimitiveComponent_SetEmissiveLightSource(&uapi_UPrimitiveComponent_SetEmissiveLightSource);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetEnableGravity = (uapi_UPrimitiveComponent_SetEnableGravityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetEnableGravity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetEnableGravity){
+        apiuapi_UPrimitiveComponent_SetEnableGravity(&uapi_UPrimitiveComponent_SetEnableGravity);
+    }
+
     auto const apiuapi_UPrimitiveComponent_SetGenerateOverlapEvents = (uapi_UPrimitiveComponent_SetGenerateOverlapEventsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetGenerateOverlapEvents_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetGenerateOverlapEvents){
         apiuapi_UPrimitiveComponent_SetGenerateOverlapEvents(&uapi_UPrimitiveComponent_SetGenerateOverlapEvents);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetHiddenInSceneCapture = (uapi_UPrimitiveComponent_SetHiddenInSceneCaptureFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetHiddenInSceneCapture_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetHiddenInSceneCapture){
+        apiuapi_UPrimitiveComponent_SetHiddenInSceneCapture(&uapi_UPrimitiveComponent_SetHiddenInSceneCapture);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus = (uapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocusFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus){
+        apiuapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus(&uapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocus);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetIsBeingMovedByEditor = (uapi_UPrimitiveComponent_SetIsBeingMovedByEditorFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetIsBeingMovedByEditor_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetIsBeingMovedByEditor){
+        apiuapi_UPrimitiveComponent_SetIsBeingMovedByEditor(&uapi_UPrimitiveComponent_SetIsBeingMovedByEditor);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetLODParentPrimitive = (uapi_UPrimitiveComponent_SetLODParentPrimitiveFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetLODParentPrimitive_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetLODParentPrimitive){
+        apiuapi_UPrimitiveComponent_SetLODParentPrimitive(&uapi_UPrimitiveComponent_SetLODParentPrimitive);
     }
 
     auto const apiuapi_UPrimitiveComponent_SetLastRenderTime = (uapi_UPrimitiveComponent_SetLastRenderTimeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetLastRenderTime_handler\0"));
@@ -15422,6 +19215,96 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_SetLightingChannels(&uapi_UPrimitiveComponent_SetLightingChannels);
     }
 
+    auto const apiuapi_UPrimitiveComponent_SetLinearDamping = (uapi_UPrimitiveComponent_SetLinearDampingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetLinearDamping_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetLinearDamping){
+        apiuapi_UPrimitiveComponent_SetLinearDamping(&uapi_UPrimitiveComponent_SetLinearDamping);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetMassOverrideInKg = (uapi_UPrimitiveComponent_SetMassOverrideInKgFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMassOverrideInKg_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMassOverrideInKg){
+        apiuapi_UPrimitiveComponent_SetMassOverrideInKg(&uapi_UPrimitiveComponent_SetMassOverrideInKg);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetMassScale = (uapi_UPrimitiveComponent_SetMassScaleFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMassScale_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMassScale){
+        apiuapi_UPrimitiveComponent_SetMassScale(&uapi_UPrimitiveComponent_SetMassScale);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetMaterial = (uapi_UPrimitiveComponent_SetMaterialFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMaterial_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMaterial){
+        apiuapi_UPrimitiveComponent_SetMaterial(&uapi_UPrimitiveComponent_SetMaterial);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetMaterialByName = (uapi_UPrimitiveComponent_SetMaterialByNameFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMaterialByName_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMaterialByName){
+        apiuapi_UPrimitiveComponent_SetMaterialByName(&uapi_UPrimitiveComponent_SetMaterialByName);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision = (uapi_UPrimitiveComponent_SetNotifyRigidBodyCollisionFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetNotifyRigidBodyCollision_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision){
+        apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision(&uapi_UPrimitiveComponent_SetNotifyRigidBodyCollision);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetOnlyOwnerSee = (uapi_UPrimitiveComponent_SetOnlyOwnerSeeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetOnlyOwnerSee_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetOnlyOwnerSee){
+        apiuapi_UPrimitiveComponent_SetOnlyOwnerSee(&uapi_UPrimitiveComponent_SetOnlyOwnerSee);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetOwnerNoSee = (uapi_UPrimitiveComponent_SetOwnerNoSeeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetOwnerNoSee_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetOwnerNoSee){
+        apiuapi_UPrimitiveComponent_SetOwnerNoSee(&uapi_UPrimitiveComponent_SetOwnerNoSee);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysMaterialOverride = (uapi_UPrimitiveComponent_SetPhysMaterialOverrideFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysMaterialOverride_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysMaterialOverride){
+        apiuapi_UPrimitiveComponent_SetPhysMaterialOverride(&uapi_UPrimitiveComponent_SetPhysMaterialOverride);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees = (uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees){
+        apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees(&uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians = (uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadiansFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians){
+        apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians(&uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInRadians);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysicsLinearVelocity = (uapi_UPrimitiveComponent_SetPhysicsLinearVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsLinearVelocity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysicsLinearVelocity){
+        apiuapi_UPrimitiveComponent_SetPhysicsLinearVelocity(&uapi_UPrimitiveComponent_SetPhysicsLinearVelocity);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees = (uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees){
+        apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees(&uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInDegrees);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians = (uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadiansFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians){
+        apiuapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians(&uapi_UPrimitiveComponent_SetPhysicsMaxAngularVelocityInRadians);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetReceivesDecals = (uapi_UPrimitiveComponent_SetReceivesDecalsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetReceivesDecals_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetReceivesDecals){
+        apiuapi_UPrimitiveComponent_SetReceivesDecals(&uapi_UPrimitiveComponent_SetReceivesDecals);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetRenderCustomDepth = (uapi_UPrimitiveComponent_SetRenderCustomDepthFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetRenderCustomDepth_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetRenderCustomDepth){
+        apiuapi_UPrimitiveComponent_SetRenderCustomDepth(&uapi_UPrimitiveComponent_SetRenderCustomDepth);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetRenderInDepthPass = (uapi_UPrimitiveComponent_SetRenderInDepthPassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetRenderInDepthPass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetRenderInDepthPass){
+        apiuapi_UPrimitiveComponent_SetRenderInDepthPass(&uapi_UPrimitiveComponent_SetRenderInDepthPass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetRenderInMainPass = (uapi_UPrimitiveComponent_SetRenderInMainPassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetRenderInMainPass_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetRenderInMainPass){
+        apiuapi_UPrimitiveComponent_SetRenderInMainPass(&uapi_UPrimitiveComponent_SetRenderInMainPass);
+    }
+
     auto const apiuapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData = (uapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveDataFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData){
         apiuapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData(&uapi_UPrimitiveComponent_SetScalarParameterForCustomPrimitiveData);
@@ -15430,6 +19313,31 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData = (uapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveDataFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData){
         apiuapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData(&uapi_UPrimitiveComponent_SetScalarParameterForDefaultCustomPrimitiveData);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetSimulatePhysics = (uapi_UPrimitiveComponent_SetSimulatePhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetSimulatePhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetSimulatePhysics){
+        apiuapi_UPrimitiveComponent_SetSimulatePhysics(&uapi_UPrimitiveComponent_SetSimulatePhysics);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights = (uapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLightsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights){
+        apiuapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights(&uapi_UPrimitiveComponent_SetSingleSampleShadowFromStationaryLights);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetTranslucencySortDistanceOffset = (uapi_UPrimitiveComponent_SetTranslucencySortDistanceOffsetFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetTranslucencySortDistanceOffset_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetTranslucencySortDistanceOffset){
+        apiuapi_UPrimitiveComponent_SetTranslucencySortDistanceOffset(&uapi_UPrimitiveComponent_SetTranslucencySortDistanceOffset);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetTranslucentSortPriority = (uapi_UPrimitiveComponent_SetTranslucentSortPriorityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetTranslucentSortPriority_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetTranslucentSortPriority){
+        apiuapi_UPrimitiveComponent_SetTranslucentSortPriority(&uapi_UPrimitiveComponent_SetTranslucentSortPriority);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetUseCCD = (uapi_UPrimitiveComponent_SetUseCCDFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetUseCCD_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetUseCCD){
+        apiuapi_UPrimitiveComponent_SetUseCCD(&uapi_UPrimitiveComponent_SetUseCCD);
     }
 
     auto const apiuapi_UPrimitiveComponent_SetVectorParameterForCustomPrimitiveData = (uapi_UPrimitiveComponent_SetVectorParameterForCustomPrimitiveDataFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetVectorParameterForCustomPrimitiveData_handler\0"));
@@ -15442,9 +19350,114 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveData(&uapi_UPrimitiveComponent_SetVectorParameterForDefaultCustomPrimitiveData);
     }
 
+    auto const apiuapi_UPrimitiveComponent_SetVisibleInRayTracing = (uapi_UPrimitiveComponent_SetVisibleInRayTracingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetVisibleInRayTracing_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetVisibleInRayTracing){
+        apiuapi_UPrimitiveComponent_SetVisibleInRayTracing(&uapi_UPrimitiveComponent_SetVisibleInRayTracing);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnly = (uapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnlyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetVisibleInSceneCaptureOnly_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnly){
+        apiuapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnly(&uapi_UPrimitiveComponent_SetVisibleInSceneCaptureOnly);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ShouldComponentAddToScene = (uapi_UPrimitiveComponent_ShouldComponentAddToSceneFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ShouldComponentAddToScene_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ShouldComponentAddToScene){
+        apiuapi_UPrimitiveComponent_ShouldComponentAddToScene(&uapi_UPrimitiveComponent_ShouldComponentAddToScene);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ShouldCreatePhysicsState = (uapi_UPrimitiveComponent_ShouldCreatePhysicsStateFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ShouldCreatePhysicsState_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ShouldCreatePhysicsState){
+        apiuapi_UPrimitiveComponent_ShouldCreatePhysicsState(&uapi_UPrimitiveComponent_ShouldCreatePhysicsState);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ShouldGenerateAutoLOD = (uapi_UPrimitiveComponent_ShouldGenerateAutoLODFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ShouldGenerateAutoLOD_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ShouldGenerateAutoLOD){
+        apiuapi_UPrimitiveComponent_ShouldGenerateAutoLOD(&uapi_UPrimitiveComponent_ShouldGenerateAutoLOD);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform = (uapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransformFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform){
+        apiuapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform(&uapi_UPrimitiveComponent_ShouldRecreateProxyOnUpdateTransform);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_ShouldRenderSelected = (uapi_UPrimitiveComponent_ShouldRenderSelectedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ShouldRenderSelected_handler\0"));
+    if(apiuapi_UPrimitiveComponent_ShouldRenderSelected){
+        apiuapi_UPrimitiveComponent_ShouldRenderSelected(&uapi_UPrimitiveComponent_ShouldRenderSelected);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity = (uapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity){
+        apiuapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity(&uapi_UPrimitiveComponent_SupportsWorldPositionOffsetVelocity);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SyncComponentToRBPhysics = (uapi_UPrimitiveComponent_SyncComponentToRBPhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SyncComponentToRBPhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SyncComponentToRBPhysics){
+        apiuapi_UPrimitiveComponent_SyncComponentToRBPhysics(&uapi_UPrimitiveComponent_SyncComponentToRBPhysics);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UnWeldChildren = (uapi_UPrimitiveComponent_UnWeldChildrenFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UnWeldChildren_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UnWeldChildren){
+        apiuapi_UPrimitiveComponent_UnWeldChildren(&uapi_UPrimitiveComponent_UnWeldChildren);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UnWeldFromParent = (uapi_UPrimitiveComponent_UnWeldFromParentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UnWeldFromParent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UnWeldFromParent){
+        apiuapi_UPrimitiveComponent_UnWeldFromParent(&uapi_UPrimitiveComponent_UnWeldFromParent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UpdateBounds = (uapi_UPrimitiveComponent_UpdateBoundsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdateBounds_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdateBounds){
+        apiuapi_UPrimitiveComponent_UpdateBounds(&uapi_UPrimitiveComponent_UpdateBounds);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UpdateCollisionProfile = (uapi_UPrimitiveComponent_UpdateCollisionProfileFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdateCollisionProfile_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdateCollisionProfile){
+        apiuapi_UPrimitiveComponent_UpdateCollisionProfile(&uapi_UPrimitiveComponent_UpdateCollisionProfile);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack = (uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlackFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdateOcclusionBoundsSlack_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack){
+        apiuapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack(&uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UpdateOverlapsImpl = (uapi_UPrimitiveComponent_UpdateOverlapsImplFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdateOverlapsImpl_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdateOverlapsImpl){
+        apiuapi_UPrimitiveComponent_UpdateOverlapsImpl(&uapi_UPrimitiveComponent_UpdateOverlapsImpl);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UpdatePhysicsVolume = (uapi_UPrimitiveComponent_UpdatePhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdatePhysicsVolume_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdatePhysicsVolume){
+        apiuapi_UPrimitiveComponent_UpdatePhysicsVolume(&uapi_UPrimitiveComponent_UpdatePhysicsVolume);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_UsesOnlyUnlitMaterials = (uapi_UPrimitiveComponent_UsesOnlyUnlitMaterialsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UsesOnlyUnlitMaterials_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UsesOnlyUnlitMaterials){
+        apiuapi_UPrimitiveComponent_UsesOnlyUnlitMaterials(&uapi_UPrimitiveComponent_UsesOnlyUnlitMaterials);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WakeAllRigidBodies = (uapi_UPrimitiveComponent_WakeAllRigidBodiesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WakeAllRigidBodies_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WakeAllRigidBodies){
+        apiuapi_UPrimitiveComponent_WakeAllRigidBodies(&uapi_UPrimitiveComponent_WakeAllRigidBodies);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WakeRigidBody = (uapi_UPrimitiveComponent_WakeRigidBodyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WakeRigidBody_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WakeRigidBody){
+        apiuapi_UPrimitiveComponent_WakeRigidBody(&uapi_UPrimitiveComponent_WakeRigidBody);
+    }
+
     auto const apiuapi_UPrimitiveComponent_WasRecentlyRendered = (uapi_UPrimitiveComponent_WasRecentlyRenderedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WasRecentlyRendered_handler\0"));
     if(apiuapi_UPrimitiveComponent_WasRecentlyRendered){
         apiuapi_UPrimitiveComponent_WasRecentlyRendered(&uapi_UPrimitiveComponent_WasRecentlyRendered);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WeldTo = (uapi_UPrimitiveComponent_WeldToFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WeldTo_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WeldTo){
+        apiuapi_UPrimitiveComponent_WeldTo(&uapi_UPrimitiveComponent_WeldTo);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WeldToImplementation = (uapi_UPrimitiveComponent_WeldToImplementationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WeldToImplementation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WeldToImplementation){
+        apiuapi_UPrimitiveComponent_WeldToImplementation(&uapi_UPrimitiveComponent_WeldToImplementation);
     }
 
     auto const apiuapi_UAnimInstance_AddExternalNotifyHandler = (uapi_UAnimInstance_AddExternalNotifyHandlerFn)plugin->GetDllExport(TEXT("set_UAnimInstance_AddExternalNotifyHandler_handler\0"));

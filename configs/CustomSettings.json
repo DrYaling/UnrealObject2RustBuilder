@@ -86,7 +86,13 @@
         },
         {
             "class_name": "UWorld",
-            "fields":["Ignore"]
+            "fields":["Ignore"],
+            "ignore_functions":[
+                "StoreIrisAndClearReferences",
+                "ProcessLevelStreamingVolumes",
+                "FollowWorldRedirectorInPackage",
+                "EncroachingBlockingGeometry"
+            ]
         },
         {
             "class_name": "UPrimitiveComponent",

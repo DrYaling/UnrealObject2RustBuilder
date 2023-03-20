@@ -144,13 +144,13 @@ mod opaque_types{
 	pub type IAnimClassInterfaceOpaque = c_void;//cpp type IAnimClassInterface
 	pub type FAnimNode_StateMachineOpaque = c_void;//cpp type FAnimNode_StateMachine
 	pub type FPoseSnapshotOpaque = c_void;//cpp type FPoseSnapshot
+	pub type FAnimNode_AssetPlayerRelevancyBaseOpaque = c_void;//cpp type FAnimNode_AssetPlayerRelevancyBase
 	pub type UAnimSequenceBaseOpaque = c_void;//cpp type UAnimSequenceBase
 	pub type FOnMontageBlendingOutStartedOpaque = c_void;//cpp type FOnMontageBlendingOutStarted
 	pub type USkeletalMeshOpaque = c_void;//cpp type USkeletalMesh
 	pub type UBlendProfileOpaque = c_void;//cpp type UBlendProfile
 	pub type UAnimNotifyStateOpaque = c_void;//cpp type UAnimNotifyState
 	pub type FAnimNotifyEventOpaque = c_void;//cpp type FAnimNotifyEvent
-	pub type FAnimTrackOpaque = c_void;//cpp type FAnimTrack
 	pub type UPhysicsAssetOpaque = c_void;//cpp type UPhysicsAsset
 	pub type FPrimitiveDrawInterfaceOpaque = c_void;//cpp type FPrimitiveDrawInterface
 	pub type FCanvasOpaque = c_void;//cpp type FCanvas
@@ -4224,6 +4224,10 @@ impl USceneComponent{
 		unsafe{ USceneComponent::from_ptr(USceneComponent_GetChildComponentInvokerHandler.as_ref().unwrap()(self.inner, ChildIndex)) }
 	}
 	#[inline]
+	pub fn GetCollisionEnabled(&self) -> ECollisionEnabled{
+		unsafe{ USceneComponent_GetCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn GetCollisionObjectType(&self) -> ECollisionChannel{
 		unsafe{ USceneComponent_GetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -6122,6 +6126,10 @@ impl UPrimitiveComponent{
 		unsafe{ UPrimitiveComponent_GetCenterOfMassInvokerHandler.as_ref().unwrap()(self.inner, BoneName) }
 	}
 	#[inline]
+	pub fn GetCollisionEnabled(&self) -> ECollisionEnabled{
+		unsafe{ UPrimitiveComponent_GetCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner) }
+	}
+	#[inline]
 	pub fn GetCollisionObjectType(&self) -> ECollisionChannel{
 		unsafe{ UPrimitiveComponent_GetCollisionObjectTypeInvokerHandler.as_ref().unwrap()(self.inner) }
 	}
@@ -6504,6 +6512,10 @@ impl UPrimitiveComponent{
 	#[inline]
 	pub fn SetCenterOfMass(&mut self, CenterOfMassOffset: Vector3, BoneName: UName){
 		unsafe{ UPrimitiveComponent_SetCenterOfMassInvokerHandler.as_ref().unwrap()(self.inner, CenterOfMassOffset, BoneName) }
+	}
+	#[inline]
+	pub fn SetCollisionEnabled(&mut self, NewType: ECollisionEnabled){
+		unsafe{ UPrimitiveComponent_SetCollisionEnabledInvokerHandler.as_ref().unwrap()(self.inner, NewType) }
 	}
 	#[inline]
 	pub fn SetCollisionObjectType(&mut self, Channel: ECollisionChannel){
@@ -7010,6 +7022,10 @@ impl UAnimInstance{
 	#[inline]
 	pub fn GetRelevantAnimTimeRemainingFraction(&mut self, MachineIndex: i32, StateIndex: i32) -> f32{
 		unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
+	}
+	#[inline]
+	pub fn GetRelevantAssetPlayerInterfaceFromState(&self, MachineIndex: i32, StateIndex: i32) -> *mut FAnimNode_AssetPlayerRelevancyBaseOpaque{
+		unsafe{ UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
 	}
 	#[inline]
 	pub fn GetRootMotionMontageInstance(&self) -> *mut FAnimMontageInstanceOpaque{
@@ -7769,130 +7785,6 @@ impl IPtr for UAnimMontage{
 }
 impl UAnimMontage{
     
-	#[inline]
-	pub fn AddAnimCompositeSection(&mut self, InSectionName: UName, StartPos: f32) -> i32{
-		unsafe{ UAnimMontage_AddAnimCompositeSectionInvokerHandler.as_ref().unwrap()(self.inner, InSectionName, StartPos) }
-	}
-	#[inline]
-	pub fn CalculateSequenceLength(&mut self) -> f32{
-		unsafe{ UAnimMontage_CalculateSequenceLengthInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn CanBeUsedInComposition(&self) -> bool{
-		unsafe{ UAnimMontage_CanBeUsedInCompositionInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn CanUseMarkerSync(&self) -> bool{
-		unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn CreateSlotAnimationAsDynamicMontage(Asset: *mut UAnimSequenceBaseOpaque, SlotNodeName: UName, BlendInTime: f32, BlendOutTime: f32, InPlayRate: f32, LoopCount: i32, BlendOutTriggerTime: f32, InTimeToStartMontageAt: f32) -> Option<UAnimMontage>{
-		unsafe{ UAnimMontage::from_ptr(UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler.as_ref().unwrap()(Asset, SlotNodeName, BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt)) }
-	}
-	#[inline]
-	pub fn DeleteAnimCompositeSection(&mut self, SectionIndex: i32) -> bool{
-		unsafe{ UAnimMontage_DeleteAnimCompositeSectionInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
-	}
-	#[inline]
-	pub fn ExtractRootMotionFromTrackRange(&self, StartTrackPosition: f32, EndTrackPosition: f32) -> Transform{
-		unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler.as_ref().unwrap()(self.inner, StartTrackPosition, EndTrackPosition) }
-	}
-	#[inline]
-	pub fn GetAnimCompositeSectionIndexFromPos(&self, CurrentTime: f32, PosWithinCompositeSection: &mut f32) -> i32{
-		unsafe{ UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler.as_ref().unwrap()(self.inner, CurrentTime, PosWithinCompositeSection) }
-	}
-	#[inline]
-	pub fn GetAnimationData(&self, SlotName: UName) -> *mut FAnimTrackOpaque{
-		unsafe{ UAnimMontage_GetAnimationDataInvokerHandler.as_ref().unwrap()(self.inner, SlotName) }
-	}
-	#[inline]
-	pub fn GetDefaultBlendInTime(&self) -> f32{
-		unsafe{ UAnimMontage_GetDefaultBlendInTimeInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetDefaultBlendOutTime(&self) -> f32{
-		unsafe{ UAnimMontage_GetDefaultBlendOutTimeInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetGroupName(&self) -> UName{
-		unsafe{ UAnimMontage_GetGroupNameInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetNumSections(&self) -> i32{
-		unsafe{ UAnimMontage_GetNumSectionsInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn GetSectionIndex(&self, InSectionName: UName) -> i32{
-		unsafe{ UAnimMontage_GetSectionIndexInvokerHandler.as_ref().unwrap()(self.inner, InSectionName) }
-	}
-	#[inline]
-	pub fn GetSectionIndexFromPosition(&self, Position: f32) -> i32{
-		unsafe{ UAnimMontage_GetSectionIndexFromPositionInvokerHandler.as_ref().unwrap()(self.inner, Position) }
-	}
-	#[inline]
-	pub fn GetSectionLength(&self, SectionIndex: i32) -> f32{
-		unsafe{ UAnimMontage_GetSectionLengthInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
-	}
-	#[inline]
-	pub fn GetSectionName(&self, SectionIndex: i32) -> UName{
-		unsafe{ UAnimMontage_GetSectionNameInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
-	}
-	#[inline]
-	pub fn GetSectionStartAndEndTime(&self, SectionIndex: i32, OutStartTime: &mut f32, OutEndTime: &mut f32){
-		unsafe{ UAnimMontage_GetSectionStartAndEndTimeInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex, OutStartTime, OutEndTime) }
-	}
-	#[inline]
-	pub fn GetSectionTimeLeftFromPos(&mut self, Position: f32) -> f32{
-		unsafe{ UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler.as_ref().unwrap()(self.inner, Position) }
-	}
-	#[inline]
-	pub fn HasRootMotion(&self) -> bool{
-		unsafe{ UAnimMontage_HasRootMotionInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn InvalidateRecursiveAsset(&mut self){
-		unsafe{ UAnimMontage_InvalidateRecursiveAssetInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn IsValidAdditive(&self) -> bool{
-		unsafe{ UAnimMontage_IsValidAdditiveInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn IsValidSectionIndex(&self, SectionIndex: i32) -> bool{
-		unsafe{ UAnimMontage_IsValidSectionIndexInvokerHandler.as_ref().unwrap()(self.inner, SectionIndex) }
-	}
-	#[inline]
-	pub fn IsValidSectionName(&self, InSectionName: UName) -> bool{
-		unsafe{ UAnimMontage_IsValidSectionNameInvokerHandler.as_ref().unwrap()(self.inner, InSectionName) }
-	}
-	#[inline]
-	pub fn IsValidSlot(&self, InSlotName: UName) -> bool{
-		unsafe{ UAnimMontage_IsValidSlotInvokerHandler.as_ref().unwrap()(self.inner, InSlotName) }
-	}
-	#[inline]
-	pub fn PostLoad(&mut self){
-		unsafe{ UAnimMontage_PostLoadInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn RefreshCacheData(&mut self){
-		unsafe{ UAnimMontage_RefreshCacheDataInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn SetCompositeLength(&mut self, InLength: f32){
-		unsafe{ UAnimMontage_SetCompositeLengthInvokerHandler.as_ref().unwrap()(self.inner, InLength) }
-	}
-	#[inline]
-	pub fn UnregisterOnMontageChanged(&mut self, Unregister: *mut c_void){
-		unsafe{ UAnimMontage_UnregisterOnMontageChangedInvokerHandler.as_ref().unwrap()(self.inner, Unregister) }
-	}
-	#[inline]
-	pub fn UpdateLinkableElements(&mut self){
-		unsafe{ UAnimMontage_UpdateLinkableElementsInvokerHandler.as_ref().unwrap()(self.inner) }
-	}
-	#[inline]
-	pub fn UpdateLinkableElements2(&mut self, SlotIdx: i32, SegmentIdx: i32){
-		unsafe{ UAnimMontage_UpdateLinkableElements2InvokerHandler.as_ref().unwrap()(self.inner, SlotIdx, SegmentIdx) }
-	}
 }
 pub struct USkeletalMeshComponent{
     inner: *mut USkeletalMeshComponentOpaque
@@ -15602,6 +15494,13 @@ mod ffis{
         unsafe{ USceneComponent_GetChildComponentInvokerHandler = Some(handler) };
     }
 
+    type USceneComponent_GetCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionEnabled;
+    pub(super) static mut USceneComponent_GetCollisionEnabledInvokerHandler: Option<USceneComponent_GetCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_USceneComponent_GetCollisionEnabled_handler(handler: USceneComponent_GetCollisionEnabledInvoker){
+        unsafe{ USceneComponent_GetCollisionEnabledInvokerHandler = Some(handler) };
+    }
+
     type USceneComponent_GetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionChannel;
     pub(super) static mut USceneComponent_GetCollisionObjectTypeInvokerHandler: Option<USceneComponent_GetCollisionObjectTypeInvoker> = None;
     #[no_mangle]
@@ -18829,6 +18728,13 @@ mod ffis{
         unsafe{ UPrimitiveComponent_GetCenterOfMassInvokerHandler = Some(handler) };
     }
 
+    type UPrimitiveComponent_GetCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionEnabled;
+    pub(super) static mut UPrimitiveComponent_GetCollisionEnabledInvokerHandler: Option<UPrimitiveComponent_GetCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_GetCollisionEnabled_handler(handler: UPrimitiveComponent_GetCollisionEnabledInvoker){
+        unsafe{ UPrimitiveComponent_GetCollisionEnabledInvokerHandler = Some(handler) };
+    }
+
     type UPrimitiveComponent_GetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void) -> ECollisionChannel;
     pub(super) static mut UPrimitiveComponent_GetCollisionObjectTypeInvokerHandler: Option<UPrimitiveComponent_GetCollisionObjectTypeInvoker> = None;
     #[no_mangle]
@@ -19499,6 +19405,13 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UPrimitiveComponent_SetCenterOfMass_handler(handler: UPrimitiveComponent_SetCenterOfMassInvoker){
         unsafe{ UPrimitiveComponent_SetCenterOfMassInvokerHandler = Some(handler) };
+    }
+
+    type UPrimitiveComponent_SetCollisionEnabledInvoker = unsafe extern "C" fn(*mut c_void, ECollisionEnabled);
+    pub(super) static mut UPrimitiveComponent_SetCollisionEnabledInvokerHandler: Option<UPrimitiveComponent_SetCollisionEnabledInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UPrimitiveComponent_SetCollisionEnabled_handler(handler: UPrimitiveComponent_SetCollisionEnabledInvoker){
+        unsafe{ UPrimitiveComponent_SetCollisionEnabledInvokerHandler = Some(handler) };
     }
 
     type UPrimitiveComponent_SetCollisionObjectTypeInvoker = unsafe extern "C" fn(*mut c_void, ECollisionChannel);
@@ -20353,6 +20266,13 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimInstance_GetRelevantAnimTimeRemainingFraction_handler(handler: UAnimInstance_GetRelevantAnimTimeRemainingFractionInvoker){
         unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler = Some(handler) };
+    }
+
+    type UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker = unsafe extern "C" fn(*mut c_void, i32, i32) -> *mut FAnimNode_AssetPlayerRelevancyBaseOpaque;
+    pub(super) static mut UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler: Option<UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker> = None;
+    #[no_mangle]
+    extern "C" fn set_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState_handler(handler: UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker){
+        unsafe{ UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler = Some(handler) };
     }
 
     type UAnimInstance_GetRootMotionMontageInstanceInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FAnimMontageInstanceOpaque;
@@ -21620,223 +21540,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UKismetSystemLibrary_UnregisterForRemoteNotifications_handler(handler: UKismetSystemLibrary_UnregisterForRemoteNotificationsInvoker){
         unsafe{ UKismetSystemLibrary_UnregisterForRemoteNotificationsInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_AddAnimCompositeSectionInvoker = unsafe extern "C" fn(*mut c_void, UName, f32) -> i32;
-    pub(super) static mut UAnimMontage_AddAnimCompositeSectionInvokerHandler: Option<UAnimMontage_AddAnimCompositeSectionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_AddAnimCompositeSection_handler(handler: UAnimMontage_AddAnimCompositeSectionInvoker){
-        unsafe{ UAnimMontage_AddAnimCompositeSectionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_CalculateSequenceLengthInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UAnimMontage_CalculateSequenceLengthInvokerHandler: Option<UAnimMontage_CalculateSequenceLengthInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_CalculateSequenceLength_handler(handler: UAnimMontage_CalculateSequenceLengthInvoker){
-        unsafe{ UAnimMontage_CalculateSequenceLengthInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_CanBeUsedInCompositionInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UAnimMontage_CanBeUsedInCompositionInvokerHandler: Option<UAnimMontage_CanBeUsedInCompositionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_CanBeUsedInComposition_handler(handler: UAnimMontage_CanBeUsedInCompositionInvoker){
-        unsafe{ UAnimMontage_CanBeUsedInCompositionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_CanUseMarkerSyncInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UAnimMontage_CanUseMarkerSyncInvokerHandler: Option<UAnimMontage_CanUseMarkerSyncInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_CanUseMarkerSync_handler(handler: UAnimMontage_CanUseMarkerSyncInvoker){
-        unsafe{ UAnimMontage_CanUseMarkerSyncInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker = unsafe extern "C" fn(*mut UAnimSequenceBaseOpaque, UName, f32, f32, f32, i32, f32, f32) -> *mut UAnimMontageOpaque;
-    pub(super) static mut UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler: Option<UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler(handler: UAnimMontage_CreateSlotAnimationAsDynamicMontageInvoker){
-        unsafe{ UAnimMontage_CreateSlotAnimationAsDynamicMontageInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_DeleteAnimCompositeSectionInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
-    pub(super) static mut UAnimMontage_DeleteAnimCompositeSectionInvokerHandler: Option<UAnimMontage_DeleteAnimCompositeSectionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_DeleteAnimCompositeSection_handler(handler: UAnimMontage_DeleteAnimCompositeSectionInvoker){
-        unsafe{ UAnimMontage_DeleteAnimCompositeSectionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_ExtractRootMotionFromTrackRangeInvoker = unsafe extern "C" fn(*mut c_void, f32, f32) -> Transform;
-    pub(super) static mut UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler: Option<UAnimMontage_ExtractRootMotionFromTrackRangeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_ExtractRootMotionFromTrackRange_handler(handler: UAnimMontage_ExtractRootMotionFromTrackRangeInvoker){
-        unsafe{ UAnimMontage_ExtractRootMotionFromTrackRangeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker = unsafe extern "C" fn(*mut c_void, f32, &mut f32) -> i32;
-    pub(super) static mut UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler: Option<UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler(handler: UAnimMontage_GetAnimCompositeSectionIndexFromPosInvoker){
-        unsafe{ UAnimMontage_GetAnimCompositeSectionIndexFromPosInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetAnimationDataInvoker = unsafe extern "C" fn(*mut c_void, UName) -> *mut FAnimTrackOpaque;
-    pub(super) static mut UAnimMontage_GetAnimationDataInvokerHandler: Option<UAnimMontage_GetAnimationDataInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetAnimationData_handler(handler: UAnimMontage_GetAnimationDataInvoker){
-        unsafe{ UAnimMontage_GetAnimationDataInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetDefaultBlendInTimeInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UAnimMontage_GetDefaultBlendInTimeInvokerHandler: Option<UAnimMontage_GetDefaultBlendInTimeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetDefaultBlendInTime_handler(handler: UAnimMontage_GetDefaultBlendInTimeInvoker){
-        unsafe{ UAnimMontage_GetDefaultBlendInTimeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetDefaultBlendOutTimeInvoker = unsafe extern "C" fn(*mut c_void) -> f32;
-    pub(super) static mut UAnimMontage_GetDefaultBlendOutTimeInvokerHandler: Option<UAnimMontage_GetDefaultBlendOutTimeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetDefaultBlendOutTime_handler(handler: UAnimMontage_GetDefaultBlendOutTimeInvoker){
-        unsafe{ UAnimMontage_GetDefaultBlendOutTimeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetGroupNameInvoker = unsafe extern "C" fn(*mut c_void) -> UName;
-    pub(super) static mut UAnimMontage_GetGroupNameInvokerHandler: Option<UAnimMontage_GetGroupNameInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetGroupName_handler(handler: UAnimMontage_GetGroupNameInvoker){
-        unsafe{ UAnimMontage_GetGroupNameInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetNumSectionsInvoker = unsafe extern "C" fn(*mut c_void) -> i32;
-    pub(super) static mut UAnimMontage_GetNumSectionsInvokerHandler: Option<UAnimMontage_GetNumSectionsInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetNumSections_handler(handler: UAnimMontage_GetNumSectionsInvoker){
-        unsafe{ UAnimMontage_GetNumSectionsInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionIndexInvoker = unsafe extern "C" fn(*mut c_void, UName) -> i32;
-    pub(super) static mut UAnimMontage_GetSectionIndexInvokerHandler: Option<UAnimMontage_GetSectionIndexInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionIndex_handler(handler: UAnimMontage_GetSectionIndexInvoker){
-        unsafe{ UAnimMontage_GetSectionIndexInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionIndexFromPositionInvoker = unsafe extern "C" fn(*mut c_void, f32) -> i32;
-    pub(super) static mut UAnimMontage_GetSectionIndexFromPositionInvokerHandler: Option<UAnimMontage_GetSectionIndexFromPositionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionIndexFromPosition_handler(handler: UAnimMontage_GetSectionIndexFromPositionInvoker){
-        unsafe{ UAnimMontage_GetSectionIndexFromPositionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionLengthInvoker = unsafe extern "C" fn(*mut c_void, i32) -> f32;
-    pub(super) static mut UAnimMontage_GetSectionLengthInvokerHandler: Option<UAnimMontage_GetSectionLengthInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionLength_handler(handler: UAnimMontage_GetSectionLengthInvoker){
-        unsafe{ UAnimMontage_GetSectionLengthInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionNameInvoker = unsafe extern "C" fn(*mut c_void, i32) -> UName;
-    pub(super) static mut UAnimMontage_GetSectionNameInvokerHandler: Option<UAnimMontage_GetSectionNameInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionName_handler(handler: UAnimMontage_GetSectionNameInvoker){
-        unsafe{ UAnimMontage_GetSectionNameInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionStartAndEndTimeInvoker = unsafe extern "C" fn(*mut c_void, i32, &mut f32, &mut f32);
-    pub(super) static mut UAnimMontage_GetSectionStartAndEndTimeInvokerHandler: Option<UAnimMontage_GetSectionStartAndEndTimeInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionStartAndEndTime_handler(handler: UAnimMontage_GetSectionStartAndEndTimeInvoker){
-        unsafe{ UAnimMontage_GetSectionStartAndEndTimeInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_GetSectionTimeLeftFromPosInvoker = unsafe extern "C" fn(*mut c_void, f32) -> f32;
-    pub(super) static mut UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler: Option<UAnimMontage_GetSectionTimeLeftFromPosInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_GetSectionTimeLeftFromPos_handler(handler: UAnimMontage_GetSectionTimeLeftFromPosInvoker){
-        unsafe{ UAnimMontage_GetSectionTimeLeftFromPosInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_HasRootMotionInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UAnimMontage_HasRootMotionInvokerHandler: Option<UAnimMontage_HasRootMotionInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_HasRootMotion_handler(handler: UAnimMontage_HasRootMotionInvoker){
-        unsafe{ UAnimMontage_HasRootMotionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_InvalidateRecursiveAssetInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimMontage_InvalidateRecursiveAssetInvokerHandler: Option<UAnimMontage_InvalidateRecursiveAssetInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_InvalidateRecursiveAsset_handler(handler: UAnimMontage_InvalidateRecursiveAssetInvoker){
-        unsafe{ UAnimMontage_InvalidateRecursiveAssetInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_IsValidAdditiveInvoker = unsafe extern "C" fn(*mut c_void) -> bool;
-    pub(super) static mut UAnimMontage_IsValidAdditiveInvokerHandler: Option<UAnimMontage_IsValidAdditiveInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_IsValidAdditive_handler(handler: UAnimMontage_IsValidAdditiveInvoker){
-        unsafe{ UAnimMontage_IsValidAdditiveInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_IsValidSectionIndexInvoker = unsafe extern "C" fn(*mut c_void, i32) -> bool;
-    pub(super) static mut UAnimMontage_IsValidSectionIndexInvokerHandler: Option<UAnimMontage_IsValidSectionIndexInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_IsValidSectionIndex_handler(handler: UAnimMontage_IsValidSectionIndexInvoker){
-        unsafe{ UAnimMontage_IsValidSectionIndexInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_IsValidSectionNameInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
-    pub(super) static mut UAnimMontage_IsValidSectionNameInvokerHandler: Option<UAnimMontage_IsValidSectionNameInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_IsValidSectionName_handler(handler: UAnimMontage_IsValidSectionNameInvoker){
-        unsafe{ UAnimMontage_IsValidSectionNameInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_IsValidSlotInvoker = unsafe extern "C" fn(*mut c_void, UName) -> bool;
-    pub(super) static mut UAnimMontage_IsValidSlotInvokerHandler: Option<UAnimMontage_IsValidSlotInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_IsValidSlot_handler(handler: UAnimMontage_IsValidSlotInvoker){
-        unsafe{ UAnimMontage_IsValidSlotInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_PostLoadInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimMontage_PostLoadInvokerHandler: Option<UAnimMontage_PostLoadInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_PostLoad_handler(handler: UAnimMontage_PostLoadInvoker){
-        unsafe{ UAnimMontage_PostLoadInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_RefreshCacheDataInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimMontage_RefreshCacheDataInvokerHandler: Option<UAnimMontage_RefreshCacheDataInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_RefreshCacheData_handler(handler: UAnimMontage_RefreshCacheDataInvoker){
-        unsafe{ UAnimMontage_RefreshCacheDataInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_SetCompositeLengthInvoker = unsafe extern "C" fn(*mut c_void, f32);
-    pub(super) static mut UAnimMontage_SetCompositeLengthInvokerHandler: Option<UAnimMontage_SetCompositeLengthInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_SetCompositeLength_handler(handler: UAnimMontage_SetCompositeLengthInvoker){
-        unsafe{ UAnimMontage_SetCompositeLengthInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_UnregisterOnMontageChangedInvoker = unsafe extern "C" fn(*mut c_void, *mut c_void);
-    pub(super) static mut UAnimMontage_UnregisterOnMontageChangedInvokerHandler: Option<UAnimMontage_UnregisterOnMontageChangedInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_UnregisterOnMontageChanged_handler(handler: UAnimMontage_UnregisterOnMontageChangedInvoker){
-        unsafe{ UAnimMontage_UnregisterOnMontageChangedInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_UpdateLinkableElementsInvoker = unsafe extern "C" fn(*mut c_void);
-    pub(super) static mut UAnimMontage_UpdateLinkableElementsInvokerHandler: Option<UAnimMontage_UpdateLinkableElementsInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_UpdateLinkableElements_handler(handler: UAnimMontage_UpdateLinkableElementsInvoker){
-        unsafe{ UAnimMontage_UpdateLinkableElementsInvokerHandler = Some(handler) };
-    }
-
-    type UAnimMontage_UpdateLinkableElements2Invoker = unsafe extern "C" fn(*mut c_void, i32, i32);
-    pub(super) static mut UAnimMontage_UpdateLinkableElements2InvokerHandler: Option<UAnimMontage_UpdateLinkableElements2Invoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimMontage_UpdateLinkableElements2_handler(handler: UAnimMontage_UpdateLinkableElements2Invoker){
-        unsafe{ UAnimMontage_UpdateLinkableElements2InvokerHandler = Some(handler) };
     }
 
     type USkeletalMeshComponent_AddClothCollisionSourceInvoker = unsafe extern "C" fn(*mut c_void, *mut USkeletalMeshComponentOpaque, *mut UPhysicsAssetOpaque);

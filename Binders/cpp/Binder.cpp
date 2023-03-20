@@ -15,7 +15,6 @@
 #include "Engine/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Classes/Animation/AnimInstance.h"
 #include "Engine/Classes/Kismet/KismetSystemLibrary.h"
-#include "Engine/Classes/Animation/AnimMontage.h"
 #include "Engine/Classes/Components/SkeletalMeshComponent.h"
 #include "Engine/Classes/Components/CapsuleComponent.h"
 #include "Engine/Classes/GameFramework/CharacterMovementComponent.h"
@@ -3178,6 +3177,10 @@ extern "C"{
 		auto result = (void*)((USceneComponent*)target)->GetChildComponent(ChildIndex);	
 		return result;	
 	}
+	ECollisionEnabled::Type uapi_USceneComponent_GetCollisionEnabled(void* target){	
+		auto result = ((USceneComponent*)target)->GetCollisionEnabled();	
+		return result;	
+	}
 	ECollisionChannel uapi_USceneComponent_GetCollisionObjectType(void* target){	
 		auto result = ((USceneComponent*)target)->GetCollisionObjectType();	
 		return result;	
@@ -4806,6 +4809,10 @@ extern "C"{
 		auto result = ToVector3(((UPrimitiveComponent*)target)->GetCenterOfMass(ToFName(BoneName)));	
 		return result;	
 	}
+	ECollisionEnabled::Type uapi_UPrimitiveComponent_GetCollisionEnabled(void* target){	
+		auto result = ((UPrimitiveComponent*)target)->GetCollisionEnabled();	
+		return result;	
+	}
 	ECollisionChannel uapi_UPrimitiveComponent_GetCollisionObjectType(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->GetCollisionObjectType();	
 		return result;	
@@ -5154,6 +5161,9 @@ extern "C"{
 	}
 	void uapi_UPrimitiveComponent_SetCenterOfMass(void* target, Vector3 CenterOfMassOffset, UName BoneName){	
 		((UPrimitiveComponent*)target)->SetCenterOfMass(ToFVector(CenterOfMassOffset), ToFName(BoneName));	
+	}
+	void uapi_UPrimitiveComponent_SetCollisionEnabled(void* target, ECollisionEnabled::Type NewType){	
+		((UPrimitiveComponent*)target)->SetCollisionEnabled(NewType);	
 	}
 	void uapi_UPrimitiveComponent_SetCollisionObjectType(void* target, ECollisionChannel Channel){	
 		((UPrimitiveComponent*)target)->SetCollisionObjectType(Channel);	
@@ -5567,6 +5577,10 @@ extern "C"{
 	}
 	float uapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction(void* target, int32 MachineIndex, int32 StateIndex){	
 		auto result = ((UAnimInstance*)target)->GetRelevantAnimTimeRemainingFraction(MachineIndex, StateIndex);	
+		return result;	
+	}
+	void* uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState(void* target, int32 MachineIndex, int32 StateIndex){	
+		auto result = (void*)((UAnimInstance*)target)->GetRelevantAssetPlayerInterfaceFromState(MachineIndex, StateIndex);	
 		return result;	
 	}
 	void* uapi_UAnimInstance_GetRootMotionMontageInstance(void* target){	
@@ -6222,122 +6236,6 @@ extern "C"{
 	}
 	void uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(){	
 		(UKismetSystemLibrary::UnregisterForRemoteNotifications());	
-	}
-	int32 uapi_UAnimMontage_AddAnimCompositeSection(void* target, UName InSectionName, float StartPos){	
-		auto result = ((UAnimMontage*)target)->AddAnimCompositeSection(ToFName(InSectionName), StartPos);	
-		return result;	
-	}
-	float uapi_UAnimMontage_CalculateSequenceLength(void* target){	
-		auto result = ((UAnimMontage*)target)->CalculateSequenceLength();	
-		return result;	
-	}
-	bool uapi_UAnimMontage_CanBeUsedInComposition(void* target){	
-		auto result = ((UAnimMontage*)target)->CanBeUsedInComposition();	
-		return result;	
-	}
-	bool uapi_UAnimMontage_CanUseMarkerSync(void* target){	
-		auto result = ((UAnimMontage*)target)->CanUseMarkerSync();	
-		return result;	
-	}
-	void* uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(UAnimSequenceBase* Asset, UName SlotNodeName, float BlendInTime, float BlendOutTime, float InPlayRate, int32 LoopCount, float BlendOutTriggerTime, float InTimeToStartMontageAt){	
-		auto result = (void*)(UAnimMontage::CreateSlotAnimationAsDynamicMontage(Asset, ToFName(SlotNodeName), BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt));	
-		return result;	
-	}
-	bool uapi_UAnimMontage_DeleteAnimCompositeSection(void* target, int32 SectionIndex){	
-		auto result = ((UAnimMontage*)target)->DeleteAnimCompositeSection(SectionIndex);	
-		return result;	
-	}
-	Transform uapi_UAnimMontage_ExtractRootMotionFromTrackRange(void* target, float StartTrackPosition, float EndTrackPosition){	
-		auto result = ToTransform(((UAnimMontage*)target)->ExtractRootMotionFromTrackRange(StartTrackPosition, EndTrackPosition));	
-		return result;	
-	}
-	int32 uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(void* target, float CurrentTime, float& PosWithinCompositeSection){	
-		auto result = ((UAnimMontage*)target)->GetAnimCompositeSectionIndexFromPos(CurrentTime, PosWithinCompositeSection);	
-		return result;	
-	}
-	void* uapi_UAnimMontage_GetAnimationData(void* target, UName SlotName){	
-		auto result = (void*)((UAnimMontage*)target)->GetAnimationData(ToFName(SlotName));	
-		return result;	
-	}
-	float uapi_UAnimMontage_GetDefaultBlendInTime(void* target){	
-		auto result = ((UAnimMontage*)target)->GetDefaultBlendInTime();	
-		return result;	
-	}
-	float uapi_UAnimMontage_GetDefaultBlendOutTime(void* target){	
-		auto result = ((UAnimMontage*)target)->GetDefaultBlendOutTime();	
-		return result;	
-	}
-	UName uapi_UAnimMontage_GetGroupName(void* target){	
-		auto result = ToUName(((UAnimMontage*)target)->GetGroupName());	
-		return result;	
-	}
-	int32 uapi_UAnimMontage_GetNumSections(void* target){	
-		auto result = ((UAnimMontage*)target)->GetNumSections();	
-		return result;	
-	}
-	int32 uapi_UAnimMontage_GetSectionIndex(void* target, UName InSectionName){	
-		auto result = ((UAnimMontage*)target)->GetSectionIndex(ToFName(InSectionName));	
-		return result;	
-	}
-	int32 uapi_UAnimMontage_GetSectionIndexFromPosition(void* target, float Position){	
-		auto result = ((UAnimMontage*)target)->GetSectionIndexFromPosition(Position);	
-		return result;	
-	}
-	float uapi_UAnimMontage_GetSectionLength(void* target, int32 SectionIndex){	
-		auto result = ((UAnimMontage*)target)->GetSectionLength(SectionIndex);	
-		return result;	
-	}
-	UName uapi_UAnimMontage_GetSectionName(void* target, int32 SectionIndex){	
-		auto result = ToUName(((UAnimMontage*)target)->GetSectionName(SectionIndex));	
-		return result;	
-	}
-	void uapi_UAnimMontage_GetSectionStartAndEndTime(void* target, int32 SectionIndex, float& OutStartTime, float& OutEndTime){	
-		((UAnimMontage*)target)->GetSectionStartAndEndTime(SectionIndex, OutStartTime, OutEndTime);	
-	}
-	float uapi_UAnimMontage_GetSectionTimeLeftFromPos(void* target, float Position){	
-		auto result = ((UAnimMontage*)target)->GetSectionTimeLeftFromPos(Position);	
-		return result;	
-	}
-	bool uapi_UAnimMontage_HasRootMotion(void* target){	
-		auto result = ((UAnimMontage*)target)->HasRootMotion();	
-		return result;	
-	}
-	void uapi_UAnimMontage_InvalidateRecursiveAsset(void* target){	
-		((UAnimMontage*)target)->InvalidateRecursiveAsset();	
-	}
-	bool uapi_UAnimMontage_IsValidAdditive(void* target){	
-		auto result = ((UAnimMontage*)target)->IsValidAdditive();	
-		return result;	
-	}
-	bool uapi_UAnimMontage_IsValidSectionIndex(void* target, int32 SectionIndex){	
-		auto result = ((UAnimMontage*)target)->IsValidSectionIndex(SectionIndex);	
-		return result;	
-	}
-	bool uapi_UAnimMontage_IsValidSectionName(void* target, UName InSectionName){	
-		auto result = ((UAnimMontage*)target)->IsValidSectionName(ToFName(InSectionName));	
-		return result;	
-	}
-	bool uapi_UAnimMontage_IsValidSlot(void* target, UName InSlotName){	
-		auto result = ((UAnimMontage*)target)->IsValidSlot(ToFName(InSlotName));	
-		return result;	
-	}
-	void uapi_UAnimMontage_PostLoad(void* target){	
-		((UAnimMontage*)target)->PostLoad();	
-	}
-	void uapi_UAnimMontage_RefreshCacheData(void* target){	
-		((UAnimMontage*)target)->RefreshCacheData();	
-	}
-	void uapi_UAnimMontage_SetCompositeLength(void* target, float InLength){	
-		((UAnimMontage*)target)->SetCompositeLength(InLength);	
-	}
-	void uapi_UAnimMontage_UnregisterOnMontageChanged(void* target, void* Unregister){	
-		((UAnimMontage*)target)->UnregisterOnMontageChanged(Unregister);	
-	}
-	void uapi_UAnimMontage_UpdateLinkableElements(void* target){	
-		((UAnimMontage*)target)->UpdateLinkableElements();	
-	}
-	void uapi_UAnimMontage_UpdateLinkableElements2(void* target, int32 SlotIdx, int32 SegmentIdx){	
-		((UAnimMontage*)target)->UpdateLinkableElements(SlotIdx, SegmentIdx);	
 	}
 	void uapi_USkeletalMeshComponent_AddClothCollisionSource(void* target, USkeletalMeshComponent* InSourceComponent, UPhysicsAsset* InSourcePhysicsAsset){	
 		((USkeletalMeshComponent*)target)->AddClothCollisionSource(InSourceComponent, InSourcePhysicsAsset);	
@@ -9328,6 +9226,8 @@ using uapi_USceneComponent_GetAttachmentRootActorFn = void(*)(void*(*)(void* tar
 
 using uapi_USceneComponent_GetChildComponentFn = void(*)(void*(*)(void* target,int32 ChildIndex));
 
+using uapi_USceneComponent_GetCollisionEnabledFn = void(*)(ECollisionEnabled::Type(*)(void* target));
+
 using uapi_USceneComponent_GetCollisionObjectTypeFn = void(*)(ECollisionChannel(*)(void* target));
 
 using uapi_USceneComponent_GetComponentLocationFn = void(*)(Vector3(*)(void* target));
@@ -10250,6 +10150,8 @@ using uapi_UPrimitiveComponent_GetBodySetupFn = void(*)(void*(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetCenterOfMassFn = void(*)(Vector3(*)(void* target,UName BoneName));
 
+using uapi_UPrimitiveComponent_GetCollisionEnabledFn = void(*)(ECollisionEnabled::Type(*)(void* target));
+
 using uapi_UPrimitiveComponent_GetCollisionObjectTypeFn = void(*)(ECollisionChannel(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetCollisionProfileNameFn = void(*)(UName(*)(void* target));
@@ -10441,6 +10343,8 @@ using uapi_UPrimitiveComponent_SetCastHiddenShadowFn = void(*)(void(*)(void* tar
 using uapi_UPrimitiveComponent_SetCastShadowFn = void(*)(void(*)(void* target,bool NewCastShadow));
 
 using uapi_UPrimitiveComponent_SetCenterOfMassFn = void(*)(void(*)(void* target,Vector3 CenterOfMassOffset,UName BoneName));
+
+using uapi_UPrimitiveComponent_SetCollisionEnabledFn = void(*)(void(*)(void* target,ECollisionEnabled::Type NewType));
 
 using uapi_UPrimitiveComponent_SetCollisionObjectTypeFn = void(*)(void(*)(void* target,ECollisionChannel Channel));
 
@@ -10685,6 +10589,8 @@ using uapi_UAnimInstance_GetRelevantAnimTimeFractionFn = void(*)(float(*)(void* 
 using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFn = void(*)(float(*)(void* target,int32 MachineIndex,int32 StateIndex));
 
 using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFractionFn = void(*)(float(*)(void* target,int32 MachineIndex,int32 StateIndex));
+
+using uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateFn = void(*)(void*(*)(void* target,int32 MachineIndex,int32 StateIndex));
 
 using uapi_UAnimInstance_GetRootMotionMontageInstanceFn = void(*)(void*(*)(void* target));
 
@@ -11047,68 +10953,6 @@ using uapi_UKismetSystemLibrary_SnapshotObjectFn = void(*)(void(*)(UObject* Obje
 using uapi_UKismetSystemLibrary_TransactObjectFn = void(*)(void(*)(UObject* Object));
 
 using uapi_UKismetSystemLibrary_UnregisterForRemoteNotificationsFn = void(*)(void(*)());
-
-using uapi_UAnimMontage_AddAnimCompositeSectionFn = void(*)(int32(*)(void* target,UName InSectionName,float StartPos));
-
-using uapi_UAnimMontage_CalculateSequenceLengthFn = void(*)(float(*)(void* target));
-
-using uapi_UAnimMontage_CanBeUsedInCompositionFn = void(*)(bool(*)(void* target));
-
-using uapi_UAnimMontage_CanUseMarkerSyncFn = void(*)(bool(*)(void* target));
-
-using uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn = void(*)(void*(*)(UAnimSequenceBase* Asset,UName SlotNodeName,float BlendInTime,float BlendOutTime,float InPlayRate,int32 LoopCount,float BlendOutTriggerTime,float InTimeToStartMontageAt));
-
-using uapi_UAnimMontage_DeleteAnimCompositeSectionFn = void(*)(bool(*)(void* target,int32 SectionIndex));
-
-using uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn = void(*)(Transform(*)(void* target,float StartTrackPosition,float EndTrackPosition));
-
-using uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn = void(*)(int32(*)(void* target,float CurrentTime,float& PosWithinCompositeSection));
-
-using uapi_UAnimMontage_GetAnimationDataFn = void(*)(void*(*)(void* target,UName SlotName));
-
-using uapi_UAnimMontage_GetDefaultBlendInTimeFn = void(*)(float(*)(void* target));
-
-using uapi_UAnimMontage_GetDefaultBlendOutTimeFn = void(*)(float(*)(void* target));
-
-using uapi_UAnimMontage_GetGroupNameFn = void(*)(UName(*)(void* target));
-
-using uapi_UAnimMontage_GetNumSectionsFn = void(*)(int32(*)(void* target));
-
-using uapi_UAnimMontage_GetSectionIndexFn = void(*)(int32(*)(void* target,UName InSectionName));
-
-using uapi_UAnimMontage_GetSectionIndexFromPositionFn = void(*)(int32(*)(void* target,float Position));
-
-using uapi_UAnimMontage_GetSectionLengthFn = void(*)(float(*)(void* target,int32 SectionIndex));
-
-using uapi_UAnimMontage_GetSectionNameFn = void(*)(UName(*)(void* target,int32 SectionIndex));
-
-using uapi_UAnimMontage_GetSectionStartAndEndTimeFn = void(*)(void(*)(void* target,int32 SectionIndex,float& OutStartTime,float& OutEndTime));
-
-using uapi_UAnimMontage_GetSectionTimeLeftFromPosFn = void(*)(float(*)(void* target,float Position));
-
-using uapi_UAnimMontage_HasRootMotionFn = void(*)(bool(*)(void* target));
-
-using uapi_UAnimMontage_InvalidateRecursiveAssetFn = void(*)(void(*)(void* target));
-
-using uapi_UAnimMontage_IsValidAdditiveFn = void(*)(bool(*)(void* target));
-
-using uapi_UAnimMontage_IsValidSectionIndexFn = void(*)(bool(*)(void* target,int32 SectionIndex));
-
-using uapi_UAnimMontage_IsValidSectionNameFn = void(*)(bool(*)(void* target,UName InSectionName));
-
-using uapi_UAnimMontage_IsValidSlotFn = void(*)(bool(*)(void* target,UName InSlotName));
-
-using uapi_UAnimMontage_PostLoadFn = void(*)(void(*)(void* target));
-
-using uapi_UAnimMontage_RefreshCacheDataFn = void(*)(void(*)(void* target));
-
-using uapi_UAnimMontage_SetCompositeLengthFn = void(*)(void(*)(void* target,float InLength));
-
-using uapi_UAnimMontage_UnregisterOnMontageChangedFn = void(*)(void(*)(void* target,void* Unregister));
-
-using uapi_UAnimMontage_UpdateLinkableElementsFn = void(*)(void(*)(void* target));
-
-using uapi_UAnimMontage_UpdateLinkableElements2Fn = void(*)(void(*)(void* target,int32 SlotIdx,int32 SegmentIdx));
 
 using uapi_USkeletalMeshComponent_AddClothCollisionSourceFn = void(*)(void(*)(void* target,USkeletalMeshComponent* InSourceComponent,UPhysicsAsset* InSourcePhysicsAsset));
 
@@ -16283,6 +16127,11 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_GetChildComponent(&uapi_USceneComponent_GetChildComponent);
     }
 
+    auto const apiuapi_USceneComponent_GetCollisionEnabled = (uapi_USceneComponent_GetCollisionEnabledFn)plugin->GetDllExport(TEXT("set_USceneComponent_GetCollisionEnabled_handler\0"));
+    if(apiuapi_USceneComponent_GetCollisionEnabled){
+        apiuapi_USceneComponent_GetCollisionEnabled(&uapi_USceneComponent_GetCollisionEnabled);
+    }
+
     auto const apiuapi_USceneComponent_GetCollisionObjectType = (uapi_USceneComponent_GetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_USceneComponent_GetCollisionObjectType_handler\0"));
     if(apiuapi_USceneComponent_GetCollisionObjectType){
         apiuapi_USceneComponent_GetCollisionObjectType(&uapi_USceneComponent_GetCollisionObjectType);
@@ -18588,6 +18437,11 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_GetCenterOfMass(&uapi_UPrimitiveComponent_GetCenterOfMass);
     }
 
+    auto const apiuapi_UPrimitiveComponent_GetCollisionEnabled = (uapi_UPrimitiveComponent_GetCollisionEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetCollisionEnabled){
+        apiuapi_UPrimitiveComponent_GetCollisionEnabled(&uapi_UPrimitiveComponent_GetCollisionEnabled);
+    }
+
     auto const apiuapi_UPrimitiveComponent_GetCollisionObjectType = (uapi_UPrimitiveComponent_GetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionObjectType_handler\0"));
     if(apiuapi_UPrimitiveComponent_GetCollisionObjectType){
         apiuapi_UPrimitiveComponent_GetCollisionObjectType(&uapi_UPrimitiveComponent_GetCollisionObjectType);
@@ -19066,6 +18920,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_SetCenterOfMass = (uapi_UPrimitiveComponent_SetCenterOfMassFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCenterOfMass_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetCenterOfMass){
         apiuapi_UPrimitiveComponent_SetCenterOfMass(&uapi_UPrimitiveComponent_SetCenterOfMass);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetCollisionEnabled = (uapi_UPrimitiveComponent_SetCollisionEnabledFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCollisionEnabled_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetCollisionEnabled){
+        apiuapi_UPrimitiveComponent_SetCollisionEnabled(&uapi_UPrimitiveComponent_SetCollisionEnabled);
     }
 
     auto const apiuapi_UPrimitiveComponent_SetCollisionObjectType = (uapi_UPrimitiveComponent_SetCollisionObjectTypeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetCollisionObjectType_handler\0"));
@@ -19676,6 +19535,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction = (uapi_UAnimInstance_GetRelevantAnimTimeRemainingFractionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRelevantAnimTimeRemainingFraction_handler\0"));
     if(apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction){
         apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction(&uapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction);
+    }
+
+    auto const apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState = (uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState_handler\0"));
+    if(apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState){
+        apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState(&uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState);
     }
 
     auto const apiuapi_UAnimInstance_GetRootMotionMontageInstance = (uapi_UAnimInstance_GetRootMotionMontageInstanceFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRootMotionMontageInstance_handler\0"));
@@ -20581,161 +20445,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications = (uapi_UKismetSystemLibrary_UnregisterForRemoteNotificationsFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_UnregisterForRemoteNotifications_handler\0"));
     if(apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications){
         apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(&uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications);
-    }
-
-    auto const apiuapi_UAnimMontage_AddAnimCompositeSection = (uapi_UAnimMontage_AddAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_AddAnimCompositeSection_handler\0"));
-    if(apiuapi_UAnimMontage_AddAnimCompositeSection){
-        apiuapi_UAnimMontage_AddAnimCompositeSection(&uapi_UAnimMontage_AddAnimCompositeSection);
-    }
-
-    auto const apiuapi_UAnimMontage_CalculateSequenceLength = (uapi_UAnimMontage_CalculateSequenceLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CalculateSequenceLength_handler\0"));
-    if(apiuapi_UAnimMontage_CalculateSequenceLength){
-        apiuapi_UAnimMontage_CalculateSequenceLength(&uapi_UAnimMontage_CalculateSequenceLength);
-    }
-
-    auto const apiuapi_UAnimMontage_CanBeUsedInComposition = (uapi_UAnimMontage_CanBeUsedInCompositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanBeUsedInComposition_handler\0"));
-    if(apiuapi_UAnimMontage_CanBeUsedInComposition){
-        apiuapi_UAnimMontage_CanBeUsedInComposition(&uapi_UAnimMontage_CanBeUsedInComposition);
-    }
-
-    auto const apiuapi_UAnimMontage_CanUseMarkerSync = (uapi_UAnimMontage_CanUseMarkerSyncFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanUseMarkerSync_handler\0"));
-    if(apiuapi_UAnimMontage_CanUseMarkerSync){
-        apiuapi_UAnimMontage_CanUseMarkerSync(&uapi_UAnimMontage_CanUseMarkerSync);
-    }
-
-    auto const apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage = (uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler\0"));
-    if(apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage){
-        apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(&uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage);
-    }
-
-    auto const apiuapi_UAnimMontage_DeleteAnimCompositeSection = (uapi_UAnimMontage_DeleteAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_DeleteAnimCompositeSection_handler\0"));
-    if(apiuapi_UAnimMontage_DeleteAnimCompositeSection){
-        apiuapi_UAnimMontage_DeleteAnimCompositeSection(&uapi_UAnimMontage_DeleteAnimCompositeSection);
-    }
-
-    auto const apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange = (uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_ExtractRootMotionFromTrackRange_handler\0"));
-    if(apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange){
-        apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange(&uapi_UAnimMontage_ExtractRootMotionFromTrackRange);
-    }
-
-    auto const apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos = (uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler\0"));
-    if(apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos){
-        apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(&uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos);
-    }
-
-    auto const apiuapi_UAnimMontage_GetAnimationData = (uapi_UAnimMontage_GetAnimationDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimationData_handler\0"));
-    if(apiuapi_UAnimMontage_GetAnimationData){
-        apiuapi_UAnimMontage_GetAnimationData(&uapi_UAnimMontage_GetAnimationData);
-    }
-
-    auto const apiuapi_UAnimMontage_GetDefaultBlendInTime = (uapi_UAnimMontage_GetDefaultBlendInTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendInTime_handler\0"));
-    if(apiuapi_UAnimMontage_GetDefaultBlendInTime){
-        apiuapi_UAnimMontage_GetDefaultBlendInTime(&uapi_UAnimMontage_GetDefaultBlendInTime);
-    }
-
-    auto const apiuapi_UAnimMontage_GetDefaultBlendOutTime = (uapi_UAnimMontage_GetDefaultBlendOutTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendOutTime_handler\0"));
-    if(apiuapi_UAnimMontage_GetDefaultBlendOutTime){
-        apiuapi_UAnimMontage_GetDefaultBlendOutTime(&uapi_UAnimMontage_GetDefaultBlendOutTime);
-    }
-
-    auto const apiuapi_UAnimMontage_GetGroupName = (uapi_UAnimMontage_GetGroupNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetGroupName_handler\0"));
-    if(apiuapi_UAnimMontage_GetGroupName){
-        apiuapi_UAnimMontage_GetGroupName(&uapi_UAnimMontage_GetGroupName);
-    }
-
-    auto const apiuapi_UAnimMontage_GetNumSections = (uapi_UAnimMontage_GetNumSectionsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetNumSections_handler\0"));
-    if(apiuapi_UAnimMontage_GetNumSections){
-        apiuapi_UAnimMontage_GetNumSections(&uapi_UAnimMontage_GetNumSections);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionIndex = (uapi_UAnimMontage_GetSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndex_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionIndex){
-        apiuapi_UAnimMontage_GetSectionIndex(&uapi_UAnimMontage_GetSectionIndex);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionIndexFromPosition = (uapi_UAnimMontage_GetSectionIndexFromPositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndexFromPosition_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionIndexFromPosition){
-        apiuapi_UAnimMontage_GetSectionIndexFromPosition(&uapi_UAnimMontage_GetSectionIndexFromPosition);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionLength = (uapi_UAnimMontage_GetSectionLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionLength_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionLength){
-        apiuapi_UAnimMontage_GetSectionLength(&uapi_UAnimMontage_GetSectionLength);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionName = (uapi_UAnimMontage_GetSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionName_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionName){
-        apiuapi_UAnimMontage_GetSectionName(&uapi_UAnimMontage_GetSectionName);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionStartAndEndTime = (uapi_UAnimMontage_GetSectionStartAndEndTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionStartAndEndTime_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionStartAndEndTime){
-        apiuapi_UAnimMontage_GetSectionStartAndEndTime(&uapi_UAnimMontage_GetSectionStartAndEndTime);
-    }
-
-    auto const apiuapi_UAnimMontage_GetSectionTimeLeftFromPos = (uapi_UAnimMontage_GetSectionTimeLeftFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionTimeLeftFromPos_handler\0"));
-    if(apiuapi_UAnimMontage_GetSectionTimeLeftFromPos){
-        apiuapi_UAnimMontage_GetSectionTimeLeftFromPos(&uapi_UAnimMontage_GetSectionTimeLeftFromPos);
-    }
-
-    auto const apiuapi_UAnimMontage_HasRootMotion = (uapi_UAnimMontage_HasRootMotionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_HasRootMotion_handler\0"));
-    if(apiuapi_UAnimMontage_HasRootMotion){
-        apiuapi_UAnimMontage_HasRootMotion(&uapi_UAnimMontage_HasRootMotion);
-    }
-
-    auto const apiuapi_UAnimMontage_InvalidateRecursiveAsset = (uapi_UAnimMontage_InvalidateRecursiveAssetFn)plugin->GetDllExport(TEXT("set_UAnimMontage_InvalidateRecursiveAsset_handler\0"));
-    if(apiuapi_UAnimMontage_InvalidateRecursiveAsset){
-        apiuapi_UAnimMontage_InvalidateRecursiveAsset(&uapi_UAnimMontage_InvalidateRecursiveAsset);
-    }
-
-    auto const apiuapi_UAnimMontage_IsValidAdditive = (uapi_UAnimMontage_IsValidAdditiveFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidAdditive_handler\0"));
-    if(apiuapi_UAnimMontage_IsValidAdditive){
-        apiuapi_UAnimMontage_IsValidAdditive(&uapi_UAnimMontage_IsValidAdditive);
-    }
-
-    auto const apiuapi_UAnimMontage_IsValidSectionIndex = (uapi_UAnimMontage_IsValidSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionIndex_handler\0"));
-    if(apiuapi_UAnimMontage_IsValidSectionIndex){
-        apiuapi_UAnimMontage_IsValidSectionIndex(&uapi_UAnimMontage_IsValidSectionIndex);
-    }
-
-    auto const apiuapi_UAnimMontage_IsValidSectionName = (uapi_UAnimMontage_IsValidSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionName_handler\0"));
-    if(apiuapi_UAnimMontage_IsValidSectionName){
-        apiuapi_UAnimMontage_IsValidSectionName(&uapi_UAnimMontage_IsValidSectionName);
-    }
-
-    auto const apiuapi_UAnimMontage_IsValidSlot = (uapi_UAnimMontage_IsValidSlotFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSlot_handler\0"));
-    if(apiuapi_UAnimMontage_IsValidSlot){
-        apiuapi_UAnimMontage_IsValidSlot(&uapi_UAnimMontage_IsValidSlot);
-    }
-
-    auto const apiuapi_UAnimMontage_PostLoad = (uapi_UAnimMontage_PostLoadFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PostLoad_handler\0"));
-    if(apiuapi_UAnimMontage_PostLoad){
-        apiuapi_UAnimMontage_PostLoad(&uapi_UAnimMontage_PostLoad);
-    }
-
-    auto const apiuapi_UAnimMontage_RefreshCacheData = (uapi_UAnimMontage_RefreshCacheDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_RefreshCacheData_handler\0"));
-    if(apiuapi_UAnimMontage_RefreshCacheData){
-        apiuapi_UAnimMontage_RefreshCacheData(&uapi_UAnimMontage_RefreshCacheData);
-    }
-
-    auto const apiuapi_UAnimMontage_SetCompositeLength = (uapi_UAnimMontage_SetCompositeLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_SetCompositeLength_handler\0"));
-    if(apiuapi_UAnimMontage_SetCompositeLength){
-        apiuapi_UAnimMontage_SetCompositeLength(&uapi_UAnimMontage_SetCompositeLength);
-    }
-
-    auto const apiuapi_UAnimMontage_UnregisterOnMontageChanged = (uapi_UAnimMontage_UnregisterOnMontageChangedFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UnregisterOnMontageChanged_handler\0"));
-    if(apiuapi_UAnimMontage_UnregisterOnMontageChanged){
-        apiuapi_UAnimMontage_UnregisterOnMontageChanged(&uapi_UAnimMontage_UnregisterOnMontageChanged);
-    }
-
-    auto const apiuapi_UAnimMontage_UpdateLinkableElements = (uapi_UAnimMontage_UpdateLinkableElementsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements_handler\0"));
-    if(apiuapi_UAnimMontage_UpdateLinkableElements){
-        apiuapi_UAnimMontage_UpdateLinkableElements(&uapi_UAnimMontage_UpdateLinkableElements);
-    }
-
-    auto const apiuapi_UAnimMontage_UpdateLinkableElements2 = (uapi_UAnimMontage_UpdateLinkableElements2Fn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements2_handler\0"));
-    if(apiuapi_UAnimMontage_UpdateLinkableElements2){
-        apiuapi_UAnimMontage_UpdateLinkableElements2(&uapi_UAnimMontage_UpdateLinkableElements2);
     }
 
     auto const apiuapi_USkeletalMeshComponent_AddClothCollisionSource = (uapi_USkeletalMeshComponent_AddClothCollisionSourceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_AddClothCollisionSource_handler\0"));

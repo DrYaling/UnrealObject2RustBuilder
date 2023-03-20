@@ -127,9 +127,18 @@ pub struct CppClass{
 }
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppEnum{
+    pub enum_class: bool,
+    pub namespace_enum: bool,
     pub name: String,
     pub constants: Vec<CppEnumConstant>,
-    pub enum_class: bool,
+}
+impl CppEnum{
+    pub fn equal(&self, param_name: &str) -> bool{
+        self.name == param_name ||
+        {
+            self.namespace_enum && format!("{}::Type",self.name) == param_name
+        }
+    }
 }
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CppEnumConstant{    

@@ -107,7 +107,8 @@
                 "PostCompileValidationClassName"
             ],
             "ignore_functions":[
-                "GetStateMachineIndexAndDescription"
+                "GetStateMachineIndexAndDescription",
+                "GetRelevantAssetPlayerInterfaceFromState"
             ],
             "fields": ["Ignore"]
         },

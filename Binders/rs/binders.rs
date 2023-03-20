@@ -144,7 +144,6 @@ mod opaque_types{
 	pub type IAnimClassInterfaceOpaque = c_void;//cpp type IAnimClassInterface
 	pub type FAnimNode_StateMachineOpaque = c_void;//cpp type FAnimNode_StateMachine
 	pub type FPoseSnapshotOpaque = c_void;//cpp type FPoseSnapshot
-	pub type FAnimNode_AssetPlayerRelevancyBaseOpaque = c_void;//cpp type FAnimNode_AssetPlayerRelevancyBase
 	pub type UAnimSequenceBaseOpaque = c_void;//cpp type UAnimSequenceBase
 	pub type FOnMontageBlendingOutStartedOpaque = c_void;//cpp type FOnMontageBlendingOutStarted
 	pub type USkeletalMeshOpaque = c_void;//cpp type USkeletalMesh
@@ -7022,10 +7021,6 @@ impl UAnimInstance{
 	#[inline]
 	pub fn GetRelevantAnimTimeRemainingFraction(&mut self, MachineIndex: i32, StateIndex: i32) -> f32{
 		unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
-	}
-	#[inline]
-	pub fn GetRelevantAssetPlayerInterfaceFromState(&self, MachineIndex: i32, StateIndex: i32) -> *mut FAnimNode_AssetPlayerRelevancyBaseOpaque{
-		unsafe{ UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler.as_ref().unwrap()(self.inner, MachineIndex, StateIndex) }
 	}
 	#[inline]
 	pub fn GetRootMotionMontageInstance(&self) -> *mut FAnimMontageInstanceOpaque{
@@ -20266,13 +20261,6 @@ mod ffis{
     #[no_mangle]
     extern "C" fn set_UAnimInstance_GetRelevantAnimTimeRemainingFraction_handler(handler: UAnimInstance_GetRelevantAnimTimeRemainingFractionInvoker){
         unsafe{ UAnimInstance_GetRelevantAnimTimeRemainingFractionInvokerHandler = Some(handler) };
-    }
-
-    type UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker = unsafe extern "C" fn(*mut c_void, i32, i32) -> *mut FAnimNode_AssetPlayerRelevancyBaseOpaque;
-    pub(super) static mut UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler: Option<UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker> = None;
-    #[no_mangle]
-    extern "C" fn set_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState_handler(handler: UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvoker){
-        unsafe{ UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateInvokerHandler = Some(handler) };
     }
 
     type UAnimInstance_GetRootMotionMontageInstanceInvoker = unsafe extern "C" fn(*mut c_void) -> *mut FAnimMontageInstanceOpaque;

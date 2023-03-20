@@ -5579,10 +5579,6 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->GetRelevantAnimTimeRemainingFraction(MachineIndex, StateIndex);	
 		return result;	
 	}
-	void* uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState(void* target, int32 MachineIndex, int32 StateIndex){	
-		auto result = (void*)((UAnimInstance*)target)->GetRelevantAssetPlayerInterfaceFromState(MachineIndex, StateIndex);	
-		return result;	
-	}
 	void* uapi_UAnimInstance_GetRootMotionMontageInstance(void* target){	
 		auto result = (void*)((UAnimInstance*)target)->GetRootMotionMontageInstance();	
 		return result;	
@@ -10589,8 +10585,6 @@ using uapi_UAnimInstance_GetRelevantAnimTimeFractionFn = void(*)(float(*)(void* 
 using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFn = void(*)(float(*)(void* target,int32 MachineIndex,int32 StateIndex));
 
 using uapi_UAnimInstance_GetRelevantAnimTimeRemainingFractionFn = void(*)(float(*)(void* target,int32 MachineIndex,int32 StateIndex));
-
-using uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateFn = void(*)(void*(*)(void* target,int32 MachineIndex,int32 StateIndex));
 
 using uapi_UAnimInstance_GetRootMotionMontageInstanceFn = void(*)(void*(*)(void* target));
 
@@ -19535,11 +19529,6 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction = (uapi_UAnimInstance_GetRelevantAnimTimeRemainingFractionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRelevantAnimTimeRemainingFraction_handler\0"));
     if(apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction){
         apiuapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction(&uapi_UAnimInstance_GetRelevantAnimTimeRemainingFraction);
-    }
-
-    auto const apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState = (uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromStateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState_handler\0"));
-    if(apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState){
-        apiuapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState(&uapi_UAnimInstance_GetRelevantAssetPlayerInterfaceFromState);
     }
 
     auto const apiuapi_UAnimInstance_GetRootMotionMontageInstance = (uapi_UAnimInstance_GetRootMotionMontageInstanceFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetRootMotionMontageInstance_handler\0"));

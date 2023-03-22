@@ -478,7 +478,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
             else{
                 //opaque ref and ref 
-                if is_opaque(&param.type_str, engine, settings) && !(param.ptr_param || param.ref_param){
+                if is_opaque(&param.type_str, engine, settings){//} && !(param.ptr_param || param.ref_param){
                     continue 'api;
                 }
                 let wrapper_type = is_wrapper_type(&param.type_str, settings);

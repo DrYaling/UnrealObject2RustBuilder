@@ -53,3 +53,9 @@ pub enum ECollisionEnabled{
 	ProbeOnly = 4,
 	QueryAndProbe = 5,
 }
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ETeleportType{
+	TeleportPhysics = 0,
+	ResetPhysics = 1,
+}

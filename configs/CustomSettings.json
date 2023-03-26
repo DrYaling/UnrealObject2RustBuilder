@@ -1,5 +1,5 @@
 {
-    "EngineRoot": "F:/Unreal/UE_5.1/Engine",
+    "EngineRoot": "D:/Unreal/UE_5.1/Engine",
     "ExportClasses":[
         {
             "class_name": "UObject",
@@ -85,6 +85,12 @@
             "fields": ["Ignore"]
         },
         {
+            "class_name": "UMovementComponent",
+            "fields":[
+                "Velocity"
+            ]
+        },
+        {
             "class_name": "UWorld",
             "fields":["Ignore"],
             "ignore_functions":[
@@ -146,7 +152,7 @@
         },
         {
             "class_name": "UCharacterMovementComponent",
-            "fields": ["Ignore"]
+            "fields": ["GravityScale", "GroundFriction"]
         },
         {
             "class_name": "UCapsuleComponent",

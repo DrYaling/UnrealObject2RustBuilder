@@ -5,16 +5,17 @@
 #include "Engine/Classes/GameFramework/Pawn.h"
 #include "Engine/Classes/GameFramework/Controller.h"
 #include "Engine/Classes/GameFramework/PlayerController.h"
-#include "Core/Public/Math/RandomStream.h"
 #include "Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/Classes/GameFramework/Character.h"
 #include "Engine/Classes/GameFramework/GameModeBase.h"
 #include "Engine/Classes/Components/SceneComponent.h"
 #include "Engine/Classes/Components/ActorComponent.h"
+#include "Engine/Classes/GameFramework/MovementComponent.h"
 #include "Engine/Classes/Engine/World.h"
 #include "Engine/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Classes/Animation/AnimInstance.h"
 #include "Engine/Classes/Kismet/KismetSystemLibrary.h"
+#include "Engine/Classes/Animation/AnimMontage.h"
 #include "Engine/Classes/Components/SkeletalMeshComponent.h"
 #include "Engine/Classes/Components/CapsuleComponent.h"
 #include "Engine/Classes/GameFramework/CharacterMovementComponent.h"
@@ -88,8 +89,27 @@ extern "C"{
 	void uapi_UObject_AbortInsideMemberFunction(void* target){	
 		((UObject*)target)->AbortInsideMemberFunction();	
 	}
+	bool uapi_UObject_AreNativePropertiesIdenticalTo(void* target, UObject* Other){	
+		auto result = ((UObject*)target)->AreNativePropertiesIdenticalTo(Other);	
+		return result;	
+	}
+	void uapi_UObject_BeginCacheForCookedPlatformData(void* target, ITargetPlatform* TargetPlatform){	
+		((UObject*)target)->BeginCacheForCookedPlatformData(TargetPlatform);	
+	}
 	void uapi_UObject_BeginDestroy(void* target){	
 		((UObject*)target)->BeginDestroy();	
+	}
+	bool uapi_UObject_CallRemoteFunction(void* target, UFunction* Function, void* Parms, FOutParmRec* OutParms, FFrame* Stack){	
+		auto result = ((UObject*)target)->CallRemoteFunction(Function, Parms, OutParms, Stack);	
+		return result;	
+	}
+	bool uapi_UObject_CanCreateInCurrentContext(UObject* Template){	
+		auto result = (UObject::CanCreateInCurrentContext(Template));	
+		return result;	
+	}
+	bool uapi_UObject_CanEditChange(void* target, FProperty* InProperty){	
+		auto result = ((UObject*)target)->CanEditChange(InProperty);	
+		return result;	
 	}
 	bool uapi_UObject_CanModify(void* target){	
 		auto result = ((UObject*)target)->CanModify();	
@@ -102,6 +122,9 @@ extern "C"{
 	void uapi_UObject_ClearAllCachedCookedPlatformData(void* target){	
 		((UObject*)target)->ClearAllCachedCookedPlatformData();	
 	}
+	void uapi_UObject_ClearCachedCookedPlatformData(void* target, ITargetPlatform* TargetPlatform){	
+		((UObject*)target)->ClearCachedCookedPlatformData(TargetPlatform);	
+	}
 	bool uapi_UObject_ConditionalBeginDestroy(void* target){	
 		auto result = ((UObject*)target)->ConditionalBeginDestroy();	
 		return result;	
@@ -112,6 +135,9 @@ extern "C"{
 	}
 	void uapi_UObject_ConditionalPostLoad(void* target){	
 		((UObject*)target)->ConditionalPostLoad();	
+	}
+	void uapi_UObject_ConditionalPostLoadSubobjects(void* target, FObjectInstancingGraph* OuterInstanceGraph){	
+		((UObject*)target)->ConditionalPostLoadSubobjects(OuterInstanceGraph);	
 	}
 	void uapi_UObject_DestroyNonNativeProperties(void* target){	
 		((UObject*)target)->DestroyNonNativeProperties();	
@@ -154,6 +180,10 @@ extern "C"{
 		auto result = ToUName(((UObject*)target)->GetExporterName());	
 		return result;	
 	}
+	int32 uapi_UObject_GetFunctionCallspace(void* target, UFunction* Function, FFrame* Stack){	
+		auto result = ((UObject*)target)->GetFunctionCallspace(Function, Stack);	
+		return result;	
+	}
 	const char* uapi_UObject_GetGlobalUserConfigFilename(void* target){	
 		auto result = FString2Utf8(((UObject*)target)->GetGlobalUserConfigFilename());	
 		return result;	
@@ -186,8 +216,22 @@ extern "C"{
 		auto result = ((UObject*)target)->ImplementsGetWorld();	
 		return result;	
 	}
+	void uapi_UObject_ImportCustomProperties(void* target, TCHAR* SourceText, FFeedbackContext* Warn){	
+		((UObject*)target)->ImportCustomProperties(SourceText, Warn);	
+	}
+	void uapi_UObject_InstanceSubobjectTemplates(void* target, FObjectInstancingGraph* InstanceGraph){	
+		((UObject*)target)->InstanceSubobjectTemplates(InstanceGraph);	
+	}
 	bool uapi_UObject_IsAsset(void* target){	
 		auto result = ((UObject*)target)->IsAsset();	
+		return result;	
+	}
+	bool uapi_UObject_IsBasedOnArchetype(void* target, UObject* SomeObject){	
+		auto result = ((UObject*)target)->IsBasedOnArchetype(SomeObject);	
+		return result;	
+	}
+	bool uapi_UObject_IsCachedCookedPlatformDataLoaded(void* target, ITargetPlatform* TargetPlatform){	
+		auto result = ((UObject*)target)->IsCachedCookedPlatformDataLoaded(TargetPlatform);	
 		return result;	
 	}
 	bool uapi_UObject_IsDestructionThreadSafe(void* target){	
@@ -238,6 +282,9 @@ extern "C"{
 		auto result = ((UObject*)target)->IsSupportedForNetworking();	
 		return result;	
 	}
+	void uapi_UObject_LoadConfig(void* target, UClass* ConfigClass, TCHAR* Filename, uint32 PropagationFlags, FProperty* PropertyToLoad){	
+		((UObject*)target)->LoadConfig(ConfigClass, Filename, PropagationFlags, PropertyToLoad);	
+	}
 	void uapi_UObject_MarkAsEditorOnlySubobject(void* target){	
 		((UObject*)target)->MarkAsEditorOnlySubobject();	
 	}
@@ -260,6 +307,13 @@ extern "C"{
 		auto result = ((UObject*)target)->NeedsLoadForServer();	
 		return result;	
 	}
+	bool uapi_UObject_NeedsLoadForTargetPlatform(void* target, ITargetPlatform* TargetPlatform){	
+		auto result = ((UObject*)target)->NeedsLoadForTargetPlatform(TargetPlatform);	
+		return result;	
+	}
+	void uapi_UObject_ParseParms(void* target, TCHAR* Parms){	
+		((UObject*)target)->ParseParms(Parms);	
+	}
 	void uapi_UObject_PostCDOContruct(void* target){	
 		((UObject*)target)->PostCDOContruct();	
 	}
@@ -278,11 +332,17 @@ extern "C"{
 	void uapi_UObject_PostInitProperties(void* target){	
 		((UObject*)target)->PostInitProperties();	
 	}
+	void uapi_UObject_PostInterpChange(void* target, FProperty* PropertyThatChanged){	
+		((UObject*)target)->PostInterpChange(PropertyThatChanged);	
+	}
 	void uapi_UObject_PostLinkerChange(void* target){	
 		((UObject*)target)->PostLinkerChange();	
 	}
 	void uapi_UObject_PostLoad(void* target){	
 		((UObject*)target)->PostLoad();	
+	}
+	void uapi_UObject_PostLoadSubobjects(void* target, FObjectInstancingGraph* OuterInstanceGraph){	
+		((UObject*)target)->PostLoadSubobjects(OuterInstanceGraph);	
 	}
 	void uapi_UObject_PostNetReceive(void* target){	
 		((UObject*)target)->PostNetReceive();	
@@ -290,17 +350,45 @@ extern "C"{
 	void uapi_UObject_PostReinitProperties(void* target){	
 		((UObject*)target)->PostReinitProperties();	
 	}
+	void uapi_UObject_PostReloadConfig(void* target, FProperty* PropertyThatWasLoaded){	
+		((UObject*)target)->PostReloadConfig(PropertyThatWasLoaded);	
+	}
+	void uapi_UObject_PostRename(void* target, UObject* OldOuter, UName OldName){	
+		((UObject*)target)->PostRename(OldOuter, ToFName(OldName));	
+	}
 	void uapi_UObject_PostRepNotifies(void* target){	
 		((UObject*)target)->PostRepNotifies();	
 	}
 	void uapi_UObject_PreDestroyFromReplication(void* target){	
 		((UObject*)target)->PreDestroyFromReplication();	
 	}
+	void uapi_UObject_PreEditChange(void* target, FProperty* PropertyAboutToChange){	
+		((UObject*)target)->PreEditChange(PropertyAboutToChange);	
+	}
 	void uapi_UObject_PreEditUndo(void* target){	
 		((UObject*)target)->PreEditUndo();	
 	}
 	void uapi_UObject_PreNetReceive(void* target){	
 		((UObject*)target)->PreNetReceive();	
+	}
+	void uapi_UObject_ProcessEvent(void* target, UFunction* Function, void* Parms){	
+		((UObject*)target)->ProcessEvent(Function, Parms);	
+	}
+	void* uapi_UObject_RegenerateClass(void* target, UClass* ClassToRegenerate, UObject* PreviousCDO){	
+		auto result = (void*)((UObject*)target)->RegenerateClass(ClassToRegenerate, PreviousCDO);	
+		return result;	
+	}
+	void uapi_UObject_ReinitializeProperties(void* target, UObject* SourceObject, FObjectInstancingGraph* InstanceGraph){	
+		((UObject*)target)->ReinitializeProperties(SourceObject, InstanceGraph);	
+	}
+	void uapi_UObject_ReloadConfig(void* target, UClass* ConfigClass, TCHAR* Filename, uint32 PropagationFlags, FProperty* PropertyToLoad){	
+		((UObject*)target)->ReloadConfig(ConfigClass, Filename, PropagationFlags, PropertyToLoad);	
+	}
+	void uapi_UObject_SaveConfig(void* target, uint64 Flags, TCHAR* Filename, FConfigCacheIni* Config, bool bAllowCopyToDefaultObject){	
+		((UObject*)target)->SaveConfig(Flags, Filename, Config, bAllowCopyToDefaultObject);	
+	}
+	void uapi_UObject_SetLinker(void* target, FLinkerLoad* LinkerLoad, int32 LinkerIndex, bool bShouldDetachExisting){	
+		((UObject*)target)->SetLinker(LinkerLoad, LinkerIndex, bShouldDetachExisting);	
 	}
 	void uapi_UObject_ShutdownAfterError(void* target){	
 		((UObject*)target)->ShutdownAfterError();	
@@ -322,12 +410,54 @@ extern "C"{
 		auto result = ToTransform(((AActor*)target)->ActorToWorld());	
 		return result;	
 	}
+	void uapi_AActor_AddActorLocalOffset(void* target, Vector3 DeltaLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->AddActorLocalOffset(ToFVector(DeltaLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_AActor_AddActorLocalRotation(void* target, Rotator DeltaRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->AddActorLocalRotation(ToFRotator(DeltaRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_AActor_AddActorWorldOffset(void* target, Vector3 DeltaLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->AddActorWorldOffset(ToFVector(DeltaLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_AActor_AddActorWorldRotation(void* target, Rotator DeltaRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->AddActorWorldRotation(ToFRotator(DeltaRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	bool uapi_AActor_AddDataLayer(void* target, UDataLayerAsset* DataLayerAsset){	
+		auto result = ((AActor*)target)->AddDataLayer(DataLayerAsset);	
+		return result;	
+	}
+	void uapi_AActor_AddInstanceComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->AddInstanceComponent(Component);	
+	}
+	void uapi_AActor_AddOwnedComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->AddOwnedComponent(Component);	
+	}
+	void uapi_AActor_AddTickPrerequisiteActor(void* target, AActor* PrerequisiteActor){	
+		((AActor*)target)->AddTickPrerequisiteActor(PrerequisiteActor);	
+	}
+	void uapi_AActor_AddTickPrerequisiteComponent(void* target, UActorComponent* PrerequisiteComponent){	
+		((AActor*)target)->AddTickPrerequisiteComponent(PrerequisiteComponent);	
+	}
 	bool uapi_AActor_AllowReceiveTickEventOnDedicatedServer(void* target){	
 		auto result = ((AActor*)target)->AllowReceiveTickEventOnDedicatedServer();	
 		return result;	
 	}
 	void uapi_AActor_AsyncPhysicsTickActor(void* target, float DeltaTime, float SimTime){	
 		((AActor*)target)->AsyncPhysicsTickActor(DeltaTime, SimTime);	
+	}
+	void uapi_AActor_BecomeViewTarget(void* target, APlayerController* PC){	
+		((AActor*)target)->BecomeViewTarget(PC);	
+	}
+	void uapi_AActor_CallPreReplication(void* target, UNetDriver* NetDriver){	
+		((AActor*)target)->CallPreReplication(NetDriver);	
+	}
+	bool uapi_AActor_CallRemoteFunction(void* target, UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){	
+		auto result = ((AActor*)target)->CallRemoteFunction(Function, Parameters, OutParms, Stack);	
+		return result;	
+	}
+	bool uapi_AActor_CanBeBaseForCharacter(void* target, APawn* Pawn){	
+		auto result = ((AActor*)target)->CanBeBaseForCharacter(Pawn);	
+		return result;	
 	}
 	bool uapi_AActor_CanBeDamaged(void* target){	
 		auto result = ((AActor*)target)->CanBeDamaged();	
@@ -339,6 +469,14 @@ extern "C"{
 	}
 	bool uapi_AActor_CanChangeIsSpatiallyLoadedFlag(void* target){	
 		auto result = ((AActor*)target)->CanChangeIsSpatiallyLoadedFlag();	
+		return result;	
+	}
+	bool uapi_AActor_CanEditChange(void* target, FProperty* InProperty){	
+		auto result = ((AActor*)target)->CanEditChange(InProperty);	
+		return result;	
+	}
+	bool uapi_AActor_CanEditChangeComponent(void* target, UActorComponent* Component, FProperty* InProperty){	
+		auto result = ((AActor*)target)->CanEditChangeComponent(Component, InProperty);	
 		return result;	
 	}
 	bool uapi_AActor_CanEverTick(void* target){	
@@ -378,9 +516,30 @@ extern "C"{
 	void uapi_AActor_ClearInstanceComponents(void* target, bool bDestroyComponents){	
 		((AActor*)target)->ClearInstanceComponents(bDestroyComponents);	
 	}
+	bool uapi_AActor_ContainsDataLayer(void* target, UDataLayerAsset* DataLayerAsset){	
+		auto result = ((AActor*)target)->ContainsDataLayer(DataLayerAsset);	
+		return result;	
+	}
+	void uapi_AActor_CopyRemoteRoleFrom(void* target, AActor* CopyFromActor){	
+		((AActor*)target)->CopyRemoteRoleFrom(CopyFromActor);	
+	}
+	void* uapi_AActor_CreateComponentFromTemplate(void* target, UActorComponent* Template, UName InName){	
+		auto result = (void*)((AActor*)target)->CreateComponentFromTemplate(Template, ToFName(InName));	
+		return result;	
+	}
+	void* uapi_AActor_CreateComponentFromTemplateData(void* target, FBlueprintCookedComponentInstancingData* TemplateData, UName InName){	
+		auto result = (void*)((AActor*)target)->CreateComponentFromTemplateData(TemplateData, ToFName(InName));	
+		return result;	
+	}
 	bool uapi_AActor_CreateOrUpdateActorFolder(void* target){	
 		auto result = ((AActor*)target)->CreateOrUpdateActorFolder();	
 		return result;	
+	}
+	void uapi_AActor_DebugShowComponentHierarchy(void* target, TCHAR* Info, bool bShowPosition){	
+		((AActor*)target)->DebugShowComponentHierarchy(Info, bShowPosition);	
+	}
+	void uapi_AActor_DebugShowOneComponentHierarchy(void* target, USceneComponent* SceneComp, int32& NestLevel, bool bShowPosition){	
+		((AActor*)target)->DebugShowOneComponentHierarchy(SceneComp, NestLevel, bShowPosition);	
 	}
 	bool uapi_AActor_Destroy(void* target, bool bNetForce, bool bShouldModifyLevel){	
 		auto result = ((AActor*)target)->Destroy(bNetForce, bShouldModifyLevel);	
@@ -399,11 +558,30 @@ extern "C"{
 	void uapi_AActor_DisableComponentsSimulatePhysics(void* target){	
 		((AActor*)target)->DisableComponentsSimulatePhysics();	
 	}
+	void uapi_AActor_DisableInput(void* target, APlayerController* PlayerController){	
+		((AActor*)target)->DisableInput(PlayerController);	
+	}
 	void uapi_AActor_DispatchBeginPlay(void* target, bool bFromLevelStreaming){	
 		((AActor*)target)->DispatchBeginPlay(bFromLevelStreaming);	
 	}
+	void uapi_AActor_EditorReplacedActor(void* target, AActor* OldActor){	
+		((AActor*)target)->EditorReplacedActor(OldActor);	
+	}
+	void uapi_AActor_EnableInput(void* target, APlayerController* PlayerController){	
+		((AActor*)target)->EnableInput(PlayerController);	
+	}
+	void uapi_AActor_EndViewTarget(void* target, APlayerController* PC){	
+		((AActor*)target)->EndViewTarget(PC);	
+	}
 	void uapi_AActor_ExchangeNetRoles(void* target, bool bRemoteOwner){	
 		((AActor*)target)->ExchangeNetRoles(bRemoteOwner);	
+	}
+	void* uapi_AActor_FindActorInPackage(UPackage* InPackage){	
+		auto result = (void*)(AActor::FindActorInPackage(InPackage));	
+		return result;	
+	}
+	void uapi_AActor_FinishAndRegisterComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->FinishAndRegisterComponent(Component);	
 	}
 	void uapi_AActor_FixupActorFolder(void* target){	
 		((AActor*)target)->FixupActorFolder();	
@@ -478,6 +656,10 @@ extern "C"{
 		auto result = ((AActor*)target)->GetActorTimeDilation();	
 		return result;	
 	}
+	float uapi_AActor_GetActorTimeDilation2(void* target, UWorld* ActorWorld){	
+		auto result = ((AActor*)target)->GetActorTimeDilation(*ActorWorld);	
+		return result;	
+	}
 	Transform uapi_AActor_GetActorTransform(void* target){	
 		auto result = ToTransform(((AActor*)target)->GetActorTransform());	
 		return result;	
@@ -525,12 +707,24 @@ extern "C"{
 		auto result = (void*)((AActor*)target)->GetDefaultAttachComponent();	
 		return result;	
 	}
+	float uapi_AActor_GetDistanceTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetDistanceTo(OtherActor);	
+		return result;	
+	}
+	float uapi_AActor_GetDotProductTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetDotProductTo(OtherActor);	
+		return result;	
+	}
 	Uuid uapi_AActor_GetFolderGuid(void* target, bool bDirectAccess){	
 		auto result = ToUuid(((AActor*)target)->GetFolderGuid(bDirectAccess));	
 		return result;	
 	}
 	UName uapi_AActor_GetFolderPath(void* target){	
 		auto result = ToUName(((AActor*)target)->GetFolderPath());	
+		return result;	
+	}
+	int32 uapi_AActor_GetFunctionCallspace(void* target, UFunction* Function, FFrame* Stack){	
+		auto result = ((AActor*)target)->GetFunctionCallspace(Function, Stack);	
 		return result;	
 	}
 	void* uapi_AActor_GetGameInstance(void* target){	
@@ -551,6 +745,14 @@ extern "C"{
 	}
 	UName uapi_AActor_GetHiddenPropertyName(){	
 		auto result = ToUName((AActor::GetHiddenPropertyName()));	
+		return result;	
+	}
+	float uapi_AActor_GetHorizontalDistanceTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetHorizontalDistanceTo(OtherActor);	
+		return result;	
+	}
+	float uapi_AActor_GetHorizontalDotProductTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetHorizontalDotProductTo(OtherActor);	
 		return result;	
 	}
 	const char* uapi_AActor_GetHumanReadableName(void* target){	
@@ -700,6 +902,18 @@ extern "C"{
 		auto result = ((AActor*)target)->GetSimpleCollisionRadius();	
 		return result;	
 	}
+	float uapi_AActor_GetSquaredDistanceTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetSquaredDistanceTo(OtherActor);	
+		return result;	
+	}
+	float uapi_AActor_GetSquaredHorizontalDistanceTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetSquaredHorizontalDistanceTo(OtherActor);	
+		return result;	
+	}
+	Vector3 uapi_AActor_GetTargetLocation(void* target, AActor* RequestedBy){	
+		auto result = ToVector3(((AActor*)target)->GetTargetLocation(RequestedBy));	
+		return result;	
+	}
 	bool uapi_AActor_GetTearOff(void* target){	
 		auto result = ((AActor*)target)->GetTearOff();	
 		return result;	
@@ -716,6 +930,10 @@ extern "C"{
 		auto result = ToVector3(((AActor*)target)->GetVelocity());	
 		return result;	
 	}
+	float uapi_AActor_GetVerticalDistanceTo(void* target, AActor* OtherActor){	
+		auto result = ((AActor*)target)->GetVerticalDistanceTo(OtherActor);	
+		return result;	
+	}
 	void* uapi_AActor_GetWorld(void* target){	
 		auto result = (void*)((AActor*)target)->GetWorld();	
 		return result;	
@@ -723,6 +941,9 @@ extern "C"{
 	void* uapi_AActor_GetWorldSettings(void* target){	
 		auto result = (void*)((AActor*)target)->GetWorldSettings();	
 		return result;	
+	}
+	void uapi_AActor_HandleRegisterComponentWithWorld(void* target, UActorComponent* Component){	
+		((AActor*)target)->HandleRegisterComponentWithWorld(Component);	
 	}
 	bool uapi_AActor_HasActiveCameraComponent(void* target){	
 		auto result = ((AActor*)target)->HasActiveCameraComponent();	
@@ -768,6 +989,10 @@ extern "C"{
 		auto result = ((AActor*)target)->HasValidRootComponent();	
 		return result;	
 	}
+	bool uapi_AActor_IncrementalRegisterComponents(void* target, int32 NumComponentsToRegister, FRegisterComponentContext* Context){	
+		auto result = ((AActor*)target)->IncrementalRegisterComponents(NumComponentsToRegister, Context);	
+		return result;	
+	}
 	void uapi_AActor_InitializeComponents(void* target){	
 		((AActor*)target)->InitializeComponents();	
 	}
@@ -787,6 +1012,10 @@ extern "C"{
 	}
 	bool uapi_AActor_IsActorBeingDestroyed(void* target){	
 		auto result = ((AActor*)target)->IsActorBeingDestroyed();	
+		return result;	
+	}
+	bool uapi_AActor_IsActorComponentReplicatedSubObjectRegistered(void* target, UActorComponent* OwnerComponent, UObject* SubObject){	
+		auto result = ((AActor*)target)->IsActorComponentReplicatedSubObjectRegistered(OwnerComponent, SubObject);	
 		return result;	
 	}
 	bool uapi_AActor_IsActorInitialized(void* target){	
@@ -809,8 +1038,20 @@ extern "C"{
 		auto result = ((AActor*)target)->IsAsset();	
 		return result;	
 	}
+	bool uapi_AActor_IsAttachedTo(void* target, AActor* Other){	
+		auto result = ((AActor*)target)->IsAttachedTo(Other);	
+		return result;	
+	}
+	bool uapi_AActor_IsBasedOnActor(void* target, AActor* Other){	
+		auto result = ((AActor*)target)->IsBasedOnActor(Other);	
+		return result;	
+	}
 	bool uapi_AActor_IsChildActor(void* target){	
 		auto result = ((AActor*)target)->IsChildActor();	
+		return result;	
+	}
+	bool uapi_AActor_IsComponentRelevantForNavigation(void* target, UActorComponent* Component){	
+		auto result = ((AActor*)target)->IsComponentRelevantForNavigation(Component);	
 		return result;	
 	}
 	bool uapi_AActor_IsDefaultPreviewEnabled(void* target){	
@@ -849,6 +1090,10 @@ extern "C"{
 		auto result = ((AActor*)target)->IsInEditingLevelInstance();	
 		return result;	
 	}
+	bool uapi_AActor_IsInLevel(void* target, ULevel* TestLevel){	
+		auto result = ((AActor*)target)->IsInLevel(TestLevel);	
+		return result;	
+	}
 	bool uapi_AActor_IsInPersistentLevel(void* target, bool bIncludeLevelStreamingPersistent){	
 		auto result = ((AActor*)target)->IsInPersistentLevel(bIncludeLevelStreamingPersistent);	
 		return result;	
@@ -877,12 +1122,32 @@ extern "C"{
 		auto result = ((AActor*)target)->IsNetStartupActor();	
 		return result;	
 	}
+	bool uapi_AActor_IsOverlappingActor(void* target, AActor* Other){	
+		auto result = ((AActor*)target)->IsOverlappingActor(Other);	
+		return result;	
+	}
+	bool uapi_AActor_IsOwnedBy(void* target, AActor* TestOwner){	
+		auto result = ((AActor*)target)->IsOwnedBy(TestOwner);	
+		return result;	
+	}
 	bool uapi_AActor_IsPendingKillPending(void* target){	
 		auto result = ((AActor*)target)->IsPendingKillPending();	
 		return result;	
 	}
 	bool uapi_AActor_IsReadyForFinishDestroy(void* target){	
 		auto result = ((AActor*)target)->IsReadyForFinishDestroy();	
+		return result;	
+	}
+	bool uapi_AActor_IsRelevancyOwnerFor(void* target, AActor* ReplicatedActor, AActor* ActorOwner, AActor* ConnectionActor){	
+		auto result = ((AActor*)target)->IsRelevancyOwnerFor(ReplicatedActor, ActorOwner, ConnectionActor);	
+		return result;	
+	}
+	bool uapi_AActor_IsReplicatedActorComponentRegistered(void* target, UActorComponent* ReplicatedComponent){	
+		auto result = ((AActor*)target)->IsReplicatedActorComponentRegistered(ReplicatedComponent);	
+		return result;	
+	}
+	bool uapi_AActor_IsReplicatedSubObjectRegistered(void* target, UObject* SubObject){	
+		auto result = ((AActor*)target)->IsReplicatedSubObjectRegistered(SubObject);	
 		return result;	
 	}
 	bool uapi_AActor_IsReplicatingMovement(void* target){	
@@ -960,6 +1225,12 @@ extern "C"{
 		auto result = (void*)((AActor*)target)->K2_GetRootComponent();	
 		return result;	
 	}
+	void uapi_AActor_K2_OnBecomeViewTarget(void* target, APlayerController* PC){	
+		((AActor*)target)->K2_OnBecomeViewTarget(PC);	
+	}
+	void uapi_AActor_K2_OnEndViewTarget(void* target, APlayerController* PC){	
+		((AActor*)target)->K2_OnEndViewTarget(PC);	
+	}
 	void uapi_AActor_K2_OnReset(void* target){	
 		((AActor*)target)->K2_OnReset();	
 	}
@@ -974,6 +1245,9 @@ extern "C"{
 	void uapi_AActor_LifeSpanExpired(void* target){	
 		((AActor*)target)->LifeSpanExpired();	
 	}
+	void uapi_AActor_MakeNoise(void* target, float Loudness, APawn* NoiseInstigator, Vector3 NoiseLocation, float MaxRange, UName Tag){	
+		((AActor*)target)->MakeNoise(Loudness, NoiseInstigator, ToFVector(NoiseLocation), MaxRange, ToFName(Tag));	
+	}
 	void uapi_AActor_MarkComponentsAsPendingKill(void* target){	
 		((AActor*)target)->MarkComponentsAsPendingKill();	
 	}
@@ -984,11 +1258,24 @@ extern "C"{
 		auto result = ((AActor*)target)->Modify(bAlwaysMarkDirty);	
 		return result;	
 	}
+	bool uapi_AActor_NeedsLoadForTargetPlatform(void* target, ITargetPlatform* TargetPlatform){	
+		auto result = ((AActor*)target)->NeedsLoadForTargetPlatform(TargetPlatform);	
+		return result;	
+	}
 	void uapi_AActor_NotifyActorBeginCursorOver(void* target){	
 		((AActor*)target)->NotifyActorBeginCursorOver();	
 	}
+	void uapi_AActor_NotifyActorBeginOverlap(void* target, AActor* OtherActor){	
+		((AActor*)target)->NotifyActorBeginOverlap(OtherActor);	
+	}
 	void uapi_AActor_NotifyActorEndCursorOver(void* target){	
 		((AActor*)target)->NotifyActorEndCursorOver();	
+	}
+	void uapi_AActor_NotifyActorEndOverlap(void* target, AActor* OtherActor){	
+		((AActor*)target)->NotifyActorEndOverlap(OtherActor);	
+	}
+	void uapi_AActor_OnNetCleanup(void* target, UNetConnection* Connection){	
+		((AActor*)target)->OnNetCleanup(Connection);	
 	}
 	void uapi_AActor_OnPlayFromHere(void* target){	
 		((AActor*)target)->OnPlayFromHere();	
@@ -1008,12 +1295,22 @@ extern "C"{
 	void uapi_AActor_OnReplicationPausedChanged(void* target, bool bIsReplicationPaused){	
 		((AActor*)target)->OnReplicationPausedChanged(bIsReplicationPaused);	
 	}
+	void uapi_AActor_OnSubobjectCreatedFromReplication(void* target, UObject* NewSubobject){	
+		((AActor*)target)->OnSubobjectCreatedFromReplication(NewSubobject);	
+	}
+	void uapi_AActor_OnSubobjectDestroyFromReplication(void* target, UObject* Subobject){	
+		((AActor*)target)->OnSubobjectDestroyFromReplication(Subobject);	
+	}
 	bool uapi_AActor_OpenAssetEditor(void* target){	
 		auto result = ((AActor*)target)->OpenAssetEditor();	
 		return result;	
 	}
 	void uapi_AActor_OutsideWorldBounds(void* target){	
 		((AActor*)target)->OutsideWorldBounds();	
+	}
+	bool uapi_AActor_OwnsComponent(void* target, UActorComponent* Component){	
+		auto result = ((AActor*)target)->OwnsComponent(Component);	
+		return result;	
 	}
 	void uapi_AActor_PostActorConstruction(void* target){	
 		((AActor*)target)->PostActorConstruction();	
@@ -1039,6 +1336,9 @@ extern "C"{
 	void uapi_AActor_PostLoad(void* target){	
 		((AActor*)target)->PostLoad();	
 	}
+	void uapi_AActor_PostLoadSubobjects(void* target, FObjectInstancingGraph* OuterInstanceGraph){	
+		((AActor*)target)->PostLoadSubobjects(OuterInstanceGraph);	
+	}
 	void uapi_AActor_PostNetInit(void* target){	
 		((AActor*)target)->PostNetInit();	
 	}
@@ -1057,8 +1357,17 @@ extern "C"{
 	void uapi_AActor_PostRegisterAllComponents(void* target){	
 		((AActor*)target)->PostRegisterAllComponents();	
 	}
+	void uapi_AActor_PostRename(void* target, UObject* OldOuter, UName OldName){	
+		((AActor*)target)->PostRename(OldOuter, ToFName(OldName));	
+	}
+	void uapi_AActor_PostRenderFor(void* target, APlayerController* PC, UCanvas* Canvas, Vector3 CameraPosition, Vector3 CameraDir){	
+		((AActor*)target)->PostRenderFor(PC, Canvas, ToFVector(CameraPosition), ToFVector(CameraDir));	
+	}
 	void uapi_AActor_PostUnregisterAllComponents(void* target){	
 		((AActor*)target)->PostUnregisterAllComponents();	
+	}
+	void uapi_AActor_PreEditChange(void* target, FProperty* PropertyThatWillChange){	
+		((AActor*)target)->PreEditChange(PropertyThatWillChange);	
 	}
 	void uapi_AActor_PreEditUndo(void* target){	
 		((AActor*)target)->PreEditUndo();	
@@ -1075,6 +1384,9 @@ extern "C"{
 	void uapi_AActor_PrestreamTextures(void* target, float Seconds, bool bEnableStreaming, int32 CinematicTextureGroups){	
 		((AActor*)target)->PrestreamTextures(Seconds, bEnableStreaming, CinematicTextureGroups);	
 	}
+	void uapi_AActor_ProcessEvent(void* target, UFunction* Function, void* Parameters){	
+		((AActor*)target)->ProcessEvent(Function, Parameters);	
+	}
 	void uapi_AActor_PushLevelInstanceEditingStateToProxies(void* target, bool bInEditingState){	
 		((AActor*)target)->PushLevelInstanceEditingStateToProxies(bInEditingState);	
 	}
@@ -1084,8 +1396,17 @@ extern "C"{
 	void uapi_AActor_ReceiveActorBeginCursorOver(void* target){	
 		((AActor*)target)->ReceiveActorBeginCursorOver();	
 	}
+	void uapi_AActor_ReceiveActorBeginOverlap(void* target, AActor* OtherActor){	
+		((AActor*)target)->ReceiveActorBeginOverlap(OtherActor);	
+	}
 	void uapi_AActor_ReceiveActorEndCursorOver(void* target){	
 		((AActor*)target)->ReceiveActorEndCursorOver();	
+	}
+	void uapi_AActor_ReceiveActorEndOverlap(void* target, AActor* OtherActor){	
+		((AActor*)target)->ReceiveActorEndOverlap(OtherActor);	
+	}
+	void uapi_AActor_ReceiveAnyDamage(void* target, float Damage, UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser){	
+		((AActor*)target)->ReceiveAnyDamage(Damage, DamageType, InstigatedBy, DamageCauser);	
 	}
 	void uapi_AActor_ReceiveAsyncPhysicsTick(void* target, float DeltaSeconds, float SimSeconds){	
 		((AActor*)target)->ReceiveAsyncPhysicsTick(DeltaSeconds, SimSeconds);	
@@ -1102,8 +1423,34 @@ extern "C"{
 	void uapi_AActor_RegisterAllComponents(void* target){	
 		((AActor*)target)->RegisterAllComponents();	
 	}
+	void uapi_AActor_RemoveActorComponentReplicatedSubObject(void* target, UActorComponent* OwnerComponent, UObject* SubObject){	
+		((AActor*)target)->RemoveActorComponentReplicatedSubObject(OwnerComponent, SubObject);	
+	}
 	bool uapi_AActor_RemoveAllDataLayers(void* target){	
 		auto result = ((AActor*)target)->RemoveAllDataLayers();	
+		return result;	
+	}
+	bool uapi_AActor_RemoveDataLayer(void* target, UDataLayerAsset* DataLayerAsset){	
+		auto result = ((AActor*)target)->RemoveDataLayer(DataLayerAsset);	
+		return result;	
+	}
+	void uapi_AActor_RemoveInstanceComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->RemoveInstanceComponent(Component);	
+	}
+	void uapi_AActor_RemoveOwnedComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->RemoveOwnedComponent(Component);	
+	}
+	void uapi_AActor_RemoveReplicatedSubObject(void* target, UObject* SubObject){	
+		((AActor*)target)->RemoveReplicatedSubObject(SubObject);	
+	}
+	void uapi_AActor_RemoveTickPrerequisiteActor(void* target, AActor* PrerequisiteActor){	
+		((AActor*)target)->RemoveTickPrerequisiteActor(PrerequisiteActor);	
+	}
+	void uapi_AActor_RemoveTickPrerequisiteComponent(void* target, UActorComponent* PrerequisiteComponent){	
+		((AActor*)target)->RemoveTickPrerequisiteComponent(PrerequisiteComponent);	
+	}
+	bool uapi_AActor_ReplicateSubobjects(void* target, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags){	
+		auto result = ((AActor*)target)->ReplicateSubobjects(Channel, Bunch, RepFlags);	
 		return result;	
 	}
 	void uapi_AActor_ReregisterAllComponents(void* target){	
@@ -1136,6 +1483,16 @@ extern "C"{
 	}
 	void uapi_AActor_SetActorHiddenInGame(void* target, bool bNewHidden){	
 		((AActor*)target)->SetActorHiddenInGame(bNewHidden);	
+	}
+	bool uapi_AActor_SetActorLocationAndRotation(void* target, Vector3 NewLocation, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		auto result = ((AActor*)target)->SetActorLocationAndRotation(ToFVector(NewLocation), ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
+		return result;	
+	}
+	void uapi_AActor_SetActorRelativeLocation(void* target, Vector3 NewRelativeLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->SetActorRelativeLocation(ToFVector(NewRelativeLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_AActor_SetActorRelativeRotation(void* target, Rotator NewRelativeRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((AActor*)target)->SetActorRelativeRotation(ToFRotator(NewRelativeRotation), bSweep, OutSweepHitResult, Teleport);	
 	}
 	void uapi_AActor_SetActorRelativeScale3D(void* target, Vector3 NewRelativeScale){	
 		((AActor*)target)->SetActorRelativeScale3D(ToFVector(NewRelativeScale));	
@@ -1171,11 +1528,17 @@ extern "C"{
 	void uapi_AActor_SetForceExternalActorLevelReferenceForPIE(void* target, bool bValue){	
 		((AActor*)target)->SetForceExternalActorLevelReferenceForPIE(bValue);	
 	}
+	void uapi_AActor_SetHLODLayer(void* target, UHLODLayer* InHLODLayer){	
+		((AActor*)target)->SetHLODLayer(InHLODLayer);	
+	}
 	void uapi_AActor_SetHasActorRegisteredAllComponents(void* target){	
 		((AActor*)target)->SetHasActorRegisteredAllComponents();	
 	}
 	void uapi_AActor_SetHidden(void* target, bool bInHidden){	
 		((AActor*)target)->SetHidden(bInHidden);	
+	}
+	void uapi_AActor_SetInstigator(void* target, APawn* InInstigator){	
+		((AActor*)target)->SetInstigator(InInstigator);	
 	}
 	bool uapi_AActor_SetIsHiddenEdLayer(void* target, bool bIsHiddenEdLayer){	
 		auto result = ((AActor*)target)->SetIsHiddenEdLayer(bIsHiddenEdLayer);	
@@ -1186,6 +1549,9 @@ extern "C"{
 	}
 	void uapi_AActor_SetIsTemporarilyHiddenInEditor(void* target, bool bIsHidden){	
 		((AActor*)target)->SetIsTemporarilyHiddenInEditor(bIsHidden);	
+	}
+	void uapi_AActor_SetLODParent(void* target, UPrimitiveComponent* InLODParent, float InParentDrawDistance){	
+		((AActor*)target)->SetLODParent(InLODParent, InParentDrawDistance);	
 	}
 	void uapi_AActor_SetLifeSpan(void* target, float InLifespan){	
 		((AActor*)target)->SetLifeSpan(InLifespan);	
@@ -1198,6 +1564,9 @@ extern "C"{
 	}
 	void uapi_AActor_SetNetDriverName(void* target, UName NewNetDriverName){	
 		((AActor*)target)->SetNetDriverName(ToFName(NewNetDriverName));	
+	}
+	void uapi_AActor_SetOwner(void* target, AActor* NewOwner){	
+		((AActor*)target)->SetOwner(NewOwner);	
 	}
 	void uapi_AActor_SetPackageExternal(void* target, bool bExternal, bool bShouldDirty){	
 		((AActor*)target)->SetPackageExternal(bExternal, bShouldDirty);	
@@ -1213,6 +1582,10 @@ extern "C"{
 	}
 	void uapi_AActor_SetReplicatingMovement(void* target, bool bInReplicateMovement){	
 		((AActor*)target)->SetReplicatingMovement(bInReplicateMovement);	
+	}
+	bool uapi_AActor_SetRootComponent(void* target, USceneComponent* NewRootComponent){	
+		auto result = ((AActor*)target)->SetRootComponent(NewRootComponent);	
+		return result;	
 	}
 	void uapi_AActor_SetRuntimeGrid(void* target, UName InRuntimeGrid){	
 		((AActor*)target)->SetRuntimeGrid(ToFName(InRuntimeGrid));	
@@ -1283,6 +1656,9 @@ extern "C"{
 	void uapi_AActor_UpdateOverlaps(void* target, bool bDoNotifies){	
 		((AActor*)target)->UpdateOverlaps(bDoNotifies);	
 	}
+	void uapi_AActor_UpdateReplicatedComponent(void* target, UActorComponent* Component){	
+		((AActor*)target)->UpdateReplicatedComponent(Component);	
+	}
 	bool uapi_AActor_UseShortConnectTimeout(void* target){	
 		auto result = ((AActor*)target)->UseShortConnectTimeout();	
 		return result;	
@@ -1294,8 +1670,72 @@ extern "C"{
 		auto result = ((AActor*)target)->WasRecentlyRendered(Tolerance);	
 		return result;	
 	}
+	void uapi_APawn_AddControllerPitchInput(void* target, float Val){	
+		((APawn*)target)->AddControllerPitchInput(Val);	
+	}
+	void uapi_APawn_AddControllerRollInput(void* target, float Val){	
+		((APawn*)target)->AddControllerRollInput(Val);	
+	}
+	void uapi_APawn_AddControllerYawInput(void* target, float Val){	
+		((APawn*)target)->AddControllerYawInput(Val);	
+	}
+	void uapi_APawn_AddMovementInput(void* target, Vector3 WorldDirection, float ScaleValue, bool bForce){	
+		((APawn*)target)->AddMovementInput(ToFVector(WorldDirection), ScaleValue, bForce);	
+	}
+	void uapi_APawn_BecomeViewTarget(void* target, APlayerController* PC){	
+		((APawn*)target)->BecomeViewTarget(PC);	
+	}
+	Vector3 uapi_APawn_ConsumeMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->ConsumeMovementInputVector());	
+		return result;	
+	}
+	void uapi_APawn_Destroyed(void* target){	
+		((APawn*)target)->Destroyed();	
+	}
+	void uapi_APawn_DetachFromControllerPendingDestroy(void* target){	
+		((APawn*)target)->DetachFromControllerPendingDestroy();	
+	}
+	void uapi_APawn_DisableInput(void* target, APlayerController* PlayerController){	
+		((APawn*)target)->DisableInput(PlayerController);	
+	}
+	void uapi_APawn_DispatchRestart(void* target, bool bCallClientRestart){	
+		((APawn*)target)->DispatchRestart(bCallClientRestart);	
+	}
+	void uapi_APawn_EnableInput(void* target, APlayerController* PlayerController){	
+		((APawn*)target)->EnableInput(PlayerController);	
+	}
+	void uapi_APawn_EndViewTarget(void* target, APlayerController* PC){	
+		((APawn*)target)->EndViewTarget(PC);	
+	}
+	void uapi_APawn_FaceRotation(void* target, Rotator NewControlRotation, float DeltaTime){	
+		((APawn*)target)->FaceRotation(ToFRotator(NewControlRotation), DeltaTime);	
+	}
+	Rotator uapi_APawn_GetBaseAimRotation(void* target){	
+		auto result = ToRotator(((APawn*)target)->GetBaseAimRotation());	
+		return result;	
+	}
+	Rotator uapi_APawn_GetControlRotation(void* target){	
+		auto result = ToRotator(((APawn*)target)->GetControlRotation());	
+		return result;	
+	}
 	void* uapi_APawn_GetController(void* target){	
 		auto result = (void*)((APawn*)target)->GetController();	
+		return result;	
+	}
+	float uapi_APawn_GetDefaultHalfHeight(void* target){	
+		auto result = ((APawn*)target)->GetDefaultHalfHeight();	
+		return result;	
+	}
+	Vector3 uapi_APawn_GetGravityDirection(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetGravityDirection());	
+		return result;	
+	}
+	const char* uapi_APawn_GetHumanReadableName(void* target){	
+		auto result = FString2Utf8(((APawn*)target)->GetHumanReadableName());	
+		return result;	
+	}
+	Vector3 uapi_APawn_GetLastMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetLastMovementInputVector());	
 		return result;	
 	}
 	void* uapi_APawn_GetLocalViewingPlayerController(void* target){	
@@ -1306,25 +1746,219 @@ extern "C"{
 		auto result = (void*)((APawn*)target)->GetMovementBase();	
 		return result;	
 	}
+	void* uapi_APawn_GetMovementBaseActor(APawn* Pawn){	
+		auto result = (void*)(APawn::GetMovementBaseActor(Pawn));	
+		return result;	
+	}
 	void* uapi_APawn_GetMovementComponent(void* target){	
 		auto result = (void*)((APawn*)target)->GetMovementComponent();	
+		return result;	
+	}
+	Vector3 uapi_APawn_GetNavAgentLocation(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetNavAgentLocation());	
+		return result;	
+	}
+	void* uapi_APawn_GetNetConnection(void* target){	
+		auto result = (void*)((APawn*)target)->GetNetConnection();	
+		return result;	
+	}
+	void* uapi_APawn_GetNetOwner(void* target){	
+		auto result = (void*)((APawn*)target)->GetNetOwner();	
+		return result;	
+	}
+	void* uapi_APawn_GetNetOwningPlayer(void* target){	
+		auto result = (void*)((APawn*)target)->GetNetOwningPlayer();	
 		return result;	
 	}
 	void* uapi_APawn_GetPawnNoiseEmitterComponent(void* target){	
 		auto result = (void*)((APawn*)target)->GetPawnNoiseEmitterComponent();	
 		return result;	
 	}
+	Vector3 uapi_APawn_GetPawnViewLocation(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetPawnViewLocation());	
+		return result;	
+	}
+	Vector3 uapi_APawn_GetPendingMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetPendingMovementInputVector());	
+		return result;	
+	}
+	void* uapi_APawn_GetPhysicsVolume(void* target){	
+		auto result = (void*)((APawn*)target)->GetPhysicsVolume();	
+		return result;	
+	}
 	void* uapi_APawn_GetPlayerState(void* target){	
 		auto result = (void*)((APawn*)target)->GetPlayerState();	
+		return result;	
+	}
+	Vector3 uapi_APawn_GetVelocity(void* target){	
+		auto result = ToVector3(((APawn*)target)->GetVelocity());	
+		return result;	
+	}
+	Rotator uapi_APawn_GetViewRotation(void* target){	
+		auto result = ToRotator(((APawn*)target)->GetViewRotation());	
+		return result;	
+	}
+	bool uapi_APawn_InFreeCam(void* target){	
+		auto result = ((APawn*)target)->InFreeCam();	
+		return result;	
+	}
+	bool uapi_APawn_InputEnabled(void* target){	
+		auto result = ((APawn*)target)->InputEnabled();	
+		return result;	
+	}
+	void uapi_APawn_Internal_AddMovementInput(void* target, Vector3 WorldAccel, bool bForce){	
+		((APawn*)target)->Internal_AddMovementInput(ToFVector(WorldAccel), bForce);	
+	}
+	Vector3 uapi_APawn_Internal_ConsumeMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->Internal_ConsumeMovementInputVector());	
+		return result;	
+	}
+	Vector3 uapi_APawn_Internal_GetLastMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->Internal_GetLastMovementInputVector());	
+		return result;	
+	}
+	Vector3 uapi_APawn_Internal_GetPendingMovementInputVector(void* target){	
+		auto result = ToVector3(((APawn*)target)->Internal_GetPendingMovementInputVector());	
+		return result;	
+	}
+	bool uapi_APawn_IsBasedOnActor(void* target, AActor* Other){	
+		auto result = ((APawn*)target)->IsBasedOnActor(Other);	
+		return result;	
+	}
+	bool uapi_APawn_IsBotControlled(void* target){	
+		auto result = ((APawn*)target)->IsBotControlled();	
 		return result;	
 	}
 	bool uapi_APawn_IsLocalPlayerControllerViewingAPawn(void* target){	
 		auto result = ((APawn*)target)->IsLocalPlayerControllerViewingAPawn();	
 		return result;	
 	}
+	bool uapi_APawn_IsLocallyControlled(void* target){	
+		auto result = ((APawn*)target)->IsLocallyControlled();	
+		return result;	
+	}
 	bool uapi_APawn_IsLocallyViewed(void* target){	
 		auto result = ((APawn*)target)->IsLocallyViewed();	
 		return result;	
+	}
+	bool uapi_APawn_IsMoveInputIgnored(void* target){	
+		auto result = ((APawn*)target)->IsMoveInputIgnored();	
+		return result;	
+	}
+	bool uapi_APawn_IsPawnControlled(void* target){	
+		auto result = ((APawn*)target)->IsPawnControlled();	
+		return result;	
+	}
+	bool uapi_APawn_IsPlayerControlled(void* target){	
+		auto result = ((APawn*)target)->IsPlayerControlled();	
+		return result;	
+	}
+	void uapi_APawn_MoveIgnoreActorAdd(void* target, AActor* ActorToIgnore){	
+		((APawn*)target)->MoveIgnoreActorAdd(ActorToIgnore);	
+	}
+	void uapi_APawn_MoveIgnoreActorRemove(void* target, AActor* ActorToIgnore){	
+		((APawn*)target)->MoveIgnoreActorRemove(ActorToIgnore);	
+	}
+	void uapi_APawn_NotifyControllerChanged(void* target){	
+		((APawn*)target)->NotifyControllerChanged();	
+	}
+	void uapi_APawn_NotifyRestarted(void* target){	
+		((APawn*)target)->NotifyRestarted();	
+	}
+	void uapi_APawn_OnRep_Controller(void* target){	
+		((APawn*)target)->OnRep_Controller();	
+	}
+	void uapi_APawn_OnRep_PlayerState(void* target){	
+		((APawn*)target)->OnRep_PlayerState();	
+	}
+	void uapi_APawn_OutsideWorldBounds(void* target){	
+		((APawn*)target)->OutsideWorldBounds();	
+	}
+	void uapi_APawn_PawnClientRestart(void* target){	
+		((APawn*)target)->PawnClientRestart();	
+	}
+	void uapi_APawn_PawnMakeNoise(void* target, float Loudness, Vector3 NoiseLocation, bool bUseNoiseMakerLocation, AActor* NoiseMaker){	
+		((APawn*)target)->PawnMakeNoise(Loudness, ToFVector(NoiseLocation), bUseNoiseMakerLocation, NoiseMaker);	
+	}
+	void uapi_APawn_PawnStartFire(void* target, uint8 FireModeNum){	
+		((APawn*)target)->PawnStartFire(FireModeNum);	
+	}
+	void uapi_APawn_PossessedBy(void* target, AController* NewController){	
+		((APawn*)target)->PossessedBy(NewController);	
+	}
+	void uapi_APawn_PostInitializeComponents(void* target){	
+		((APawn*)target)->PostInitializeComponents();	
+	}
+	void uapi_APawn_PostLoad(void* target){	
+		((APawn*)target)->PostLoad();	
+	}
+	void uapi_APawn_PostNetReceiveLocationAndRotation(void* target){	
+		((APawn*)target)->PostNetReceiveLocationAndRotation();	
+	}
+	void uapi_APawn_PostRegisterAllComponents(void* target){	
+		((APawn*)target)->PostRegisterAllComponents();	
+	}
+	void uapi_APawn_PreInitializeComponents(void* target){	
+		((APawn*)target)->PreInitializeComponents();	
+	}
+	bool uapi_APawn_ReachedDesiredRotation(void* target){	
+		auto result = ((APawn*)target)->ReachedDesiredRotation();	
+		return result;	
+	}
+	void uapi_APawn_RecalculateBaseEyeHeight(void* target){	
+		((APawn*)target)->RecalculateBaseEyeHeight();	
+	}
+	void uapi_APawn_ReceiveControllerChanged(void* target, AController* OldController, AController* NewController){	
+		((APawn*)target)->ReceiveControllerChanged(OldController, NewController);	
+	}
+	void uapi_APawn_ReceivePossessed(void* target, AController* NewController){	
+		((APawn*)target)->ReceivePossessed(NewController);	
+	}
+	void uapi_APawn_ReceiveRestarted(void* target){	
+		((APawn*)target)->ReceiveRestarted();	
+	}
+	void uapi_APawn_ReceiveUnpossessed(void* target, AController* OldController){	
+		((APawn*)target)->ReceiveUnpossessed(OldController);	
+	}
+	void uapi_APawn_Reset(void* target){	
+		((APawn*)target)->Reset();	
+	}
+	void uapi_APawn_Restart(void* target){	
+		((APawn*)target)->Restart();	
+	}
+	void uapi_APawn_SetCanAffectNavigationGeneration(void* target, bool bNewValue, bool bForceUpdate){	
+		((APawn*)target)->SetCanAffectNavigationGeneration(bNewValue, bForceUpdate);	
+	}
+	void uapi_APawn_SetPlayerDefaults(void* target){	
+		((APawn*)target)->SetPlayerDefaults();	
+	}
+	void uapi_APawn_SetPlayerState(void* target, APlayerState* NewPlayerState){	
+		((APawn*)target)->SetPlayerState(NewPlayerState);	
+	}
+	void uapi_APawn_SetRemoteViewPitch(void* target, float NewRemoteViewPitch){	
+		((APawn*)target)->SetRemoteViewPitch(NewRemoteViewPitch);	
+	}
+	bool uapi_APawn_ShouldTickIfViewportsOnly(void* target){	
+		auto result = ((APawn*)target)->ShouldTickIfViewportsOnly();	
+		return result;	
+	}
+	void uapi_APawn_SpawnDefaultController(void* target){	
+		((APawn*)target)->SpawnDefaultController();	
+	}
+	void uapi_APawn_TeleportSucceeded(void* target, bool bIsATest){	
+		((APawn*)target)->TeleportSucceeded(bIsATest);	
+	}
+	void uapi_APawn_TurnOff(void* target){	
+		((APawn*)target)->TurnOff();	
+	}
+	void uapi_APawn_UnPossessed(void* target){	
+		((APawn*)target)->UnPossessed();	
+	}
+	void uapi_APawn_UpdateNavAgent(void* target){	
+		((APawn*)target)->UpdateNavAgent();	
+	}
+	void uapi_APawn_UpdateNavigationRelevance(void* target){	
+		((APawn*)target)->UpdateNavigationRelevance();	
 	}
 	void uapi_AController_ChangeState(void* target, UName NewState){	
 		((AController*)target)->ChangeState(ToFName(NewState));	
@@ -1346,6 +1980,9 @@ extern "C"{
 	}
 	void uapi_AController_FailedToSpawnPawn(void* target){	
 		((AController*)target)->FailedToSpawnPawn();	
+	}
+	void uapi_AController_GameHasEnded(void* target, AActor* EndGameFocus, bool bIsWinner){	
+		((AController*)target)->GameHasEnded(EndGameFocus, bIsWinner);	
 	}
 	void* uapi_AController_GetCharacter(void* target){	
 		auto result = (void*)((AController*)target)->GetCharacter();	
@@ -1382,6 +2019,9 @@ extern "C"{
 	void uapi_AController_InitPlayerState(void* target){	
 		((AController*)target)->InitPlayerState();	
 	}
+	void uapi_AController_InstigatedAnyDamage(void* target, float Damage, UDamageType* DamageType, AActor* DamagedActor, AActor* DamageCauser){	
+		((AController*)target)->InstigatedAnyDamage(Damage, DamageType, DamagedActor, DamageCauser);	
+	}
 	bool uapi_AController_IsFollowingAPath(void* target){	
 		auto result = ((AController*)target)->IsFollowingAPath();	
 		return result;	
@@ -1417,11 +2057,21 @@ extern "C"{
 		auto result = (void*)((AController*)target)->K2_GetPawn();	
 		return result;	
 	}
+	bool uapi_AController_LineOfSightTo(void* target, AActor* Other, Vector3 ViewPoint, bool bAlternateChecks){	
+		auto result = ((AController*)target)->LineOfSightTo(Other, ToFVector(ViewPoint), bAlternateChecks);	
+		return result;	
+	}
 	void uapi_AController_OnRep_Pawn(void* target){	
 		((AController*)target)->OnRep_Pawn();	
 	}
 	void uapi_AController_OnRep_PlayerState(void* target){	
 		((AController*)target)->OnRep_PlayerState();	
+	}
+	void uapi_AController_PawnPendingDestroy(void* target, APawn* inPawn){	
+		((AController*)target)->PawnPendingDestroy(inPawn);	
+	}
+	void uapi_AController_Possess(void* target, APawn* InPawn){	
+		((AController*)target)->Possess(InPawn);	
 	}
 	void uapi_AController_PostInitializeComponents(void* target){	
 		((AController*)target)->PostInitializeComponents();	
@@ -1444,6 +2094,12 @@ extern "C"{
 	void uapi_AController_SetIgnoreMoveInput(void* target, bool bNewMoveInput){	
 		((AController*)target)->SetIgnoreMoveInput(bNewMoveInput);	
 	}
+	void uapi_AController_SetPawn(void* target, APawn* InPawn){	
+		((AController*)target)->SetPawn(InPawn);	
+	}
+	void uapi_AController_SetPawnFromRep(void* target, APawn* InPawn){	
+		((AController*)target)->SetPawnFromRep(InPawn);	
+	}
 	bool uapi_AController_ShouldParticipateInSeamlessTravel(void* target){	
 		auto result = ((AController*)target)->ShouldParticipateInSeamlessTravel();	
 		return result;	
@@ -1458,6 +2114,12 @@ extern "C"{
 	void uapi_AController_UnPossess(void* target){	
 		((AController*)target)->UnPossess();	
 	}
+	void uapi_APlayerController_AcknowledgePossession(void* target, APawn* P){	
+		((APlayerController*)target)->AcknowledgePossession(P);	
+	}
+	void uapi_APlayerController_ActivateTouchInterface(void* target, UTouchInterface* NewTouchInterface){	
+		((APlayerController*)target)->ActivateTouchInterface(NewTouchInterface);	
+	}
 	void uapi_APlayerController_AddCheats(void* target, bool bForce){	
 		((APlayerController*)target)->AddCheats(bForce);	
 	}
@@ -1469,6 +2131,9 @@ extern "C"{
 	}
 	void uapi_APlayerController_AddYawInput(void* target, float Val){	
 		((APlayerController*)target)->AddYawInput(Val);	
+	}
+	void uapi_APlayerController_AutoManageActiveCameraTarget(void* target, AActor* SuggestedTarget){	
+		((APlayerController*)target)->AutoManageActiveCameraTarget(SuggestedTarget);	
 	}
 	void uapi_APlayerController_BeginInactiveState(void* target){	
 		((APlayerController*)target)->BeginInactiveState();	
@@ -1525,6 +2190,9 @@ extern "C"{
 	void uapi_APlayerController_ClientForceGarbageCollection(void* target){	
 		((APlayerController*)target)->ClientForceGarbageCollection();	
 	}
+	void uapi_APlayerController_ClientGameEnded(void* target, AActor* EndGameFocus, bool bIsWinner){	
+		((APlayerController*)target)->ClientGameEnded(EndGameFocus, bIsWinner);	
+	}
 	void uapi_APlayerController_ClientGotoState(void* target, UName NewState){	
 		((APlayerController*)target)->ClientGotoState(ToFName(NewState));	
 	}
@@ -1534,8 +2202,17 @@ extern "C"{
 	void uapi_APlayerController_ClientIgnoreMoveInput(void* target, bool bIgnore){	
 		((APlayerController*)target)->ClientIgnoreMoveInput(bIgnore);	
 	}
+	void uapi_APlayerController_ClientPlaySound(void* target, USoundBase* Sound, float VolumeMultiplier, float PitchMultiplier){	
+		((APlayerController*)target)->ClientPlaySound(Sound, VolumeMultiplier, PitchMultiplier);	
+	}
+	void uapi_APlayerController_ClientPlaySoundAtLocation(void* target, USoundBase* Sound, Vector3 Location, float VolumeMultiplier, float PitchMultiplier){	
+		((APlayerController*)target)->ClientPlaySoundAtLocation(Sound, ToFVector(Location), VolumeMultiplier, PitchMultiplier);	
+	}
 	void uapi_APlayerController_ClientPrepareMapChange(void* target, UName LevelName, bool bFirst, bool bLast){	
 		((APlayerController*)target)->ClientPrepareMapChange(ToFName(LevelName), bFirst, bLast);	
+	}
+	void uapi_APlayerController_ClientPrestreamTextures(void* target, AActor* ForcedActor, float ForceDuration, bool bEnableStreaming, int32 CinematicTextureGroups){	
+		((APlayerController*)target)->ClientPrestreamTextures(ForcedActor, ForceDuration, bEnableStreaming, CinematicTextureGroups);	
 	}
 	void uapi_APlayerController_ClientRecvServerAckFrame(void* target, int32 LastProcessedInputFrame, int32 RecvServerFrameNumber, int8 TimeDilation){	
 		((APlayerController*)target)->ClientRecvServerAckFrame(LastProcessedInputFrame, RecvServerFrameNumber, TimeDilation);	
@@ -1543,8 +2220,17 @@ extern "C"{
 	void uapi_APlayerController_ClientRecvServerAckFrameDebug(void* target, uint8 NumBuffered, float TargetNumBufferedCmds){	
 		((APlayerController*)target)->ClientRecvServerAckFrameDebug(NumBuffered, TargetNumBufferedCmds);	
 	}
+	void uapi_APlayerController_ClientRepObjRef(void* target, UObject* Object){	
+		((APlayerController*)target)->ClientRepObjRef(Object);	
+	}
 	void uapi_APlayerController_ClientReset(void* target){	
 		((APlayerController*)target)->ClientReset();	
+	}
+	void uapi_APlayerController_ClientRestart(void* target, APawn* NewPawn){	
+		((APlayerController*)target)->ClientRestart(NewPawn);	
+	}
+	void uapi_APlayerController_ClientRetryClientRestart(void* target, APawn* NewPawn){	
+		((APlayerController*)target)->ClientRetryClientRestart(NewPawn);	
 	}
 	void uapi_APlayerController_ClientSetBlockOnAsyncLoading(void* target){	
 		((APlayerController*)target)->ClientSetBlockOnAsyncLoading();	
@@ -1558,11 +2244,20 @@ extern "C"{
 	void uapi_APlayerController_ClientSetCinematicMode(void* target, bool bInCinematicMode, bool bAffectsMovement, bool bAffectsTurning, bool bAffectsHUD){	
 		((APlayerController*)target)->ClientSetCinematicMode(bInCinematicMode, bAffectsMovement, bAffectsTurning, bAffectsHUD);	
 	}
+	void uapi_APlayerController_ClientSetForceMipLevelsToBeResident(void* target, UMaterialInterface* Material, float ForceDuration, int32 CinematicTextureGroups){	
+		((APlayerController*)target)->ClientSetForceMipLevelsToBeResident(Material, ForceDuration, CinematicTextureGroups);	
+	}
 	void uapi_APlayerController_ClientSetSpectatorWaiting(void* target, bool bWaiting){	
 		((APlayerController*)target)->ClientSetSpectatorWaiting(bWaiting);	
 	}
 	void uapi_APlayerController_ClientStartOnlineSession(void* target){	
 		((APlayerController*)target)->ClientStartOnlineSession();	
+	}
+	void uapi_APlayerController_ClientStopCameraShakesFromSource(void* target, UCameraShakeSourceComponent* SourceComponent, bool bImmediately){	
+		((APlayerController*)target)->ClientStopCameraShakesFromSource(SourceComponent, bImmediately);	
+	}
+	void uapi_APlayerController_ClientStopForceFeedback(void* target, UForceFeedbackEffect* ForceFeedbackEffect, UName Tag){	
+		((APlayerController*)target)->ClientStopForceFeedback(ForceFeedbackEffect, ToFName(Tag));	
 	}
 	void uapi_APlayerController_ClientUpdateLevelStreamingStatus(void* target, UName PackageName, bool bNewShouldBeLoaded, bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex){	
 		((APlayerController*)target)->ClientUpdateLevelStreamingStatus(ToFName(PackageName), bNewShouldBeLoaded, bNewShouldBeVisible, bNewShouldBlockOnLoad, LODIndex);	
@@ -1587,8 +2282,14 @@ extern "C"{
 	void uapi_APlayerController_Destroyed(void* target){	
 		((APlayerController*)target)->Destroyed();	
 	}
+	void uapi_APlayerController_DisableInput(void* target, APlayerController* PlayerController){	
+		((APlayerController*)target)->DisableInput(PlayerController);	
+	}
 	void uapi_APlayerController_EnableCheats(void* target){	
 		((APlayerController*)target)->EnableCheats();	
+	}
+	void uapi_APlayerController_EnableInput(void* target, APlayerController* PlayerController){	
+		((APlayerController*)target)->EnableInput(PlayerController);	
 	}
 	void uapi_APlayerController_EndInactiveState(void* target){	
 		((APlayerController*)target)->EndInactiveState();	
@@ -1601,6 +2302,12 @@ extern "C"{
 	}
 	void uapi_APlayerController_FlushPressedKeys(void* target){	
 		((APlayerController*)target)->FlushPressedKeys();	
+	}
+	void uapi_APlayerController_ForceSingleNetUpdateFor(void* target, AActor* Target){	
+		((APlayerController*)target)->ForceSingleNetUpdateFor(Target);	
+	}
+	void uapi_APlayerController_GameHasEnded(void* target, AActor* EndGameFocus, bool bIsWinner){	
+		((APlayerController*)target)->GameHasEnded(EndGameFocus, bIsWinner);	
 	}
 	void uapi_APlayerController_GameplayUnmuteAllPlayers(void* target){	
 		((APlayerController*)target)->GameplayUnmuteAllPlayers();	
@@ -1697,6 +2404,10 @@ extern "C"{
 		auto result = ((APlayerController*)target)->IsFrozen();	
 		return result;	
 	}
+	bool uapi_APlayerController_IsInputComponentInStack(void* target, UInputComponent* Input){	
+		auto result = ((APlayerController*)target)->IsInputComponentInStack(Input);	
+		return result;	
+	}
 	bool uapi_APlayerController_IsLocalController(void* target){	
 		auto result = ((APlayerController*)target)->IsLocalController();	
 		return result;	
@@ -1721,15 +2432,31 @@ extern "C"{
 		auto result = ((APlayerController*)target)->IsStreamingSourceEnabled();	
 		return result;	
 	}
+	void uapi_APlayerController_K2_ClientPlayForceFeedback(void* target, UForceFeedbackEffect* ForceFeedbackEffect, UName Tag, bool bLooping, bool bIgnoreTimeDilation, bool bPlayWhilePaused){	
+		((APlayerController*)target)->K2_ClientPlayForceFeedback(ForceFeedbackEffect, ToFName(Tag), bLooping, bIgnoreTimeDilation, bPlayWhilePaused);	
+	}
+	void uapi_APlayerController_LevelStreamingStatusChanged(void* target, ULevelStreaming* LevelObject, bool bNewShouldBeLoaded, bool bNewShouldBeVisible, bool bNewShouldBlockOnLoad, int32 LODIndex){	
+		((APlayerController*)target)->LevelStreamingStatusChanged(LevelObject, bNewShouldBeLoaded, bNewShouldBeVisible, bNewShouldBlockOnLoad, LODIndex);	
+	}
 	UName uapi_APlayerController_NetworkRemapPath(void* target, UName InPackageName, bool bReading){	
 		auto result = ToUName(((APlayerController*)target)->NetworkRemapPath(ToFName(InPackageName), bReading));	
 		return result;	
 	}
+	void uapi_APlayerController_NotifyActorChannelFailure(void* target, UActorChannel* ActorChan){	
+		((APlayerController*)target)->NotifyActorChannelFailure(ActorChan);	
+	}
 	void uapi_APlayerController_NotifyLoadedWorld(void* target, UName WorldPackageName, bool bFinalDest){	
 		((APlayerController*)target)->NotifyLoadedWorld(ToFName(WorldPackageName), bFinalDest);	
 	}
+	bool uapi_APlayerController_NotifyServerReceivedClientData(void* target, APawn* InPawn, float TimeStamp){	
+		auto result = ((APlayerController*)target)->NotifyServerReceivedClientData(InPawn, TimeStamp);	
+		return result;	
+	}
 	void uapi_APlayerController_OnAddedToPlayerControllerList(void* target){	
 		((APlayerController*)target)->OnAddedToPlayerControllerList();	
+	}
+	void uapi_APlayerController_OnNetCleanup(void* target, UNetConnection* Connection){	
+		((APlayerController*)target)->OnNetCleanup(Connection);	
 	}
 	void uapi_APlayerController_OnRemovedFromPlayerControllerList(void* target){	
 		((APlayerController*)target)->OnRemovedFromPlayerControllerList();	
@@ -1746,6 +2473,10 @@ extern "C"{
 	void uapi_APlayerController_PlayerTick(void* target, float DeltaTime){	
 		((APlayerController*)target)->PlayerTick(DeltaTime);	
 	}
+	bool uapi_APlayerController_PopInputComponent(void* target, UInputComponent* Input){	
+		auto result = ((APlayerController*)target)->PopInputComponent(Input);	
+		return result;	
+	}
 	void uapi_APlayerController_PostInitializeComponents(void* target){	
 		((APlayerController*)target)->PostInitializeComponents();	
 	}
@@ -1760,6 +2491,9 @@ extern "C"{
 	}
 	void uapi_APlayerController_PreProcessInput(void* target, float DeltaTime, bool bGamePaused){	
 		((APlayerController*)target)->PreProcessInput(DeltaTime, bGamePaused);	
+	}
+	void uapi_APlayerController_PushInputComponent(void* target, UInputComponent* Input){	
+		((APlayerController*)target)->PushInputComponent(Input);	
 	}
 	void uapi_APlayerController_ReceivedPlayer(void* target){	
 		((APlayerController*)target)->ReceivedPlayer();	
@@ -1791,8 +2525,17 @@ extern "C"{
 	void uapi_APlayerController_SafeServerUpdateSpectatorState(void* target){	
 		((APlayerController*)target)->SafeServerUpdateSpectatorState();	
 	}
+	void uapi_APlayerController_SeamlessTravelFrom(void* target, APlayerController* OldPC){	
+		((APlayerController*)target)->SeamlessTravelFrom(OldPC);	
+	}
+	void uapi_APlayerController_SeamlessTravelTo(void* target, APlayerController* NewPC){	
+		((APlayerController*)target)->SeamlessTravelTo(NewPC);	
+	}
 	void uapi_APlayerController_SendClientAdjustment(void* target){	
 		((APlayerController*)target)->SendClientAdjustment();	
+	}
+	void uapi_APlayerController_ServerAcknowledgePossession(void* target, APawn* P){	
+		((APlayerController*)target)->ServerAcknowledgePossession(P);	
 	}
 	void uapi_APlayerController_ServerCamera(void* target, UName NewMode){	
 		((APlayerController*)target)->ServerCamera(ToFName(NewMode));	
@@ -1836,6 +2579,12 @@ extern "C"{
 	void uapi_APlayerController_SetAsLocalPlayerController(void* target){	
 		((APlayerController*)target)->SetAsLocalPlayerController();	
 	}
+	void uapi_APlayerController_SetAudioListenerAttenuationOverride(void* target, USceneComponent* AttachToComponent, Vector3 AttenuationLocationOVerride){	
+		((APlayerController*)target)->SetAudioListenerAttenuationOverride(AttachToComponent, ToFVector(AttenuationLocationOVerride));	
+	}
+	void uapi_APlayerController_SetAudioListenerOverride(void* target, USceneComponent* AttachToComponent, Vector3 Location, Rotator Rotation){	
+		((APlayerController*)target)->SetAudioListenerOverride(AttachToComponent, ToFVector(Location), ToFRotator(Rotation));	
+	}
 	void uapi_APlayerController_SetCameraMode(void* target, UName NewCamMode){	
 		((APlayerController*)target)->SetCameraMode(ToFName(NewCamMode));	
 	}
@@ -1856,6 +2605,12 @@ extern "C"{
 	}
 	void uapi_APlayerController_SetNetSpeed(void* target, int32 NewSpeed){	
 		((APlayerController*)target)->SetNetSpeed(NewSpeed);	
+	}
+	void uapi_APlayerController_SetPawn(void* target, APawn* InPawn){	
+		((APlayerController*)target)->SetPawn(InPawn);	
+	}
+	void uapi_APlayerController_SetPlayer(void* target, UPlayer* InPlayer){	
+		((APlayerController*)target)->SetPlayer(InPlayer);	
 	}
 	void uapi_APlayerController_SetShowMouseCursor(void* target, bool bShow){	
 		((APlayerController*)target)->SetShowMouseCursor(bShow);	
@@ -1878,6 +2633,9 @@ extern "C"{
 	bool uapi_APlayerController_ShouldShowMouseCursor(void* target){	
 		auto result = ((APlayerController*)target)->ShouldShowMouseCursor();	
 		return result;	
+	}
+	void uapi_APlayerController_SmoothTargetViewRotation(void* target, APawn* TargetPawn, float DeltaSeconds){	
+		((APlayerController*)target)->SmoothTargetViewRotation(TargetPawn, DeltaSeconds);	
 	}
 	void uapi_APlayerController_SpawnDefaultHUD(void* target){	
 		((APlayerController*)target)->SpawnDefaultHUD();	
@@ -1927,54 +2685,8 @@ extern "C"{
 	void uapi_APlayerController_ViewAPlayer(void* target, int32 dir){	
 		((APlayerController*)target)->ViewAPlayer(dir);	
 	}
-	float uapi_FRandomStream_FRand(void* target){	
-		auto result = ((FRandomStream*)target)->FRand();	
-		return result;	
-	}
-	void uapi_FRandomStream_GenerateNewSeed(void* target){	
-		((FRandomStream*)target)->GenerateNewSeed();	
-	}
-	int32 uapi_FRandomStream_GetCurrentSeed(void* target){	
-		auto result = ((FRandomStream*)target)->GetCurrentSeed();	
-		return result;	
-	}
-	float uapi_FRandomStream_GetFraction(void* target){	
-		auto result = ((FRandomStream*)target)->GetFraction();	
-		return result;	
-	}
-	int32 uapi_FRandomStream_GetInitialSeed(void* target){	
-		auto result = ((FRandomStream*)target)->GetInitialSeed();	
-		return result;	
-	}
-	Vector3 uapi_FRandomStream_GetUnitVector(void* target){	
-		auto result = ToVector3(((FRandomStream*)target)->GetUnitVector());	
-		return result;	
-	}
-	uint32 uapi_FRandomStream_GetUnsignedInt(void* target){	
-		auto result = ((FRandomStream*)target)->GetUnsignedInt();	
-		return result;	
-	}
-	void uapi_FRandomStream_Initialize(void* target, int32 InSeed){	
-		((FRandomStream*)target)->Initialize(InSeed);	
-	}
-	int32 uapi_FRandomStream_RandHelper(void* target, int32 A){	
-		auto result = ((FRandomStream*)target)->RandHelper(A);	
-		return result;	
-	}
-	int32 uapi_FRandomStream_RandRange(void* target, int32 Min, int32 Max){	
-		auto result = ((FRandomStream*)target)->RandRange(Min, Max);	
-		return result;	
-	}
-	void uapi_FRandomStream_Reset(void* target){	
-		((FRandomStream*)target)->Reset();	
-	}
-	const char* uapi_FRandomStream_ToString(void* target){	
-		auto result = FString2Utf8(((FRandomStream*)target)->ToString());	
-		return result;	
-	}
-	Vector3 uapi_FRandomStream_VRand(void* target){	
-		auto result = ToVector3(((FRandomStream*)target)->VRand());	
-		return result;	
+	void uapi_UGameplayStatics_ActivateReverbEffect(UObject* WorldContextObject, UReverbEffect* ReverbEffect, UName TagName, float Priority, float Volume, float FadeTime){	
+		(UGameplayStatics::ActivateReverbEffect(WorldContextObject, ReverbEffect, ToFName(TagName), Priority, Volume, FadeTime));	
 	}
 	bool uapi_UGameplayStatics_AreSubtitlesEnabled(){	
 		auto result = (UGameplayStatics::AreSubtitlesEnabled());	
@@ -1983,18 +2695,247 @@ extern "C"{
 	void uapi_UGameplayStatics_CancelAsyncLoading(){	
 		(UGameplayStatics::CancelAsyncLoading());	
 	}
+	void uapi_UGameplayStatics_ClearSoundMixClassOverride(UObject* WorldContextObject, USoundMix* InSoundMixModifier, USoundClass* InSoundClass, float FadeOutTime){	
+		(UGameplayStatics::ClearSoundMixClassOverride(WorldContextObject, InSoundMixModifier, InSoundClass, FadeOutTime));	
+	}
+	void uapi_UGameplayStatics_ClearSoundMixModifiers(UObject* WorldContextObject){	
+		(UGameplayStatics::ClearSoundMixModifiers(WorldContextObject));	
+	}
+	void* uapi_UGameplayStatics_CreatePlayer(UObject* WorldContextObject, int32 ControllerId, bool bSpawnPlayerController){	
+		auto result = (void*)(UGameplayStatics::CreatePlayer(WorldContextObject, ControllerId, bSpawnPlayerController));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_CreateSound2D(UObject* WorldContextObject, USoundBase* Sound, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundConcurrency* ConcurrencySettings, bool bPersistAcrossLevelTransition, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::CreateSound2D(WorldContextObject, Sound, VolumeMultiplier, PitchMultiplier, StartTime, ConcurrencySettings, bPersistAcrossLevelTransition, bAutoDestroy));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_DeactivateReverbEffect(UObject* WorldContextObject, UName TagName){	
+		(UGameplayStatics::DeactivateReverbEffect(WorldContextObject, ToFName(TagName)));	
+	}
 	void uapi_UGameplayStatics_EnableLiveStreaming(bool Enable){	
 		(UGameplayStatics::EnableLiveStreaming(Enable));	
 	}
+	void uapi_UGameplayStatics_FlushLevelStreaming(UObject* WorldContextObject){	
+		(UGameplayStatics::FlushLevelStreaming(WorldContextObject));	
+	}
 	void uapi_UGameplayStatics_GetAccurateRealTime(int32& Seconds, double& PartialSeconds){	
 		(UGameplayStatics::GetAccurateRealTime(Seconds, PartialSeconds));	
+	}
+	UName uapi_UGameplayStatics_GetActiveSpatialPluginName(UObject* WorldContextObject){	
+		auto result = ToUName((UGameplayStatics::GetActiveSpatialPluginName(WorldContextObject)));	
+		return result;	
+	}
+	double uapi_UGameplayStatics_GetAudioTimeSeconds(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetAudioTimeSeconds(WorldContextObject));	
+		return result;	
+	}
+	const char* uapi_UGameplayStatics_GetCurrentLevelName(UObject* WorldContextObject, bool bRemovePrefixString){	
+		auto result = FString2Utf8((UGameplayStatics::GetCurrentLevelName(WorldContextObject, bRemovePrefixString)));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetCurrentReverbEffect(UObject* WorldContextObject){	
+		auto result = (void*)(UGameplayStatics::GetCurrentReverbEffect(WorldContextObject));	
+		return result;	
+	}
+	bool uapi_UGameplayStatics_GetEnableWorldRendering(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetEnableWorldRendering(WorldContextObject));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetGameInstance(UObject* WorldContextObject){	
+		auto result = (void*)(UGameplayStatics::GetGameInstance(WorldContextObject));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetGameMode(UObject* WorldContextObject){	
+		auto result = (void*)(UGameplayStatics::GetGameMode(WorldContextObject));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetGameState(UObject* WorldContextObject){	
+		auto result = (void*)(UGameplayStatics::GetGameState(WorldContextObject));	
+		return result;	
+	}
+	float uapi_UGameplayStatics_GetGlobalTimeDilation(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetGlobalTimeDilation(WorldContextObject));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GetMaxAudioChannelCount(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetMaxAudioChannelCount(WorldContextObject));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GetNumLocalPlayerControllers(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetNumLocalPlayerControllers(WorldContextObject));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GetNumPlayerControllers(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetNumPlayerControllers(WorldContextObject));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GetNumPlayerStates(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetNumPlayerStates(WorldContextObject));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetObjectClass(UObject* Object){	
+		auto result = (void*)(UGameplayStatics::GetObjectClass(Object));	
+		return result;	
 	}
 	const char* uapi_UGameplayStatics_GetPlatformName(){	
 		auto result = FString2Utf8((UGameplayStatics::GetPlatformName()));	
 		return result;	
 	}
+	void* uapi_UGameplayStatics_GetPlayerCameraManager(UObject* WorldContextObject, int32 PlayerIndex){	
+		auto result = (void*)(UGameplayStatics::GetPlayerCameraManager(WorldContextObject, PlayerIndex));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetPlayerCharacter(UObject* WorldContextObject, int32 PlayerIndex){	
+		auto result = (void*)(UGameplayStatics::GetPlayerCharacter(WorldContextObject, PlayerIndex));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetPlayerController(UObject* WorldContextObject, int32 PlayerIndex){	
+		auto result = (void*)(UGameplayStatics::GetPlayerController(WorldContextObject, PlayerIndex));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetPlayerControllerFromID(UObject* WorldContextObject, int32 ControllerID){	
+		auto result = (void*)(UGameplayStatics::GetPlayerControllerFromID(WorldContextObject, ControllerID));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GetPlayerControllerID(APlayerController* Player){	
+		auto result = (UGameplayStatics::GetPlayerControllerID(Player));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetPlayerPawn(UObject* WorldContextObject, int32 PlayerIndex){	
+		auto result = (void*)(UGameplayStatics::GetPlayerPawn(WorldContextObject, PlayerIndex));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetPlayerState(UObject* WorldContextObject, int32 PlayerStateIndex){	
+		auto result = (void*)(UGameplayStatics::GetPlayerState(WorldContextObject, PlayerStateIndex));	
+		return result;	
+	}
+	double uapi_UGameplayStatics_GetRealTimeSeconds(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetRealTimeSeconds(WorldContextObject));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_GetStreamingLevel(UObject* WorldContextObject, UName PackageName){	
+		auto result = (void*)(UGameplayStatics::GetStreamingLevel(WorldContextObject, ToFName(PackageName)));	
+		return result;	
+	}
+	double uapi_UGameplayStatics_GetTimeSeconds(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetTimeSeconds(WorldContextObject));	
+		return result;	
+	}
+	double uapi_UGameplayStatics_GetUnpausedTimeSeconds(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetUnpausedTimeSeconds(WorldContextObject));	
+		return result;	
+	}
+	double uapi_UGameplayStatics_GetWorldDeltaSeconds(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::GetWorldDeltaSeconds(WorldContextObject));	
+		return result;	
+	}
+	int32 uapi_UGameplayStatics_GrassOverlappingSphereCount(UObject* WorldContextObject, UStaticMesh* StaticMesh, Vector3 CenterPosition, float Radius){	
+		auto result = (UGameplayStatics::GrassOverlappingSphereCount(WorldContextObject, StaticMesh, ToFVector(CenterPosition), Radius));	
+		return result;	
+	}
+	bool uapi_UGameplayStatics_IsGamePaused(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::IsGamePaused(WorldContextObject));	
+		return result;	
+	}
+	bool uapi_UGameplayStatics_IsSplitscreenForceDisabled(UObject* WorldContextObject){	
+		auto result = (UGameplayStatics::IsSplitscreenForceDisabled(WorldContextObject));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_OpenLevel(UObject* WorldContextObject, UName LevelName, bool bAbsolute, NativeString Options){	
+		auto fstr3 = Utf82FString(Options);	
+		(UGameplayStatics::OpenLevel(WorldContextObject, ToFName(LevelName), bAbsolute, fstr3));	
+	}
+	void uapi_UGameplayStatics_PlaySound2D(UObject* WorldContextObject, USoundBase* Sound, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundConcurrency* ConcurrencySettings, AActor* OwningActor, bool bIsUISound){	
+		(UGameplayStatics::PlaySound2D(WorldContextObject, Sound, VolumeMultiplier, PitchMultiplier, StartTime, ConcurrencySettings, OwningActor, bIsUISound));	
+	}
+	void uapi_UGameplayStatics_PlaySoundAtLocation(UObject* WorldContextObject, USoundBase* Sound, Vector3 Location, Rotator Rotation, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundAttenuation* AttenuationSettings, USoundConcurrency* ConcurrencySettings, AActor* OwningActor, UInitialActiveSoundParams* InitialParams){	
+		(UGameplayStatics::PlaySoundAtLocation(WorldContextObject, Sound, ToFVector(Location), ToFRotator(Rotation), VolumeMultiplier, PitchMultiplier, StartTime, AttenuationSettings, ConcurrencySettings, OwningActor, InitialParams));	
+	}
+	void uapi_UGameplayStatics_PlaySoundAtLocation2(UObject* WorldContextObject, USoundBase* Sound, Vector3 Location, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundAttenuation* AttenuationSettings, USoundConcurrency* ConcurrencySettings, UInitialActiveSoundParams* InitialParams){	
+		(UGameplayStatics::PlaySoundAtLocation(WorldContextObject, Sound, ToFVector(Location), VolumeMultiplier, PitchMultiplier, StartTime, AttenuationSettings, ConcurrencySettings, InitialParams));	
+	}
+	void uapi_UGameplayStatics_PopSoundMixModifier(UObject* WorldContextObject, USoundMix* InSoundMixModifier){	
+		(UGameplayStatics::PopSoundMixModifier(WorldContextObject, InSoundMixModifier));	
+	}
+	void uapi_UGameplayStatics_PrimeAllSoundsInSoundClass(USoundClass* InSoundClass){	
+		(UGameplayStatics::PrimeAllSoundsInSoundClass(InSoundClass));	
+	}
+	void uapi_UGameplayStatics_PrimeSound(USoundBase* InSound){	
+		(UGameplayStatics::PrimeSound(InSound));	
+	}
+	void uapi_UGameplayStatics_PushSoundMixModifier(UObject* WorldContextObject, USoundMix* InSoundMixModifier){	
+		(UGameplayStatics::PushSoundMixModifier(WorldContextObject, InSoundMixModifier));	
+	}
+	Vector3 uapi_UGameplayStatics_RebaseLocalOriginOntoZero(UObject* WorldContextObject, Vector3 WorldLocation){	
+		auto result = ToVector3((UGameplayStatics::RebaseLocalOriginOntoZero(WorldContextObject, ToFVector(WorldLocation))));	
+		return result;	
+	}
+	Vector3 uapi_UGameplayStatics_RebaseZeroOriginOntoLocal(UObject* WorldContextObject, Vector3 WorldLocation){	
+		auto result = ToVector3((UGameplayStatics::RebaseZeroOriginOntoLocal(WorldContextObject, ToFVector(WorldLocation))));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_RemovePlayer(APlayerController* Player, bool bDestroyPawn){	
+		(UGameplayStatics::RemovePlayer(Player, bDestroyPawn));	
+	}
+	bool uapi_UGameplayStatics_SetActiveSpatialPluginByName(UObject* WorldContextObject, UName InPluginName){	
+		auto result = (UGameplayStatics::SetActiveSpatialPluginByName(WorldContextObject, ToFName(InPluginName)));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_SetBaseSoundMix(UObject* WorldContextObject, USoundMix* InSoundMix){	
+		(UGameplayStatics::SetBaseSoundMix(WorldContextObject, InSoundMix));	
+	}
+	void uapi_UGameplayStatics_SetEnableWorldRendering(UObject* WorldContextObject, bool bEnable){	
+		(UGameplayStatics::SetEnableWorldRendering(WorldContextObject, bEnable));	
+	}
+	void uapi_UGameplayStatics_SetForceDisableSplitscreen(UObject* WorldContextObject, bool bDisable){	
+		(UGameplayStatics::SetForceDisableSplitscreen(WorldContextObject, bDisable));	
+	}
+	bool uapi_UGameplayStatics_SetGamePaused(UObject* WorldContextObject, bool bPaused){	
+		auto result = (UGameplayStatics::SetGamePaused(WorldContextObject, bPaused));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_SetGlobalListenerFocusParameters(UObject* WorldContextObject, float FocusAzimuthScale, float NonFocusAzimuthScale, float FocusDistanceScale, float NonFocusDistanceScale, float FocusVolumeScale, float NonFocusVolumeScale, float FocusPriorityScale, float NonFocusPriorityScale){	
+		(UGameplayStatics::SetGlobalListenerFocusParameters(WorldContextObject, FocusAzimuthScale, NonFocusAzimuthScale, FocusDistanceScale, NonFocusDistanceScale, FocusVolumeScale, NonFocusVolumeScale, FocusPriorityScale, NonFocusPriorityScale));	
+	}
+	void uapi_UGameplayStatics_SetGlobalPitchModulation(UObject* WorldContextObject, float PitchModulation, float TimeSec){	
+		(UGameplayStatics::SetGlobalPitchModulation(WorldContextObject, PitchModulation, TimeSec));	
+	}
+	void uapi_UGameplayStatics_SetGlobalTimeDilation(UObject* WorldContextObject, float TimeDilation){	
+		(UGameplayStatics::SetGlobalTimeDilation(WorldContextObject, TimeDilation));	
+	}
+	void uapi_UGameplayStatics_SetMaxAudioChannelsScaled(UObject* WorldContextObject, float MaxChannelCountScale){	
+		(UGameplayStatics::SetMaxAudioChannelsScaled(WorldContextObject, MaxChannelCountScale));	
+	}
+	void uapi_UGameplayStatics_SetPlayerControllerID(APlayerController* Player, int32 ControllerId){	
+		(UGameplayStatics::SetPlayerControllerID(Player, ControllerId));	
+	}
+	void uapi_UGameplayStatics_SetSoundClassDistanceScale(UObject* WorldContextObject, USoundClass* SoundClass, float DistanceAttenuationScale, float TimeSec){	
+		(UGameplayStatics::SetSoundClassDistanceScale(WorldContextObject, SoundClass, DistanceAttenuationScale, TimeSec));	
+	}
+	void uapi_UGameplayStatics_SetSoundMixClassOverride(UObject* WorldContextObject, USoundMix* InSoundMixModifier, USoundClass* InSoundClass, float Volume, float Pitch, float FadeInTime, bool bApplyToChildren){	
+		(UGameplayStatics::SetSoundMixClassOverride(WorldContextObject, InSoundMixModifier, InSoundClass, Volume, Pitch, FadeInTime, bApplyToChildren));	
+	}
 	void uapi_UGameplayStatics_SetSubtitlesEnabled(bool bEnabled){	
 		(UGameplayStatics::SetSubtitlesEnabled(bEnabled));	
+	}
+	void* uapi_UGameplayStatics_SpawnDecalAtLocation(UObject* WorldContextObject, UMaterialInterface* DecalMaterial, Vector3 DecalSize, Vector3 Location, Rotator Rotation, float LifeSpan){	
+		auto result = (void*)(UGameplayStatics::SpawnDecalAtLocation(WorldContextObject, DecalMaterial, ToFVector(DecalSize), ToFVector(Location), ToFRotator(Rotation), LifeSpan));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_SpawnForceFeedbackAtLocation(UObject* WorldContextObject, UForceFeedbackEffect* ForceFeedbackEffect, Vector3 Location, Rotator Rotation, bool bLooping, float IntensityMultiplier, float StartTime, UForceFeedbackAttenuation* AttenuationSettings, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::SpawnForceFeedbackAtLocation(WorldContextObject, ForceFeedbackEffect, ToFVector(Location), ToFRotator(Rotation), bLooping, IntensityMultiplier, StartTime, AttenuationSettings, bAutoDestroy));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_SpawnSound2D(UObject* WorldContextObject, USoundBase* Sound, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundConcurrency* ConcurrencySettings, bool bPersistAcrossLevelTransition, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::SpawnSound2D(WorldContextObject, Sound, VolumeMultiplier, PitchMultiplier, StartTime, ConcurrencySettings, bPersistAcrossLevelTransition, bAutoDestroy));	
+		return result;	
+	}
+	void* uapi_UGameplayStatics_SpawnSoundAtLocation(UObject* WorldContextObject, USoundBase* Sound, Vector3 Location, Rotator Rotation, float VolumeMultiplier, float PitchMultiplier, float StartTime, USoundAttenuation* AttenuationSettings, USoundConcurrency* ConcurrencySettings, bool bAutoDestroy){	
+		auto result = (void*)(UGameplayStatics::SpawnSoundAtLocation(WorldContextObject, Sound, ToFVector(Location), ToFRotator(Rotation), VolumeMultiplier, PitchMultiplier, StartTime, AttenuationSettings, ConcurrencySettings, bAutoDestroy));	
+		return result;	
+	}
+	void uapi_UGameplayStatics_UnRetainAllSoundsInSoundClass(USoundClass* InSoundClass){	
+		(UGameplayStatics::UnRetainAllSoundsInSoundClass(InSoundClass));	
 	}
 	void uapi_ACharacter_BeginPlay(void* target){	
 		((ACharacter*)target)->BeginPlay();	
@@ -2025,6 +2966,12 @@ extern "C"{
 	void uapi_ACharacter_ClientAckGoodMove_Implementation(void* target, float TimeStamp){	
 		((ACharacter*)target)->ClientAckGoodMove_Implementation(TimeStamp);	
 	}
+	void uapi_ACharacter_ClientAdjustPosition(void* target, float TimeStamp, Vector3 NewLoc, Vector3 NewVel, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((ACharacter*)target)->ClientAdjustPosition(TimeStamp, ToFVector(NewLoc), ToFVector(NewVel), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
+	void uapi_ACharacter_ClientAdjustPosition_Implementation(void* target, float TimeStamp, Vector3 NewLoc, Vector3 NewVel, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((ACharacter*)target)->ClientAdjustPosition_Implementation(TimeStamp, ToFVector(NewLoc), ToFVector(NewVel), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
 	void uapi_ACharacter_ClientCheatFly(void* target){	
 		((ACharacter*)target)->ClientCheatFly();	
 	}
@@ -2042,6 +2989,12 @@ extern "C"{
 	}
 	void uapi_ACharacter_ClientCheatWalk_Implementation(void* target){	
 		((ACharacter*)target)->ClientCheatWalk_Implementation();	
+	}
+	void uapi_ACharacter_ClientVeryShortAdjustPosition(void* target, float TimeStamp, Vector3 NewLoc, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((ACharacter*)target)->ClientVeryShortAdjustPosition(TimeStamp, ToFVector(NewLoc), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
+	void uapi_ACharacter_ClientVeryShortAdjustPosition_Implementation(void* target, float TimeStamp, Vector3 NewLoc, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((ACharacter*)target)->ClientVeryShortAdjustPosition_Implementation(TimeStamp, ToFVector(NewLoc), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
 	}
 	void uapi_ACharacter_Crouch(void* target, bool bClientSimulation){	
 		((ACharacter*)target)->Crouch(bClientSimulation);	
@@ -2151,6 +3104,12 @@ extern "C"{
 	void uapi_ACharacter_LaunchCharacter(void* target, Vector3 LaunchVelocity, bool bXYOverride, bool bZOverride){	
 		((ACharacter*)target)->LaunchCharacter(ToFVector(LaunchVelocity), bXYOverride, bZOverride);	
 	}
+	void uapi_ACharacter_NotifyActorBeginOverlap(void* target, AActor* OtherActor){	
+		((ACharacter*)target)->NotifyActorBeginOverlap(OtherActor);	
+	}
+	void uapi_ACharacter_NotifyActorEndOverlap(void* target, AActor* OtherActor){	
+		((ACharacter*)target)->NotifyActorEndOverlap(OtherActor);	
+	}
 	void uapi_ACharacter_NotifyJumpApex(void* target){	
 		((ACharacter*)target)->NotifyJumpApex();	
 	}
@@ -2187,6 +3146,13 @@ extern "C"{
 	void uapi_ACharacter_PawnClientRestart(void* target){	
 		((ACharacter*)target)->PawnClientRestart();	
 	}
+	float uapi_ACharacter_PlayAnimMontage(void* target, UAnimMontage* AnimMontage, float InPlayRate, UName StartSectionName){	
+		auto result = ((ACharacter*)target)->PlayAnimMontage(AnimMontage, InPlayRate, ToFName(StartSectionName));	
+		return result;	
+	}
+	void uapi_ACharacter_PossessedBy(void* target, AController* NewController){	
+		((ACharacter*)target)->PossessedBy(NewController);	
+	}
 	void uapi_ACharacter_PostInitializeComponents(void* target){	
 		((ACharacter*)target)->PostInitializeComponents();	
 	}
@@ -2217,11 +3183,20 @@ extern "C"{
 	void uapi_ACharacter_SetAnimRootMotionTranslationScale(void* target, float InAnimRootMotionTranslationScale){	
 		((ACharacter*)target)->SetAnimRootMotionTranslationScale(InAnimRootMotionTranslationScale);	
 	}
+	void uapi_ACharacter_SetBase(void* target, UPrimitiveComponent* NewBase, UName BoneName, bool bNotifyActor){	
+		((ACharacter*)target)->SetBase(NewBase, ToFName(BoneName), bNotifyActor);	
+	}
 	void uapi_ACharacter_SetReplicateMovement(void* target, bool bInReplicateMovement){	
 		((ACharacter*)target)->SetReplicateMovement(bInReplicateMovement);	
 	}
+	void uapi_ACharacter_SetupPlayerInputComponent(void* target, UInputComponent* PlayerInputComponent){	
+		((ACharacter*)target)->SetupPlayerInputComponent(PlayerInputComponent);	
+	}
 	void uapi_ACharacter_SimulatedRootMotionPositionFixup(void* target, float DeltaSeconds){	
 		((ACharacter*)target)->SimulatedRootMotionPositionFixup(DeltaSeconds);	
+	}
+	void uapi_ACharacter_StopAnimMontage(void* target, UAnimMontage* AnimMontage){	
+		((ACharacter*)target)->StopAnimMontage(AnimMontage);	
 	}
 	void uapi_ACharacter_StopJumping(void* target){	
 		((ACharacter*)target)->StopJumping();	
@@ -2241,9 +3216,31 @@ extern "C"{
 	void uapi_ACharacter_UpdateNavigationRelevance(void* target){	
 		((ACharacter*)target)->UpdateNavigationRelevance();	
 	}
+	bool uapi_AGameModeBase_AllowCheats(void* target, APlayerController* P){	
+		auto result = ((AGameModeBase*)target)->AllowCheats(P);	
+		return result;	
+	}
+	bool uapi_AGameModeBase_AllowPausing(void* target, APlayerController* PC){	
+		auto result = ((AGameModeBase*)target)->AllowPausing(PC);	
+		return result;	
+	}
+	bool uapi_AGameModeBase_CanSpectate(void* target, APlayerController* Viewer, APlayerState* ViewTarget){	
+		auto result = ((AGameModeBase*)target)->CanSpectate(Viewer, ViewTarget);	
+		return result;	
+	}
+	void* uapi_AGameModeBase_ChoosePlayerStart(void* target, AController* Player){	
+		auto result = (void*)((AGameModeBase*)target)->ChoosePlayerStart(Player);	
+		return result;	
+	}
 	bool uapi_AGameModeBase_ClearPause(void* target){	
 		auto result = ((AGameModeBase*)target)->ClearPause();	
 		return result;	
+	}
+	void uapi_AGameModeBase_DispatchPostLogin(void* target, AController* NewPlayer){	
+		((AGameModeBase*)target)->DispatchPostLogin(NewPlayer);	
+	}
+	void uapi_AGameModeBase_ForceClearUnpauseDelegates(void* target, AActor* PauseActor){	
+		((AGameModeBase*)target)->ForceClearUnpauseDelegates(PauseActor);	
 	}
 	int32 uapi_AGameModeBase_GetNumPlayers(void* target){	
 		auto result = ((AGameModeBase*)target)->GetNumPlayers();	
@@ -2252,6 +3249,9 @@ extern "C"{
 	int32 uapi_AGameModeBase_GetNumSpectators(void* target){	
 		auto result = ((AGameModeBase*)target)->GetNumSpectators();	
 		return result;	
+	}
+	void uapi_AGameModeBase_HandleStartingNewPlayer(void* target, APlayerController* NewPlayer){	
+		((AGameModeBase*)target)->HandleStartingNewPlayer(NewPlayer);	
 	}
 	bool uapi_AGameModeBase_HasMatchEnded(void* target){	
 		auto result = ((AGameModeBase*)target)->HasMatchEnded();	
@@ -2264,6 +3264,9 @@ extern "C"{
 	void uapi_AGameModeBase_InitGameState(void* target){	
 		((AGameModeBase*)target)->InitGameState();	
 	}
+	void uapi_AGameModeBase_InitStartSpot(void* target, AActor* StartSpot, AController* NewPlayer){	
+		((AGameModeBase*)target)->InitStartSpot(StartSpot, NewPlayer);	
+	}
 	bool uapi_AGameModeBase_IsHandlingReplays(void* target){	
 		auto result = ((AGameModeBase*)target)->IsHandlingReplays();	
 		return result;	
@@ -2271,6 +3274,29 @@ extern "C"{
 	bool uapi_AGameModeBase_IsPaused(void* target){	
 		auto result = ((AGameModeBase*)target)->IsPaused();	
 		return result;	
+	}
+	void uapi_AGameModeBase_K2_OnLogout(void* target, AController* ExitingController){	
+		((AGameModeBase*)target)->K2_OnLogout(ExitingController);	
+	}
+	void uapi_AGameModeBase_K2_OnRestartPlayer(void* target, AController* NewPlayer){	
+		((AGameModeBase*)target)->K2_OnRestartPlayer(NewPlayer);	
+	}
+	void uapi_AGameModeBase_K2_PostLogin(void* target, APlayerController* NewPlayer){	
+		((AGameModeBase*)target)->K2_PostLogin(NewPlayer);	
+	}
+	void uapi_AGameModeBase_Logout(void* target, AController* Exiting){	
+		((AGameModeBase*)target)->Logout(Exiting);	
+	}
+	bool uapi_AGameModeBase_MustSpectate(void* target, APlayerController* NewPlayerController){	
+		auto result = ((AGameModeBase*)target)->MustSpectate(NewPlayerController);	
+		return result;	
+	}
+	bool uapi_AGameModeBase_PlayerCanRestart(void* target, APlayerController* Player){	
+		auto result = ((AGameModeBase*)target)->PlayerCanRestart(Player);	
+		return result;	
+	}
+	void uapi_AGameModeBase_PostLogin(void* target, APlayerController* NewPlayer){	
+		((AGameModeBase*)target)->PostLogin(NewPlayer);	
 	}
 	void uapi_AGameModeBase_PostSeamlessTravel(void* target){	
 		((AGameModeBase*)target)->PostSeamlessTravel();	
@@ -2284,8 +3310,25 @@ extern "C"{
 	void uapi_AGameModeBase_ResetLevel(void* target){	
 		((AGameModeBase*)target)->ResetLevel();	
 	}
+	void uapi_AGameModeBase_RestartPlayer(void* target, AController* NewPlayer){	
+		((AGameModeBase*)target)->RestartPlayer(NewPlayer);	
+	}
+	void uapi_AGameModeBase_RestartPlayerAtPlayerStart(void* target, AController* NewPlayer, AActor* StartSpot){	
+		((AGameModeBase*)target)->RestartPlayerAtPlayerStart(NewPlayer, StartSpot);	
+	}
 	void uapi_AGameModeBase_ReturnToMainMenuHost(void* target){	
 		((AGameModeBase*)target)->ReturnToMainMenuHost();	
+	}
+	void uapi_AGameModeBase_SetPlayerDefaults(void* target, APawn* PlayerPawn){	
+		((AGameModeBase*)target)->SetPlayerDefaults(PlayerPawn);	
+	}
+	bool uapi_AGameModeBase_ShouldReset(void* target, AActor* ActorToReset){	
+		auto result = ((AGameModeBase*)target)->ShouldReset(ActorToReset);	
+		return result;	
+	}
+	void* uapi_AGameModeBase_SpawnDefaultPawnFor(void* target, AController* NewPlayer, AActor* StartSpot){	
+		auto result = (void*)((AGameModeBase*)target)->SpawnDefaultPawnFor(NewPlayer, StartSpot);	
+		return result;	
 	}
 	void uapi_AGameModeBase_StartPlay(void* target){	
 		((AGameModeBase*)target)->StartPlay();	
@@ -2293,11 +3336,40 @@ extern "C"{
 	void uapi_AGameModeBase_StartToLeaveMap(void* target){	
 		((AGameModeBase*)target)->StartToLeaveMap();	
 	}
+	void uapi_AGameModeBase_SwapPlayerControllers(void* target, APlayerController* OldPC, APlayerController* NewPC){	
+		((AGameModeBase*)target)->SwapPlayerControllers(OldPC, NewPC);	
+	}
+	void uapi_USceneComponent_AddLocalOffset(void* target, Vector3 DeltaLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddLocalOffset(ToFVector(DeltaLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_AddLocalRotation(void* target, Rotator DeltaRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddLocalRotation(ToFRotator(DeltaRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_AddRelativeLocation(void* target, Vector3 DeltaLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddRelativeLocation(ToFVector(DeltaLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_AddRelativeRotation(void* target, Rotator DeltaRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddRelativeRotation(ToFRotator(DeltaRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_AddWorldOffset(void* target, Vector3 DeltaLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddWorldOffset(ToFVector(DeltaLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_AddWorldRotation(void* target, Rotator DeltaRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->AddWorldRotation(ToFRotator(DeltaRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
 	void uapi_USceneComponent_BeginDestroy(void* target){	
 		((USceneComponent*)target)->BeginDestroy();	
 	}
 	void uapi_USceneComponent_CalcBoundingCylinder(void* target, float& CylinderRadius, float& CylinderHalfHeight){	
 		((USceneComponent*)target)->CalcBoundingCylinder(CylinderRadius, CylinderHalfHeight);	
+	}
+	bool uapi_USceneComponent_CanAttachAsChild(void* target, USceneComponent* ChildComponent, UName SocketName){	
+		auto result = ((USceneComponent*)target)->CanAttachAsChild(ChildComponent, ToFName(SocketName));	
+		return result;	
+	}
+	bool uapi_USceneComponent_CanEditChange(void* target, FProperty* Property){	
+		auto result = ((USceneComponent*)target)->CanEditChange(Property);	
+		return result;	
 	}
 	bool uapi_USceneComponent_CanEverRender(void* target){	
 		auto result = ((USceneComponent*)target)->CanEverRender();	
@@ -2500,6 +3572,10 @@ extern "C"{
 		auto result = ((USceneComponent*)target)->IsAnySimulatingPhysics();	
 		return result;	
 	}
+	bool uapi_USceneComponent_IsAttachedTo(void* target, USceneComponent* TestComp){	
+		auto result = ((USceneComponent*)target)->IsAttachedTo(TestComp);	
+		return result;	
+	}
 	bool uapi_USceneComponent_IsCollisionEnabled(void* target){	
 		auto result = ((USceneComponent*)target)->IsCollisionEnabled();	
 		return result;	
@@ -2568,6 +3644,10 @@ extern "C"{
 		auto result = ToTransform(((USceneComponent*)target)->K2_GetComponentToWorld());	
 		return result;	
 	}
+	bool uapi_USceneComponent_NeedsLoadForTargetPlatform(void* target, ITargetPlatform* TargetPlatform){	
+		auto result = ((USceneComponent*)target)->NeedsLoadForTargetPlatform(TargetPlatform);	
+		return result;	
+	}
 	void uapi_USceneComponent_OnAttachmentChanged(void* target){	
 		((USceneComponent*)target)->OnAttachmentChanged();	
 	}
@@ -2582,6 +3662,9 @@ extern "C"{
 	}
 	void uapi_USceneComponent_PostEditComponentMove(void* target, bool bFinished){	
 		((USceneComponent*)target)->PostEditComponentMove(bFinished);	
+	}
+	void uapi_USceneComponent_PostInterpChange(void* target, FProperty* PropertyThatChanged){	
+		((USceneComponent*)target)->PostInterpChange(PropertyThatChanged);	
 	}
 	void uapi_USceneComponent_PostLoad(void* target){	
 		((USceneComponent*)target)->PostLoad();	
@@ -2607,8 +3690,23 @@ extern "C"{
 	void uapi_USceneComponent_SetHiddenInGame(void* target, bool NewHidden, bool bPropagateToChildren){	
 		((USceneComponent*)target)->SetHiddenInGame(NewHidden, bPropagateToChildren);	
 	}
+	void uapi_USceneComponent_SetPhysicsVolume(void* target, APhysicsVolume* NewVolume, bool bTriggerNotifiers){	
+		((USceneComponent*)target)->SetPhysicsVolume(NewVolume, bTriggerNotifiers);	
+	}
+	void uapi_USceneComponent_SetRelativeLocation(void* target, Vector3 NewLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetRelativeLocation(ToFVector(NewLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_SetRelativeLocationAndRotation(void* target, Vector3 NewLocation, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetRelativeLocationAndRotation(ToFVector(NewLocation), ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
 	void uapi_USceneComponent_SetRelativeLocation_Direct(void* target, Vector3 NewRelativeLocation){	
 		((USceneComponent*)target)->SetRelativeLocation_Direct(ToFVector(NewRelativeLocation));	
+	}
+	void uapi_USceneComponent_SetRelativeRotation(void* target, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetRelativeRotation(ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_SetRelativeRotationExact(void* target, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetRelativeRotationExact(ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
 	}
 	void uapi_USceneComponent_SetRelativeRotation_Direct(void* target, Rotator NewRelativeRotation){	
 		((USceneComponent*)target)->SetRelativeRotation_Direct(ToFRotator(NewRelativeRotation));	
@@ -2637,8 +3735,20 @@ extern "C"{
 	void uapi_USceneComponent_SetVisibleFlag(void* target, bool bInVisible){	
 		((USceneComponent*)target)->SetVisibleFlag(bInVisible);	
 	}
+	void uapi_USceneComponent_SetWorldLocation(void* target, Vector3 NewLocation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetWorldLocation(ToFVector(NewLocation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_SetWorldLocationAndRotation(void* target, Vector3 NewLocation, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetWorldLocationAndRotation(ToFVector(NewLocation), ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
+	void uapi_USceneComponent_SetWorldRotation(void* target, Rotator NewRotation, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport){	
+		((USceneComponent*)target)->SetWorldRotation(ToFRotator(NewRotation), bSweep, OutSweepHitResult, Teleport);	
+	}
 	void uapi_USceneComponent_SetWorldScale3D(void* target, Vector3 NewScale){	
 		((USceneComponent*)target)->SetWorldScale3D(ToFVector(NewScale));	
+	}
+	void uapi_USceneComponent_SetupAttachment(void* target, USceneComponent* InParent, UName InSocketName){	
+		((USceneComponent*)target)->SetupAttachment(InParent, ToFName(InSocketName));	
 	}
 	bool uapi_USceneComponent_ShouldCollideWhenPlacing(void* target){	
 		auto result = ((USceneComponent*)target)->ShouldCollideWhenPlacing();	
@@ -2666,6 +3776,10 @@ extern "C"{
 	void uapi_USceneComponent_UpdateBounds(void* target){	
 		((USceneComponent*)target)->UpdateBounds();	
 	}
+	bool uapi_USceneComponent_UpdateOverlaps(void* target, TOverlapArrayView* PendingOverlaps, bool bDoNotifies, TOverlapArrayView* OverlapsAtEndLocation){	
+		auto result = ((USceneComponent*)target)->UpdateOverlaps(PendingOverlaps, bDoNotifies, OverlapsAtEndLocation);	
+		return result;	
+	}
 	void uapi_USceneComponent_UpdatePhysicsVolume(void* target, bool bTriggerNotifiers){	
 		((USceneComponent*)target)->UpdatePhysicsVolume(bTriggerNotifiers);	
 	}
@@ -2674,6 +3788,12 @@ extern "C"{
 	}
 	void uapi_UActorComponent_AddAssetUserData(void* target, UAssetUserData* InUserData){	
 		((UActorComponent*)target)->AddAssetUserData(InUserData);	
+	}
+	void uapi_UActorComponent_AddTickPrerequisiteActor(void* target, AActor* PrerequisiteActor){	
+		((UActorComponent*)target)->AddTickPrerequisiteActor(PrerequisiteActor);	
+	}
+	void uapi_UActorComponent_AddTickPrerequisiteComponent(void* target, UActorComponent* PrerequisiteComponent){	
+		((UActorComponent*)target)->AddTickPrerequisiteComponent(PrerequisiteComponent);	
 	}
 	void* uapi_UActorComponent_AdditionalStatObject(void* target){	
 		auto result = (void*)((UActorComponent*)target)->AdditionalStatObject();	
@@ -2692,6 +3812,14 @@ extern "C"{
 	void uapi_UActorComponent_BeginPlay(void* target){	
 		((UActorComponent*)target)->BeginPlay();	
 	}
+	bool uapi_UActorComponent_CallRemoteFunction(void* target, UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){	
+		auto result = ((UActorComponent*)target)->CallRemoteFunction(Function, Parameters, OutParms, Stack);	
+		return result;	
+	}
+	bool uapi_UActorComponent_CanEditChange(void* target, FProperty* InProperty){	
+		auto result = ((UActorComponent*)target)->CanEditChange(InProperty);	
+		return result;	
+	}
 	bool uapi_UActorComponent_CanEverAffectNavigation(void* target){	
 		auto result = ((UActorComponent*)target)->CanEverAffectNavigation();	
 		return result;	
@@ -2707,6 +3835,10 @@ extern "C"{
 	}
 	bool uapi_UActorComponent_ComponentHasTag(void* target, UName Tag){	
 		auto result = ((UActorComponent*)target)->ComponentHasTag(ToFName(Tag));	
+		return result;	
+	}
+	bool uapi_UActorComponent_ComponentIsInLevel(void* target, ULevel* TestLevel){	
+		auto result = ((UActorComponent*)target)->ComponentIsInLevel(TestLevel);	
 		return result;	
 	}
 	bool uapi_UActorComponent_ComponentIsInPersistentLevel(void* target, bool bIncludeLevelStreamingPersistent){	
@@ -2741,6 +3873,10 @@ extern "C"{
 	}
 	float uapi_UActorComponent_GetComponentTickInterval(void* target){	
 		auto result = ((UActorComponent*)target)->GetComponentTickInterval();	
+		return result;	
+	}
+	int32 uapi_UActorComponent_GetFunctionCallspace(void* target, UFunction* Function, FFrame* Stack){	
+		auto result = ((UActorComponent*)target)->GetFunctionCallspace(Function, Stack);	
 		return result;	
 	}
 	bool uapi_UActorComponent_GetIsReplicated(void* target){	
@@ -2880,6 +4016,10 @@ extern "C"{
 		auto result = ((UActorComponent*)target)->IsRenderTransformDirty();	
 		return result;	
 	}
+	bool uapi_UActorComponent_IsReplicatedSubObjectRegistered(void* target, UObject* SubObject){	
+		auto result = ((UActorComponent*)target)->IsReplicatedSubObjectRegistered(SubObject);	
+		return result;	
+	}
 	bool uapi_UActorComponent_IsSelectedInEditor(void* target){	
 		auto result = ((UActorComponent*)target)->IsSelectedInEditor();	
 		return result;	
@@ -2895,6 +4035,9 @@ extern "C"{
 	bool uapi_UActorComponent_IsVisualizationComponent(void* target){	
 		auto result = ((UActorComponent*)target)->IsVisualizationComponent();	
 		return result;	
+	}
+	void uapi_UActorComponent_K2_DestroyComponent(void* target, UObject* Object){	
+		((UActorComponent*)target)->K2_DestroyComponent(Object);	
 	}
 	void uapi_UActorComponent_MarkAsEditorOnlySubobject(void* target){	
 		((UActorComponent*)target)->MarkAsEditorOnlySubobject();	
@@ -2969,6 +4112,12 @@ extern "C"{
 	void uapi_UActorComponent_PostLoad(void* target){	
 		((UActorComponent*)target)->PostLoad();	
 	}
+	void uapi_UActorComponent_PostRename(void* target, UObject* OldOuter, UName OldName){	
+		((UActorComponent*)target)->PostRename(OldOuter, ToFName(OldName));	
+	}
+	void uapi_UActorComponent_PreEditChange(void* target, FProperty* PropertyThatWillChange){	
+		((UActorComponent*)target)->PreEditChange(PropertyThatWillChange);	
+	}
 	void uapi_UActorComponent_PreEditUndo(void* target){	
 		((UActorComponent*)target)->PreEditUndo();	
 	}
@@ -2995,6 +4144,22 @@ extern "C"{
 	}
 	void uapi_UActorComponent_RegisterComponent(void* target){	
 		((UActorComponent*)target)->RegisterComponent();	
+	}
+	void uapi_UActorComponent_RegisterComponentWithWorld(void* target, UWorld* InWorld, FRegisterComponentContext* Context){	
+		((UActorComponent*)target)->RegisterComponentWithWorld(InWorld, Context);	
+	}
+	void uapi_UActorComponent_RemoveReplicatedSubObject(void* target, UObject* SubObject){	
+		((UActorComponent*)target)->RemoveReplicatedSubObject(SubObject);	
+	}
+	void uapi_UActorComponent_RemoveTickPrerequisiteActor(void* target, AActor* PrerequisiteActor){	
+		((UActorComponent*)target)->RemoveTickPrerequisiteActor(PrerequisiteActor);	
+	}
+	void uapi_UActorComponent_RemoveTickPrerequisiteComponent(void* target, UActorComponent* PrerequisiteComponent){	
+		((UActorComponent*)target)->RemoveTickPrerequisiteComponent(PrerequisiteComponent);	
+	}
+	bool uapi_UActorComponent_ReplicateSubobjects(void* target, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags){	
+		auto result = ((UActorComponent*)target)->ReplicateSubobjects(Channel, Bunch, RepFlags);	
+		return result;	
 	}
 	bool uapi_UActorComponent_RequiresGameThreadEndOfFrameRecreate(void* target){	
 		auto result = ((UActorComponent*)target)->RequiresGameThreadEndOfFrameRecreate();	
@@ -3053,6 +4218,10 @@ extern "C"{
 	void uapi_UActorComponent_SetTickableWhenPaused(void* target, bool bTickableWhenPaused){	
 		((UActorComponent*)target)->SetTickableWhenPaused(bTickableWhenPaused);	
 	}
+	bool uapi_UActorComponent_SetupActorComponentTickFunction(void* target, FTickFunction* TickFunction){	
+		auto result = ((UActorComponent*)target)->SetupActorComponentTickFunction(TickFunction);	
+		return result;	
+	}
 	void uapi_UActorComponent_ToggleActive(void* target){	
 		((UActorComponent*)target)->ToggleActive();	
 	}
@@ -3061,6 +4230,130 @@ extern "C"{
 	}
 	void uapi_UActorComponent_UnregisterComponent(void* target){	
 		((UActorComponent*)target)->UnregisterComponent();	
+	}
+
+    Vector3 get_UMovementComponent_Velocity(void* target) { return ToVector3(((UMovementComponent*)target) -> Velocity);};
+
+    void set_UMovementComponent_Velocity(void* target, Vector3 value){ ((UMovementComponent*)target) -> Velocity = ToFVector(value);};
+	Vector3 uapi_UMovementComponent_ConstrainDirectionToPlane(void* target, Vector3 Direction){	
+		auto result = ToVector3(((UMovementComponent*)target)->ConstrainDirectionToPlane(ToFVector(Direction)));	
+		return result;	
+	}
+	Vector3 uapi_UMovementComponent_ConstrainLocationToPlane(void* target, Vector3 Location){	
+		auto result = ToVector3(((UMovementComponent*)target)->ConstrainLocationToPlane(ToFVector(Location)));	
+		return result;	
+	}
+	Vector3 uapi_UMovementComponent_ConstrainNormalToPlane(void* target, Vector3 Normal){	
+		auto result = ToVector3(((UMovementComponent*)target)->ConstrainNormalToPlane(ToFVector(Normal)));	
+		return result;	
+	}
+	void uapi_UMovementComponent_Deactivate(void* target){	
+		((UMovementComponent*)target)->Deactivate();	
+	}
+	float uapi_UMovementComponent_GetGravityZ(void* target){	
+		auto result = ((UMovementComponent*)target)->GetGravityZ();	
+		return result;	
+	}
+	float uapi_UMovementComponent_GetMaxSpeed(void* target){	
+		auto result = ((UMovementComponent*)target)->GetMaxSpeed();	
+		return result;	
+	}
+	void* uapi_UMovementComponent_GetPhysicsVolume(void* target){	
+		auto result = (void*)((UMovementComponent*)target)->GetPhysicsVolume();	
+		return result;	
+	}
+	Vector3 uapi_UMovementComponent_GetPlaneConstraintNormal(void* target){	
+		auto result = ToVector3(((UMovementComponent*)target)->GetPlaneConstraintNormal());	
+		return result;	
+	}
+	Vector3 uapi_UMovementComponent_GetPlaneConstraintOrigin(void* target){	
+		auto result = ToVector3(((UMovementComponent*)target)->GetPlaneConstraintOrigin());	
+		return result;	
+	}
+	void uapi_UMovementComponent_InitializeComponent(void* target){	
+		((UMovementComponent*)target)->InitializeComponent();	
+	}
+	bool uapi_UMovementComponent_IsExceedingMaxSpeed(void* target, float MaxSpeed){	
+		auto result = ((UMovementComponent*)target)->IsExceedingMaxSpeed(MaxSpeed);	
+		return result;	
+	}
+	bool uapi_UMovementComponent_IsInWater(void* target){	
+		auto result = ((UMovementComponent*)target)->IsInWater();	
+		return result;	
+	}
+	void uapi_UMovementComponent_OnRegister(void* target){	
+		((UMovementComponent*)target)->OnRegister();	
+	}
+	void uapi_UMovementComponent_OnTeleported(void* target){	
+		((UMovementComponent*)target)->OnTeleported();	
+	}
+	void uapi_UMovementComponent_PhysicsLockedAxisSettingChanged(){	
+		(UMovementComponent::PhysicsLockedAxisSettingChanged());	
+	}
+	void uapi_UMovementComponent_PhysicsVolumeChanged(void* target, APhysicsVolume* NewVolume){	
+		((UMovementComponent*)target)->PhysicsVolumeChanged(NewVolume);	
+	}
+	void uapi_UMovementComponent_PostLoad(void* target){	
+		((UMovementComponent*)target)->PostLoad();	
+	}
+	void uapi_UMovementComponent_RegisterComponentTickFunctions(void* target, bool bRegister){	
+		((UMovementComponent*)target)->RegisterComponentTickFunctions(bRegister);	
+	}
+	void uapi_UMovementComponent_SetPlaneConstraintEnabled(void* target, bool bEnabled){	
+		((UMovementComponent*)target)->SetPlaneConstraintEnabled(bEnabled);	
+	}
+	void uapi_UMovementComponent_SetPlaneConstraintFromVectors(void* target, Vector3 Forward, Vector3 Up){	
+		((UMovementComponent*)target)->SetPlaneConstraintFromVectors(ToFVector(Forward), ToFVector(Up));	
+	}
+	void uapi_UMovementComponent_SetPlaneConstraintNormal(void* target, Vector3 PlaneNormal){	
+		((UMovementComponent*)target)->SetPlaneConstraintNormal(ToFVector(PlaneNormal));	
+	}
+	void uapi_UMovementComponent_SetPlaneConstraintOrigin(void* target, Vector3 PlaneOrigin){	
+		((UMovementComponent*)target)->SetPlaneConstraintOrigin(ToFVector(PlaneOrigin));	
+	}
+	void uapi_UMovementComponent_SetUpdatedComponent(void* target, USceneComponent* NewUpdatedComponent){	
+		((UMovementComponent*)target)->SetUpdatedComponent(NewUpdatedComponent);	
+	}
+	bool uapi_UMovementComponent_ShouldSkipUpdate(void* target, float DeltaTime){	
+		auto result = ((UMovementComponent*)target)->ShouldSkipUpdate(DeltaTime);	
+		return result;	
+	}
+	void uapi_UMovementComponent_SnapUpdatedComponentToPlane(void* target){	
+		((UMovementComponent*)target)->SnapUpdatedComponentToPlane();	
+	}
+	void uapi_UMovementComponent_StopMovementImmediately(void* target){	
+		((UMovementComponent*)target)->StopMovementImmediately();	
+	}
+	void uapi_UMovementComponent_UpdateComponentVelocity(void* target){	
+		((UMovementComponent*)target)->UpdateComponentVelocity();	
+	}
+	void uapi_UMovementComponent_UpdateTickRegistration(void* target){	
+		((UMovementComponent*)target)->UpdateTickRegistration();	
+	}
+	void uapi_UWorld_AddController(void* target, AController* Controller){	
+		((UWorld*)target)->AddController(Controller);	
+	}
+	bool uapi_UWorld_AddLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->AddLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_AddNetworkActor(void* target, AActor* Actor){	
+		((UWorld*)target)->AddNetworkActor(Actor);	
+	}
+	void uapi_UWorld_AddParameterCollectionInstance(void* target, UMaterialParameterCollection* Collection, bool bUpdateScene){	
+		((UWorld*)target)->AddParameterCollectionInstance(Collection, bUpdateScene);	
+	}
+	void uapi_UWorld_AddPhysicsVolume(void* target, APhysicsVolume* Volume){	
+		((UWorld*)target)->AddPhysicsVolume(Volume);	
+	}
+	void uapi_UWorld_AddPostProcessingSettings(void* target, Vector3 ViewLocation, FSceneView* SceneView){	
+		((UWorld*)target)->AddPostProcessingSettings(ToFVector(ViewLocation), SceneView);	
+	}
+	void uapi_UWorld_AddStreamingLevel(void* target, ULevelStreaming* StreamingLevelToAdd){	
+		((UWorld*)target)->AddStreamingLevel(StreamingLevelToAdd);	
+	}
+	void uapi_UWorld_AddUniqueStreamingLevel(void* target, ULevelStreaming* StreamingLevelToAdd){	
+		((UWorld*)target)->AddUniqueStreamingLevel(StreamingLevelToAdd);	
 	}
 	bool uapi_UWorld_AllowAudioPlayback(void* target){	
 		auto result = ((UWorld*)target)->AllowAudioPlayback();	
@@ -3106,8 +4399,17 @@ extern "C"{
 	void uapi_UWorld_CleanupActors(void* target){	
 		((UWorld*)target)->CleanupActors();	
 	}
+	void uapi_UWorld_CleanupWorld(void* target, bool bSessionEnded, bool bCleanupResources, UWorld* NewWorld){	
+		((UWorld*)target)->CleanupWorld(bSessionEnded, bCleanupResources, NewWorld);	
+	}
+	void uapi_UWorld_ClearActorComponentEndOfFrameUpdate(void* target, UActorComponent* Component){	
+		((UWorld*)target)->ClearActorComponentEndOfFrameUpdate(Component);	
+	}
 	void uapi_UWorld_ClearDemoNetDriver(void* target){	
 		((UWorld*)target)->ClearDemoNetDriver();	
+	}
+	void uapi_UWorld_ClearNetDriver(void* target, UNetDriver* Driver){	
+		((UWorld*)target)->ClearNetDriver(Driver);	
 	}
 	void uapi_UWorld_ClearStreamingLevels(void* target){	
 		((UWorld*)target)->ClearStreamingLevels();	
@@ -3124,6 +4426,17 @@ extern "C"{
 	void uapi_UWorld_ConditionallyBuildStreamingData(void* target){	
 		((UWorld*)target)->ConditionallyBuildStreamingData();	
 	}
+	bool uapi_UWorld_ContainsActor(void* target, AActor* Actor){	
+		auto result = ((UWorld*)target)->ContainsActor(Actor);	
+		return result;	
+	}
+	bool uapi_UWorld_ContainsLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->ContainsLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_CopyGameState(void* target, AGameModeBase* FromGameMode, AGameStateBase* FromGameState){	
+		((UWorld*)target)->CopyGameState(FromGameMode, FromGameState);	
+	}
 	void* uapi_UWorld_CreateAISystem(void* target){	
 		auto result = (void*)((UWorld*)target)->CreateAISystem();	
 		return result;	
@@ -3131,17 +4444,42 @@ extern "C"{
 	void uapi_UWorld_CreateFXSystem(void* target){	
 		((UWorld*)target)->CreateFXSystem();	
 	}
+	void uapi_UWorld_CreatePhysicsScene(void* target, AWorldSettings* Settings){	
+		((UWorld*)target)->CreatePhysicsScene(Settings);	
+	}
+	void uapi_UWorld_DeSelectLevel(void* target, ULevel* InLevel){	
+		((UWorld*)target)->DeSelectLevel(InLevel);	
+	}
 	void uapi_UWorld_DelayStreamingVolumeUpdates(void* target, int32 InFrameDelay){	
 		((UWorld*)target)->DelayStreamingVolumeUpdates(InFrameDelay);	
+	}
+	bool uapi_UWorld_DestroyActor(void* target, AActor* Actor, bool bNetForce, bool bShouldModifyLevel){	
+		auto result = ((UWorld*)target)->DestroyActor(Actor, bNetForce, bShouldModifyLevel);	
+		return result;	
 	}
 	void uapi_UWorld_DestroyDemoNetDriver(void* target){	
 		((UWorld*)target)->DestroyDemoNetDriver();	
 	}
+	bool uapi_UWorld_DestroySwappedPC(void* target, UNetConnection* Connection){	
+		auto result = ((UWorld*)target)->DestroySwappedPC(Connection);	
+		return result;	
+	}
+	void uapi_UWorld_DestroyWorld(void* target, bool bInformEngineOfWorld, UWorld* NewWorld){	
+		((UWorld*)target)->DestroyWorld(bInformEngineOfWorld, NewWorld);	
+	}
 	void uapi_UWorld_DuplicateRequestedLevels(void* target, UName MapName){	
 		((UWorld*)target)->DuplicateRequestedLevels(ToFName(MapName));	
 	}
+	bool uapi_UWorld_EditorDestroyActor(void* target, AActor* Actor, bool bShouldModifyLevel){	
+		auto result = ((UWorld*)target)->EditorDestroyActor(Actor, bShouldModifyLevel);	
+		return result;	
+	}
 	void uapi_UWorld_EnsureCollisionTreeIsBuilt(void* target){	
 		((UWorld*)target)->EnsureCollisionTreeIsBuilt();	
+	}
+	void* uapi_UWorld_FindWorldInPackage(UPackage* Package){	
+		auto result = (void*)(UWorld::FindWorldInPackage(Package));	
+		return result;	
 	}
 	void uapi_UWorld_FinishDestroy(void* target){	
 		((UWorld*)target)->FinishDestroy();	
@@ -3186,6 +4524,10 @@ extern "C"{
 	}
 	double uapi_UWorld_GetAudioTimeSeconds(void* target){	
 		auto result = ((UWorld*)target)->GetAudioTimeSeconds();	
+		return result;	
+	}
+	void* uapi_UWorld_GetAuthGameMode(void* target){	
+		auto result = (void*)((UWorld*)target)->GetAuthGameMode();	
 		return result;	
 	}
 	void* uapi_UWorld_GetAvoidanceManager(void* target){	
@@ -3244,6 +4586,10 @@ extern "C"{
 		auto result = ((UWorld*)target)->GetDetailMode();	
 		return result;	
 	}
+	void* uapi_UWorld_GetDuplicatedWorldForPIE(UWorld* InWorld, UPackage* InPIEackage, int32 PIEInstanceID){	
+		auto result = (void*)(UWorld::GetDuplicatedWorldForPIE(InWorld, InPIEackage, PIEInstanceID));	
+		return result;	
+	}
 	void* uapi_UWorld_GetFirstLocalPlayerFromController(void* target){	
 		auto result = (void*)((UWorld*)target)->GetFirstLocalPlayerFromController();	
 		return result;	
@@ -3274,6 +4620,10 @@ extern "C"{
 	}
 	void* uapi_UWorld_GetLevel(void* target, int32 InLevelIndex){	
 		auto result = (void*)((UWorld*)target)->GetLevel(InLevelIndex);	
+		return result;	
+	}
+	void* uapi_UWorld_GetLevelScriptActor(void* target, ULevel* OwnerLevel){	
+		auto result = (void*)((UWorld*)target)->GetLevelScriptActor(OwnerLevel);	
 		return result;	
 	}
 	void* uapi_UWorld_GetLevelStreamingForPackageName(void* target, UName PackageName){	
@@ -3310,6 +4660,10 @@ extern "C"{
 	}
 	int32 uapi_UWorld_GetNumSelectedLevels(void* target){	
 		auto result = ((UWorld*)target)->GetNumSelectedLevels();	
+		return result;	
+	}
+	void* uapi_UWorld_GetParameterCollectionInstance(void* target, UMaterialParameterCollection* Collection){	
+		auto result = (void*)((UWorld*)target)->GetParameterCollectionInstance(Collection);	
 		return result;	
 	}
 	void* uapi_UWorld_GetPhysicsScene(void* target){	
@@ -3352,6 +4706,10 @@ extern "C"{
 		auto result = (void*)((UWorld*)target)->GetWorld();	
 		return result;	
 	}
+	void* uapi_UWorld_GetWorldDataLayers(void* target){	
+		auto result = (void*)((UWorld*)target)->GetWorldDataLayers();	
+		return result;	
+	}
 	void* uapi_UWorld_GetWorldPartition(void* target){	
 		auto result = (void*)((UWorld*)target)->GetWorldPartition();	
 		return result;	
@@ -3390,8 +4748,14 @@ extern "C"{
 	void uapi_UWorld_InitializeSubsystems(void* target){	
 		((UWorld*)target)->InitializeSubsystems();	
 	}
+	void uapi_UWorld_InsertPostProcessVolume(void* target, IInterface_PostProcessVolume* InVolume){	
+		((UWorld*)target)->InsertPostProcessVolume(InVolume);	
+	}
 	void uapi_UWorld_InvalidateAllSkyCaptures(void* target){	
 		((UWorld*)target)->InvalidateAllSkyCaptures();	
+	}
+	void uapi_UWorld_InvalidateModelGeometry(void* target, ULevel* InLevel){	
+		((UWorld*)target)->InvalidateModelGeometry(InLevel);	
 	}
 	void uapi_UWorld_InvalidateModelSurface(void* target, bool bCurrentLevelOnly){	
 		((UWorld*)target)->InvalidateModelSurface(bCurrentLevelOnly);	
@@ -3420,6 +4784,10 @@ extern "C"{
 		auto result = ((UWorld*)target)->IsInstanced();	
 		return result;	
 	}
+	bool uapi_UWorld_IsLevelSelected(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->IsLevelSelected(InLevel);	
+		return result;	
+	}
 	bool uapi_UWorld_IsMapChangeReady(void* target){	
 		auto result = ((UWorld*)target)->IsMapChangeReady();	
 		return result;	
@@ -3438,6 +4806,10 @@ extern "C"{
 	}
 	bool uapi_UWorld_IsPartitionedWorld(void* target){	
 		auto result = ((UWorld*)target)->IsPartitionedWorld();	
+		return result;	
+	}
+	bool uapi_UWorld_IsPartitionedWorld2(UWorld* InWorld){	
+		auto result = (UWorld::IsPartitionedWorld(InWorld));	
 		return result;	
 	}
 	bool uapi_UWorld_IsPaused(void* target){	
@@ -3492,8 +4864,16 @@ extern "C"{
 		auto result = ((UWorld*)target)->IsRefreshingStreamingLevels();	
 		return result;	
 	}
+	bool uapi_UWorld_IsStreamingLevelBeingConsidered(void* target, ULevelStreaming* StreamingLevel){	
+		auto result = ((UWorld*)target)->IsStreamingLevelBeingConsidered(StreamingLevel);	
+		return result;	
+	}
 	bool uapi_UWorld_IsVisibilityRequestPending(void* target){	
 		auto result = ((UWorld*)target)->IsVisibilityRequestPending();	
+		return result;	
+	}
+	bool uapi_UWorld_IsWorldOrExternalActorPackage(UPackage* Package){	
+		auto result = (UWorld::IsWorldOrExternalActorPackage(Package));	
 		return result;	
 	}
 	void uapi_UWorld_IssueEditorLoadWarnings(void* target){	
@@ -3503,8 +4883,24 @@ extern "C"{
 		auto result = (void*)((UWorld*)target)->K2_GetWorldSettings();	
 		return result;	
 	}
+	void uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate(void* target, UActorComponent* Component, bool bForceGameThread){	
+		((UWorld*)target)->MarkActorComponentForNeededEndOfFrameUpdate(Component, bForceGameThread);	
+	}
 	void uapi_UWorld_MarkObjectsPendingKill(void* target){	
 		((UWorld*)target)->MarkObjectsPendingKill();	
+	}
+	void uapi_UWorld_ModifyLevel(void* target, ULevel* Level){	
+		((UWorld*)target)->ModifyLevel(Level);	
+	}
+	void uapi_UWorld_NotifyAcceptedConnection(void* target, UNetConnection* Connection){	
+		((UWorld*)target)->NotifyAcceptedConnection(Connection);	
+	}
+	bool uapi_UWorld_NotifyAcceptingChannel(void* target, UChannel* Channel){	
+		auto result = ((UWorld*)target)->NotifyAcceptingChannel(Channel);	
+		return result;	
+	}
+	void uapi_UWorld_NotifyOfBlueprintDebuggingAssociation(void* target, UBlueprint* Blueprint, UObject* DebugObject){	
+		((UWorld*)target)->NotifyOfBlueprintDebuggingAssociation(Blueprint, DebugObject);	
 	}
 	void uapi_UWorld_PopulateStreamingLevelsToConsider(void* target){	
 		((UWorld*)target)->PopulateStreamingLevelsToConsider();	
@@ -3524,8 +4920,34 @@ extern "C"{
 	void uapi_UWorld_RefreshStreamingLevels(void* target){	
 		((UWorld*)target)->RefreshStreamingLevels();	
 	}
+	void uapi_UWorld_RegisterAutoActivateCamera(void* target, ACameraActor* CameraActor, int32 PlayerIndex){	
+		((UWorld*)target)->RegisterAutoActivateCamera(CameraActor, PlayerIndex);	
+	}
 	void uapi_UWorld_ReleasePhysicsScene(void* target){	
 		((UWorld*)target)->ReleasePhysicsScene();	
+	}
+	void uapi_UWorld_RemoveActor(void* target, AActor* Actor, bool bShouldModifyLevel){	
+		((UWorld*)target)->RemoveActor(Actor, bShouldModifyLevel);	
+	}
+	void uapi_UWorld_RemoveController(void* target, AController* Controller){	
+		((UWorld*)target)->RemoveController(Controller);	
+	}
+	bool uapi_UWorld_RemoveLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->RemoveLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_RemoveNetworkActor(void* target, AActor* Actor){	
+		((UWorld*)target)->RemoveNetworkActor(Actor);	
+	}
+	void uapi_UWorld_RemovePhysicsVolume(void* target, APhysicsVolume* Volume){	
+		((UWorld*)target)->RemovePhysicsVolume(Volume);	
+	}
+	void uapi_UWorld_RemovePostProcessVolume(void* target, IInterface_PostProcessVolume* InVolume){	
+		((UWorld*)target)->RemovePostProcessVolume(InVolume);	
+	}
+	bool uapi_UWorld_RemoveStreamingLevel(void* target, ULevelStreaming* StreamingLevelToRemove){	
+		auto result = ((UWorld*)target)->RemoveStreamingLevel(StreamingLevelToRemove);	
+		return result;	
 	}
 	bool uapi_UWorld_RemoveStreamingLevelAt(void* target, int32 IndexToRemove){	
 		auto result = ((UWorld*)target)->RemoveStreamingLevelAt(IndexToRemove);	
@@ -3538,6 +4960,9 @@ extern "C"{
 		auto result = ((UWorld*)target)->RequiresHitProxies();	
 		return result;	
 	}
+	void uapi_UWorld_SelectLevel(void* target, ULevel* InLevel){	
+		((UWorld*)target)->SelectLevel(InLevel);	
+	}
 	void uapi_UWorld_SendAllEndOfFrameUpdates(void* target){	
 		((UWorld*)target)->SendAllEndOfFrameUpdates();	
 	}
@@ -3547,6 +4972,19 @@ extern "C"{
 	void uapi_UWorld_SetAllowDeferredPhysicsStateCreation(void* target, bool bAllow){	
 		((UWorld*)target)->SetAllowDeferredPhysicsStateCreation(bAllow);	
 	}
+	bool uapi_UWorld_SetCurrentLevel(void* target, ULevel* InLevel){	
+		auto result = ((UWorld*)target)->SetCurrentLevel(InLevel);	
+		return result;	
+	}
+	void uapi_UWorld_SetDemoNetDriver(void* target, UDemoNetDriver* InDemoNetDriver){	
+		((UWorld*)target)->SetDemoNetDriver(InDemoNetDriver);	
+	}
+	void uapi_UWorld_SetGameInstance(void* target, UGameInstance* NewGI){	
+		((UWorld*)target)->SetGameInstance(NewGI);	
+	}
+	void uapi_UWorld_SetGameState(void* target, AGameStateBase* NewGameState){	
+		((UWorld*)target)->SetGameState(NewGameState);	
+	}
 	void uapi_UWorld_SetMapNeedsLightingFullyRebuilt(void* target, int32 InNumLightingUnbuiltObjects, int32 InNumUnbuiltReflectionCaptures){	
 		((UWorld*)target)->SetMapNeedsLightingFullyRebuilt(InNumLightingUnbuiltObjects, InNumUnbuiltReflectionCaptures);	
 	}
@@ -3555,6 +4993,12 @@ extern "C"{
 	}
 	void uapi_UWorld_SetNavigationSystem(void* target, UNavigationSystemBase* InNavigationSystem){	
 		((UWorld*)target)->SetNavigationSystem(InNavigationSystem);	
+	}
+	void uapi_UWorld_SetNetDriver(void* target, UNetDriver* NewDriver){	
+		((UWorld*)target)->SetNetDriver(NewDriver);	
+	}
+	void uapi_UWorld_SetPhysicsScene(void* target, FPhysScene* InScene){	
+		((UWorld*)target)->SetPhysicsScene(InScene);	
 	}
 	void uapi_UWorld_SetSeamlessTravelMidpointPause(void* target, bool bNowPaused){	
 		((UWorld*)target)->SetSeamlessTravelMidpointPause(bNowPaused);	
@@ -3606,8 +5050,14 @@ extern "C"{
 		auto result = ((UWorld*)target)->TimeSince(Time);	
 		return result;	
 	}
+	void uapi_UWorld_TransferBlueprintDebugReferences(void* target, UWorld* NewWorld){	
+		((UWorld*)target)->TransferBlueprintDebugReferences(NewWorld);	
+	}
 	void uapi_UWorld_TriggerStreamingDataRebuild(void* target){	
 		((UWorld*)target)->TriggerStreamingDataRebuild();	
+	}
+	void uapi_UWorld_UpdateActorComponentEndOfFrameUpdateState(void* target, UActorComponent* Component){	
+		((UWorld*)target)->UpdateActorComponentEndOfFrameUpdateState(Component);	
 	}
 	void uapi_UWorld_UpdateAllSkyCaptures(void* target){	
 		((UWorld*)target)->UpdateAllSkyCaptures();	
@@ -3615,15 +5065,31 @@ extern "C"{
 	void uapi_UWorld_UpdateConstraintActors(void* target){	
 		((UWorld*)target)->UpdateConstraintActors();	
 	}
+	bool uapi_UWorld_UpdateCullDistanceVolumes(void* target, AActor* ActorToUpdate, UPrimitiveComponent* ComponentToUpdate){	
+		auto result = ((UWorld*)target)->UpdateCullDistanceVolumes(ActorToUpdate, ComponentToUpdate);	
+		return result;	
+	}
 	void uapi_UWorld_UpdateLevelStreaming(void* target){	
 		((UWorld*)target)->UpdateLevelStreaming();	
 	}
 	void uapi_UWorld_UpdateParameterCollectionInstances(void* target, bool bUpdateInstanceUniformBuffers, bool bRecreateUniformBuffer){	
 		((UWorld*)target)->UpdateParameterCollectionInstances(bUpdateInstanceUniformBuffers, bRecreateUniformBuffer);	
 	}
+	void uapi_UWorld_UpdateStreamingLevelPriority(void* target, ULevelStreaming* StreamingLevel){	
+		((UWorld*)target)->UpdateStreamingLevelPriority(StreamingLevel);	
+	}
+	void uapi_UWorld_UpdateStreamingLevelShouldBeConsidered(void* target, ULevelStreaming* StreamingLevelToConsider){	
+		((UWorld*)target)->UpdateStreamingLevelShouldBeConsidered(StreamingLevelToConsider);	
+	}
+	void uapi_UWorld_UpdateWorldComponents(void* target, bool bRerunConstructionScripts, bool bCurrentLevelOnly, FRegisterComponentContext* Context){	
+		((UWorld*)target)->UpdateWorldComponents(bRerunConstructionScripts, bCurrentLevelOnly, Context);	
+	}
 	bool uapi_UWorld_UsesGameHiddenFlags(void* target){	
 		auto result = ((UWorld*)target)->UsesGameHiddenFlags();	
 		return result;	
+	}
+	void uapi_UWorld_WelcomePlayer(void* target, UNetConnection* Connection){	
+		((UWorld*)target)->WelcomePlayer(Connection);	
 	}
 	void uapi_UPrimitiveComponent_AddAngularImpulseInDegrees(void* target, Vector3 Impulse, UName BoneName, bool bVelChange){	
 		((UPrimitiveComponent*)target)->AddAngularImpulseInDegrees(ToFVector(Impulse), ToFName(BoneName), bVelChange);	
@@ -3665,6 +5131,14 @@ extern "C"{
 		auto result = ((UPrimitiveComponent*)target)->CalculateMass(ToFName(BoneName));	
 		return result;	
 	}
+	bool uapi_UPrimitiveComponent_CanCharacterStepUp(void* target, APawn* Pawn){	
+		auto result = ((UPrimitiveComponent*)target)->CanCharacterStepUp(Pawn);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_CanEditChange(void* target, FProperty* InProperty){	
+		auto result = ((UPrimitiveComponent*)target)->CanEditChange(InProperty);	
+		return result;	
+	}
 	bool uapi_UPrimitiveComponent_CanEditSimulatePhysics(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->CanEditSimulatePhysics();	
 		return result;	
@@ -3686,12 +5160,18 @@ extern "C"{
 		auto result = ((UPrimitiveComponent*)target)->ComputeHashTextureStreamingBuiltData();	
 		return result;	
 	}
+	void uapi_UPrimitiveComponent_CreateRenderState_Concurrent(void* target, FRegisterComponentContext* Context){	
+		((UPrimitiveComponent*)target)->CreateRenderState_Concurrent(Context);	
+	}
 	void* uapi_UPrimitiveComponent_CreateSceneProxy(void* target){	
 		auto result = (void*)((UPrimitiveComponent*)target)->CreateSceneProxy();	
 		return result;	
 	}
 	void uapi_UPrimitiveComponent_DestroyRenderState_Concurrent(void* target){	
 		((UPrimitiveComponent*)target)->DestroyRenderState_Concurrent();	
+	}
+	void uapi_UPrimitiveComponent_DispatchMouseOverEvents(UPrimitiveComponent* CurrentComponent, UPrimitiveComponent* NewComponent){	
+		(UPrimitiveComponent::DispatchMouseOverEvents(CurrentComponent, NewComponent));	
 	}
 	void uapi_UPrimitiveComponent_FinishDestroy(void* target){	
 		((UPrimitiveComponent*)target)->FinishDestroy();	
@@ -3726,6 +5206,10 @@ extern "C"{
 	}
 	CollisionShape uapi_UPrimitiveComponent_GetCollisionShape(void* target, float Inflation){	
 		auto result = ToCollisionShape(((UPrimitiveComponent*)target)->GetCollisionShape(Inflation));	
+		return result;	
+	}
+	Transform uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance(void* target, FBodyInstance* UseBI){	
+		auto result = ToTransform(((UPrimitiveComponent*)target)->GetComponentTransformFromBodyInstance(UseBI));	
 		return result;	
 	}
 	Vector3 uapi_UPrimitiveComponent_GetComponentVelocity(void* target){	
@@ -3867,9 +5351,15 @@ extern "C"{
 		auto result = ((UPrimitiveComponent*)target)->HasValidSettingsForStaticLighting(bOverlookInvalidComponents);	
 		return result;	
 	}
+	void uapi_UPrimitiveComponent_IgnoreActorWhenMoving(void* target, AActor* Actor, bool bShouldIgnore){	
+		((UPrimitiveComponent*)target)->IgnoreActorWhenMoving(Actor, bShouldIgnore);	
+	}
 	bool uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->IgnoreBoundsForEditorFocus();	
 		return result;	
+	}
+	void uapi_UPrimitiveComponent_IgnoreComponentWhenMoving(void* target, UPrimitiveComponent* Component, bool bShouldIgnore){	
+		((UPrimitiveComponent*)target)->IgnoreComponentWhenMoving(Component, bShouldIgnore);	
 	}
 	void uapi_UPrimitiveComponent_InvalidateLightingCacheDetailed(void* target, bool bInvalidateBuildEnqueuedLighting, bool bTranslationOnly){	
 		((UPrimitiveComponent*)target)->InvalidateLightingCacheDetailed(bInvalidateBuildEnqueuedLighting, bTranslationOnly);	
@@ -3903,6 +5393,14 @@ extern "C"{
 	}
 	bool uapi_UPrimitiveComponent_IsNavigationRelevant(void* target){	
 		auto result = ((UPrimitiveComponent*)target)->IsNavigationRelevant();	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsOverlappingActor(void* target, AActor* Other){	
+		auto result = ((UPrimitiveComponent*)target)->IsOverlappingActor(Other);	
+		return result;	
+	}
+	bool uapi_UPrimitiveComponent_IsOverlappingComponent(void* target, UPrimitiveComponent* OtherComp){	
+		auto result = ((UPrimitiveComponent*)target)->IsOverlappingComponent(OtherComp);	
 		return result;	
 	}
 	bool uapi_UPrimitiveComponent_IsReadyForFinishDestroy(void* target){	
@@ -3996,6 +5494,10 @@ extern "C"{
 	void uapi_UPrimitiveComponent_PutRigidBodyToSleep(void* target, UName BoneName){	
 		((UPrimitiveComponent*)target)->PutRigidBodyToSleep(ToFName(BoneName));	
 	}
+	bool uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel(void* target, UActorTextureStreamingBuildDataComponent* InActorTextureBuildData){	
+		auto result = ((UPrimitiveComponent*)target)->RemapActorTextureStreamingBuiltDataToLevel(InActorTextureBuildData);	
+		return result;	
+	}
 	bool uapi_UPrimitiveComponent_RigidBodyIsAwake(void* target, UName BoneName){	
 		auto result = ((UPrimitiveComponent*)target)->RigidBodyIsAwake(ToFName(BoneName));	
 		return result;	
@@ -4003,6 +5505,9 @@ extern "C"{
 	Vector3 uapi_UPrimitiveComponent_ScaleByMomentOfInertia(void* target, Vector3 InputVector, UName BoneName){	
 		auto result = ToVector3(((UPrimitiveComponent*)target)->ScaleByMomentOfInertia(ToFVector(InputVector), ToFName(BoneName)));	
 		return result;	
+	}
+	void uapi_UPrimitiveComponent_SendRenderDebugPhysics(void* target, FPrimitiveSceneProxy* OverrideSceneProxy){	
+		((UPrimitiveComponent*)target)->SendRenderDebugPhysics(OverrideSceneProxy);	
 	}
 	void uapi_UPrimitiveComponent_SendRenderTransform_Concurrent(void* target){	
 		((UPrimitiveComponent*)target)->SendRenderTransform_Concurrent();	
@@ -4097,6 +5602,9 @@ extern "C"{
 	void uapi_UPrimitiveComponent_SetIsBeingMovedByEditor(void* target, bool bNewIsBeingMoved){	
 		((UPrimitiveComponent*)target)->SetIsBeingMovedByEditor(bNewIsBeingMoved);	
 	}
+	void uapi_UPrimitiveComponent_SetLODParentPrimitive(void* target, UPrimitiveComponent* InLODParentPrimitive){	
+		((UPrimitiveComponent*)target)->SetLODParentPrimitive(InLODParentPrimitive);	
+	}
 	void uapi_UPrimitiveComponent_SetLastRenderTime(void* target, float InLastRenderTime){	
 		((UPrimitiveComponent*)target)->SetLastRenderTime(InLastRenderTime);	
 	}
@@ -4112,6 +5620,12 @@ extern "C"{
 	void uapi_UPrimitiveComponent_SetMassScale(void* target, UName BoneName, float InMassScale){	
 		((UPrimitiveComponent*)target)->SetMassScale(ToFName(BoneName), InMassScale);	
 	}
+	void uapi_UPrimitiveComponent_SetMaterial(void* target, int32 ElementIndex, UMaterialInterface* Material){	
+		((UPrimitiveComponent*)target)->SetMaterial(ElementIndex, Material);	
+	}
+	void uapi_UPrimitiveComponent_SetMaterialByName(void* target, UName MaterialSlotName, UMaterialInterface* Material){	
+		((UPrimitiveComponent*)target)->SetMaterialByName(ToFName(MaterialSlotName), Material);	
+	}
 	void uapi_UPrimitiveComponent_SetNotifyRigidBodyCollision(void* target, bool bNewNotifyRigidBodyCollision){	
 		((UPrimitiveComponent*)target)->SetNotifyRigidBodyCollision(bNewNotifyRigidBodyCollision);	
 	}
@@ -4120,6 +5634,9 @@ extern "C"{
 	}
 	void uapi_UPrimitiveComponent_SetOwnerNoSee(void* target, bool bNewOwnerNoSee){	
 		((UPrimitiveComponent*)target)->SetOwnerNoSee(bNewOwnerNoSee);	
+	}
+	void uapi_UPrimitiveComponent_SetPhysMaterialOverride(void* target, UPhysicalMaterial* NewPhysMaterial){	
+		((UPrimitiveComponent*)target)->SetPhysMaterialOverride(NewPhysMaterial);	
 	}
 	void uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees(void* target, Vector3 NewAngVel, bool bAddToCurrent, UName BoneName){	
 		((UPrimitiveComponent*)target)->SetPhysicsAngularVelocityInDegrees(ToFVector(NewAngVel), bAddToCurrent, ToFName(BoneName));	
@@ -4223,6 +5740,10 @@ extern "C"{
 	void uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack(void* target, float NewSlack){	
 		((UPrimitiveComponent*)target)->UpdateOcclusionBoundsSlack(NewSlack);	
 	}
+	bool uapi_UPrimitiveComponent_UpdateOverlapsImpl(void* target, TOverlapArrayView* NewPendingOverlaps, bool bDoNotifies, TOverlapArrayView* OverlapsAtEndLocation){	
+		auto result = ((UPrimitiveComponent*)target)->UpdateOverlapsImpl(NewPendingOverlaps, bDoNotifies, OverlapsAtEndLocation);	
+		return result;	
+	}
 	void uapi_UPrimitiveComponent_UpdatePhysicsVolume(void* target, bool bTriggerNotifiers){	
 		((UPrimitiveComponent*)target)->UpdatePhysicsVolume(bTriggerNotifiers);	
 	}
@@ -4239,6 +5760,16 @@ extern "C"{
 	bool uapi_UPrimitiveComponent_WasRecentlyRendered(void* target, float Tolerance){	
 		auto result = ((UPrimitiveComponent*)target)->WasRecentlyRendered(Tolerance);	
 		return result;	
+	}
+	void uapi_UPrimitiveComponent_WeldTo(void* target, USceneComponent* InParent, UName InSocketName){	
+		((UPrimitiveComponent*)target)->WeldTo(InParent, ToFName(InSocketName));	
+	}
+	bool uapi_UPrimitiveComponent_WeldToImplementation(void* target, USceneComponent* InParent, UName ParentSocketName, bool bWeldSimulatedChild){	
+		auto result = ((UPrimitiveComponent*)target)->WeldToImplementation(InParent, ToFName(ParentSocketName), bWeldSimulatedChild);	
+		return result;	
+	}
+	void uapi_UAnimInstance_AddExternalNotifyHandler(void* target, UObject* ExternalHandlerObject, UName NotifyEventName){	
+		((UAnimInstance*)target)->AddExternalNotifyHandler(ExternalHandlerObject, ToFName(NotifyEventName));	
 	}
 	void uapi_UAnimInstance_BeginDestroy(void* target){	
 		((UAnimInstance*)target)->BeginDestroy();	
@@ -4278,11 +5809,18 @@ extern "C"{
 	void uapi_UAnimInstance_ClearTransitionEvents(void* target, UName EventName){	
 		((UAnimInstance*)target)->ClearTransitionEvents(ToFName(EventName));	
 	}
+	void uapi_UAnimInstance_CopyCurveValues(void* target, UAnimInstance* InSourceInstance){	
+		((UAnimInstance*)target)->CopyCurveValues(*InSourceInstance);	
+	}
 	void uapi_UAnimInstance_DispatchQueuedAnimEvents(void* target){	
 		((UAnimInstance*)target)->DispatchQueuedAnimEvents();	
 	}
 	void uapi_UAnimInstance_EndNotifyStates(void* target){	
 		((UAnimInstance*)target)->EndNotifyStates();	
+	}
+	void* uapi_UAnimInstance_GetActiveInstanceForMontage(void* target, UAnimMontage* Montage){	
+		auto result = (void*)((UAnimInstance*)target)->GetActiveInstanceForMontage(Montage);	
+		return result;	
 	}
 	void* uapi_UAnimInstance_GetActiveMontageInstance(void* target){	
 		auto result = (void*)((UAnimInstance*)target)->GetActiveMontageInstance();	
@@ -4374,6 +5912,10 @@ extern "C"{
 	}
 	void* uapi_UAnimInstance_GetLinkedInputPoseNode(void* target, UName InSubInput, UName InGraph){	
 		auto result = (void*)((UAnimInstance*)target)->GetLinkedInputPoseNode(ToFName(InSubInput), ToFName(InGraph));	
+		return result;	
+	}
+	void* uapi_UAnimInstance_GetMachineDescription(void* target, IAnimClassInterface* AnimBlueprintClass, FAnimNode_StateMachine* MachineInstance){	
+		auto result = (void*)((UAnimInstance*)target)->GetMachineDescription(AnimBlueprintClass, MachineInstance);	
 		return result;	
 	}
 	void* uapi_UAnimInstance_GetMontageInstanceForID(void* target, int32 MontageInstanceID){	
@@ -4482,6 +6024,10 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->IsBeingDebugged();	
 		return result;	
 	}
+	bool uapi_UAnimInstance_IsPlayingSlotAnimation(void* target, UAnimSequenceBase* Asset, UName SlotNodeName){	
+		auto result = ((UAnimInstance*)target)->IsPlayingSlotAnimation(Asset, ToFName(SlotNodeName));	
+		return result;	
+	}
 	bool uapi_UAnimInstance_IsPostUpdatingAnimation(void* target){	
 		auto result = ((UAnimInstance*)target)->IsPostUpdatingAnimation();	
 		return result;	
@@ -4504,6 +6050,72 @@ extern "C"{
 	}
 	void uapi_UAnimInstance_LockAIResources(void* target, bool bLockMovement, bool LockAILogic){	
 		((UAnimInstance*)target)->LockAIResources(bLockMovement, LockAILogic);	
+	}
+	void uapi_UAnimInstance_MontageSync_Follow(void* target, UAnimMontage* MontageFollower, UAnimInstance* OtherAnimInstance, UAnimMontage* MontageLeader){	
+		((UAnimInstance*)target)->MontageSync_Follow(MontageFollower, OtherAnimInstance, MontageLeader);	
+	}
+	void uapi_UAnimInstance_MontageSync_StopFollowing(void* target, UAnimMontage* MontageFollower){	
+		((UAnimInstance*)target)->MontageSync_StopFollowing(MontageFollower);	
+	}
+	float uapi_UAnimInstance_Montage_GetBlendTime(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_GetBlendTime(Montage);	
+		return result;	
+	}
+	void* uapi_UAnimInstance_Montage_GetBlendingOutDelegate(void* target, UAnimMontage* Montage){	
+		auto result = (void*)((UAnimInstance*)target)->Montage_GetBlendingOutDelegate(Montage);	
+		return result;	
+	}
+	UName uapi_UAnimInstance_Montage_GetCurrentSection(void* target, UAnimMontage* Montage){	
+		auto result = ToUName(((UAnimInstance*)target)->Montage_GetCurrentSection(Montage));	
+		return result;	
+	}
+	bool uapi_UAnimInstance_Montage_GetIsStopped(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_GetIsStopped(Montage);	
+		return result;	
+	}
+	float uapi_UAnimInstance_Montage_GetPlayRate(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_GetPlayRate(Montage);	
+		return result;	
+	}
+	float uapi_UAnimInstance_Montage_GetPosition(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_GetPosition(Montage);	
+		return result;	
+	}
+	bool uapi_UAnimInstance_Montage_IsActive(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_IsActive(Montage);	
+		return result;	
+	}
+	bool uapi_UAnimInstance_Montage_IsPlaying(void* target, UAnimMontage* Montage){	
+		auto result = ((UAnimInstance*)target)->Montage_IsPlaying(Montage);	
+		return result;	
+	}
+	void uapi_UAnimInstance_Montage_JumpToSection(void* target, UName SectionName, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_JumpToSection(ToFName(SectionName), Montage);	
+	}
+	void uapi_UAnimInstance_Montage_JumpToSectionsEnd(void* target, UName SectionName, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_JumpToSectionsEnd(ToFName(SectionName), Montage);	
+	}
+	void uapi_UAnimInstance_Montage_Pause(void* target, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_Pause(Montage);	
+	}
+	float uapi_UAnimInstance_Montage_Play(void* target, UAnimMontage* MontageToPlay, float InPlayRate, EMontagePlayReturnType ReturnValueType, float InTimeToStartMontageAt, bool bStopAllMontages){	
+		auto result = ((UAnimInstance*)target)->Montage_Play(MontageToPlay, InPlayRate, ReturnValueType, InTimeToStartMontageAt, bStopAllMontages);	
+		return result;	
+	}
+	void uapi_UAnimInstance_Montage_Resume(void* target, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_Resume(Montage);	
+	}
+	void uapi_UAnimInstance_Montage_SetNextSection(void* target, UName SectionNameToChange, UName NextSection, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_SetNextSection(ToFName(SectionNameToChange), ToFName(NextSection), Montage);	
+	}
+	void uapi_UAnimInstance_Montage_SetPlayRate(void* target, UAnimMontage* Montage, float NewPlayRate){	
+		((UAnimInstance*)target)->Montage_SetPlayRate(Montage, NewPlayRate);	
+	}
+	void uapi_UAnimInstance_Montage_SetPosition(void* target, UAnimMontage* Montage, float NewPosition){	
+		((UAnimInstance*)target)->Montage_SetPosition(Montage, NewPosition);	
+	}
+	void uapi_UAnimInstance_Montage_Stop(void* target, float InBlendOutTime, UAnimMontage* Montage){	
+		((UAnimInstance*)target)->Montage_Stop(InBlendOutTime, Montage);	
 	}
 	void uapi_UAnimInstance_Montage_StopGroupByName(void* target, float InBlendOutTime, UName GroupName){	
 		((UAnimInstance*)target)->Montage_StopGroupByName(InBlendOutTime, ToFName(GroupName));	
@@ -4541,8 +6153,16 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->PCV_ShouldWarnAboutNodesNotUsingFastPath();	
 		return result;	
 	}
+	bool uapi_UAnimInstance_ParallelCanEvaluate(void* target, USkeletalMesh* InSkeletalMesh){	
+		auto result = ((UAnimInstance*)target)->ParallelCanEvaluate(InSkeletalMesh);	
+		return result;	
+	}
 	void uapi_UAnimInstance_ParallelUpdateAnimation(void* target){	
 		((UAnimInstance*)target)->ParallelUpdateAnimation();	
+	}
+	void* uapi_UAnimInstance_PlaySlotAnimationAsDynamicMontage(void* target, UAnimSequenceBase* Asset, UName SlotNodeName, float BlendInTime, float BlendOutTime, float InPlayRate, int32 LoopCount, float BlendOutTriggerTime, float InTimeToStartMontageAt){	
+		auto result = (void*)((UAnimInstance*)target)->PlaySlotAnimationAsDynamicMontage(Asset, ToFName(SlotNodeName), BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt);	
+		return result;	
 	}
 	void uapi_UAnimInstance_PostEvaluateAnimation(void* target){	
 		((UAnimInstance*)target)->PostEvaluateAnimation();	
@@ -4576,8 +6196,20 @@ extern "C"{
 	void uapi_UAnimInstance_RecordStateWeight(void* target, int32 InMachineClassIndex, int32 InStateIndex, float InStateWeight, float InElapsedTime){	
 		((UAnimInstance*)target)->RecordStateWeight(InMachineClassIndex, InStateIndex, InStateWeight, InElapsedTime);	
 	}
+	void uapi_UAnimInstance_RefreshCurves(void* target, USkeletalMeshComponent* Component){	
+		((UAnimInstance*)target)->RefreshCurves(Component);	
+	}
+	void uapi_UAnimInstance_RemoveExternalNotifyHandler(void* target, UObject* ExternalHandlerObject, UName NotifyEventName){	
+		((UAnimInstance*)target)->RemoveExternalNotifyHandler(ExternalHandlerObject, ToFName(NotifyEventName));	
+	}
 	void uapi_UAnimInstance_RemovePoseSnapshot(void* target, UName SnapshotName){	
 		((UAnimInstance*)target)->RemovePoseSnapshot(ToFName(SnapshotName));	
+	}
+	void uapi_UAnimInstance_RequestMontageInertialization(void* target, UAnimMontage* Montage, float Duration, UBlendProfile* BlendProfile){	
+		((UAnimInstance*)target)->RequestMontageInertialization(Montage, Duration, BlendProfile);	
+	}
+	void uapi_UAnimInstance_RequestSlotGroupInertialization(void* target, UName InSlotGroupName, float Duration, UBlendProfile* BlendProfile){	
+		((UAnimInstance*)target)->RequestSlotGroupInertialization(ToFName(InSlotGroupName), Duration, BlendProfile);	
 	}
 	void uapi_UAnimInstance_ResetDynamics(void* target, ETeleportType InTeleportType){	
 		((UAnimInstance*)target)->ResetDynamics(InTeleportType);	
@@ -4601,6 +6233,10 @@ extern "C"{
 		auto result = ((UAnimInstance*)target)->ShouldExtractRootMotion();	
 		return result;	
 	}
+	bool uapi_UAnimInstance_ShouldTriggerAnimNotifyState(void* target, UAnimNotifyState* AnimNotifyState){	
+		auto result = ((UAnimInstance*)target)->ShouldTriggerAnimNotifyState(AnimNotifyState);	
+		return result;	
+	}
 	void uapi_UAnimInstance_StopAllMontages(void* target, float BlendOut){	
 		((UAnimInstance*)target)->StopAllMontages(BlendOut);	
 	}
@@ -4609,6 +6245,9 @@ extern "C"{
 	}
 	void uapi_UAnimInstance_TriggerAnimNotifies(void* target, float DeltaSeconds){	
 		((UAnimInstance*)target)->TriggerAnimNotifies(DeltaSeconds);	
+	}
+	void uapi_UAnimInstance_TriggerSingleAnimNotify(void* target, FAnimNotifyEvent* AnimNotifyEvent){	
+		((UAnimInstance*)target)->TriggerSingleAnimNotify(AnimNotifyEvent);	
 	}
 	void* uapi_UAnimInstance_TryGetPawnOwner(void* target){	
 		auto result = (void*)((UAnimInstance*)target)->TryGetPawnOwner();	
@@ -4644,12 +6283,31 @@ extern "C"{
 	void uapi_UKismetSystemLibrary_ControlScreensaver(bool bAllowScreenSaver){	
 		(UKismetSystemLibrary::ControlScreensaver(bAllowScreenSaver));	
 	}
+	void uapi_UKismetSystemLibrary_CreateCopyForUndoBuffer(UObject* ObjectToModify){	
+		(UKismetSystemLibrary::CreateCopyForUndoBuffer(ObjectToModify));	
+	}
+	void uapi_UKismetSystemLibrary_DrawDebugCoordinateSystem(UObject* WorldContextObject, Vector3 AxisLoc, Rotator AxisRot, float Scale, float Duration, float Thickness){	
+		(UKismetSystemLibrary::DrawDebugCoordinateSystem(WorldContextObject, ToFVector(AxisLoc), ToFRotator(AxisRot), Scale, Duration, Thickness));	
+	}
 	int32 uapi_UKismetSystemLibrary_EndTransaction(){	
 		auto result = (UKismetSystemLibrary::EndTransaction());	
 		return result;	
 	}
+	void uapi_UKismetSystemLibrary_FlushDebugStrings(UObject* WorldContextObject){	
+		(UKismetSystemLibrary::FlushDebugStrings(WorldContextObject));	
+	}
+	void uapi_UKismetSystemLibrary_FlushPersistentDebugLines(UObject* WorldContextObject){	
+		(UKismetSystemLibrary::FlushPersistentDebugLines(WorldContextObject));	
+	}
 	void uapi_UKismetSystemLibrary_ForceCloseAdBanner(){	
 		(UKismetSystemLibrary::ForceCloseAdBanner());	
+	}
+	bool uapi_UKismetSystemLibrary_Generic_GetEditorProperty(UObject* Object, FProperty* ObjectProp, void* ValuePtr, FProperty* ValueProp){	
+		auto result = (UKismetSystemLibrary::Generic_GetEditorProperty(Object, ObjectProp, ValuePtr, ValueProp));	
+		return result;	
+	}
+	void uapi_UKismetSystemLibrary_Generic_SetStructurePropertyByName(UObject* OwnerObject, UName StructPropertyName, void* SrcStructAddr){	
+		(UKismetSystemLibrary::Generic_SetStructurePropertyByName(OwnerObject, ToFName(StructPropertyName), SrcStructAddr));	
 	}
 	int32 uapi_UKismetSystemLibrary_GetAdIDCount(){	
 		auto result = (UKismetSystemLibrary::GetAdIDCount());	
@@ -4661,6 +6319,10 @@ extern "C"{
 	}
 	const char* uapi_UKismetSystemLibrary_GetBuildVersion(){	
 		auto result = FString2Utf8((UKismetSystemLibrary::GetBuildVersion()));	
+		return result;	
+	}
+	const char* uapi_UKismetSystemLibrary_GetClassDisplayName(UClass* arg0){	
+		auto result = FString2Utf8((UKismetSystemLibrary::GetClassDisplayName(arg0)));	
 		return result;	
 	}
 	const char* uapi_UKismetSystemLibrary_GetCommandLine(){	
@@ -4679,6 +6341,14 @@ extern "C"{
 		auto result = FString2Utf8((UKismetSystemLibrary::GetDeviceId()));	
 		return result;	
 	}
+	const char* uapi_UKismetSystemLibrary_GetDisplayName(UObject* Object){	
+		auto result = FString2Utf8((UKismetSystemLibrary::GetDisplayName(Object)));	
+		return result;	
+	}
+	bool uapi_UKismetSystemLibrary_GetEditorProperty(UObject* Object, UName PropertyName, int32& PropertyValue){	
+		auto result = (UKismetSystemLibrary::GetEditorProperty(Object, ToFName(PropertyName), PropertyValue));	
+		return result;	
+	}
 	const char* uapi_UKismetSystemLibrary_GetEngineVersion(){	
 		auto result = FString2Utf8((UKismetSystemLibrary::GetEngineVersion()));	
 		return result;	
@@ -4693,6 +6363,10 @@ extern "C"{
 	}
 	const char* uapi_UKismetSystemLibrary_GetGameName(){	
 		auto result = FString2Utf8((UKismetSystemLibrary::GetGameName()));	
+		return result;	
+	}
+	double uapi_UKismetSystemLibrary_GetGameTimeInSeconds(UObject* WorldContextObject){	
+		auto result = (UKismetSystemLibrary::GetGameTimeInSeconds(WorldContextObject));	
 		return result;	
 	}
 	const char* uapi_UKismetSystemLibrary_GetGamepadControllerName(int32 ControllerId){	
@@ -4713,6 +6387,18 @@ extern "C"{
 	}
 	int32 uapi_UKismetSystemLibrary_GetMinYResolutionForUI(){	
 		auto result = (UKismetSystemLibrary::GetMinYResolutionForUI());	
+		return result;	
+	}
+	const char* uapi_UKismetSystemLibrary_GetObjectName(UObject* Object){	
+		auto result = FString2Utf8((UKismetSystemLibrary::GetObjectName(Object)));	
+		return result;	
+	}
+	void* uapi_UKismetSystemLibrary_GetOuterObject(UObject* Object){	
+		auto result = (void*)(UKismetSystemLibrary::GetOuterObject(Object));	
+		return result;	
+	}
+	const char* uapi_UKismetSystemLibrary_GetPathName(UObject* Object){	
+		auto result = FString2Utf8((UKismetSystemLibrary::GetPathName(Object)));	
 		return result;	
 	}
 	const char* uapi_UKismetSystemLibrary_GetPlatformUserDir(){	
@@ -4743,6 +6429,10 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::GetRenderingMaterialQualityLevel());	
 		return result;	
 	}
+	const char* uapi_UKismetSystemLibrary_GetSystemPath(UObject* Object){	
+		auto result = FString2Utf8((UKismetSystemLibrary::GetSystemPath(Object)));	
+		return result;	
+	}
 	const char* uapi_UKismetSystemLibrary_GetUniqueDeviceId(){	
 		auto result = FString2Utf8((UKismetSystemLibrary::GetUniqueDeviceId()));	
 		return result;	
@@ -4751,11 +6441,19 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::GetVolumeButtonsHandledBySystem());	
 		return result;	
 	}
+	bool uapi_UKismetSystemLibrary_HasMultipleLocalPlayers(UObject* WorldContextObject){	
+		auto result = (UKismetSystemLibrary::HasMultipleLocalPlayers(WorldContextObject));	
+		return result;	
+	}
 	void uapi_UKismetSystemLibrary_HideAdBanner(){	
 		(UKismetSystemLibrary::HideAdBanner());	
 	}
 	bool uapi_UKismetSystemLibrary_IsControllerAssignedToGamepad(int32 ControllerId){	
 		auto result = (UKismetSystemLibrary::IsControllerAssignedToGamepad(ControllerId));	
+		return result;	
+	}
+	bool uapi_UKismetSystemLibrary_IsDedicatedServer(UObject* WorldContextObject){	
+		auto result = (UKismetSystemLibrary::IsDedicatedServer(WorldContextObject));	
 		return result;	
 	}
 	bool uapi_UKismetSystemLibrary_IsInterstitialAdAvailable(){	
@@ -4766,6 +6464,10 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::IsInterstitialAdRequested());	
 		return result;	
 	}
+	bool uapi_UKismetSystemLibrary_IsLoggedIn(APlayerController* SpecificPlayer){	
+		auto result = (UKismetSystemLibrary::IsLoggedIn(SpecificPlayer));	
+		return result;	
+	}
 	bool uapi_UKismetSystemLibrary_IsPackagedForDistribution(){	
 		auto result = (UKismetSystemLibrary::IsPackagedForDistribution());	
 		return result;	
@@ -4774,9 +6476,54 @@ extern "C"{
 		auto result = (UKismetSystemLibrary::IsScreensaverEnabled());	
 		return result;	
 	}
+	bool uapi_UKismetSystemLibrary_IsServer(UObject* WorldContextObject){	
+		auto result = (UKismetSystemLibrary::IsServer(WorldContextObject));	
+		return result;	
+	}
+	bool uapi_UKismetSystemLibrary_IsStandalone(UObject* WorldContextObject){	
+		auto result = (UKismetSystemLibrary::IsStandalone(WorldContextObject));	
+		return result;	
+	}
 	bool uapi_UKismetSystemLibrary_IsUnattended(){	
 		auto result = (UKismetSystemLibrary::IsUnattended());	
 		return result;	
+	}
+	void uapi_UKismetSystemLibrary_K2_ClearTimer(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		(UKismetSystemLibrary::K2_ClearTimer(Object, fstr1));	
+	}
+	float uapi_UKismetSystemLibrary_K2_GetTimerElapsedTime(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		auto result = (UKismetSystemLibrary::K2_GetTimerElapsedTime(Object, fstr1));	
+		return result;	
+	}
+	float uapi_UKismetSystemLibrary_K2_GetTimerRemainingTime(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		auto result = (UKismetSystemLibrary::K2_GetTimerRemainingTime(Object, fstr1));	
+		return result;	
+	}
+	bool uapi_UKismetSystemLibrary_K2_IsTimerActive(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		auto result = (UKismetSystemLibrary::K2_IsTimerActive(Object, fstr1));	
+		return result;	
+	}
+	bool uapi_UKismetSystemLibrary_K2_IsTimerPaused(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		auto result = (UKismetSystemLibrary::K2_IsTimerPaused(Object, fstr1));	
+		return result;	
+	}
+	void uapi_UKismetSystemLibrary_K2_PauseTimer(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		(UKismetSystemLibrary::K2_PauseTimer(Object, fstr1));	
+	}
+	bool uapi_UKismetSystemLibrary_K2_TimerExists(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		auto result = (UKismetSystemLibrary::K2_TimerExists(Object, fstr1));	
+		return result;	
+	}
+	void uapi_UKismetSystemLibrary_K2_UnPauseTimer(UObject* Object, NativeString FunctionName){	
+		auto fstr1 = Utf82FString(FunctionName);	
+		(UKismetSystemLibrary::K2_UnPauseTimer(Object, fstr1));	
 	}
 	void uapi_UKismetSystemLibrary_LoadInterstitialAd(int32 AdIdIndex){	
 		(UKismetSystemLibrary::LoadInterstitialAd(AdIdIndex));	
@@ -4827,8 +6574,29 @@ extern "C"{
 	void uapi_UKismetSystemLibrary_ResetGamepadAssignments(){	
 		(UKismetSystemLibrary::ResetGamepadAssignments());	
 	}
+	void uapi_UKismetSystemLibrary_SetBoolPropertyByName(UObject* Object, UName PropertyName, bool Value){	
+		(UKismetSystemLibrary::SetBoolPropertyByName(Object, ToFName(PropertyName), Value));	
+	}
+	void uapi_UKismetSystemLibrary_SetBytePropertyByName(UObject* Object, UName PropertyName, uint8 Value){	
+		(UKismetSystemLibrary::SetBytePropertyByName(Object, ToFName(PropertyName), Value));	
+	}
+	void uapi_UKismetSystemLibrary_SetDoublePropertyByName(UObject* Object, UName PropertyName, double Value){	
+		(UKismetSystemLibrary::SetDoublePropertyByName(Object, ToFName(PropertyName), Value));	
+	}
 	void uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback(bool bBlock){	
 		(UKismetSystemLibrary::SetGamepadsBlockDeviceFeedback(bBlock));	
+	}
+	void uapi_UKismetSystemLibrary_SetInt64PropertyByName(UObject* Object, UName PropertyName, int64 Value){	
+		(UKismetSystemLibrary::SetInt64PropertyByName(Object, ToFName(PropertyName), Value));	
+	}
+	void uapi_UKismetSystemLibrary_SetIntPropertyByName(UObject* Object, UName PropertyName, int32 Value){	
+		(UKismetSystemLibrary::SetIntPropertyByName(Object, ToFName(PropertyName), Value));	
+	}
+	void uapi_UKismetSystemLibrary_SetObjectPropertyByName(UObject* Object, UName PropertyName, UObject* Value){	
+		(UKismetSystemLibrary::SetObjectPropertyByName(Object, ToFName(PropertyName), Value));	
+	}
+	void uapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessage(UObject* WorldContextObject, bool bState){	
+		(UKismetSystemLibrary::SetSuppressViewportTransitionMessage(WorldContextObject, bState));	
 	}
 	void uapi_UKismetSystemLibrary_SetVolumeButtonsHandledBySystem(bool bEnabled){	
 		(UKismetSystemLibrary::SetVolumeButtonsHandledBySystem(bEnabled));	
@@ -4839,8 +6607,136 @@ extern "C"{
 	void uapi_UKismetSystemLibrary_ShowInterstitialAd(){	
 		(UKismetSystemLibrary::ShowInterstitialAd());	
 	}
+	void uapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen(APlayerController* SpecificPlayer){	
+		(UKismetSystemLibrary::ShowPlatformSpecificAchievementsScreen(SpecificPlayer));	
+	}
+	void uapi_UKismetSystemLibrary_SnapshotObject(UObject* Object){	
+		(UKismetSystemLibrary::SnapshotObject(Object));	
+	}
+	void uapi_UKismetSystemLibrary_TransactObject(UObject* Object){	
+		(UKismetSystemLibrary::TransactObject(Object));	
+	}
 	void uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(){	
 		(UKismetSystemLibrary::UnregisterForRemoteNotifications());	
+	}
+	int32 uapi_UAnimMontage_AddAnimCompositeSection(void* target, UName InSectionName, float StartPos){	
+		auto result = ((UAnimMontage*)target)->AddAnimCompositeSection(ToFName(InSectionName), StartPos);	
+		return result;	
+	}
+	float uapi_UAnimMontage_CalculateSequenceLength(void* target){	
+		auto result = ((UAnimMontage*)target)->CalculateSequenceLength();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_CanBeUsedInComposition(void* target){	
+		auto result = ((UAnimMontage*)target)->CanBeUsedInComposition();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_CanUseMarkerSync(void* target){	
+		auto result = ((UAnimMontage*)target)->CanUseMarkerSync();	
+		return result;	
+	}
+	void* uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(UAnimSequenceBase* Asset, UName SlotNodeName, float BlendInTime, float BlendOutTime, float InPlayRate, int32 LoopCount, float BlendOutTriggerTime, float InTimeToStartMontageAt){	
+		auto result = (void*)(UAnimMontage::CreateSlotAnimationAsDynamicMontage(Asset, ToFName(SlotNodeName), BlendInTime, BlendOutTime, InPlayRate, LoopCount, BlendOutTriggerTime, InTimeToStartMontageAt));	
+		return result;	
+	}
+	bool uapi_UAnimMontage_DeleteAnimCompositeSection(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->DeleteAnimCompositeSection(SectionIndex);	
+		return result;	
+	}
+	Transform uapi_UAnimMontage_ExtractRootMotionFromTrackRange(void* target, float StartTrackPosition, float EndTrackPosition){	
+		auto result = ToTransform(((UAnimMontage*)target)->ExtractRootMotionFromTrackRange(StartTrackPosition, EndTrackPosition));	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(void* target, float CurrentTime, float& PosWithinCompositeSection){	
+		auto result = ((UAnimMontage*)target)->GetAnimCompositeSectionIndexFromPos(CurrentTime, PosWithinCompositeSection);	
+		return result;	
+	}
+	void* uapi_UAnimMontage_GetAnimationData(void* target, UName SlotName){	
+		auto result = (void*)((UAnimMontage*)target)->GetAnimationData(ToFName(SlotName));	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetDefaultBlendInTime(void* target){	
+		auto result = ((UAnimMontage*)target)->GetDefaultBlendInTime();	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetDefaultBlendOutTime(void* target){	
+		auto result = ((UAnimMontage*)target)->GetDefaultBlendOutTime();	
+		return result;	
+	}
+	UName uapi_UAnimMontage_GetGroupName(void* target){	
+		auto result = ToUName(((UAnimMontage*)target)->GetGroupName());	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetNumSections(void* target){	
+		auto result = ((UAnimMontage*)target)->GetNumSections();	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetSectionIndex(void* target, UName InSectionName){	
+		auto result = ((UAnimMontage*)target)->GetSectionIndex(ToFName(InSectionName));	
+		return result;	
+	}
+	int32 uapi_UAnimMontage_GetSectionIndexFromPosition(void* target, float Position){	
+		auto result = ((UAnimMontage*)target)->GetSectionIndexFromPosition(Position);	
+		return result;	
+	}
+	float uapi_UAnimMontage_GetSectionLength(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->GetSectionLength(SectionIndex);	
+		return result;	
+	}
+	UName uapi_UAnimMontage_GetSectionName(void* target, int32 SectionIndex){	
+		auto result = ToUName(((UAnimMontage*)target)->GetSectionName(SectionIndex));	
+		return result;	
+	}
+	void uapi_UAnimMontage_GetSectionStartAndEndTime(void* target, int32 SectionIndex, float& OutStartTime, float& OutEndTime){	
+		((UAnimMontage*)target)->GetSectionStartAndEndTime(SectionIndex, OutStartTime, OutEndTime);	
+	}
+	float uapi_UAnimMontage_GetSectionTimeLeftFromPos(void* target, float Position){	
+		auto result = ((UAnimMontage*)target)->GetSectionTimeLeftFromPos(Position);	
+		return result;	
+	}
+	bool uapi_UAnimMontage_HasRootMotion(void* target){	
+		auto result = ((UAnimMontage*)target)->HasRootMotion();	
+		return result;	
+	}
+	void uapi_UAnimMontage_InvalidateRecursiveAsset(void* target){	
+		((UAnimMontage*)target)->InvalidateRecursiveAsset();	
+	}
+	bool uapi_UAnimMontage_IsValidAdditive(void* target){	
+		auto result = ((UAnimMontage*)target)->IsValidAdditive();	
+		return result;	
+	}
+	bool uapi_UAnimMontage_IsValidSectionIndex(void* target, int32 SectionIndex){	
+		auto result = ((UAnimMontage*)target)->IsValidSectionIndex(SectionIndex);	
+		return result;	
+	}
+	bool uapi_UAnimMontage_IsValidSectionName(void* target, UName InSectionName){	
+		auto result = ((UAnimMontage*)target)->IsValidSectionName(ToFName(InSectionName));	
+		return result;	
+	}
+	bool uapi_UAnimMontage_IsValidSlot(void* target, UName InSlotName){	
+		auto result = ((UAnimMontage*)target)->IsValidSlot(ToFName(InSlotName));	
+		return result;	
+	}
+	void uapi_UAnimMontage_PostLoad(void* target){	
+		((UAnimMontage*)target)->PostLoad();	
+	}
+	void uapi_UAnimMontage_RefreshCacheData(void* target){	
+		((UAnimMontage*)target)->RefreshCacheData();	
+	}
+	void uapi_UAnimMontage_SetCompositeLength(void* target, float InLength){	
+		((UAnimMontage*)target)->SetCompositeLength(InLength);	
+	}
+	void uapi_UAnimMontage_UnregisterOnMontageChanged(void* target, void* Unregister){	
+		((UAnimMontage*)target)->UnregisterOnMontageChanged(Unregister);	
+	}
+	void uapi_UAnimMontage_UpdateLinkableElements(void* target){	
+		((UAnimMontage*)target)->UpdateLinkableElements();	
+	}
+	void uapi_UAnimMontage_UpdateLinkableElements2(void* target, int32 SlotIdx, int32 SegmentIdx){	
+		((UAnimMontage*)target)->UpdateLinkableElements(SlotIdx, SegmentIdx);	
+	}
+	void uapi_USkeletalMeshComponent_AddClothCollisionSource(void* target, USkeletalMeshComponent* InSourceComponent, UPhysicsAsset* InSourcePhysicsAsset){	
+		((USkeletalMeshComponent*)target)->AddClothCollisionSource(InSourceComponent, InSourcePhysicsAsset);	
 	}
 	void uapi_USkeletalMeshComponent_AddForceToAllBodiesBelow(void* target, Vector3 Force, UName BoneName, bool bAccelChange, bool bIncludeSelf){	
 		((USkeletalMeshComponent*)target)->AddForceToAllBodiesBelow(ToFVector(Force), ToFName(BoneName), bAccelChange, bIncludeSelf);	
@@ -4886,6 +6782,9 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_CheckClothTeleport(void* target){	
 		((USkeletalMeshComponent*)target)->CheckClothTeleport();	
 	}
+	void uapi_USkeletalMeshComponent_ClearAnimNotifyErrors(void* target, UObject* InSourceNotify){	
+		((USkeletalMeshComponent*)target)->ClearAnimNotifyErrors(InSourceNotify);	
+	}
 	void uapi_USkeletalMeshComponent_ClearAnimScriptInstance(void* target){	
 		((USkeletalMeshComponent*)target)->ClearAnimScriptInstance();	
 	}
@@ -4909,6 +6808,12 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_DeallocateTransformData(void* target){	
 		((USkeletalMeshComponent*)target)->DeallocateTransformData();	
+	}
+	void uapi_USkeletalMeshComponent_DebugDrawClothing(void* target, FPrimitiveDrawInterface* PDI){	
+		((USkeletalMeshComponent*)target)->DebugDrawClothing(PDI);	
+	}
+	void uapi_USkeletalMeshComponent_DebugDrawClothingTexts(void* target, FCanvas* Canvas, FSceneView* SceneView){	
+		((USkeletalMeshComponent*)target)->DebugDrawClothingTexts(Canvas, SceneView);	
 	}
 	void uapi_USkeletalMeshComponent_FinalizeBoneTransform(void* target){	
 		((USkeletalMeshComponent*)target)->FinalizeBoneTransform();	
@@ -5053,6 +6958,9 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_InitAnim(void* target, bool bForceReinit){	
 		((USkeletalMeshComponent*)target)->InitAnim(bForceReinit);	
 	}
+	void uapi_USkeletalMeshComponent_InitArticulated(void* target, FPhysScene* PhysScene){	
+		((USkeletalMeshComponent*)target)->InitArticulated(PhysScene);	
+	}
 	void uapi_USkeletalMeshComponent_InitCollisionRelationships(void* target){	
 		((USkeletalMeshComponent*)target)->InitCollisionRelationships();	
 	}
@@ -5119,17 +7027,26 @@ extern "C"{
 		auto result = ((USkeletalMeshComponent*)target)->IsWindEnabled();	
 		return result;	
 	}
+	void uapi_USkeletalMeshComponent_NotifySkelControlBeyondLimit(void* target, USkelControlLookAt* LookAt){	
+		((USkeletalMeshComponent*)target)->NotifySkelControlBeyondLimit(LookAt);	
+	}
 	void uapi_USkeletalMeshComponent_OnComponentCollisionSettingsChanged(void* target, bool bUpdateOverlaps){	
 		((USkeletalMeshComponent*)target)->OnComponentCollisionSettingsChanged(bUpdateOverlaps);	
 	}
 	void uapi_USkeletalMeshComponent_OnPreEndOfFrameSync(void* target){	
 		((USkeletalMeshComponent*)target)->OnPreEndOfFrameSync();	
 	}
+	void uapi_USkeletalMeshComponent_OverrideAnimationData(void* target, UAnimationAsset* InAnimToPlay, bool bIsLooping, bool bIsPlaying, float Position, float PlayRate){	
+		((USkeletalMeshComponent*)target)->OverrideAnimationData(InAnimToPlay, bIsLooping, bIsPlaying, Position, PlayRate);	
+	}
 	void uapi_USkeletalMeshComponent_ParallelAnimationEvaluation(void* target){	
 		((USkeletalMeshComponent*)target)->ParallelAnimationEvaluation();	
 	}
 	void uapi_USkeletalMeshComponent_Play(void* target, bool bLooping){	
 		((USkeletalMeshComponent*)target)->Play(bLooping);	
+	}
+	void uapi_USkeletalMeshComponent_PlayAnimation(void* target, UAnimationAsset* NewAnimToPlay, bool bLooping){	
+		((USkeletalMeshComponent*)target)->PlayAnimation(NewAnimToPlay, bLooping);	
 	}
 	bool uapi_USkeletalMeshComponent_PoseTickedThisFrame(void* target){	
 		auto result = ((USkeletalMeshComponent*)target)->PoseTickedThisFrame();	
@@ -5164,6 +7081,12 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_RemoveAllClothingActors(void* target){	
 		((USkeletalMeshComponent*)target)->RemoveAllClothingActors();	
+	}
+	void uapi_USkeletalMeshComponent_RemoveClothCollisionSource(void* target, USkeletalMeshComponent* InSourceComponent){	
+		((USkeletalMeshComponent*)target)->RemoveClothCollisionSource(InSourceComponent);	
+	}
+	void uapi_USkeletalMeshComponent_RemoveClothCollisionSource2(void* target, USkeletalMeshComponent* InSourceComponent, UPhysicsAsset* InSourcePhysicsAsset){	
+		((USkeletalMeshComponent*)target)->RemoveClothCollisionSource(InSourceComponent, InSourcePhysicsAsset);	
 	}
 	bool uapi_USkeletalMeshComponent_RequiresPreEndOfFrameSync(void* target){	
 		auto result = ((USkeletalMeshComponent*)target)->RequiresPreEndOfFrameSync();	
@@ -5238,6 +7161,9 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_SetAngularLimits(void* target, UName InBoneName, float Swing1LimitAngle, float TwistLimitAngle, float Swing2LimitAngle){	
 		((USkeletalMeshComponent*)target)->SetAngularLimits(ToFName(InBoneName), Swing1LimitAngle, TwistLimitAngle, Swing2LimitAngle);	
 	}
+	void uapi_USkeletalMeshComponent_SetAnimation(void* target, UAnimationAsset* NewAnimToPlay){	
+		((USkeletalMeshComponent*)target)->SetAnimation(NewAnimToPlay);	
+	}
 	void uapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision(void* target, bool bNewNotifyRigidBodyCollision, UName BoneName){	
 		((USkeletalMeshComponent*)target)->SetBodyNotifyRigidBodyCollision(bNewNotifyRigidBodyCollision, ToFName(BoneName));	
 	}
@@ -5283,6 +7209,12 @@ extern "C"{
 	void uapi_USkeletalMeshComponent_SetNotifyRigidBodyCollisionBelow(void* target, bool bNewNotifyRigidBodyCollision, UName BoneName, bool bIncludeSelf){	
 		((USkeletalMeshComponent*)target)->SetNotifyRigidBodyCollisionBelow(bNewNotifyRigidBodyCollision, ToFName(BoneName), bIncludeSelf);	
 	}
+	void uapi_USkeletalMeshComponent_SetPhysMaterialOverride(void* target, UPhysicalMaterial* NewPhysMaterial){	
+		((USkeletalMeshComponent*)target)->SetPhysMaterialOverride(NewPhysMaterial);	
+	}
+	void uapi_USkeletalMeshComponent_SetPhysicsAsset(void* target, UPhysicsAsset* NewPhysicsAsset, bool bForceReInit){	
+		((USkeletalMeshComponent*)target)->SetPhysicsAsset(NewPhysicsAsset, bForceReInit);	
+	}
 	void uapi_USkeletalMeshComponent_SetPhysicsBlendWeight(void* target, float PhysicsBlendWeight){	
 		((USkeletalMeshComponent*)target)->SetPhysicsBlendWeight(PhysicsBlendWeight);	
 	}
@@ -5300,6 +7232,12 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_SetSimulatePhysics(void* target, bool bEnabled){	
 		((USkeletalMeshComponent*)target)->SetSimulatePhysics(bEnabled);	
+	}
+	void uapi_USkeletalMeshComponent_SetSkeletalMeshAsset(void* target, USkeletalMesh* NewMesh){	
+		((USkeletalMeshComponent*)target)->SetSkeletalMeshAsset(NewMesh);	
+	}
+	void uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate(void* target, USkinnedAsset* InSkinnedAsset, bool bReinitPose){	
+		((USkeletalMeshComponent*)target)->SetSkinnedAssetAndUpdate(InSkinnedAsset, bReinitPose);	
 	}
 	void uapi_USkeletalMeshComponent_SetTeleportDistanceThreshold(void* target, float Threshold){	
 		((USkeletalMeshComponent*)target)->SetTeleportDistanceThreshold(Threshold);	
@@ -5340,6 +7278,9 @@ extern "C"{
 	bool uapi_USkeletalMeshComponent_ShouldUpdateTransform(void* target, bool bLODHasChanged){	
 		auto result = ((USkeletalMeshComponent*)target)->ShouldUpdateTransform(bLODHasChanged);	
 		return result;	
+	}
+	void uapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished(void* target, UParticleSystemComponent* PSC){	
+		((USkeletalMeshComponent*)target)->SkelMeshCompOnParticleSystemFinished(PSC);	
 	}
 	void uapi_USkeletalMeshComponent_Stop(void* target){	
 		((USkeletalMeshComponent*)target)->Stop();	
@@ -5398,6 +7339,10 @@ extern "C"{
 	}
 	void uapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraints(void* target){	
 		((USkeletalMeshComponent*)target)->UpdateMeshForBrokenConstraints();	
+	}
+	bool uapi_USkeletalMeshComponent_UpdateOverlapsImpl(void* target, TOverlapArrayView* PendingOverlaps, bool bDoNotifies, TOverlapArrayView* OverlapsAtEndLocation){	
+		auto result = ((USkeletalMeshComponent*)target)->UpdateOverlapsImpl(PendingOverlaps, bDoNotifies, OverlapsAtEndLocation);	
+		return result;	
 	}
 	void uapi_USkeletalMeshComponent_UpdatePhysicsToRBChannels(void* target){	
 		((USkeletalMeshComponent*)target)->UpdatePhysicsToRBChannels();	
@@ -5487,6 +7432,14 @@ extern "C"{
 	void uapi_UCapsuleComponent_UpdateBodySetup(void* target){	
 		((UCapsuleComponent*)target)->UpdateBodySetup();	
 	}
+
+    float get_UCharacterMovementComponent_GravityScale(void* target) { return ((UCharacterMovementComponent*)target) -> GravityScale;};
+
+    void set_UCharacterMovementComponent_GravityScale(void* target, float value){ ((UCharacterMovementComponent*)target) -> GravityScale = value;};
+
+    float get_UCharacterMovementComponent_GroundFriction(void* target) { return ((UCharacterMovementComponent*)target) -> GroundFriction;};
+
+    void set_UCharacterMovementComponent_GroundFriction(void* target, float value){ ((UCharacterMovementComponent*)target) -> GroundFriction = value;};
 	void uapi_UCharacterMovementComponent_AddForce(void* target, Vector3 Force){	
 		((UCharacterMovementComponent*)target)->AddForce(ToFVector(Force));	
 	}
@@ -5549,6 +7502,15 @@ extern "C"{
 	void uapi_UCharacterMovementComponent_ClientAckGoodMove_Implementation(void* target, float TimeStamp){	
 		((UCharacterMovementComponent*)target)->ClientAckGoodMove_Implementation(TimeStamp);	
 	}
+	void uapi_UCharacterMovementComponent_ClientAdjustPosition(void* target, float TimeStamp, Vector3 NewLoc, Vector3 NewVel, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((UCharacterMovementComponent*)target)->ClientAdjustPosition(TimeStamp, ToFVector(NewLoc), ToFVector(NewVel), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
+	void uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition(void* target, float TimeStamp, Vector3 NewLoc, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((UCharacterMovementComponent*)target)->ClientVeryShortAdjustPosition(TimeStamp, ToFVector(NewLoc), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
+	void uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation(void* target, float TimeStamp, Vector3 NewLoc, UPrimitiveComponent* NewBase, UName NewBaseBoneName, bool bHasBase, bool bBaseRelativePosition, uint8 ServerMovementMode){	
+		((UCharacterMovementComponent*)target)->ClientVeryShortAdjustPosition_Implementation(TimeStamp, ToFVector(NewLoc), NewBase, ToFName(NewBaseBoneName), bHasBase, bBaseRelativePosition, ServerMovementMode);	
+	}
 	void uapi_UCharacterMovementComponent_Crouch(void* target, bool bClientSimulation){	
 		((UCharacterMovementComponent*)target)->Crouch(bClientSimulation);	
 	}
@@ -5585,6 +7547,10 @@ extern "C"{
 	}
 	int32 uapi_UCharacterMovementComponent_GetAvoidanceGroupMask(void* target){	
 		auto result = ((UCharacterMovementComponent*)target)->GetAvoidanceGroupMask();	
+		return result;	
+	}
+	Vector3 uapi_UCharacterMovementComponent_GetBestDirectionOffActor(void* target, AActor* BaseActor){	
+		auto result = ToVector3(((UCharacterMovementComponent*)target)->GetBestDirectionOffActor(BaseActor));	
 		return result;	
 	}
 	void* uapi_UCharacterMovementComponent_GetCharacterOwner(void* target){	
@@ -5819,6 +7785,9 @@ extern "C"{
 		auto result = ((UCharacterMovementComponent*)target)->IsWalking();	
 		return result;	
 	}
+	void uapi_UCharacterMovementComponent_JumpOff(void* target, AActor* MovementBaseActor){	
+		((UCharacterMovementComponent*)target)->JumpOff(MovementBaseActor);	
+	}
 	void uapi_UCharacterMovementComponent_JumpOutOfWater(void* target, Vector3 WallNormal){	
 		((UCharacterMovementComponent*)target)->JumpOutOfWater(ToFVector(WallNormal));	
 	}
@@ -5835,6 +7804,9 @@ extern "C"{
 	}
 	void uapi_UCharacterMovementComponent_MaybeUpdateBasedMovement(void* target, float DeltaSeconds){	
 		((UCharacterMovementComponent*)target)->MaybeUpdateBasedMovement(DeltaSeconds);	
+	}
+	void uapi_UCharacterMovementComponent_NotifyBumpedPawn(void* target, APawn* BumpedPawn){	
+		((UCharacterMovementComponent*)target)->NotifyBumpedPawn(BumpedPawn);	
 	}
 	void uapi_UCharacterMovementComponent_NotifyJumpApex(void* target){	
 		((UCharacterMovementComponent*)target)->NotifyJumpApex();	
@@ -5864,6 +7836,9 @@ extern "C"{
 	}
 	void uapi_UCharacterMovementComponent_PhysicsRotation(void* target, float DeltaTime){	
 		((UCharacterMovementComponent*)target)->PhysicsRotation(DeltaTime);	
+	}
+	void uapi_UCharacterMovementComponent_PhysicsVolumeChanged(void* target, APhysicsVolume* NewVolume){	
+		((UCharacterMovementComponent*)target)->PhysicsVolumeChanged(NewVolume);	
 	}
 	void uapi_UCharacterMovementComponent_PostLoad(void* target){	
 		((UCharacterMovementComponent*)target)->PostLoad();	
@@ -5899,6 +7874,12 @@ extern "C"{
 	void uapi_UCharacterMovementComponent_SetAvoidanceGroup(void* target, int32 GroupFlags){	
 		((UCharacterMovementComponent*)target)->SetAvoidanceGroup(GroupFlags);	
 	}
+	void uapi_UCharacterMovementComponent_SetAvoidanceVelocityLock(void* target, UAvoidanceManager* Avoidance, float Duration){	
+		((UCharacterMovementComponent*)target)->SetAvoidanceVelocityLock(Avoidance, Duration);	
+	}
+	void uapi_UCharacterMovementComponent_SetBase(void* target, UPrimitiveComponent* NewBase, UName BoneName, bool bNotifyActor){	
+		((UCharacterMovementComponent*)target)->SetBase(NewBase, ToFName(BoneName), bNotifyActor);	
+	}
 	void uapi_UCharacterMovementComponent_SetCrouchedHalfHeight(void* target, float NewValue){	
 		((UCharacterMovementComponent*)target)->SetCrouchedHalfHeight(NewValue);	
 	}
@@ -5916,6 +7897,9 @@ extern "C"{
 	}
 	void uapi_UCharacterMovementComponent_SetRVOAvoidanceWeight(void* target, float Weight){	
 		((UCharacterMovementComponent*)target)->SetRVOAvoidanceWeight(Weight);	
+	}
+	void uapi_UCharacterMovementComponent_SetUpdatedComponent(void* target, USceneComponent* NewUpdatedComponent){	
+		((UCharacterMovementComponent*)target)->SetUpdatedComponent(NewUpdatedComponent);	
 	}
 	void uapi_UCharacterMovementComponent_SetWalkableFloorAngle(void* target, float InWalkableFloorAngle){	
 		((UCharacterMovementComponent*)target)->SetWalkableFloorAngle(InWalkableFloorAngle);	
@@ -5974,7 +7958,17 @@ extern "C"{
 
 using uapi_UObject_AbortInsideMemberFunctionFn = void(*)(void(*)(void* target));
 
+using uapi_UObject_AreNativePropertiesIdenticalToFn = void(*)(bool(*)(void* target,UObject* Other));
+
+using uapi_UObject_BeginCacheForCookedPlatformDataFn = void(*)(void(*)(void* target,ITargetPlatform* TargetPlatform));
+
 using uapi_UObject_BeginDestroyFn = void(*)(void(*)(void* target));
+
+using uapi_UObject_CallRemoteFunctionFn = void(*)(bool(*)(void* target,UFunction* Function,void* Parms,FOutParmRec* OutParms,FFrame* Stack));
+
+using uapi_UObject_CanCreateInCurrentContextFn = void(*)(bool(*)(UObject* Template));
+
+using uapi_UObject_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* InProperty));
 
 using uapi_UObject_CanModifyFn = void(*)(bool(*)(void* target));
 
@@ -5982,11 +7976,15 @@ using uapi_UObject_CheckDefaultSubobjectsFn = void(*)(bool(*)(void* target,bool 
 
 using uapi_UObject_ClearAllCachedCookedPlatformDataFn = void(*)(void(*)(void* target));
 
+using uapi_UObject_ClearCachedCookedPlatformDataFn = void(*)(void(*)(void* target,ITargetPlatform* TargetPlatform));
+
 using uapi_UObject_ConditionalBeginDestroyFn = void(*)(bool(*)(void* target));
 
 using uapi_UObject_ConditionalFinishDestroyFn = void(*)(bool(*)(void* target));
 
 using uapi_UObject_ConditionalPostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UObject_ConditionalPostLoadSubobjectsFn = void(*)(void(*)(void* target,FObjectInstancingGraph* OuterInstanceGraph));
 
 using uapi_UObject_DestroyNonNativePropertiesFn = void(*)(void(*)(void* target));
 
@@ -6010,6 +8008,8 @@ using uapi_UObject_GetDetailedInfoFn = void(*)(const char*(*)(void* target));
 
 using uapi_UObject_GetExporterNameFn = void(*)(UName(*)(void* target));
 
+using uapi_UObject_GetFunctionCallspaceFn = void(*)(int32(*)(void* target,UFunction* Function,FFrame* Stack));
+
 using uapi_UObject_GetGlobalUserConfigFilenameFn = void(*)(const char*(*)(void* target));
 
 using uapi_UObject_GetNetPushIdDynamicFn = void(*)(uint64(*)(void* target));
@@ -6026,7 +8026,15 @@ using uapi_UObject_HasNonEditorOnlyReferencesFn = void(*)(bool(*)(void* target))
 
 using uapi_UObject_ImplementsGetWorldFn = void(*)(bool(*)(void* target));
 
+using uapi_UObject_ImportCustomPropertiesFn = void(*)(void(*)(void* target,TCHAR* SourceText,FFeedbackContext* Warn));
+
+using uapi_UObject_InstanceSubobjectTemplatesFn = void(*)(void(*)(void* target,FObjectInstancingGraph* InstanceGraph));
+
 using uapi_UObject_IsAssetFn = void(*)(bool(*)(void* target));
+
+using uapi_UObject_IsBasedOnArchetypeFn = void(*)(bool(*)(void* target,UObject* SomeObject));
+
+using uapi_UObject_IsCachedCookedPlatformDataLoadedFn = void(*)(bool(*)(void* target,ITargetPlatform* TargetPlatform));
 
 using uapi_UObject_IsDestructionThreadSafeFn = void(*)(bool(*)(void* target));
 
@@ -6052,6 +8060,8 @@ using uapi_UObject_IsSelectedFn = void(*)(bool(*)(void* target));
 
 using uapi_UObject_IsSupportedForNetworkingFn = void(*)(bool(*)(void* target));
 
+using uapi_UObject_LoadConfigFn = void(*)(void(*)(void* target,UClass* ConfigClass,TCHAR* Filename,uint32 PropagationFlags,FProperty* PropertyToLoad));
+
 using uapi_UObject_MarkAsEditorOnlySubobjectFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_ModifyFn = void(*)(bool(*)(void* target,bool bAlwaysMarkDirty));
@@ -6063,6 +8073,10 @@ using uapi_UObject_NeedsLoadForClientFn = void(*)(bool(*)(void* target));
 using uapi_UObject_NeedsLoadForEditorGameFn = void(*)(bool(*)(void* target));
 
 using uapi_UObject_NeedsLoadForServerFn = void(*)(bool(*)(void* target));
+
+using uapi_UObject_NeedsLoadForTargetPlatformFn = void(*)(bool(*)(void* target,ITargetPlatform* TargetPlatform));
+
+using uapi_UObject_ParseParmsFn = void(*)(void(*)(void* target,TCHAR* Parms));
 
 using uapi_UObject_PostCDOContructFn = void(*)(void(*)(void* target));
 
@@ -6076,21 +8090,43 @@ using uapi_UObject_PostEditUndoFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_PostInitPropertiesFn = void(*)(void(*)(void* target));
 
+using uapi_UObject_PostInterpChangeFn = void(*)(void(*)(void* target,FProperty* PropertyThatChanged));
+
 using uapi_UObject_PostLinkerChangeFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UObject_PostLoadSubobjectsFn = void(*)(void(*)(void* target,FObjectInstancingGraph* OuterInstanceGraph));
 
 using uapi_UObject_PostNetReceiveFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_PostReinitPropertiesFn = void(*)(void(*)(void* target));
 
+using uapi_UObject_PostReloadConfigFn = void(*)(void(*)(void* target,FProperty* PropertyThatWasLoaded));
+
+using uapi_UObject_PostRenameFn = void(*)(void(*)(void* target,UObject* OldOuter,UName OldName));
+
 using uapi_UObject_PostRepNotifiesFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_PreDestroyFromReplicationFn = void(*)(void(*)(void* target));
 
+using uapi_UObject_PreEditChangeFn = void(*)(void(*)(void* target,FProperty* PropertyAboutToChange));
+
 using uapi_UObject_PreEditUndoFn = void(*)(void(*)(void* target));
 
 using uapi_UObject_PreNetReceiveFn = void(*)(void(*)(void* target));
+
+using uapi_UObject_ProcessEventFn = void(*)(void(*)(void* target,UFunction* Function,void* Parms));
+
+using uapi_UObject_RegenerateClassFn = void(*)(void*(*)(void* target,UClass* ClassToRegenerate,UObject* PreviousCDO));
+
+using uapi_UObject_ReinitializePropertiesFn = void(*)(void(*)(void* target,UObject* SourceObject,FObjectInstancingGraph* InstanceGraph));
+
+using uapi_UObject_ReloadConfigFn = void(*)(void(*)(void* target,UClass* ConfigClass,TCHAR* Filename,uint32 PropagationFlags,FProperty* PropertyToLoad));
+
+using uapi_UObject_SaveConfigFn = void(*)(void(*)(void* target,uint64 Flags,TCHAR* Filename,FConfigCacheIni* Config,bool bAllowCopyToDefaultObject));
+
+using uapi_UObject_SetLinkerFn = void(*)(void(*)(void* target,FLinkerLoad* LinkerLoad,int32 LinkerIndex,bool bShouldDetachExisting));
 
 using uapi_UObject_ShutdownAfterErrorFn = void(*)(void(*)(void* target));
 
@@ -6104,15 +8140,45 @@ using uapi_AActor_ActorHasTagFn = void(*)(bool(*)(void* target,UName Tag));
 
 using uapi_AActor_ActorToWorldFn = void(*)(Transform(*)(void* target));
 
+using uapi_AActor_AddActorLocalOffsetFn = void(*)(void(*)(void* target,Vector3 DeltaLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_AddActorLocalRotationFn = void(*)(void(*)(void* target,Rotator DeltaRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_AddActorWorldOffsetFn = void(*)(void(*)(void* target,Vector3 DeltaLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_AddActorWorldRotationFn = void(*)(void(*)(void* target,Rotator DeltaRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_AddDataLayerFn = void(*)(bool(*)(void* target,UDataLayerAsset* DataLayerAsset));
+
+using uapi_AActor_AddInstanceComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_AActor_AddOwnedComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_AActor_AddTickPrerequisiteActorFn = void(*)(void(*)(void* target,AActor* PrerequisiteActor));
+
+using uapi_AActor_AddTickPrerequisiteComponentFn = void(*)(void(*)(void* target,UActorComponent* PrerequisiteComponent));
+
 using uapi_AActor_AllowReceiveTickEventOnDedicatedServerFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_AsyncPhysicsTickActorFn = void(*)(void(*)(void* target,float DeltaTime,float SimTime));
+
+using uapi_AActor_BecomeViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
+using uapi_AActor_CallPreReplicationFn = void(*)(void(*)(void* target,UNetDriver* NetDriver));
+
+using uapi_AActor_CallRemoteFunctionFn = void(*)(bool(*)(void* target,UFunction* Function,void* Parameters,FOutParmRec* OutParms,FFrame* Stack));
+
+using uapi_AActor_CanBeBaseForCharacterFn = void(*)(bool(*)(void* target,APawn* Pawn));
 
 using uapi_AActor_CanBeDamagedFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_CanBeInClusterFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_CanChangeIsSpatiallyLoadedFlagFn = void(*)(bool(*)(void* target));
+
+using uapi_AActor_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* InProperty));
+
+using uapi_AActor_CanEditChangeComponentFn = void(*)(bool(*)(void* target,UActorComponent* Component,FProperty* InProperty));
 
 using uapi_AActor_CanEverTickFn = void(*)(bool(*)(void* target));
 
@@ -6136,7 +8202,19 @@ using uapi_AActor_ClearCrossLevelReferencesFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_ClearInstanceComponentsFn = void(*)(void(*)(void* target,bool bDestroyComponents));
 
+using uapi_AActor_ContainsDataLayerFn = void(*)(bool(*)(void* target,UDataLayerAsset* DataLayerAsset));
+
+using uapi_AActor_CopyRemoteRoleFromFn = void(*)(void(*)(void* target,AActor* CopyFromActor));
+
+using uapi_AActor_CreateComponentFromTemplateFn = void(*)(void*(*)(void* target,UActorComponent* Template,UName InName));
+
+using uapi_AActor_CreateComponentFromTemplateDataFn = void(*)(void*(*)(void* target,FBlueprintCookedComponentInstancingData* TemplateData,UName InName));
+
 using uapi_AActor_CreateOrUpdateActorFolderFn = void(*)(bool(*)(void* target));
+
+using uapi_AActor_DebugShowComponentHierarchyFn = void(*)(void(*)(void* target,TCHAR* Info,bool bShowPosition));
+
+using uapi_AActor_DebugShowOneComponentHierarchyFn = void(*)(void(*)(void* target,USceneComponent* SceneComp,int32& NestLevel,bool bShowPosition));
 
 using uapi_AActor_DestroyFn = void(*)(bool(*)(void* target,bool bNetForce,bool bShouldModifyLevel));
 
@@ -6148,9 +8226,21 @@ using uapi_AActor_DestroyedFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_DisableComponentsSimulatePhysicsFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_DisableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
+
 using uapi_AActor_DispatchBeginPlayFn = void(*)(void(*)(void* target,bool bFromLevelStreaming));
 
+using uapi_AActor_EditorReplacedActorFn = void(*)(void(*)(void* target,AActor* OldActor));
+
+using uapi_AActor_EnableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
+
+using uapi_AActor_EndViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
 using uapi_AActor_ExchangeNetRolesFn = void(*)(void(*)(void* target,bool bRemoteOwner));
+
+using uapi_AActor_FindActorInPackageFn = void(*)(void*(*)(UPackage* InPackage));
+
+using uapi_AActor_FinishAndRegisterComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
 
 using uapi_AActor_FixupActorFolderFn = void(*)(void(*)(void* target));
 
@@ -6192,6 +8282,8 @@ using uapi_AActor_GetActorTickIntervalFn = void(*)(float(*)(void* target));
 
 using uapi_AActor_GetActorTimeDilationFn = void(*)(float(*)(void* target));
 
+using uapi_AActor_GetActorTimeDilation2Fn = void(*)(float(*)(void* target,UWorld* ActorWorld));
+
 using uapi_AActor_GetActorTransformFn = void(*)(Transform(*)(void* target));
 
 using uapi_AActor_GetActorUpVectorFn = void(*)(Vector3(*)(void* target));
@@ -6216,9 +8308,15 @@ using uapi_AActor_GetDefaultActorLabelFn = void(*)(const char*(*)(void* target))
 
 using uapi_AActor_GetDefaultAttachComponentFn = void(*)(void*(*)(void* target));
 
+using uapi_AActor_GetDistanceToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_GetDotProductToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
 using uapi_AActor_GetFolderGuidFn = void(*)(Uuid(*)(void* target,bool bDirectAccess));
 
 using uapi_AActor_GetFolderPathFn = void(*)(UName(*)(void* target));
+
+using uapi_AActor_GetFunctionCallspaceFn = void(*)(int32(*)(void* target,UFunction* Function,FFrame* Stack));
 
 using uapi_AActor_GetGameInstanceFn = void(*)(void*(*)(void* target));
 
@@ -6229,6 +8327,10 @@ using uapi_AActor_GetHLODLayerFn = void(*)(void*(*)(void* target));
 using uapi_AActor_GetHLODLayerPropertyNameFn = void(*)(UName(*)());
 
 using uapi_AActor_GetHiddenPropertyNameFn = void(*)(UName(*)());
+
+using uapi_AActor_GetHorizontalDistanceToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_GetHorizontalDotProductToFn = void(*)(float(*)(void* target,AActor* OtherActor));
 
 using uapi_AActor_GetHumanReadableNameFn = void(*)(const char*(*)(void* target));
 
@@ -6304,6 +8406,12 @@ using uapi_AActor_GetSimpleCollisionHalfHeightFn = void(*)(float(*)(void* target
 
 using uapi_AActor_GetSimpleCollisionRadiusFn = void(*)(float(*)(void* target));
 
+using uapi_AActor_GetSquaredDistanceToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_GetSquaredHorizontalDistanceToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_GetTargetLocationFn = void(*)(Vector3(*)(void* target,AActor* RequestedBy));
+
 using uapi_AActor_GetTearOffFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_GetTickableWhenPausedFn = void(*)(bool(*)(void* target));
@@ -6312,9 +8420,13 @@ using uapi_AActor_GetTransformFn = void(*)(Transform(*)(void* target));
 
 using uapi_AActor_GetVelocityFn = void(*)(Vector3(*)(void* target));
 
+using uapi_AActor_GetVerticalDistanceToFn = void(*)(float(*)(void* target,AActor* OtherActor));
+
 using uapi_AActor_GetWorldFn = void(*)(void*(*)(void* target));
 
 using uapi_AActor_GetWorldSettingsFn = void(*)(void*(*)(void* target));
+
+using uapi_AActor_HandleRegisterComponentWithWorldFn = void(*)(void(*)(void* target,UActorComponent* Component));
 
 using uapi_AActor_HasActiveCameraComponentFn = void(*)(bool(*)(void* target));
 
@@ -6338,6 +8450,8 @@ using uapi_AActor_HasNonTrivialUserConstructionScriptFn = void(*)(bool(*)(void* 
 
 using uapi_AActor_HasValidRootComponentFn = void(*)(bool(*)(void* target));
 
+using uapi_AActor_IncrementalRegisterComponentsFn = void(*)(bool(*)(void* target,int32 NumComponentsToRegister,FRegisterComponentContext* Context));
+
 using uapi_AActor_InitializeComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_InvalidateLightingCacheFn = void(*)(void(*)(void* target));
@@ -6350,6 +8464,8 @@ using uapi_AActor_IsActorBeginningPlayFromLevelStreamingFn = void(*)(bool(*)(voi
 
 using uapi_AActor_IsActorBeingDestroyedFn = void(*)(bool(*)(void* target));
 
+using uapi_AActor_IsActorComponentReplicatedSubObjectRegisteredFn = void(*)(bool(*)(void* target,UActorComponent* OwnerComponent,UObject* SubObject));
+
 using uapi_AActor_IsActorInitializedFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_IsActorLabelEditableFn = void(*)(bool(*)(void* target));
@@ -6360,7 +8476,13 @@ using uapi_AActor_IsActorTickEnabledFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_IsAssetFn = void(*)(bool(*)(void* target));
 
+using uapi_AActor_IsAttachedToFn = void(*)(bool(*)(void* target,AActor* Other));
+
+using uapi_AActor_IsBasedOnActorFn = void(*)(bool(*)(void* target,AActor* Other));
+
 using uapi_AActor_IsChildActorFn = void(*)(bool(*)(void* target));
+
+using uapi_AActor_IsComponentRelevantForNavigationFn = void(*)(bool(*)(void* target,UActorComponent* Component));
 
 using uapi_AActor_IsDefaultPreviewEnabledFn = void(*)(bool(*)(void* target));
 
@@ -6380,6 +8502,8 @@ using uapi_AActor_IsHiddenEdAtStartupFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_IsInEditingLevelInstanceFn = void(*)(bool(*)(void* target));
 
+using uapi_AActor_IsInLevelFn = void(*)(bool(*)(void* target,ULevel* TestLevel));
+
 using uapi_AActor_IsInPersistentLevelFn = void(*)(bool(*)(void* target,bool bIncludeLevelStreamingPersistent));
 
 using uapi_AActor_IsLevelBoundsRelevantFn = void(*)(bool(*)(void* target));
@@ -6394,9 +8518,19 @@ using uapi_AActor_IsNameStableForNetworkingFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_IsNetStartupActorFn = void(*)(bool(*)(void* target));
 
+using uapi_AActor_IsOverlappingActorFn = void(*)(bool(*)(void* target,AActor* Other));
+
+using uapi_AActor_IsOwnedByFn = void(*)(bool(*)(void* target,AActor* TestOwner));
+
 using uapi_AActor_IsPendingKillPendingFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_IsReadyForFinishDestroyFn = void(*)(bool(*)(void* target));
+
+using uapi_AActor_IsRelevancyOwnerForFn = void(*)(bool(*)(void* target,AActor* ReplicatedActor,AActor* ActorOwner,AActor* ConnectionActor));
+
+using uapi_AActor_IsReplicatedActorComponentRegisteredFn = void(*)(bool(*)(void* target,UActorComponent* ReplicatedComponent));
+
+using uapi_AActor_IsReplicatedSubObjectRegisteredFn = void(*)(bool(*)(void* target,UObject* SubObject));
 
 using uapi_AActor_IsReplicatingMovementFn = void(*)(bool(*)(void* target));
 
@@ -6436,6 +8570,10 @@ using uapi_AActor_K2_GetActorRotationFn = void(*)(Rotator(*)(void* target));
 
 using uapi_AActor_K2_GetRootComponentFn = void(*)(void*(*)(void* target));
 
+using uapi_AActor_K2_OnBecomeViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
+using uapi_AActor_K2_OnEndViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
 using uapi_AActor_K2_OnResetFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_K2_SetActorRotationFn = void(*)(bool(*)(void* target,Rotator NewRotation,bool bTeleportPhysics));
@@ -6444,15 +8582,25 @@ using uapi_AActor_K2_TeleportToFn = void(*)(bool(*)(void* target,Vector3 DestLoc
 
 using uapi_AActor_LifeSpanExpiredFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_MakeNoiseFn = void(*)(void(*)(void* target,float Loudness,APawn* NoiseInstigator,Vector3 NoiseLocation,float MaxRange,UName Tag));
+
 using uapi_AActor_MarkComponentsAsPendingKillFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_MarkComponentsRenderStateDirtyFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_ModifyFn = void(*)(bool(*)(void* target,bool bAlwaysMarkDirty));
 
+using uapi_AActor_NeedsLoadForTargetPlatformFn = void(*)(bool(*)(void* target,ITargetPlatform* TargetPlatform));
+
 using uapi_AActor_NotifyActorBeginCursorOverFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_NotifyActorBeginOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
 using uapi_AActor_NotifyActorEndCursorOverFn = void(*)(void(*)(void* target));
+
+using uapi_AActor_NotifyActorEndOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_OnNetCleanupFn = void(*)(void(*)(void* target,UNetConnection* Connection));
 
 using uapi_AActor_OnPlayFromHereFn = void(*)(void(*)(void* target));
 
@@ -6466,9 +8614,15 @@ using uapi_AActor_OnRep_ReplicatedMovementFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_OnReplicationPausedChangedFn = void(*)(void(*)(void* target,bool bIsReplicationPaused));
 
+using uapi_AActor_OnSubobjectCreatedFromReplicationFn = void(*)(void(*)(void* target,UObject* NewSubobject));
+
+using uapi_AActor_OnSubobjectDestroyFromReplicationFn = void(*)(void(*)(void* target,UObject* Subobject));
+
 using uapi_AActor_OpenAssetEditorFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_OutsideWorldBoundsFn = void(*)(void(*)(void* target));
+
+using uapi_AActor_OwnsComponentFn = void(*)(bool(*)(void* target,UActorComponent* Component));
 
 using uapi_AActor_PostActorConstructionFn = void(*)(void(*)(void* target));
 
@@ -6486,6 +8640,8 @@ using uapi_AActor_PostInitializeComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_PostLoadFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_PostLoadSubobjectsFn = void(*)(void(*)(void* target,FObjectInstancingGraph* OuterInstanceGraph));
+
 using uapi_AActor_PostNetInitFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_PostNetReceiveFn = void(*)(void(*)(void* target));
@@ -6498,7 +8654,13 @@ using uapi_AActor_PostNetReceiveRoleFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_PostRegisterAllComponentsFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_PostRenameFn = void(*)(void(*)(void* target,UObject* OldOuter,UName OldName));
+
+using uapi_AActor_PostRenderForFn = void(*)(void(*)(void* target,APlayerController* PC,UCanvas* Canvas,Vector3 CameraPosition,Vector3 CameraDir));
+
 using uapi_AActor_PostUnregisterAllComponentsFn = void(*)(void(*)(void* target));
+
+using uapi_AActor_PreEditChangeFn = void(*)(void(*)(void* target,FProperty* PropertyThatWillChange));
 
 using uapi_AActor_PreEditUndoFn = void(*)(void(*)(void* target));
 
@@ -6510,13 +8672,21 @@ using uapi_AActor_PreRegisterAllComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_PrestreamTexturesFn = void(*)(void(*)(void* target,float Seconds,bool bEnableStreaming,int32 CinematicTextureGroups));
 
+using uapi_AActor_ProcessEventFn = void(*)(void(*)(void* target,UFunction* Function,void* Parameters));
+
 using uapi_AActor_PushLevelInstanceEditingStateToProxiesFn = void(*)(void(*)(void* target,bool bInEditingState));
 
 using uapi_AActor_PushSelectionToProxiesFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_ReceiveActorBeginCursorOverFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_ReceiveActorBeginOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
 using uapi_AActor_ReceiveActorEndCursorOverFn = void(*)(void(*)(void* target));
+
+using uapi_AActor_ReceiveActorEndOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
+using uapi_AActor_ReceiveAnyDamageFn = void(*)(void(*)(void* target,float Damage,UDamageType* DamageType,AController* InstigatedBy,AActor* DamageCauser));
 
 using uapi_AActor_ReceiveAsyncPhysicsTickFn = void(*)(void(*)(void* target,float DeltaSeconds,float SimSeconds));
 
@@ -6528,7 +8698,23 @@ using uapi_AActor_RegisterAllActorTickFunctionsFn = void(*)(void(*)(void* target
 
 using uapi_AActor_RegisterAllComponentsFn = void(*)(void(*)(void* target));
 
+using uapi_AActor_RemoveActorComponentReplicatedSubObjectFn = void(*)(void(*)(void* target,UActorComponent* OwnerComponent,UObject* SubObject));
+
 using uapi_AActor_RemoveAllDataLayersFn = void(*)(bool(*)(void* target));
+
+using uapi_AActor_RemoveDataLayerFn = void(*)(bool(*)(void* target,UDataLayerAsset* DataLayerAsset));
+
+using uapi_AActor_RemoveInstanceComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_AActor_RemoveOwnedComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
+using uapi_AActor_RemoveReplicatedSubObjectFn = void(*)(void(*)(void* target,UObject* SubObject));
+
+using uapi_AActor_RemoveTickPrerequisiteActorFn = void(*)(void(*)(void* target,AActor* PrerequisiteActor));
+
+using uapi_AActor_RemoveTickPrerequisiteComponentFn = void(*)(void(*)(void* target,UActorComponent* PrerequisiteComponent));
+
+using uapi_AActor_ReplicateSubobjectsFn = void(*)(bool(*)(void* target,UActorChannel* Channel,FOutBunch* Bunch,FReplicationFlags* RepFlags));
 
 using uapi_AActor_ReregisterAllComponentsFn = void(*)(void(*)(void* target));
 
@@ -6549,6 +8735,12 @@ using uapi_AActor_SeedAllRandomStreamsFn = void(*)(void(*)(void* target));
 using uapi_AActor_SetActorEnableCollisionFn = void(*)(void(*)(void* target,bool bNewActorEnableCollision));
 
 using uapi_AActor_SetActorHiddenInGameFn = void(*)(void(*)(void* target,bool bNewHidden));
+
+using uapi_AActor_SetActorLocationAndRotationFn = void(*)(bool(*)(void* target,Vector3 NewLocation,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_SetActorRelativeLocationFn = void(*)(void(*)(void* target,Vector3 NewRelativeLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_AActor_SetActorRelativeRotationFn = void(*)(void(*)(void* target,Rotator NewRelativeRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
 
 using uapi_AActor_SetActorRelativeScale3DFn = void(*)(void(*)(void* target,Vector3 NewRelativeScale));
 
@@ -6572,15 +8764,21 @@ using uapi_AActor_SetCanBeDamagedFn = void(*)(void(*)(void* target,bool bInCanBe
 
 using uapi_AActor_SetForceExternalActorLevelReferenceForPIEFn = void(*)(void(*)(void* target,bool bValue));
 
+using uapi_AActor_SetHLODLayerFn = void(*)(void(*)(void* target,UHLODLayer* InHLODLayer));
+
 using uapi_AActor_SetHasActorRegisteredAllComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_SetHiddenFn = void(*)(void(*)(void* target,bool bInHidden));
+
+using uapi_AActor_SetInstigatorFn = void(*)(void(*)(void* target,APawn* InInstigator));
 
 using uapi_AActor_SetIsHiddenEdLayerFn = void(*)(bool(*)(void* target,bool bIsHiddenEdLayer));
 
 using uapi_AActor_SetIsSpatiallyLoadedFn = void(*)(void(*)(void* target,bool bInIsSpatiallyLoaded));
 
 using uapi_AActor_SetIsTemporarilyHiddenInEditorFn = void(*)(void(*)(void* target,bool bIsHidden));
+
+using uapi_AActor_SetLODParentFn = void(*)(void(*)(void* target,UPrimitiveComponent* InLODParent,float InParentDrawDistance));
 
 using uapi_AActor_SetLifeSpanFn = void(*)(void(*)(void* target,float InLifespan));
 
@@ -6589,6 +8787,8 @@ using uapi_AActor_SetLockLocationFn = void(*)(void(*)(void* target,bool bInLockL
 using uapi_AActor_SetNetAddressableFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_SetNetDriverNameFn = void(*)(void(*)(void* target,UName NewNetDriverName));
+
+using uapi_AActor_SetOwnerFn = void(*)(void(*)(void* target,AActor* NewOwner));
 
 using uapi_AActor_SetPackageExternalFn = void(*)(void(*)(void* target,bool bExternal,bool bShouldDirty));
 
@@ -6599,6 +8799,8 @@ using uapi_AActor_SetReplicateMovementFn = void(*)(void(*)(void* target,bool bIn
 using uapi_AActor_SetReplicatesFn = void(*)(void(*)(void* target,bool bInReplicates));
 
 using uapi_AActor_SetReplicatingMovementFn = void(*)(void(*)(void* target,bool bInReplicateMovement));
+
+using uapi_AActor_SetRootComponentFn = void(*)(bool(*)(void* target,USceneComponent* NewRootComponent));
 
 using uapi_AActor_SetRuntimeGridFn = void(*)(void(*)(void* target,UName InRuntimeGrid));
 
@@ -6640,27 +8842,181 @@ using uapi_AActor_UpdateComponentTransformsFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_UpdateOverlapsFn = void(*)(void(*)(void* target,bool bDoNotifies));
 
+using uapi_AActor_UpdateReplicatedComponentFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
 using uapi_AActor_UseShortConnectTimeoutFn = void(*)(bool(*)(void* target));
 
 using uapi_AActor_UserConstructionScriptFn = void(*)(void(*)(void* target));
 
 using uapi_AActor_WasRecentlyRenderedFn = void(*)(bool(*)(void* target,float Tolerance));
 
+using uapi_APawn_AddControllerPitchInputFn = void(*)(void(*)(void* target,float Val));
+
+using uapi_APawn_AddControllerRollInputFn = void(*)(void(*)(void* target,float Val));
+
+using uapi_APawn_AddControllerYawInputFn = void(*)(void(*)(void* target,float Val));
+
+using uapi_APawn_AddMovementInputFn = void(*)(void(*)(void* target,Vector3 WorldDirection,float ScaleValue,bool bForce));
+
+using uapi_APawn_BecomeViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
+using uapi_APawn_ConsumeMovementInputVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_DestroyedFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_DetachFromControllerPendingDestroyFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_DisableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
+
+using uapi_APawn_DispatchRestartFn = void(*)(void(*)(void* target,bool bCallClientRestart));
+
+using uapi_APawn_EnableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
+
+using uapi_APawn_EndViewTargetFn = void(*)(void(*)(void* target,APlayerController* PC));
+
+using uapi_APawn_FaceRotationFn = void(*)(void(*)(void* target,Rotator NewControlRotation,float DeltaTime));
+
+using uapi_APawn_GetBaseAimRotationFn = void(*)(Rotator(*)(void* target));
+
+using uapi_APawn_GetControlRotationFn = void(*)(Rotator(*)(void* target));
+
 using uapi_APawn_GetControllerFn = void(*)(void*(*)(void* target));
+
+using uapi_APawn_GetDefaultHalfHeightFn = void(*)(float(*)(void* target));
+
+using uapi_APawn_GetGravityDirectionFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_GetHumanReadableNameFn = void(*)(const char*(*)(void* target));
+
+using uapi_APawn_GetLastMovementInputVectorFn = void(*)(Vector3(*)(void* target));
 
 using uapi_APawn_GetLocalViewingPlayerControllerFn = void(*)(void*(*)(void* target));
 
 using uapi_APawn_GetMovementBaseFn = void(*)(void*(*)(void* target));
 
+using uapi_APawn_GetMovementBaseActorFn = void(*)(void*(*)(APawn* Pawn));
+
 using uapi_APawn_GetMovementComponentFn = void(*)(void*(*)(void* target));
+
+using uapi_APawn_GetNavAgentLocationFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_GetNetConnectionFn = void(*)(void*(*)(void* target));
+
+using uapi_APawn_GetNetOwnerFn = void(*)(void*(*)(void* target));
+
+using uapi_APawn_GetNetOwningPlayerFn = void(*)(void*(*)(void* target));
 
 using uapi_APawn_GetPawnNoiseEmitterComponentFn = void(*)(void*(*)(void* target));
 
+using uapi_APawn_GetPawnViewLocationFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_GetPendingMovementInputVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_GetPhysicsVolumeFn = void(*)(void*(*)(void* target));
+
 using uapi_APawn_GetPlayerStateFn = void(*)(void*(*)(void* target));
+
+using uapi_APawn_GetVelocityFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_GetViewRotationFn = void(*)(Rotator(*)(void* target));
+
+using uapi_APawn_InFreeCamFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_InputEnabledFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_Internal_AddMovementInputFn = void(*)(void(*)(void* target,Vector3 WorldAccel,bool bForce));
+
+using uapi_APawn_Internal_ConsumeMovementInputVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_Internal_GetLastMovementInputVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_Internal_GetPendingMovementInputVectorFn = void(*)(Vector3(*)(void* target));
+
+using uapi_APawn_IsBasedOnActorFn = void(*)(bool(*)(void* target,AActor* Other));
+
+using uapi_APawn_IsBotControlledFn = void(*)(bool(*)(void* target));
 
 using uapi_APawn_IsLocalPlayerControllerViewingAPawnFn = void(*)(bool(*)(void* target));
 
+using uapi_APawn_IsLocallyControlledFn = void(*)(bool(*)(void* target));
+
 using uapi_APawn_IsLocallyViewedFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_IsMoveInputIgnoredFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_IsPawnControlledFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_IsPlayerControlledFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_MoveIgnoreActorAddFn = void(*)(void(*)(void* target,AActor* ActorToIgnore));
+
+using uapi_APawn_MoveIgnoreActorRemoveFn = void(*)(void(*)(void* target,AActor* ActorToIgnore));
+
+using uapi_APawn_NotifyControllerChangedFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_NotifyRestartedFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_OnRep_ControllerFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_OnRep_PlayerStateFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_OutsideWorldBoundsFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PawnClientRestartFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PawnMakeNoiseFn = void(*)(void(*)(void* target,float Loudness,Vector3 NoiseLocation,bool bUseNoiseMakerLocation,AActor* NoiseMaker));
+
+using uapi_APawn_PawnStartFireFn = void(*)(void(*)(void* target,uint8 FireModeNum));
+
+using uapi_APawn_PossessedByFn = void(*)(void(*)(void* target,AController* NewController));
+
+using uapi_APawn_PostInitializeComponentsFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PostNetReceiveLocationAndRotationFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PostRegisterAllComponentsFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_PreInitializeComponentsFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_ReachedDesiredRotationFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_RecalculateBaseEyeHeightFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_ReceiveControllerChangedFn = void(*)(void(*)(void* target,AController* OldController,AController* NewController));
+
+using uapi_APawn_ReceivePossessedFn = void(*)(void(*)(void* target,AController* NewController));
+
+using uapi_APawn_ReceiveRestartedFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_ReceiveUnpossessedFn = void(*)(void(*)(void* target,AController* OldController));
+
+using uapi_APawn_ResetFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_RestartFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_SetCanAffectNavigationGenerationFn = void(*)(void(*)(void* target,bool bNewValue,bool bForceUpdate));
+
+using uapi_APawn_SetPlayerDefaultsFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_SetPlayerStateFn = void(*)(void(*)(void* target,APlayerState* NewPlayerState));
+
+using uapi_APawn_SetRemoteViewPitchFn = void(*)(void(*)(void* target,float NewRemoteViewPitch));
+
+using uapi_APawn_ShouldTickIfViewportsOnlyFn = void(*)(bool(*)(void* target));
+
+using uapi_APawn_SpawnDefaultControllerFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_TeleportSucceededFn = void(*)(void(*)(void* target,bool bIsATest));
+
+using uapi_APawn_TurnOffFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_UnPossessedFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_UpdateNavAgentFn = void(*)(void(*)(void* target));
+
+using uapi_APawn_UpdateNavigationRelevanceFn = void(*)(void(*)(void* target));
 
 using uapi_AController_ChangeStateFn = void(*)(void(*)(void* target,UName NewState));
 
@@ -6675,6 +9031,8 @@ using uapi_AController_CurrentLevelUnloadedFn = void(*)(void(*)(void* target));
 using uapi_AController_DestroyedFn = void(*)(void(*)(void* target));
 
 using uapi_AController_FailedToSpawnPawnFn = void(*)(void(*)(void* target));
+
+using uapi_AController_GameHasEndedFn = void(*)(void(*)(void* target,AActor* EndGameFocus,bool bIsWinner));
 
 using uapi_AController_GetCharacterFn = void(*)(void*(*)(void* target));
 
@@ -6694,6 +9052,8 @@ using uapi_AController_GetViewTargetFn = void(*)(void*(*)(void* target));
 
 using uapi_AController_InitPlayerStateFn = void(*)(void(*)(void* target));
 
+using uapi_AController_InstigatedAnyDamageFn = void(*)(void(*)(void* target,float Damage,UDamageType* DamageType,AActor* DamagedActor,AActor* DamageCauser));
+
 using uapi_AController_IsFollowingAPathFn = void(*)(bool(*)(void* target));
 
 using uapi_AController_IsInStateFn = void(*)(bool(*)(void* target,UName InStateName));
@@ -6712,9 +9072,15 @@ using uapi_AController_K2_DestroyActorFn = void(*)(void(*)(void* target));
 
 using uapi_AController_K2_GetPawnFn = void(*)(void*(*)(void* target));
 
+using uapi_AController_LineOfSightToFn = void(*)(bool(*)(void* target,AActor* Other,Vector3 ViewPoint,bool bAlternateChecks));
+
 using uapi_AController_OnRep_PawnFn = void(*)(void(*)(void* target));
 
 using uapi_AController_OnRep_PlayerStateFn = void(*)(void(*)(void* target));
+
+using uapi_AController_PawnPendingDestroyFn = void(*)(void(*)(void* target,APawn* inPawn));
+
+using uapi_AController_PossessFn = void(*)(void(*)(void* target,APawn* InPawn));
 
 using uapi_AController_PostInitializeComponentsFn = void(*)(void(*)(void* target));
 
@@ -6730,6 +9096,10 @@ using uapi_AController_SetIgnoreLookInputFn = void(*)(void(*)(void* target,bool 
 
 using uapi_AController_SetIgnoreMoveInputFn = void(*)(void(*)(void* target,bool bNewMoveInput));
 
+using uapi_AController_SetPawnFn = void(*)(void(*)(void* target,APawn* InPawn));
+
+using uapi_AController_SetPawnFromRepFn = void(*)(void(*)(void* target,APawn* InPawn));
+
 using uapi_AController_ShouldParticipateInSeamlessTravelFn = void(*)(bool(*)(void* target));
 
 using uapi_AController_ShouldPostponePathUpdatesFn = void(*)(bool(*)(void* target));
@@ -6738,6 +9108,10 @@ using uapi_AController_StopMovementFn = void(*)(void(*)(void* target));
 
 using uapi_AController_UnPossessFn = void(*)(void(*)(void* target));
 
+using uapi_APlayerController_AcknowledgePossessionFn = void(*)(void(*)(void* target,APawn* P));
+
+using uapi_APlayerController_ActivateTouchInterfaceFn = void(*)(void(*)(void* target,UTouchInterface* NewTouchInterface));
+
 using uapi_APlayerController_AddCheatsFn = void(*)(void(*)(void* target,bool bForce));
 
 using uapi_APlayerController_AddPitchInputFn = void(*)(void(*)(void* target,float Val));
@@ -6745,6 +9119,8 @@ using uapi_APlayerController_AddPitchInputFn = void(*)(void(*)(void* target,floa
 using uapi_APlayerController_AddRollInputFn = void(*)(void(*)(void* target,float Val));
 
 using uapi_APlayerController_AddYawInputFn = void(*)(void(*)(void* target,float Val));
+
+using uapi_APlayerController_AutoManageActiveCameraTargetFn = void(*)(void(*)(void* target,AActor* SuggestedTarget));
 
 using uapi_APlayerController_BeginInactiveStateFn = void(*)(void(*)(void* target));
 
@@ -6782,19 +9158,33 @@ using uapi_APlayerController_ClientFlushLevelStreamingFn = void(*)(void(*)(void*
 
 using uapi_APlayerController_ClientForceGarbageCollectionFn = void(*)(void(*)(void* target));
 
+using uapi_APlayerController_ClientGameEndedFn = void(*)(void(*)(void* target,AActor* EndGameFocus,bool bIsWinner));
+
 using uapi_APlayerController_ClientGotoStateFn = void(*)(void(*)(void* target,UName NewState));
 
 using uapi_APlayerController_ClientIgnoreLookInputFn = void(*)(void(*)(void* target,bool bIgnore));
 
 using uapi_APlayerController_ClientIgnoreMoveInputFn = void(*)(void(*)(void* target,bool bIgnore));
 
+using uapi_APlayerController_ClientPlaySoundFn = void(*)(void(*)(void* target,USoundBase* Sound,float VolumeMultiplier,float PitchMultiplier));
+
+using uapi_APlayerController_ClientPlaySoundAtLocationFn = void(*)(void(*)(void* target,USoundBase* Sound,Vector3 Location,float VolumeMultiplier,float PitchMultiplier));
+
 using uapi_APlayerController_ClientPrepareMapChangeFn = void(*)(void(*)(void* target,UName LevelName,bool bFirst,bool bLast));
+
+using uapi_APlayerController_ClientPrestreamTexturesFn = void(*)(void(*)(void* target,AActor* ForcedActor,float ForceDuration,bool bEnableStreaming,int32 CinematicTextureGroups));
 
 using uapi_APlayerController_ClientRecvServerAckFrameFn = void(*)(void(*)(void* target,int32 LastProcessedInputFrame,int32 RecvServerFrameNumber,int8 TimeDilation));
 
 using uapi_APlayerController_ClientRecvServerAckFrameDebugFn = void(*)(void(*)(void* target,uint8 NumBuffered,float TargetNumBufferedCmds));
 
+using uapi_APlayerController_ClientRepObjRefFn = void(*)(void(*)(void* target,UObject* Object));
+
 using uapi_APlayerController_ClientResetFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_ClientRestartFn = void(*)(void(*)(void* target,APawn* NewPawn));
+
+using uapi_APlayerController_ClientRetryClientRestartFn = void(*)(void(*)(void* target,APawn* NewPawn));
 
 using uapi_APlayerController_ClientSetBlockOnAsyncLoadingFn = void(*)(void(*)(void* target));
 
@@ -6804,9 +9194,15 @@ using uapi_APlayerController_ClientSetCameraModeFn = void(*)(void(*)(void* targe
 
 using uapi_APlayerController_ClientSetCinematicModeFn = void(*)(void(*)(void* target,bool bInCinematicMode,bool bAffectsMovement,bool bAffectsTurning,bool bAffectsHUD));
 
+using uapi_APlayerController_ClientSetForceMipLevelsToBeResidentFn = void(*)(void(*)(void* target,UMaterialInterface* Material,float ForceDuration,int32 CinematicTextureGroups));
+
 using uapi_APlayerController_ClientSetSpectatorWaitingFn = void(*)(void(*)(void* target,bool bWaiting));
 
 using uapi_APlayerController_ClientStartOnlineSessionFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_ClientStopCameraShakesFromSourceFn = void(*)(void(*)(void* target,UCameraShakeSourceComponent* SourceComponent,bool bImmediately));
+
+using uapi_APlayerController_ClientStopForceFeedbackFn = void(*)(void(*)(void* target,UForceFeedbackEffect* ForceFeedbackEffect,UName Tag));
 
 using uapi_APlayerController_ClientUpdateLevelStreamingStatusFn = void(*)(void(*)(void* target,UName PackageName,bool bNewShouldBeLoaded,bool bNewShouldBeVisible,bool bNewShouldBlockOnLoad,int32 LODIndex));
 
@@ -6822,7 +9218,11 @@ using uapi_APlayerController_DestroyNetworkActorHandledFn = void(*)(bool(*)(void
 
 using uapi_APlayerController_DestroyedFn = void(*)(void(*)(void* target));
 
+using uapi_APlayerController_DisableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
+
 using uapi_APlayerController_EnableCheatsFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_EnableInputFn = void(*)(void(*)(void* target,APlayerController* PlayerController));
 
 using uapi_APlayerController_EndInactiveStateFn = void(*)(void(*)(void* target));
 
@@ -6831,6 +9231,10 @@ using uapi_APlayerController_FOVFn = void(*)(void(*)(void* target,float NewFOV))
 using uapi_APlayerController_FailedToSpawnPawnFn = void(*)(void(*)(void* target));
 
 using uapi_APlayerController_FlushPressedKeysFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_ForceSingleNetUpdateForFn = void(*)(void(*)(void* target,AActor* Target));
+
+using uapi_APlayerController_GameHasEndedFn = void(*)(void(*)(void* target,AActor* EndGameFocus,bool bIsWinner));
 
 using uapi_APlayerController_GameplayUnmuteAllPlayersFn = void(*)(void(*)(void* target));
 
@@ -6882,6 +9286,8 @@ using uapi_APlayerController_InputEnabledFn = void(*)(bool(*)(void* target));
 
 using uapi_APlayerController_IsFrozenFn = void(*)(bool(*)(void* target));
 
+using uapi_APlayerController_IsInputComponentInStackFn = void(*)(bool(*)(void* target,UInputComponent* Input));
+
 using uapi_APlayerController_IsLocalControllerFn = void(*)(bool(*)(void* target));
 
 using uapi_APlayerController_IsMemberOfNetConditionGroupFn = void(*)(bool(*)(void* target,UName NetGroup));
@@ -6894,11 +9300,21 @@ using uapi_APlayerController_IsSplitscreenPlayerFn = void(*)(bool(*)(void* targe
 
 using uapi_APlayerController_IsStreamingSourceEnabledFn = void(*)(bool(*)(void* target));
 
+using uapi_APlayerController_K2_ClientPlayForceFeedbackFn = void(*)(void(*)(void* target,UForceFeedbackEffect* ForceFeedbackEffect,UName Tag,bool bLooping,bool bIgnoreTimeDilation,bool bPlayWhilePaused));
+
+using uapi_APlayerController_LevelStreamingStatusChangedFn = void(*)(void(*)(void* target,ULevelStreaming* LevelObject,bool bNewShouldBeLoaded,bool bNewShouldBeVisible,bool bNewShouldBlockOnLoad,int32 LODIndex));
+
 using uapi_APlayerController_NetworkRemapPathFn = void(*)(UName(*)(void* target,UName InPackageName,bool bReading));
+
+using uapi_APlayerController_NotifyActorChannelFailureFn = void(*)(void(*)(void* target,UActorChannel* ActorChan));
 
 using uapi_APlayerController_NotifyLoadedWorldFn = void(*)(void(*)(void* target,UName WorldPackageName,bool bFinalDest));
 
+using uapi_APlayerController_NotifyServerReceivedClientDataFn = void(*)(bool(*)(void* target,APawn* InPawn,float TimeStamp));
+
 using uapi_APlayerController_OnAddedToPlayerControllerListFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_OnNetCleanupFn = void(*)(void(*)(void* target,UNetConnection* Connection));
 
 using uapi_APlayerController_OnRemovedFromPlayerControllerListFn = void(*)(void(*)(void* target));
 
@@ -6910,6 +9326,8 @@ using uapi_APlayerController_PawnLeavingGameFn = void(*)(void(*)(void* target));
 
 using uapi_APlayerController_PlayerTickFn = void(*)(void(*)(void* target,float DeltaTime));
 
+using uapi_APlayerController_PopInputComponentFn = void(*)(bool(*)(void* target,UInputComponent* Input));
+
 using uapi_APlayerController_PostInitializeComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_APlayerController_PostLoadFn = void(*)(void(*)(void* target));
@@ -6919,6 +9337,8 @@ using uapi_APlayerController_PostProcessInputFn = void(*)(void(*)(void* target,f
 using uapi_APlayerController_PostSeamlessTravelFn = void(*)(void(*)(void* target));
 
 using uapi_APlayerController_PreProcessInputFn = void(*)(void(*)(void* target,float DeltaTime,bool bGamePaused));
+
+using uapi_APlayerController_PushInputComponentFn = void(*)(void(*)(void* target,UInputComponent* Input));
 
 using uapi_APlayerController_ReceivedPlayerFn = void(*)(void(*)(void* target));
 
@@ -6940,7 +9360,13 @@ using uapi_APlayerController_SafeServerCheckClientPossessionFn = void(*)(void(*)
 
 using uapi_APlayerController_SafeServerUpdateSpectatorStateFn = void(*)(void(*)(void* target));
 
+using uapi_APlayerController_SeamlessTravelFromFn = void(*)(void(*)(void* target,APlayerController* OldPC));
+
+using uapi_APlayerController_SeamlessTravelToFn = void(*)(void(*)(void* target,APlayerController* NewPC));
+
 using uapi_APlayerController_SendClientAdjustmentFn = void(*)(void(*)(void* target));
+
+using uapi_APlayerController_ServerAcknowledgePossessionFn = void(*)(void(*)(void* target,APawn* P));
 
 using uapi_APlayerController_ServerCameraFn = void(*)(void(*)(void* target,UName NewMode));
 
@@ -6970,6 +9396,10 @@ using uapi_APlayerController_ServerViewPrevPlayerFn = void(*)(void(*)(void* targ
 
 using uapi_APlayerController_SetAsLocalPlayerControllerFn = void(*)(void(*)(void* target));
 
+using uapi_APlayerController_SetAudioListenerAttenuationOverrideFn = void(*)(void(*)(void* target,USceneComponent* AttachToComponent,Vector3 AttenuationLocationOVerride));
+
+using uapi_APlayerController_SetAudioListenerOverrideFn = void(*)(void(*)(void* target,USceneComponent* AttachToComponent,Vector3 Location,Rotator Rotation));
+
 using uapi_APlayerController_SetCameraModeFn = void(*)(void(*)(void* target,UName NewCamMode));
 
 using uapi_APlayerController_SetCinematicModeFn = void(*)(void(*)(void* target,bool bInCinematicMode,bool bAffectsMovement,bool bAffectsTurning));
@@ -6984,6 +9414,10 @@ using uapi_APlayerController_SetMotionControlsEnabledFn = void(*)(void(*)(void* 
 
 using uapi_APlayerController_SetNetSpeedFn = void(*)(void(*)(void* target,int32 NewSpeed));
 
+using uapi_APlayerController_SetPawnFn = void(*)(void(*)(void* target,APawn* InPawn));
+
+using uapi_APlayerController_SetPlayerFn = void(*)(void(*)(void* target,UPlayer* InPlayer));
+
 using uapi_APlayerController_SetShowMouseCursorFn = void(*)(void(*)(void* target,bool bShow));
 
 using uapi_APlayerController_SetVirtualJoystickVisibilityFn = void(*)(void(*)(void* target,bool bVisible));
@@ -6995,6 +9429,8 @@ using uapi_APlayerController_ShouldParticipateInSeamlessTravelFn = void(*)(bool(
 using uapi_APlayerController_ShouldPerformFullTickWhenPausedFn = void(*)(bool(*)(void* target));
 
 using uapi_APlayerController_ShouldShowMouseCursorFn = void(*)(bool(*)(void* target));
+
+using uapi_APlayerController_SmoothTargetViewRotationFn = void(*)(void(*)(void* target,APawn* TargetPawn,float DeltaSeconds));
 
 using uapi_APlayerController_SpawnDefaultHUDFn = void(*)(void(*)(void* target));
 
@@ -7026,43 +9462,145 @@ using uapi_APlayerController_UseShortConnectTimeoutFn = void(*)(bool(*)(void* ta
 
 using uapi_APlayerController_ViewAPlayerFn = void(*)(void(*)(void* target,int32 dir));
 
-using uapi_FRandomStream_FRandFn = void(*)(float(*)(void* target));
-
-using uapi_FRandomStream_GenerateNewSeedFn = void(*)(void(*)(void* target));
-
-using uapi_FRandomStream_GetCurrentSeedFn = void(*)(int32(*)(void* target));
-
-using uapi_FRandomStream_GetFractionFn = void(*)(float(*)(void* target));
-
-using uapi_FRandomStream_GetInitialSeedFn = void(*)(int32(*)(void* target));
-
-using uapi_FRandomStream_GetUnitVectorFn = void(*)(Vector3(*)(void* target));
-
-using uapi_FRandomStream_GetUnsignedIntFn = void(*)(uint32(*)(void* target));
-
-using uapi_FRandomStream_InitializeFn = void(*)(void(*)(void* target,int32 InSeed));
-
-using uapi_FRandomStream_RandHelperFn = void(*)(int32(*)(void* target,int32 A));
-
-using uapi_FRandomStream_RandRangeFn = void(*)(int32(*)(void* target,int32 Min,int32 Max));
-
-using uapi_FRandomStream_ResetFn = void(*)(void(*)(void* target));
-
-using uapi_FRandomStream_ToStringFn = void(*)(const char*(*)(void* target));
-
-using uapi_FRandomStream_VRandFn = void(*)(Vector3(*)(void* target));
+using uapi_UGameplayStatics_ActivateReverbEffectFn = void(*)(void(*)(UObject* WorldContextObject,UReverbEffect* ReverbEffect,UName TagName,float Priority,float Volume,float FadeTime));
 
 using uapi_UGameplayStatics_AreSubtitlesEnabledFn = void(*)(bool(*)());
 
 using uapi_UGameplayStatics_CancelAsyncLoadingFn = void(*)(void(*)());
 
+using uapi_UGameplayStatics_ClearSoundMixClassOverrideFn = void(*)(void(*)(UObject* WorldContextObject,USoundMix* InSoundMixModifier,USoundClass* InSoundClass,float FadeOutTime));
+
+using uapi_UGameplayStatics_ClearSoundMixModifiersFn = void(*)(void(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_CreatePlayerFn = void(*)(void*(*)(UObject* WorldContextObject,int32 ControllerId,bool bSpawnPlayerController));
+
+using uapi_UGameplayStatics_CreateSound2DFn = void(*)(void*(*)(UObject* WorldContextObject,USoundBase* Sound,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundConcurrency* ConcurrencySettings,bool bPersistAcrossLevelTransition,bool bAutoDestroy));
+
+using uapi_UGameplayStatics_DeactivateReverbEffectFn = void(*)(void(*)(UObject* WorldContextObject,UName TagName));
+
 using uapi_UGameplayStatics_EnableLiveStreamingFn = void(*)(void(*)(bool Enable));
+
+using uapi_UGameplayStatics_FlushLevelStreamingFn = void(*)(void(*)(UObject* WorldContextObject));
 
 using uapi_UGameplayStatics_GetAccurateRealTimeFn = void(*)(void(*)(int32& Seconds,double& PartialSeconds));
 
+using uapi_UGameplayStatics_GetActiveSpatialPluginNameFn = void(*)(UName(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetAudioTimeSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetCurrentLevelNameFn = void(*)(const char*(*)(UObject* WorldContextObject,bool bRemovePrefixString));
+
+using uapi_UGameplayStatics_GetCurrentReverbEffectFn = void(*)(void*(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetEnableWorldRenderingFn = void(*)(bool(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetGameInstanceFn = void(*)(void*(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetGameModeFn = void(*)(void*(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetGameStateFn = void(*)(void*(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetGlobalTimeDilationFn = void(*)(float(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetMaxAudioChannelCountFn = void(*)(int32(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetNumLocalPlayerControllersFn = void(*)(int32(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetNumPlayerControllersFn = void(*)(int32(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetNumPlayerStatesFn = void(*)(int32(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetObjectClassFn = void(*)(void*(*)(UObject* Object));
+
 using uapi_UGameplayStatics_GetPlatformNameFn = void(*)(const char*(*)());
 
+using uapi_UGameplayStatics_GetPlayerCameraManagerFn = void(*)(void*(*)(UObject* WorldContextObject,int32 PlayerIndex));
+
+using uapi_UGameplayStatics_GetPlayerCharacterFn = void(*)(void*(*)(UObject* WorldContextObject,int32 PlayerIndex));
+
+using uapi_UGameplayStatics_GetPlayerControllerFn = void(*)(void*(*)(UObject* WorldContextObject,int32 PlayerIndex));
+
+using uapi_UGameplayStatics_GetPlayerControllerFromIDFn = void(*)(void*(*)(UObject* WorldContextObject,int32 ControllerID));
+
+using uapi_UGameplayStatics_GetPlayerControllerIDFn = void(*)(int32(*)(APlayerController* Player));
+
+using uapi_UGameplayStatics_GetPlayerPawnFn = void(*)(void*(*)(UObject* WorldContextObject,int32 PlayerIndex));
+
+using uapi_UGameplayStatics_GetPlayerStateFn = void(*)(void*(*)(UObject* WorldContextObject,int32 PlayerStateIndex));
+
+using uapi_UGameplayStatics_GetRealTimeSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetStreamingLevelFn = void(*)(void*(*)(UObject* WorldContextObject,UName PackageName));
+
+using uapi_UGameplayStatics_GetTimeSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetUnpausedTimeSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GetWorldDeltaSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_GrassOverlappingSphereCountFn = void(*)(int32(*)(UObject* WorldContextObject,UStaticMesh* StaticMesh,Vector3 CenterPosition,float Radius));
+
+using uapi_UGameplayStatics_IsGamePausedFn = void(*)(bool(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_IsSplitscreenForceDisabledFn = void(*)(bool(*)(UObject* WorldContextObject));
+
+using uapi_UGameplayStatics_OpenLevelFn = void(*)(void(*)(UObject* WorldContextObject,UName LevelName,bool bAbsolute,NativeString Options));
+
+using uapi_UGameplayStatics_PlaySound2DFn = void(*)(void(*)(UObject* WorldContextObject,USoundBase* Sound,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundConcurrency* ConcurrencySettings,AActor* OwningActor,bool bIsUISound));
+
+using uapi_UGameplayStatics_PlaySoundAtLocationFn = void(*)(void(*)(UObject* WorldContextObject,USoundBase* Sound,Vector3 Location,Rotator Rotation,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundAttenuation* AttenuationSettings,USoundConcurrency* ConcurrencySettings,AActor* OwningActor,UInitialActiveSoundParams* InitialParams));
+
+using uapi_UGameplayStatics_PlaySoundAtLocation2Fn = void(*)(void(*)(UObject* WorldContextObject,USoundBase* Sound,Vector3 Location,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundAttenuation* AttenuationSettings,USoundConcurrency* ConcurrencySettings,UInitialActiveSoundParams* InitialParams));
+
+using uapi_UGameplayStatics_PopSoundMixModifierFn = void(*)(void(*)(UObject* WorldContextObject,USoundMix* InSoundMixModifier));
+
+using uapi_UGameplayStatics_PrimeAllSoundsInSoundClassFn = void(*)(void(*)(USoundClass* InSoundClass));
+
+using uapi_UGameplayStatics_PrimeSoundFn = void(*)(void(*)(USoundBase* InSound));
+
+using uapi_UGameplayStatics_PushSoundMixModifierFn = void(*)(void(*)(UObject* WorldContextObject,USoundMix* InSoundMixModifier));
+
+using uapi_UGameplayStatics_RebaseLocalOriginOntoZeroFn = void(*)(Vector3(*)(UObject* WorldContextObject,Vector3 WorldLocation));
+
+using uapi_UGameplayStatics_RebaseZeroOriginOntoLocalFn = void(*)(Vector3(*)(UObject* WorldContextObject,Vector3 WorldLocation));
+
+using uapi_UGameplayStatics_RemovePlayerFn = void(*)(void(*)(APlayerController* Player,bool bDestroyPawn));
+
+using uapi_UGameplayStatics_SetActiveSpatialPluginByNameFn = void(*)(bool(*)(UObject* WorldContextObject,UName InPluginName));
+
+using uapi_UGameplayStatics_SetBaseSoundMixFn = void(*)(void(*)(UObject* WorldContextObject,USoundMix* InSoundMix));
+
+using uapi_UGameplayStatics_SetEnableWorldRenderingFn = void(*)(void(*)(UObject* WorldContextObject,bool bEnable));
+
+using uapi_UGameplayStatics_SetForceDisableSplitscreenFn = void(*)(void(*)(UObject* WorldContextObject,bool bDisable));
+
+using uapi_UGameplayStatics_SetGamePausedFn = void(*)(bool(*)(UObject* WorldContextObject,bool bPaused));
+
+using uapi_UGameplayStatics_SetGlobalListenerFocusParametersFn = void(*)(void(*)(UObject* WorldContextObject,float FocusAzimuthScale,float NonFocusAzimuthScale,float FocusDistanceScale,float NonFocusDistanceScale,float FocusVolumeScale,float NonFocusVolumeScale,float FocusPriorityScale,float NonFocusPriorityScale));
+
+using uapi_UGameplayStatics_SetGlobalPitchModulationFn = void(*)(void(*)(UObject* WorldContextObject,float PitchModulation,float TimeSec));
+
+using uapi_UGameplayStatics_SetGlobalTimeDilationFn = void(*)(void(*)(UObject* WorldContextObject,float TimeDilation));
+
+using uapi_UGameplayStatics_SetMaxAudioChannelsScaledFn = void(*)(void(*)(UObject* WorldContextObject,float MaxChannelCountScale));
+
+using uapi_UGameplayStatics_SetPlayerControllerIDFn = void(*)(void(*)(APlayerController* Player,int32 ControllerId));
+
+using uapi_UGameplayStatics_SetSoundClassDistanceScaleFn = void(*)(void(*)(UObject* WorldContextObject,USoundClass* SoundClass,float DistanceAttenuationScale,float TimeSec));
+
+using uapi_UGameplayStatics_SetSoundMixClassOverrideFn = void(*)(void(*)(UObject* WorldContextObject,USoundMix* InSoundMixModifier,USoundClass* InSoundClass,float Volume,float Pitch,float FadeInTime,bool bApplyToChildren));
+
 using uapi_UGameplayStatics_SetSubtitlesEnabledFn = void(*)(void(*)(bool bEnabled));
+
+using uapi_UGameplayStatics_SpawnDecalAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,UMaterialInterface* DecalMaterial,Vector3 DecalSize,Vector3 Location,Rotator Rotation,float LifeSpan));
+
+using uapi_UGameplayStatics_SpawnForceFeedbackAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,UForceFeedbackEffect* ForceFeedbackEffect,Vector3 Location,Rotator Rotation,bool bLooping,float IntensityMultiplier,float StartTime,UForceFeedbackAttenuation* AttenuationSettings,bool bAutoDestroy));
+
+using uapi_UGameplayStatics_SpawnSound2DFn = void(*)(void*(*)(UObject* WorldContextObject,USoundBase* Sound,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundConcurrency* ConcurrencySettings,bool bPersistAcrossLevelTransition,bool bAutoDestroy));
+
+using uapi_UGameplayStatics_SpawnSoundAtLocationFn = void(*)(void*(*)(UObject* WorldContextObject,USoundBase* Sound,Vector3 Location,Rotator Rotation,float VolumeMultiplier,float PitchMultiplier,float StartTime,USoundAttenuation* AttenuationSettings,USoundConcurrency* ConcurrencySettings,bool bAutoDestroy));
+
+using uapi_UGameplayStatics_UnRetainAllSoundsInSoundClassFn = void(*)(void(*)(USoundClass* InSoundClass));
 
 using uapi_ACharacter_BeginPlayFn = void(*)(void(*)(void* target));
 
@@ -7082,6 +9620,10 @@ using uapi_ACharacter_ClientAckGoodMoveFn = void(*)(void(*)(void* target,float T
 
 using uapi_ACharacter_ClientAckGoodMove_ImplementationFn = void(*)(void(*)(void* target,float TimeStamp));
 
+using uapi_ACharacter_ClientAdjustPositionFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,Vector3 NewVel,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
+using uapi_ACharacter_ClientAdjustPosition_ImplementationFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,Vector3 NewVel,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
 using uapi_ACharacter_ClientCheatFlyFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_ClientCheatFly_ImplementationFn = void(*)(void(*)(void* target));
@@ -7093,6 +9635,10 @@ using uapi_ACharacter_ClientCheatGhost_ImplementationFn = void(*)(void(*)(void* 
 using uapi_ACharacter_ClientCheatWalkFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_ClientCheatWalk_ImplementationFn = void(*)(void(*)(void* target));
+
+using uapi_ACharacter_ClientVeryShortAdjustPositionFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
+using uapi_ACharacter_ClientVeryShortAdjustPosition_ImplementationFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
 
 using uapi_ACharacter_CrouchFn = void(*)(void(*)(void* target,bool bClientSimulation));
 
@@ -7152,6 +9698,10 @@ using uapi_ACharacter_K2_UpdateCustomMovementFn = void(*)(void(*)(void* target,f
 
 using uapi_ACharacter_LaunchCharacterFn = void(*)(void(*)(void* target,Vector3 LaunchVelocity,bool bXYOverride,bool bZOverride));
 
+using uapi_ACharacter_NotifyActorBeginOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
+using uapi_ACharacter_NotifyActorEndOverlapFn = void(*)(void(*)(void* target,AActor* OtherActor));
+
 using uapi_ACharacter_NotifyJumpApexFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_OnEndCrouchFn = void(*)(void(*)(void* target,float HalfHeightAdjust,float ScaledHalfHeightAdjust));
@@ -7176,6 +9726,10 @@ using uapi_ACharacter_OnStartCrouchFn = void(*)(void(*)(void* target,float HalfH
 
 using uapi_ACharacter_PawnClientRestartFn = void(*)(void(*)(void* target));
 
+using uapi_ACharacter_PlayAnimMontageFn = void(*)(float(*)(void* target,UAnimMontage* AnimMontage,float InPlayRate,UName StartSectionName));
+
+using uapi_ACharacter_PossessedByFn = void(*)(void(*)(void* target,AController* NewController));
+
 using uapi_ACharacter_PostInitializeComponentsFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_PostLoadFn = void(*)(void(*)(void* target));
@@ -7196,9 +9750,15 @@ using uapi_ACharacter_RestartFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_SetAnimRootMotionTranslationScaleFn = void(*)(void(*)(void* target,float InAnimRootMotionTranslationScale));
 
+using uapi_ACharacter_SetBaseFn = void(*)(void(*)(void* target,UPrimitiveComponent* NewBase,UName BoneName,bool bNotifyActor));
+
 using uapi_ACharacter_SetReplicateMovementFn = void(*)(void(*)(void* target,bool bInReplicateMovement));
 
+using uapi_ACharacter_SetupPlayerInputComponentFn = void(*)(void(*)(void* target,UInputComponent* PlayerInputComponent));
+
 using uapi_ACharacter_SimulatedRootMotionPositionFixupFn = void(*)(void(*)(void* target,float DeltaSeconds));
+
+using uapi_ACharacter_StopAnimMontageFn = void(*)(void(*)(void* target,UAnimMontage* AnimMontage));
 
 using uapi_ACharacter_StopJumpingFn = void(*)(void(*)(void* target));
 
@@ -7212,11 +9772,25 @@ using uapi_ACharacter_UnPossessedFn = void(*)(void(*)(void* target));
 
 using uapi_ACharacter_UpdateNavigationRelevanceFn = void(*)(void(*)(void* target));
 
+using uapi_AGameModeBase_AllowCheatsFn = void(*)(bool(*)(void* target,APlayerController* P));
+
+using uapi_AGameModeBase_AllowPausingFn = void(*)(bool(*)(void* target,APlayerController* PC));
+
+using uapi_AGameModeBase_CanSpectateFn = void(*)(bool(*)(void* target,APlayerController* Viewer,APlayerState* ViewTarget));
+
+using uapi_AGameModeBase_ChoosePlayerStartFn = void(*)(void*(*)(void* target,AController* Player));
+
 using uapi_AGameModeBase_ClearPauseFn = void(*)(bool(*)(void* target));
+
+using uapi_AGameModeBase_DispatchPostLoginFn = void(*)(void(*)(void* target,AController* NewPlayer));
+
+using uapi_AGameModeBase_ForceClearUnpauseDelegatesFn = void(*)(void(*)(void* target,AActor* PauseActor));
 
 using uapi_AGameModeBase_GetNumPlayersFn = void(*)(int32(*)(void* target));
 
 using uapi_AGameModeBase_GetNumSpectatorsFn = void(*)(int32(*)(void* target));
+
+using uapi_AGameModeBase_HandleStartingNewPlayerFn = void(*)(void(*)(void* target,APlayerController* NewPlayer));
 
 using uapi_AGameModeBase_HasMatchEndedFn = void(*)(bool(*)(void* target));
 
@@ -7224,9 +9798,25 @@ using uapi_AGameModeBase_HasMatchStartedFn = void(*)(bool(*)(void* target));
 
 using uapi_AGameModeBase_InitGameStateFn = void(*)(void(*)(void* target));
 
+using uapi_AGameModeBase_InitStartSpotFn = void(*)(void(*)(void* target,AActor* StartSpot,AController* NewPlayer));
+
 using uapi_AGameModeBase_IsHandlingReplaysFn = void(*)(bool(*)(void* target));
 
 using uapi_AGameModeBase_IsPausedFn = void(*)(bool(*)(void* target));
+
+using uapi_AGameModeBase_K2_OnLogoutFn = void(*)(void(*)(void* target,AController* ExitingController));
+
+using uapi_AGameModeBase_K2_OnRestartPlayerFn = void(*)(void(*)(void* target,AController* NewPlayer));
+
+using uapi_AGameModeBase_K2_PostLoginFn = void(*)(void(*)(void* target,APlayerController* NewPlayer));
+
+using uapi_AGameModeBase_LogoutFn = void(*)(void(*)(void* target,AController* Exiting));
+
+using uapi_AGameModeBase_MustSpectateFn = void(*)(bool(*)(void* target,APlayerController* NewPlayerController));
+
+using uapi_AGameModeBase_PlayerCanRestartFn = void(*)(bool(*)(void* target,APlayerController* Player));
+
+using uapi_AGameModeBase_PostLoginFn = void(*)(void(*)(void* target,APlayerController* NewPlayer));
 
 using uapi_AGameModeBase_PostSeamlessTravelFn = void(*)(void(*)(void* target));
 
@@ -7236,15 +9826,43 @@ using uapi_AGameModeBase_ResetFn = void(*)(void(*)(void* target));
 
 using uapi_AGameModeBase_ResetLevelFn = void(*)(void(*)(void* target));
 
+using uapi_AGameModeBase_RestartPlayerFn = void(*)(void(*)(void* target,AController* NewPlayer));
+
+using uapi_AGameModeBase_RestartPlayerAtPlayerStartFn = void(*)(void(*)(void* target,AController* NewPlayer,AActor* StartSpot));
+
 using uapi_AGameModeBase_ReturnToMainMenuHostFn = void(*)(void(*)(void* target));
+
+using uapi_AGameModeBase_SetPlayerDefaultsFn = void(*)(void(*)(void* target,APawn* PlayerPawn));
+
+using uapi_AGameModeBase_ShouldResetFn = void(*)(bool(*)(void* target,AActor* ActorToReset));
+
+using uapi_AGameModeBase_SpawnDefaultPawnForFn = void(*)(void*(*)(void* target,AController* NewPlayer,AActor* StartSpot));
 
 using uapi_AGameModeBase_StartPlayFn = void(*)(void(*)(void* target));
 
 using uapi_AGameModeBase_StartToLeaveMapFn = void(*)(void(*)(void* target));
 
+using uapi_AGameModeBase_SwapPlayerControllersFn = void(*)(void(*)(void* target,APlayerController* OldPC,APlayerController* NewPC));
+
+using uapi_USceneComponent_AddLocalOffsetFn = void(*)(void(*)(void* target,Vector3 DeltaLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_AddLocalRotationFn = void(*)(void(*)(void* target,Rotator DeltaRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_AddRelativeLocationFn = void(*)(void(*)(void* target,Vector3 DeltaLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_AddRelativeRotationFn = void(*)(void(*)(void* target,Rotator DeltaRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_AddWorldOffsetFn = void(*)(void(*)(void* target,Vector3 DeltaLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_AddWorldRotationFn = void(*)(void(*)(void* target,Rotator DeltaRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
 using uapi_USceneComponent_BeginDestroyFn = void(*)(void(*)(void* target));
 
 using uapi_USceneComponent_CalcBoundingCylinderFn = void(*)(void(*)(void* target,float& CylinderRadius,float& CylinderHalfHeight));
+
+using uapi_USceneComponent_CanAttachAsChildFn = void(*)(bool(*)(void* target,USceneComponent* ChildComponent,UName SocketName));
+
+using uapi_USceneComponent_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* Property));
 
 using uapi_USceneComponent_CanEverRenderFn = void(*)(bool(*)(void* target));
 
@@ -7348,6 +9966,8 @@ using uapi_USceneComponent_HasAnySocketsFn = void(*)(bool(*)(void* target));
 
 using uapi_USceneComponent_IsAnySimulatingPhysicsFn = void(*)(bool(*)(void* target));
 
+using uapi_USceneComponent_IsAttachedToFn = void(*)(bool(*)(void* target,USceneComponent* TestComp));
+
 using uapi_USceneComponent_IsCollisionEnabledFn = void(*)(bool(*)(void* target));
 
 using uapi_USceneComponent_IsDeferringMovementUpdatesFn = void(*)(bool(*)(void* target));
@@ -7382,6 +10002,8 @@ using uapi_USceneComponent_K2_GetComponentScaleFn = void(*)(Vector3(*)(void* tar
 
 using uapi_USceneComponent_K2_GetComponentToWorldFn = void(*)(Transform(*)(void* target));
 
+using uapi_USceneComponent_NeedsLoadForTargetPlatformFn = void(*)(bool(*)(void* target,ITargetPlatform* TargetPlatform));
+
 using uapi_USceneComponent_OnAttachmentChangedFn = void(*)(void(*)(void* target));
 
 using uapi_USceneComponent_OnComponentDestroyedFn = void(*)(void(*)(void* target,bool bDestroyingHierarchy));
@@ -7391,6 +10013,8 @@ using uapi_USceneComponent_OnRegisterFn = void(*)(void(*)(void* target));
 using uapi_USceneComponent_OnUnregisterFn = void(*)(void(*)(void* target));
 
 using uapi_USceneComponent_PostEditComponentMoveFn = void(*)(void(*)(void* target,bool bFinished));
+
+using uapi_USceneComponent_PostInterpChangeFn = void(*)(void(*)(void* target,FProperty* PropertyThatChanged));
 
 using uapi_USceneComponent_PostLoadFn = void(*)(void(*)(void* target));
 
@@ -7408,7 +10032,17 @@ using uapi_USceneComponent_SetAbsoluteFn = void(*)(void(*)(void* target,bool bNe
 
 using uapi_USceneComponent_SetHiddenInGameFn = void(*)(void(*)(void* target,bool NewHidden,bool bPropagateToChildren));
 
+using uapi_USceneComponent_SetPhysicsVolumeFn = void(*)(void(*)(void* target,APhysicsVolume* NewVolume,bool bTriggerNotifiers));
+
+using uapi_USceneComponent_SetRelativeLocationFn = void(*)(void(*)(void* target,Vector3 NewLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_SetRelativeLocationAndRotationFn = void(*)(void(*)(void* target,Vector3 NewLocation,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
 using uapi_USceneComponent_SetRelativeLocation_DirectFn = void(*)(void(*)(void* target,Vector3 NewRelativeLocation));
+
+using uapi_USceneComponent_SetRelativeRotationFn = void(*)(void(*)(void* target,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_SetRelativeRotationExactFn = void(*)(void(*)(void* target,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
 
 using uapi_USceneComponent_SetRelativeRotation_DirectFn = void(*)(void(*)(void* target,Rotator NewRelativeRotation));
 
@@ -7428,7 +10062,15 @@ using uapi_USceneComponent_SetVisibilityFn = void(*)(void(*)(void* target,bool b
 
 using uapi_USceneComponent_SetVisibleFlagFn = void(*)(void(*)(void* target,bool bInVisible));
 
+using uapi_USceneComponent_SetWorldLocationFn = void(*)(void(*)(void* target,Vector3 NewLocation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_SetWorldLocationAndRotationFn = void(*)(void(*)(void* target,Vector3 NewLocation,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
+using uapi_USceneComponent_SetWorldRotationFn = void(*)(void(*)(void* target,Rotator NewRotation,bool bSweep,FHitResult* OutSweepHitResult,ETeleportType Teleport));
+
 using uapi_USceneComponent_SetWorldScale3DFn = void(*)(void(*)(void* target,Vector3 NewScale));
+
+using uapi_USceneComponent_SetupAttachmentFn = void(*)(void(*)(void* target,USceneComponent* InParent,UName InSocketName));
 
 using uapi_USceneComponent_ShouldCollideWhenPlacingFn = void(*)(bool(*)(void* target));
 
@@ -7444,11 +10086,17 @@ using uapi_USceneComponent_ToggleVisibilityFn = void(*)(void(*)(void* target,boo
 
 using uapi_USceneComponent_UpdateBoundsFn = void(*)(void(*)(void* target));
 
+using uapi_USceneComponent_UpdateOverlapsFn = void(*)(bool(*)(void* target,TOverlapArrayView* PendingOverlaps,bool bDoNotifies,TOverlapArrayView* OverlapsAtEndLocation));
+
 using uapi_USceneComponent_UpdatePhysicsVolumeFn = void(*)(void(*)(void* target,bool bTriggerNotifiers));
 
 using uapi_UActorComponent_ActivateFn = void(*)(void(*)(void* target,bool bReset));
 
 using uapi_UActorComponent_AddAssetUserDataFn = void(*)(void(*)(void* target,UAssetUserData* InUserData));
+
+using uapi_UActorComponent_AddTickPrerequisiteActorFn = void(*)(void(*)(void* target,AActor* PrerequisiteActor));
+
+using uapi_UActorComponent_AddTickPrerequisiteComponentFn = void(*)(void(*)(void* target,UActorComponent* PrerequisiteComponent));
 
 using uapi_UActorComponent_AdditionalStatObjectFn = void(*)(void*(*)(void* target));
 
@@ -7460,6 +10108,10 @@ using uapi_UActorComponent_BeginDestroyFn = void(*)(void(*)(void* target));
 
 using uapi_UActorComponent_BeginPlayFn = void(*)(void(*)(void* target));
 
+using uapi_UActorComponent_CallRemoteFunctionFn = void(*)(bool(*)(void* target,UFunction* Function,void* Parameters,FOutParmRec* OutParms,FFrame* Stack));
+
+using uapi_UActorComponent_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* InProperty));
+
 using uapi_UActorComponent_CanEverAffectNavigationFn = void(*)(bool(*)(void* target));
 
 using uapi_UActorComponent_CheckForErrorsFn = void(*)(void(*)(void* target));
@@ -7469,6 +10121,8 @@ using uapi_UActorComponent_ClearNeedEndOfFrameUpdateFn = void(*)(void(*)(void* t
 using uapi_UActorComponent_ClearUCSModifiedPropertiesFn = void(*)(void(*)(void* target));
 
 using uapi_UActorComponent_ComponentHasTagFn = void(*)(bool(*)(void* target,UName Tag));
+
+using uapi_UActorComponent_ComponentIsInLevelFn = void(*)(bool(*)(void* target,ULevel* TestLevel));
 
 using uapi_UActorComponent_ComponentIsInPersistentLevelFn = void(*)(bool(*)(void* target,bool bIncludeLevelStreamingPersistent));
 
@@ -7489,6 +10143,8 @@ using uapi_UActorComponent_GetComponentClassCanReplicateFn = void(*)(bool(*)(voi
 using uapi_UActorComponent_GetComponentLevelFn = void(*)(void*(*)(void* target));
 
 using uapi_UActorComponent_GetComponentTickIntervalFn = void(*)(float(*)(void* target));
+
+using uapi_UActorComponent_GetFunctionCallspaceFn = void(*)(int32(*)(void* target,UFunction* Function,FFrame* Stack));
 
 using uapi_UActorComponent_GetIsReplicatedFn = void(*)(bool(*)(void* target));
 
@@ -7560,6 +10216,8 @@ using uapi_UActorComponent_IsRenderStateDirtyFn = void(*)(bool(*)(void* target))
 
 using uapi_UActorComponent_IsRenderTransformDirtyFn = void(*)(bool(*)(void* target));
 
+using uapi_UActorComponent_IsReplicatedSubObjectRegisteredFn = void(*)(bool(*)(void* target,UObject* SubObject));
+
 using uapi_UActorComponent_IsSelectedInEditorFn = void(*)(bool(*)(void* target));
 
 using uapi_UActorComponent_IsSupportedForNetworkingFn = void(*)(bool(*)(void* target));
@@ -7567,6 +10225,8 @@ using uapi_UActorComponent_IsSupportedForNetworkingFn = void(*)(bool(*)(void* ta
 using uapi_UActorComponent_IsUsingRegisteredSubObjectListFn = void(*)(bool(*)(void* target));
 
 using uapi_UActorComponent_IsVisualizationComponentFn = void(*)(bool(*)(void* target));
+
+using uapi_UActorComponent_K2_DestroyComponentFn = void(*)(void(*)(void* target,UObject* Object));
 
 using uapi_UActorComponent_MarkAsEditorOnlySubobjectFn = void(*)(void(*)(void* target));
 
@@ -7614,6 +10274,10 @@ using uapi_UActorComponent_PostInitPropertiesFn = void(*)(void(*)(void* target))
 
 using uapi_UActorComponent_PostLoadFn = void(*)(void(*)(void* target));
 
+using uapi_UActorComponent_PostRenameFn = void(*)(void(*)(void* target,UObject* OldOuter,UName OldName));
+
+using uapi_UActorComponent_PreEditChangeFn = void(*)(void(*)(void* target,FProperty* PropertyThatWillChange));
+
 using uapi_UActorComponent_PreEditUndoFn = void(*)(void(*)(void* target));
 
 using uapi_UActorComponent_ReadyForReplicationFn = void(*)(void(*)(void* target));
@@ -7631,6 +10295,16 @@ using uapi_UActorComponent_RecreateRenderState_ConcurrentFn = void(*)(void(*)(vo
 using uapi_UActorComponent_RegisterAllComponentTickFunctionsFn = void(*)(void(*)(void* target,bool bRegister));
 
 using uapi_UActorComponent_RegisterComponentFn = void(*)(void(*)(void* target));
+
+using uapi_UActorComponent_RegisterComponentWithWorldFn = void(*)(void(*)(void* target,UWorld* InWorld,FRegisterComponentContext* Context));
+
+using uapi_UActorComponent_RemoveReplicatedSubObjectFn = void(*)(void(*)(void* target,UObject* SubObject));
+
+using uapi_UActorComponent_RemoveTickPrerequisiteActorFn = void(*)(void(*)(void* target,AActor* PrerequisiteActor));
+
+using uapi_UActorComponent_RemoveTickPrerequisiteComponentFn = void(*)(void(*)(void* target,UActorComponent* PrerequisiteComponent));
+
+using uapi_UActorComponent_ReplicateSubobjectsFn = void(*)(bool(*)(void* target,UActorChannel* Channel,FOutBunch* Bunch,FReplicationFlags* RepFlags));
 
 using uapi_UActorComponent_RequiresGameThreadEndOfFrameRecreateFn = void(*)(bool(*)(void* target));
 
@@ -7668,11 +10342,89 @@ using uapi_UActorComponent_SetPackageExternalFn = void(*)(void(*)(void* target,b
 
 using uapi_UActorComponent_SetTickableWhenPausedFn = void(*)(void(*)(void* target,bool bTickableWhenPaused));
 
+using uapi_UActorComponent_SetupActorComponentTickFunctionFn = void(*)(bool(*)(void* target,FTickFunction* TickFunction));
+
 using uapi_UActorComponent_ToggleActiveFn = void(*)(void(*)(void* target));
 
 using uapi_UActorComponent_UninitializeComponentFn = void(*)(void(*)(void* target));
 
 using uapi_UActorComponent_UnregisterComponentFn = void(*)(void(*)(void* target));
+
+using set_UMovementComponentVelocity_get_handlerFn = void(*)(Vector3(*)(void* target));
+
+using set_UMovementComponentVelocity_set_handlerFn = void(*)(void(*)(void* target, Vector3 value));
+
+using uapi_UMovementComponent_ConstrainDirectionToPlaneFn = void(*)(Vector3(*)(void* target,Vector3 Direction));
+
+using uapi_UMovementComponent_ConstrainLocationToPlaneFn = void(*)(Vector3(*)(void* target,Vector3 Location));
+
+using uapi_UMovementComponent_ConstrainNormalToPlaneFn = void(*)(Vector3(*)(void* target,Vector3 Normal));
+
+using uapi_UMovementComponent_DeactivateFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_GetGravityZFn = void(*)(float(*)(void* target));
+
+using uapi_UMovementComponent_GetMaxSpeedFn = void(*)(float(*)(void* target));
+
+using uapi_UMovementComponent_GetPhysicsVolumeFn = void(*)(void*(*)(void* target));
+
+using uapi_UMovementComponent_GetPlaneConstraintNormalFn = void(*)(Vector3(*)(void* target));
+
+using uapi_UMovementComponent_GetPlaneConstraintOriginFn = void(*)(Vector3(*)(void* target));
+
+using uapi_UMovementComponent_InitializeComponentFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_IsExceedingMaxSpeedFn = void(*)(bool(*)(void* target,float MaxSpeed));
+
+using uapi_UMovementComponent_IsInWaterFn = void(*)(bool(*)(void* target));
+
+using uapi_UMovementComponent_OnRegisterFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_OnTeleportedFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_PhysicsLockedAxisSettingChangedFn = void(*)(void(*)());
+
+using uapi_UMovementComponent_PhysicsVolumeChangedFn = void(*)(void(*)(void* target,APhysicsVolume* NewVolume));
+
+using uapi_UMovementComponent_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_RegisterComponentTickFunctionsFn = void(*)(void(*)(void* target,bool bRegister));
+
+using uapi_UMovementComponent_SetPlaneConstraintEnabledFn = void(*)(void(*)(void* target,bool bEnabled));
+
+using uapi_UMovementComponent_SetPlaneConstraintFromVectorsFn = void(*)(void(*)(void* target,Vector3 Forward,Vector3 Up));
+
+using uapi_UMovementComponent_SetPlaneConstraintNormalFn = void(*)(void(*)(void* target,Vector3 PlaneNormal));
+
+using uapi_UMovementComponent_SetPlaneConstraintOriginFn = void(*)(void(*)(void* target,Vector3 PlaneOrigin));
+
+using uapi_UMovementComponent_SetUpdatedComponentFn = void(*)(void(*)(void* target,USceneComponent* NewUpdatedComponent));
+
+using uapi_UMovementComponent_ShouldSkipUpdateFn = void(*)(bool(*)(void* target,float DeltaTime));
+
+using uapi_UMovementComponent_SnapUpdatedComponentToPlaneFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_StopMovementImmediatelyFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_UpdateComponentVelocityFn = void(*)(void(*)(void* target));
+
+using uapi_UMovementComponent_UpdateTickRegistrationFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_AddControllerFn = void(*)(void(*)(void* target,AController* Controller));
+
+using uapi_UWorld_AddLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_AddNetworkActorFn = void(*)(void(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_AddParameterCollectionInstanceFn = void(*)(void(*)(void* target,UMaterialParameterCollection* Collection,bool bUpdateScene));
+
+using uapi_UWorld_AddPhysicsVolumeFn = void(*)(void(*)(void* target,APhysicsVolume* Volume));
+
+using uapi_UWorld_AddPostProcessingSettingsFn = void(*)(void(*)(void* target,Vector3 ViewLocation,FSceneView* SceneView));
+
+using uapi_UWorld_AddStreamingLevelFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToAdd));
+
+using uapi_UWorld_AddUniqueStreamingLevelFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToAdd));
 
 using uapi_UWorld_AllowAudioPlaybackFn = void(*)(bool(*)(void* target));
 
@@ -7700,7 +10452,13 @@ using uapi_UWorld_CancelPendingMapChangeFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_CleanupActorsFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_CleanupWorldFn = void(*)(void(*)(void* target,bool bSessionEnded,bool bCleanupResources,UWorld* NewWorld));
+
+using uapi_UWorld_ClearActorComponentEndOfFrameUpdateFn = void(*)(void(*)(void* target,UActorComponent* Component));
+
 using uapi_UWorld_ClearDemoNetDriverFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ClearNetDriverFn = void(*)(void(*)(void* target,UNetDriver* Driver));
 
 using uapi_UWorld_ClearStreamingLevelsFn = void(*)(void(*)(void* target));
 
@@ -7712,17 +10470,37 @@ using uapi_UWorld_CommitModelSurfacesFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_ConditionallyBuildStreamingDataFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_ContainsActorFn = void(*)(bool(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_ContainsLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_CopyGameStateFn = void(*)(void(*)(void* target,AGameModeBase* FromGameMode,AGameStateBase* FromGameState));
+
 using uapi_UWorld_CreateAISystemFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_CreateFXSystemFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_CreatePhysicsSceneFn = void(*)(void(*)(void* target,AWorldSettings* Settings));
+
+using uapi_UWorld_DeSelectLevelFn = void(*)(void(*)(void* target,ULevel* InLevel));
+
 using uapi_UWorld_DelayStreamingVolumeUpdatesFn = void(*)(void(*)(void* target,int32 InFrameDelay));
+
+using uapi_UWorld_DestroyActorFn = void(*)(bool(*)(void* target,AActor* Actor,bool bNetForce,bool bShouldModifyLevel));
 
 using uapi_UWorld_DestroyDemoNetDriverFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_DestroySwappedPCFn = void(*)(bool(*)(void* target,UNetConnection* Connection));
+
+using uapi_UWorld_DestroyWorldFn = void(*)(void(*)(void* target,bool bInformEngineOfWorld,UWorld* NewWorld));
+
 using uapi_UWorld_DuplicateRequestedLevelsFn = void(*)(void(*)(void* target,UName MapName));
 
+using uapi_UWorld_EditorDestroyActorFn = void(*)(bool(*)(void* target,AActor* Actor,bool bShouldModifyLevel));
+
 using uapi_UWorld_EnsureCollisionTreeIsBuiltFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_FindWorldInPackageFn = void(*)(void*(*)(UPackage* Package));
 
 using uapi_UWorld_FinishDestroyFn = void(*)(void(*)(void* target));
 
@@ -7747,6 +10525,8 @@ using uapi_UWorld_GetAllowDeferredPhysicsStateCreationFn = void(*)(bool(*)(void*
 using uapi_UWorld_GetAudioDeviceRawFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_GetAudioTimeSecondsFn = void(*)(double(*)(void* target));
+
+using uapi_UWorld_GetAuthGameModeFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_GetAvoidanceManagerFn = void(*)(void*(*)(void* target));
 
@@ -7776,6 +10556,8 @@ using uapi_UWorld_GetDemoNetDriverFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_GetDetailModeFn = void(*)(int32(*)(void* target));
 
+using uapi_UWorld_GetDuplicatedWorldForPIEFn = void(*)(void*(*)(UWorld* InWorld,UPackage* InPIEackage,int32 PIEInstanceID));
+
 using uapi_UWorld_GetFirstLocalPlayerFromControllerFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_GetFirstPlayerControllerFn = void(*)(void*(*)(void* target));
@@ -7791,6 +10573,8 @@ using uapi_UWorld_GetGravityZFn = void(*)(float(*)(void* target));
 using uapi_UWorld_GetIsInBlockTillLevelStreamingCompletedFn = void(*)(bool(*)(void* target));
 
 using uapi_UWorld_GetLevelFn = void(*)(void*(*)(void* target,int32 InLevelIndex));
+
+using uapi_UWorld_GetLevelScriptActorFn = void(*)(void*(*)(void* target,ULevel* OwnerLevel));
 
 using uapi_UWorld_GetLevelStreamingForPackageNameFn = void(*)(void*(*)(void* target,UName PackageName));
 
@@ -7809,6 +10593,8 @@ using uapi_UWorld_GetNumLevelsFn = void(*)(int32(*)(void* target));
 using uapi_UWorld_GetNumPlayerControllersFn = void(*)(int32(*)(void* target));
 
 using uapi_UWorld_GetNumSelectedLevelsFn = void(*)(int32(*)(void* target));
+
+using uapi_UWorld_GetParameterCollectionInstanceFn = void(*)(void*(*)(void* target,UMaterialParameterCollection* Collection));
 
 using uapi_UWorld_GetPhysicsSceneFn = void(*)(void*(*)(void* target));
 
@@ -7830,6 +10616,8 @@ using uapi_UWorld_GetUnpausedTimeSecondsFn = void(*)(double(*)(void* target));
 
 using uapi_UWorld_GetWorldFn = void(*)(void*(*)(void* target));
 
+using uapi_UWorld_GetWorldDataLayersFn = void(*)(void*(*)(void* target));
+
 using uapi_UWorld_GetWorldPartitionFn = void(*)(void*(*)(void* target));
 
 using uapi_UWorld_GetWorldSettingsFn = void(*)(void*(*)(void* target,bool bCheckStreamingPersistent,bool bChecked));
@@ -7850,7 +10638,11 @@ using uapi_UWorld_HasStreamingLevelsToConsiderFn = void(*)(bool(*)(void* target)
 
 using uapi_UWorld_InitializeSubsystemsFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_InsertPostProcessVolumeFn = void(*)(void(*)(void* target,IInterface_PostProcessVolume* InVolume));
+
 using uapi_UWorld_InvalidateAllSkyCapturesFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_InvalidateModelGeometryFn = void(*)(void(*)(void* target,ULevel* InLevel));
 
 using uapi_UWorld_InvalidateModelSurfaceFn = void(*)(void(*)(void* target,bool bCurrentLevelOnly));
 
@@ -7866,6 +10658,8 @@ using uapi_UWorld_IsInitializedFn = void(*)(bool(*)(void* target));
 
 using uapi_UWorld_IsInstancedFn = void(*)(bool(*)(void* target));
 
+using uapi_UWorld_IsLevelSelectedFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
 using uapi_UWorld_IsMapChangeReadyFn = void(*)(bool(*)(void* target));
 
 using uapi_UWorld_IsMovieSceneSequenceTickHandlerBoundFn = void(*)(bool(*)(void* target));
@@ -7875,6 +10669,8 @@ using uapi_UWorld_IsNameStableForNetworkingFn = void(*)(bool(*)(void* target));
 using uapi_UWorld_IsNavigationRebuiltFn = void(*)(bool(*)(void* target));
 
 using uapi_UWorld_IsPartitionedWorldFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsPartitionedWorld2Fn = void(*)(bool(*)(UWorld* InWorld));
 
 using uapi_UWorld_IsPausedFn = void(*)(bool(*)(void* target));
 
@@ -7902,13 +10698,27 @@ using uapi_UWorld_IsRecordingReplayFn = void(*)(bool(*)(void* target));
 
 using uapi_UWorld_IsRefreshingStreamingLevelsFn = void(*)(bool(*)(void* target));
 
+using uapi_UWorld_IsStreamingLevelBeingConsideredFn = void(*)(bool(*)(void* target,ULevelStreaming* StreamingLevel));
+
 using uapi_UWorld_IsVisibilityRequestPendingFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_IsWorldOrExternalActorPackageFn = void(*)(bool(*)(UPackage* Package));
 
 using uapi_UWorld_IssueEditorLoadWarningsFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_K2_GetWorldSettingsFn = void(*)(void*(*)(void* target));
 
+using uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdateFn = void(*)(void(*)(void* target,UActorComponent* Component,bool bForceGameThread));
+
 using uapi_UWorld_MarkObjectsPendingKillFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_ModifyLevelFn = void(*)(void(*)(void* target,ULevel* Level));
+
+using uapi_UWorld_NotifyAcceptedConnectionFn = void(*)(void(*)(void* target,UNetConnection* Connection));
+
+using uapi_UWorld_NotifyAcceptingChannelFn = void(*)(bool(*)(void* target,UChannel* Channel));
+
+using uapi_UWorld_NotifyOfBlueprintDebuggingAssociationFn = void(*)(void(*)(void* target,UBlueprint* Blueprint,UObject* DebugObject));
 
 using uapi_UWorld_PopulateStreamingLevelsToConsiderFn = void(*)(void(*)(void* target));
 
@@ -7922,7 +10732,23 @@ using uapi_UWorld_PropagateLightingScenarioChangeFn = void(*)(void(*)(void* targ
 
 using uapi_UWorld_RefreshStreamingLevelsFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_RegisterAutoActivateCameraFn = void(*)(void(*)(void* target,ACameraActor* CameraActor,int32 PlayerIndex));
+
 using uapi_UWorld_ReleasePhysicsSceneFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_RemoveActorFn = void(*)(void(*)(void* target,AActor* Actor,bool bShouldModifyLevel));
+
+using uapi_UWorld_RemoveControllerFn = void(*)(void(*)(void* target,AController* Controller));
+
+using uapi_UWorld_RemoveLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_RemoveNetworkActorFn = void(*)(void(*)(void* target,AActor* Actor));
+
+using uapi_UWorld_RemovePhysicsVolumeFn = void(*)(void(*)(void* target,APhysicsVolume* Volume));
+
+using uapi_UWorld_RemovePostProcessVolumeFn = void(*)(void(*)(void* target,IInterface_PostProcessVolume* InVolume));
+
+using uapi_UWorld_RemoveStreamingLevelFn = void(*)(bool(*)(void* target,ULevelStreaming* StreamingLevelToRemove));
 
 using uapi_UWorld_RemoveStreamingLevelAtFn = void(*)(bool(*)(void* target,int32 IndexToRemove));
 
@@ -7930,17 +10756,31 @@ using uapi_UWorld_RenameToPIEWorldFn = void(*)(void(*)(void* target,int32 PIEIns
 
 using uapi_UWorld_RequiresHitProxiesFn = void(*)(bool(*)(void* target));
 
+using uapi_UWorld_SelectLevelFn = void(*)(void(*)(void* target,ULevel* InLevel));
+
 using uapi_UWorld_SendAllEndOfFrameUpdatesFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_SetActiveLevelCollectionFn = void(*)(void(*)(void* target,int32 LevelCollectionIndex));
 
 using uapi_UWorld_SetAllowDeferredPhysicsStateCreationFn = void(*)(void(*)(void* target,bool bAllow));
 
+using uapi_UWorld_SetCurrentLevelFn = void(*)(bool(*)(void* target,ULevel* InLevel));
+
+using uapi_UWorld_SetDemoNetDriverFn = void(*)(void(*)(void* target,UDemoNetDriver* InDemoNetDriver));
+
+using uapi_UWorld_SetGameInstanceFn = void(*)(void(*)(void* target,UGameInstance* NewGI));
+
+using uapi_UWorld_SetGameStateFn = void(*)(void(*)(void* target,AGameStateBase* NewGameState));
+
 using uapi_UWorld_SetMapNeedsLightingFullyRebuiltFn = void(*)(void(*)(void* target,int32 InNumLightingUnbuiltObjects,int32 InNumUnbuiltReflectionCaptures));
 
 using uapi_UWorld_SetMaterialParameterCollectionInstanceNeedsUpdateFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_SetNavigationSystemFn = void(*)(void(*)(void* target,UNavigationSystemBase* InNavigationSystem));
+
+using uapi_UWorld_SetNetDriverFn = void(*)(void(*)(void* target,UNetDriver* NewDriver));
+
+using uapi_UWorld_SetPhysicsSceneFn = void(*)(void(*)(void* target,FPhysScene* InScene));
 
 using uapi_UWorld_SetSeamlessTravelMidpointPauseFn = void(*)(void(*)(void* target,bool bNowPaused));
 
@@ -7972,17 +10812,31 @@ using uapi_UWorld_TickNetClientFn = void(*)(void(*)(void* target,float DeltaSeco
 
 using uapi_UWorld_TimeSinceFn = void(*)(double(*)(void* target,double Time));
 
+using uapi_UWorld_TransferBlueprintDebugReferencesFn = void(*)(void(*)(void* target,UWorld* NewWorld));
+
 using uapi_UWorld_TriggerStreamingDataRebuildFn = void(*)(void(*)(void* target));
+
+using uapi_UWorld_UpdateActorComponentEndOfFrameUpdateStateFn = void(*)(void(*)(void* target,UActorComponent* Component));
 
 using uapi_UWorld_UpdateAllSkyCapturesFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_UpdateConstraintActorsFn = void(*)(void(*)(void* target));
 
+using uapi_UWorld_UpdateCullDistanceVolumesFn = void(*)(bool(*)(void* target,AActor* ActorToUpdate,UPrimitiveComponent* ComponentToUpdate));
+
 using uapi_UWorld_UpdateLevelStreamingFn = void(*)(void(*)(void* target));
 
 using uapi_UWorld_UpdateParameterCollectionInstancesFn = void(*)(void(*)(void* target,bool bUpdateInstanceUniformBuffers,bool bRecreateUniformBuffer));
 
+using uapi_UWorld_UpdateStreamingLevelPriorityFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevel));
+
+using uapi_UWorld_UpdateStreamingLevelShouldBeConsideredFn = void(*)(void(*)(void* target,ULevelStreaming* StreamingLevelToConsider));
+
+using uapi_UWorld_UpdateWorldComponentsFn = void(*)(void(*)(void* target,bool bRerunConstructionScripts,bool bCurrentLevelOnly,FRegisterComponentContext* Context));
+
 using uapi_UWorld_UsesGameHiddenFlagsFn = void(*)(bool(*)(void* target));
+
+using uapi_UWorld_WelcomePlayerFn = void(*)(void(*)(void* target,UNetConnection* Connection));
 
 using uapi_UPrimitiveComponent_AddAngularImpulseInDegreesFn = void(*)(void(*)(void* target,Vector3 Impulse,UName BoneName,bool bVelChange));
 
@@ -8010,6 +10864,10 @@ using uapi_UPrimitiveComponent_BeginPlayFn = void(*)(void(*)(void* target));
 
 using uapi_UPrimitiveComponent_CalculateMassFn = void(*)(float(*)(void* target,UName BoneName));
 
+using uapi_UPrimitiveComponent_CanCharacterStepUpFn = void(*)(bool(*)(void* target,APawn* Pawn));
+
+using uapi_UPrimitiveComponent_CanEditChangeFn = void(*)(bool(*)(void* target,FProperty* InProperty));
+
 using uapi_UPrimitiveComponent_CanEditSimulatePhysicsFn = void(*)(bool(*)(void* target));
 
 using uapi_UPrimitiveComponent_CanSkipGetTextureStreamingRenderAssetInfoFn = void(*)(bool(*)(void* target));
@@ -8022,9 +10880,13 @@ using uapi_UPrimitiveComponent_ClearMoveIgnoreComponentsFn = void(*)(void(*)(voi
 
 using uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltDataFn = void(*)(uint32(*)(void* target));
 
+using uapi_UPrimitiveComponent_CreateRenderState_ConcurrentFn = void(*)(void(*)(void* target,FRegisterComponentContext* Context));
+
 using uapi_UPrimitiveComponent_CreateSceneProxyFn = void(*)(void*(*)(void* target));
 
 using uapi_UPrimitiveComponent_DestroyRenderState_ConcurrentFn = void(*)(void(*)(void* target));
+
+using uapi_UPrimitiveComponent_DispatchMouseOverEventsFn = void(*)(void(*)(UPrimitiveComponent* CurrentComponent,UPrimitiveComponent* NewComponent));
 
 using uapi_UPrimitiveComponent_FinishDestroyFn = void(*)(void(*)(void* target));
 
@@ -8043,6 +10905,8 @@ using uapi_UPrimitiveComponent_GetCollisionObjectTypeFn = void(*)(ECollisionChan
 using uapi_UPrimitiveComponent_GetCollisionProfileNameFn = void(*)(UName(*)(void* target));
 
 using uapi_UPrimitiveComponent_GetCollisionShapeFn = void(*)(CollisionShape(*)(void* target,float Inflation));
+
+using uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstanceFn = void(*)(Transform(*)(void* target,FBodyInstance* UseBI));
 
 using uapi_UPrimitiveComponent_GetComponentVelocityFn = void(*)(Vector3(*)(void* target));
 
@@ -8114,7 +10978,11 @@ using uapi_UPrimitiveComponent_HasValidPhysicsStateFn = void(*)(bool(*)(void* ta
 
 using uapi_UPrimitiveComponent_HasValidSettingsForStaticLightingFn = void(*)(bool(*)(void* target,bool bOverlookInvalidComponents));
 
+using uapi_UPrimitiveComponent_IgnoreActorWhenMovingFn = void(*)(void(*)(void* target,AActor* Actor,bool bShouldIgnore));
+
 using uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocusFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IgnoreComponentWhenMovingFn = void(*)(void(*)(void* target,UPrimitiveComponent* Component,bool bShouldIgnore));
 
 using uapi_UPrimitiveComponent_InvalidateLightingCacheDetailedFn = void(*)(void(*)(void* target,bool bInvalidateBuildEnqueuedLighting,bool bTranslationOnly));
 
@@ -8133,6 +11001,10 @@ using uapi_UPrimitiveComponent_IsEditorOnlyFn = void(*)(bool(*)(void* target));
 using uapi_UPrimitiveComponent_IsGravityEnabledFn = void(*)(bool(*)(void* target));
 
 using uapi_UPrimitiveComponent_IsNavigationRelevantFn = void(*)(bool(*)(void* target));
+
+using uapi_UPrimitiveComponent_IsOverlappingActorFn = void(*)(bool(*)(void* target,AActor* Other));
+
+using uapi_UPrimitiveComponent_IsOverlappingComponentFn = void(*)(bool(*)(void* target,UPrimitiveComponent* OtherComp));
 
 using uapi_UPrimitiveComponent_IsReadyForFinishDestroyFn = void(*)(bool(*)(void* target));
 
@@ -8188,9 +11060,13 @@ using uapi_UPrimitiveComponent_PutAllRigidBodiesToSleepFn = void(*)(void(*)(void
 
 using uapi_UPrimitiveComponent_PutRigidBodyToSleepFn = void(*)(void(*)(void* target,UName BoneName));
 
+using uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelFn = void(*)(bool(*)(void* target,UActorTextureStreamingBuildDataComponent* InActorTextureBuildData));
+
 using uapi_UPrimitiveComponent_RigidBodyIsAwakeFn = void(*)(bool(*)(void* target,UName BoneName));
 
 using uapi_UPrimitiveComponent_ScaleByMomentOfInertiaFn = void(*)(Vector3(*)(void* target,Vector3 InputVector,UName BoneName));
+
+using uapi_UPrimitiveComponent_SendRenderDebugPhysicsFn = void(*)(void(*)(void* target,FPrimitiveSceneProxy* OverrideSceneProxy));
 
 using uapi_UPrimitiveComponent_SendRenderTransform_ConcurrentFn = void(*)(void(*)(void* target));
 
@@ -8254,6 +11130,8 @@ using uapi_UPrimitiveComponent_SetIgnoreBoundsForEditorFocusFn = void(*)(void(*)
 
 using uapi_UPrimitiveComponent_SetIsBeingMovedByEditorFn = void(*)(void(*)(void* target,bool bNewIsBeingMoved));
 
+using uapi_UPrimitiveComponent_SetLODParentPrimitiveFn = void(*)(void(*)(void* target,UPrimitiveComponent* InLODParentPrimitive));
+
 using uapi_UPrimitiveComponent_SetLastRenderTimeFn = void(*)(void(*)(void* target,float InLastRenderTime));
 
 using uapi_UPrimitiveComponent_SetLightingChannelsFn = void(*)(void(*)(void* target,bool bChannel0,bool bChannel1,bool bChannel2));
@@ -8264,11 +11142,17 @@ using uapi_UPrimitiveComponent_SetMassOverrideInKgFn = void(*)(void(*)(void* tar
 
 using uapi_UPrimitiveComponent_SetMassScaleFn = void(*)(void(*)(void* target,UName BoneName,float InMassScale));
 
+using uapi_UPrimitiveComponent_SetMaterialFn = void(*)(void(*)(void* target,int32 ElementIndex,UMaterialInterface* Material));
+
+using uapi_UPrimitiveComponent_SetMaterialByNameFn = void(*)(void(*)(void* target,UName MaterialSlotName,UMaterialInterface* Material));
+
 using uapi_UPrimitiveComponent_SetNotifyRigidBodyCollisionFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision));
 
 using uapi_UPrimitiveComponent_SetOnlyOwnerSeeFn = void(*)(void(*)(void* target,bool bNewOnlyOwnerSee));
 
 using uapi_UPrimitiveComponent_SetOwnerNoSeeFn = void(*)(void(*)(void* target,bool bNewOwnerNoSee));
+
+using uapi_UPrimitiveComponent_SetPhysMaterialOverrideFn = void(*)(void(*)(void* target,UPhysicalMaterial* NewPhysMaterial));
 
 using uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesFn = void(*)(void(*)(void* target,Vector3 NewAngVel,bool bAddToCurrent,UName BoneName));
 
@@ -8334,6 +11218,8 @@ using uapi_UPrimitiveComponent_UpdateCollisionProfileFn = void(*)(void(*)(void* 
 
 using uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlackFn = void(*)(void(*)(void* target,float NewSlack));
 
+using uapi_UPrimitiveComponent_UpdateOverlapsImplFn = void(*)(bool(*)(void* target,TOverlapArrayView* NewPendingOverlaps,bool bDoNotifies,TOverlapArrayView* OverlapsAtEndLocation));
+
 using uapi_UPrimitiveComponent_UpdatePhysicsVolumeFn = void(*)(void(*)(void* target,bool bTriggerNotifiers));
 
 using uapi_UPrimitiveComponent_UsesOnlyUnlitMaterialsFn = void(*)(bool(*)(void* target));
@@ -8343,6 +11229,12 @@ using uapi_UPrimitiveComponent_WakeAllRigidBodiesFn = void(*)(void(*)(void* targ
 using uapi_UPrimitiveComponent_WakeRigidBodyFn = void(*)(void(*)(void* target,UName BoneName));
 
 using uapi_UPrimitiveComponent_WasRecentlyRenderedFn = void(*)(bool(*)(void* target,float Tolerance));
+
+using uapi_UPrimitiveComponent_WeldToFn = void(*)(void(*)(void* target,USceneComponent* InParent,UName InSocketName));
+
+using uapi_UPrimitiveComponent_WeldToImplementationFn = void(*)(bool(*)(void* target,USceneComponent* InParent,UName ParentSocketName,bool bWeldSimulatedChild));
+
+using uapi_UAnimInstance_AddExternalNotifyHandlerFn = void(*)(void(*)(void* target,UObject* ExternalHandlerObject,UName NotifyEventName));
 
 using uapi_UAnimInstance_BeginDestroyFn = void(*)(void(*)(void* target));
 
@@ -8368,9 +11260,13 @@ using uapi_UAnimInstance_ClearMorphTargetsFn = void(*)(void(*)(void* target));
 
 using uapi_UAnimInstance_ClearTransitionEventsFn = void(*)(void(*)(void* target,UName EventName));
 
+using uapi_UAnimInstance_CopyCurveValuesFn = void(*)(void(*)(void* target,UAnimInstance* InSourceInstance));
+
 using uapi_UAnimInstance_DispatchQueuedAnimEventsFn = void(*)(void(*)(void* target));
 
 using uapi_UAnimInstance_EndNotifyStatesFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimInstance_GetActiveInstanceForMontageFn = void(*)(void*(*)(void* target,UAnimMontage* Montage));
 
 using uapi_UAnimInstance_GetActiveMontageInstanceFn = void(*)(void*(*)(void* target));
 
@@ -8417,6 +11313,8 @@ using uapi_UAnimInstance_GetLinkedAnimGraphInstanceByTagFn = void(*)(void*(*)(vo
 using uapi_UAnimInstance_GetLinkedAnimLayerInstanceByGroupFn = void(*)(void*(*)(void* target,UName InGroup));
 
 using uapi_UAnimInstance_GetLinkedInputPoseNodeFn = void(*)(void*(*)(void* target,UName InSubInput,UName InGraph));
+
+using uapi_UAnimInstance_GetMachineDescriptionFn = void(*)(void*(*)(void* target,IAnimClassInterface* AnimBlueprintClass,FAnimNode_StateMachine* MachineInstance));
 
 using uapi_UAnimInstance_GetMontageInstanceForIDFn = void(*)(void*(*)(void* target,int32 MontageInstanceID));
 
@@ -8472,6 +11370,8 @@ using uapi_UAnimInstance_IsAnyMontagePlayingFn = void(*)(bool(*)(void* target));
 
 using uapi_UAnimInstance_IsBeingDebuggedFn = void(*)(bool(*)(void* target));
 
+using uapi_UAnimInstance_IsPlayingSlotAnimationFn = void(*)(bool(*)(void* target,UAnimSequenceBase* Asset,UName SlotNodeName));
+
 using uapi_UAnimInstance_IsPostUpdatingAnimationFn = void(*)(bool(*)(void* target));
 
 using uapi_UAnimInstance_IsRunningParallelEvaluationFn = void(*)(bool(*)(void* target));
@@ -8483,6 +11383,44 @@ using uapi_UAnimInstance_IsUpdatingAnimationFn = void(*)(bool(*)(void* target));
 using uapi_UAnimInstance_IsUsingMainInstanceMontageEvaluationDataFn = void(*)(bool(*)(void* target));
 
 using uapi_UAnimInstance_LockAIResourcesFn = void(*)(void(*)(void* target,bool bLockMovement,bool LockAILogic));
+
+using uapi_UAnimInstance_MontageSync_FollowFn = void(*)(void(*)(void* target,UAnimMontage* MontageFollower,UAnimInstance* OtherAnimInstance,UAnimMontage* MontageLeader));
+
+using uapi_UAnimInstance_MontageSync_StopFollowingFn = void(*)(void(*)(void* target,UAnimMontage* MontageFollower));
+
+using uapi_UAnimInstance_Montage_GetBlendTimeFn = void(*)(float(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_GetBlendingOutDelegateFn = void(*)(void*(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_GetCurrentSectionFn = void(*)(UName(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_GetIsStoppedFn = void(*)(bool(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_GetPlayRateFn = void(*)(float(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_GetPositionFn = void(*)(float(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_IsActiveFn = void(*)(bool(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_IsPlayingFn = void(*)(bool(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_JumpToSectionFn = void(*)(void(*)(void* target,UName SectionName,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_JumpToSectionsEndFn = void(*)(void(*)(void* target,UName SectionName,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_PauseFn = void(*)(void(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_PlayFn = void(*)(float(*)(void* target,UAnimMontage* MontageToPlay,float InPlayRate,EMontagePlayReturnType ReturnValueType,float InTimeToStartMontageAt,bool bStopAllMontages));
+
+using uapi_UAnimInstance_Montage_ResumeFn = void(*)(void(*)(void* target,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_SetNextSectionFn = void(*)(void(*)(void* target,UName SectionNameToChange,UName NextSection,UAnimMontage* Montage));
+
+using uapi_UAnimInstance_Montage_SetPlayRateFn = void(*)(void(*)(void* target,UAnimMontage* Montage,float NewPlayRate));
+
+using uapi_UAnimInstance_Montage_SetPositionFn = void(*)(void(*)(void* target,UAnimMontage* Montage,float NewPosition));
+
+using uapi_UAnimInstance_Montage_StopFn = void(*)(void(*)(void* target,float InBlendOutTime,UAnimMontage* Montage));
 
 using uapi_UAnimInstance_Montage_StopGroupByNameFn = void(*)(void(*)(void* target,float InBlendOutTime,UName GroupName));
 
@@ -8506,7 +11444,11 @@ using uapi_UAnimInstance_PCV_ShouldNotifyAboutNodesNotUsingFastPathFn = void(*)(
 
 using uapi_UAnimInstance_PCV_ShouldWarnAboutNodesNotUsingFastPathFn = void(*)(bool(*)(void* target));
 
+using uapi_UAnimInstance_ParallelCanEvaluateFn = void(*)(bool(*)(void* target,USkeletalMesh* InSkeletalMesh));
+
 using uapi_UAnimInstance_ParallelUpdateAnimationFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimInstance_PlaySlotAnimationAsDynamicMontageFn = void(*)(void*(*)(void* target,UAnimSequenceBase* Asset,UName SlotNodeName,float BlendInTime,float BlendOutTime,float InPlayRate,int32 LoopCount,float BlendOutTriggerTime,float InTimeToStartMontageAt));
 
 using uapi_UAnimInstance_PostEvaluateAnimationFn = void(*)(void(*)(void* target));
 
@@ -8528,7 +11470,15 @@ using uapi_UAnimInstance_RecordMachineWeightFn = void(*)(void(*)(void* target,in
 
 using uapi_UAnimInstance_RecordStateWeightFn = void(*)(void(*)(void* target,int32 InMachineClassIndex,int32 InStateIndex,float InStateWeight,float InElapsedTime));
 
+using uapi_UAnimInstance_RefreshCurvesFn = void(*)(void(*)(void* target,USkeletalMeshComponent* Component));
+
+using uapi_UAnimInstance_RemoveExternalNotifyHandlerFn = void(*)(void(*)(void* target,UObject* ExternalHandlerObject,UName NotifyEventName));
+
 using uapi_UAnimInstance_RemovePoseSnapshotFn = void(*)(void(*)(void* target,UName SnapshotName));
+
+using uapi_UAnimInstance_RequestMontageInertializationFn = void(*)(void(*)(void* target,UAnimMontage* Montage,float Duration,UBlendProfile* BlendProfile));
+
+using uapi_UAnimInstance_RequestSlotGroupInertializationFn = void(*)(void(*)(void* target,UName InSlotGroupName,float Duration,UBlendProfile* BlendProfile));
 
 using uapi_UAnimInstance_ResetDynamicsFn = void(*)(void(*)(void* target,ETeleportType InTeleportType));
 
@@ -8544,11 +11494,15 @@ using uapi_UAnimInstance_SetUseMainInstanceMontageEvaluationDataFn = void(*)(voi
 
 using uapi_UAnimInstance_ShouldExtractRootMotionFn = void(*)(bool(*)(void* target));
 
+using uapi_UAnimInstance_ShouldTriggerAnimNotifyStateFn = void(*)(bool(*)(void* target,UAnimNotifyState* AnimNotifyState));
+
 using uapi_UAnimInstance_StopAllMontagesFn = void(*)(void(*)(void* target,float BlendOut));
 
 using uapi_UAnimInstance_StopSlotAnimationFn = void(*)(void(*)(void* target,float InBlendOutTime,UName SlotNodeName));
 
 using uapi_UAnimInstance_TriggerAnimNotifiesFn = void(*)(void(*)(void* target,float DeltaSeconds));
+
+using uapi_UAnimInstance_TriggerSingleAnimNotifyFn = void(*)(void(*)(void* target,FAnimNotifyEvent* AnimNotifyEvent));
 
 using uapi_UAnimInstance_TryGetPawnOwnerFn = void(*)(void*(*)(void* target));
 
@@ -8570,15 +11524,29 @@ using uapi_UKismetSystemLibrary_CollectGarbageFn = void(*)(void(*)());
 
 using uapi_UKismetSystemLibrary_ControlScreensaverFn = void(*)(void(*)(bool bAllowScreenSaver));
 
+using uapi_UKismetSystemLibrary_CreateCopyForUndoBufferFn = void(*)(void(*)(UObject* ObjectToModify));
+
+using uapi_UKismetSystemLibrary_DrawDebugCoordinateSystemFn = void(*)(void(*)(UObject* WorldContextObject,Vector3 AxisLoc,Rotator AxisRot,float Scale,float Duration,float Thickness));
+
 using uapi_UKismetSystemLibrary_EndTransactionFn = void(*)(int32(*)());
 
+using uapi_UKismetSystemLibrary_FlushDebugStringsFn = void(*)(void(*)(UObject* WorldContextObject));
+
+using uapi_UKismetSystemLibrary_FlushPersistentDebugLinesFn = void(*)(void(*)(UObject* WorldContextObject));
+
 using uapi_UKismetSystemLibrary_ForceCloseAdBannerFn = void(*)(void(*)());
+
+using uapi_UKismetSystemLibrary_Generic_GetEditorPropertyFn = void(*)(bool(*)(UObject* Object,FProperty* ObjectProp,void* ValuePtr,FProperty* ValueProp));
+
+using uapi_UKismetSystemLibrary_Generic_SetStructurePropertyByNameFn = void(*)(void(*)(UObject* OwnerObject,UName StructPropertyName,void* SrcStructAddr));
 
 using uapi_UKismetSystemLibrary_GetAdIDCountFn = void(*)(int32(*)());
 
 using uapi_UKismetSystemLibrary_GetBuildConfigurationFn = void(*)(const char*(*)());
 
 using uapi_UKismetSystemLibrary_GetBuildVersionFn = void(*)(const char*(*)());
+
+using uapi_UKismetSystemLibrary_GetClassDisplayNameFn = void(*)(const char*(*)(UClass* arg0));
 
 using uapi_UKismetSystemLibrary_GetCommandLineFn = void(*)(const char*(*)());
 
@@ -8588,6 +11556,10 @@ using uapi_UKismetSystemLibrary_GetDefaultLocaleFn = void(*)(const char*(*)());
 
 using uapi_UKismetSystemLibrary_GetDeviceIdFn = void(*)(const char*(*)());
 
+using uapi_UKismetSystemLibrary_GetDisplayNameFn = void(*)(const char*(*)(UObject* Object));
+
+using uapi_UKismetSystemLibrary_GetEditorPropertyFn = void(*)(bool(*)(UObject* Object,UName PropertyName,int32& PropertyValue));
+
 using uapi_UKismetSystemLibrary_GetEngineVersionFn = void(*)(const char*(*)());
 
 using uapi_UKismetSystemLibrary_GetFrameCountFn = void(*)(int64(*)());
@@ -8595,6 +11567,8 @@ using uapi_UKismetSystemLibrary_GetFrameCountFn = void(*)(int64(*)());
 using uapi_UKismetSystemLibrary_GetGameBundleIdFn = void(*)(const char*(*)());
 
 using uapi_UKismetSystemLibrary_GetGameNameFn = void(*)(const char*(*)());
+
+using uapi_UKismetSystemLibrary_GetGameTimeInSecondsFn = void(*)(double(*)(UObject* WorldContextObject));
 
 using uapi_UKismetSystemLibrary_GetGamepadControllerNameFn = void(*)(const char*(*)(int32 ControllerId));
 
@@ -8605,6 +11579,12 @@ using uapi_UKismetSystemLibrary_GetLocalCurrencySymbolFn = void(*)(const char*(*
 using uapi_UKismetSystemLibrary_GetMinYResolutionFor3DViewFn = void(*)(int32(*)());
 
 using uapi_UKismetSystemLibrary_GetMinYResolutionForUIFn = void(*)(int32(*)());
+
+using uapi_UKismetSystemLibrary_GetObjectNameFn = void(*)(const char*(*)(UObject* Object));
+
+using uapi_UKismetSystemLibrary_GetOuterObjectFn = void(*)(void*(*)(UObject* Object));
+
+using uapi_UKismetSystemLibrary_GetPathNameFn = void(*)(const char*(*)(UObject* Object));
 
 using uapi_UKismetSystemLibrary_GetPlatformUserDirFn = void(*)(const char*(*)());
 
@@ -8620,23 +11600,51 @@ using uapi_UKismetSystemLibrary_GetRenderingDetailModeFn = void(*)(int32(*)());
 
 using uapi_UKismetSystemLibrary_GetRenderingMaterialQualityLevelFn = void(*)(int32(*)());
 
+using uapi_UKismetSystemLibrary_GetSystemPathFn = void(*)(const char*(*)(UObject* Object));
+
 using uapi_UKismetSystemLibrary_GetUniqueDeviceIdFn = void(*)(const char*(*)());
 
 using uapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystemFn = void(*)(bool(*)());
+
+using uapi_UKismetSystemLibrary_HasMultipleLocalPlayersFn = void(*)(bool(*)(UObject* WorldContextObject));
 
 using uapi_UKismetSystemLibrary_HideAdBannerFn = void(*)(void(*)());
 
 using uapi_UKismetSystemLibrary_IsControllerAssignedToGamepadFn = void(*)(bool(*)(int32 ControllerId));
 
+using uapi_UKismetSystemLibrary_IsDedicatedServerFn = void(*)(bool(*)(UObject* WorldContextObject));
+
 using uapi_UKismetSystemLibrary_IsInterstitialAdAvailableFn = void(*)(bool(*)());
 
 using uapi_UKismetSystemLibrary_IsInterstitialAdRequestedFn = void(*)(bool(*)());
+
+using uapi_UKismetSystemLibrary_IsLoggedInFn = void(*)(bool(*)(APlayerController* SpecificPlayer));
 
 using uapi_UKismetSystemLibrary_IsPackagedForDistributionFn = void(*)(bool(*)());
 
 using uapi_UKismetSystemLibrary_IsScreensaverEnabledFn = void(*)(bool(*)());
 
+using uapi_UKismetSystemLibrary_IsServerFn = void(*)(bool(*)(UObject* WorldContextObject));
+
+using uapi_UKismetSystemLibrary_IsStandaloneFn = void(*)(bool(*)(UObject* WorldContextObject));
+
 using uapi_UKismetSystemLibrary_IsUnattendedFn = void(*)(bool(*)());
+
+using uapi_UKismetSystemLibrary_K2_ClearTimerFn = void(*)(void(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_GetTimerElapsedTimeFn = void(*)(float(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_GetTimerRemainingTimeFn = void(*)(float(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_IsTimerActiveFn = void(*)(bool(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_IsTimerPausedFn = void(*)(bool(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_PauseTimerFn = void(*)(void(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_TimerExistsFn = void(*)(bool(*)(UObject* Object,NativeString FunctionName));
+
+using uapi_UKismetSystemLibrary_K2_UnPauseTimerFn = void(*)(void(*)(UObject* Object,NativeString FunctionName));
 
 using uapi_UKismetSystemLibrary_LoadInterstitialAdFn = void(*)(void(*)(int32 AdIdIndex));
 
@@ -8664,7 +11672,21 @@ using uapi_UKismetSystemLibrary_ResetGamepadAssignmentToControllerFn = void(*)(v
 
 using uapi_UKismetSystemLibrary_ResetGamepadAssignmentsFn = void(*)(void(*)());
 
+using uapi_UKismetSystemLibrary_SetBoolPropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,bool Value));
+
+using uapi_UKismetSystemLibrary_SetBytePropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,uint8 Value));
+
+using uapi_UKismetSystemLibrary_SetDoublePropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,double Value));
+
 using uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedbackFn = void(*)(void(*)(bool bBlock));
+
+using uapi_UKismetSystemLibrary_SetInt64PropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,int64 Value));
+
+using uapi_UKismetSystemLibrary_SetIntPropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,int32 Value));
+
+using uapi_UKismetSystemLibrary_SetObjectPropertyByNameFn = void(*)(void(*)(UObject* Object,UName PropertyName,UObject* Value));
+
+using uapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessageFn = void(*)(void(*)(UObject* WorldContextObject,bool bState));
 
 using uapi_UKismetSystemLibrary_SetVolumeButtonsHandledBySystemFn = void(*)(void(*)(bool bEnabled));
 
@@ -8672,7 +11694,77 @@ using uapi_UKismetSystemLibrary_ShowAdBannerFn = void(*)(void(*)(int32 AdIdIndex
 
 using uapi_UKismetSystemLibrary_ShowInterstitialAdFn = void(*)(void(*)());
 
+using uapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreenFn = void(*)(void(*)(APlayerController* SpecificPlayer));
+
+using uapi_UKismetSystemLibrary_SnapshotObjectFn = void(*)(void(*)(UObject* Object));
+
+using uapi_UKismetSystemLibrary_TransactObjectFn = void(*)(void(*)(UObject* Object));
+
 using uapi_UKismetSystemLibrary_UnregisterForRemoteNotificationsFn = void(*)(void(*)());
+
+using uapi_UAnimMontage_AddAnimCompositeSectionFn = void(*)(int32(*)(void* target,UName InSectionName,float StartPos));
+
+using uapi_UAnimMontage_CalculateSequenceLengthFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_CanBeUsedInCompositionFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_CanUseMarkerSyncFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn = void(*)(void*(*)(UAnimSequenceBase* Asset,UName SlotNodeName,float BlendInTime,float BlendOutTime,float InPlayRate,int32 LoopCount,float BlendOutTriggerTime,float InTimeToStartMontageAt));
+
+using uapi_UAnimMontage_DeleteAnimCompositeSectionFn = void(*)(bool(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn = void(*)(Transform(*)(void* target,float StartTrackPosition,float EndTrackPosition));
+
+using uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn = void(*)(int32(*)(void* target,float CurrentTime,float& PosWithinCompositeSection));
+
+using uapi_UAnimMontage_GetAnimationDataFn = void(*)(void*(*)(void* target,UName SlotName));
+
+using uapi_UAnimMontage_GetDefaultBlendInTimeFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_GetDefaultBlendOutTimeFn = void(*)(float(*)(void* target));
+
+using uapi_UAnimMontage_GetGroupNameFn = void(*)(UName(*)(void* target));
+
+using uapi_UAnimMontage_GetNumSectionsFn = void(*)(int32(*)(void* target));
+
+using uapi_UAnimMontage_GetSectionIndexFn = void(*)(int32(*)(void* target,UName InSectionName));
+
+using uapi_UAnimMontage_GetSectionIndexFromPositionFn = void(*)(int32(*)(void* target,float Position));
+
+using uapi_UAnimMontage_GetSectionLengthFn = void(*)(float(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_GetSectionNameFn = void(*)(UName(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_GetSectionStartAndEndTimeFn = void(*)(void(*)(void* target,int32 SectionIndex,float& OutStartTime,float& OutEndTime));
+
+using uapi_UAnimMontage_GetSectionTimeLeftFromPosFn = void(*)(float(*)(void* target,float Position));
+
+using uapi_UAnimMontage_HasRootMotionFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_InvalidateRecursiveAssetFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_IsValidAdditiveFn = void(*)(bool(*)(void* target));
+
+using uapi_UAnimMontage_IsValidSectionIndexFn = void(*)(bool(*)(void* target,int32 SectionIndex));
+
+using uapi_UAnimMontage_IsValidSectionNameFn = void(*)(bool(*)(void* target,UName InSectionName));
+
+using uapi_UAnimMontage_IsValidSlotFn = void(*)(bool(*)(void* target,UName InSlotName));
+
+using uapi_UAnimMontage_PostLoadFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_RefreshCacheDataFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_SetCompositeLengthFn = void(*)(void(*)(void* target,float InLength));
+
+using uapi_UAnimMontage_UnregisterOnMontageChangedFn = void(*)(void(*)(void* target,void* Unregister));
+
+using uapi_UAnimMontage_UpdateLinkableElementsFn = void(*)(void(*)(void* target));
+
+using uapi_UAnimMontage_UpdateLinkableElements2Fn = void(*)(void(*)(void* target,int32 SlotIdx,int32 SegmentIdx));
+
+using uapi_USkeletalMeshComponent_AddClothCollisionSourceFn = void(*)(void(*)(void* target,USkeletalMeshComponent* InSourceComponent,UPhysicsAsset* InSourcePhysicsAsset));
 
 using uapi_USkeletalMeshComponent_AddForceToAllBodiesBelowFn = void(*)(void(*)(void* target,Vector3 Force,UName BoneName,bool bAccelChange,bool bIncludeSelf));
 
@@ -8700,6 +11792,8 @@ using uapi_USkeletalMeshComponent_CanSimulateClothingFn = void(*)(bool(*)(void* 
 
 using uapi_USkeletalMeshComponent_CheckClothTeleportFn = void(*)(void(*)(void* target));
 
+using uapi_USkeletalMeshComponent_ClearAnimNotifyErrorsFn = void(*)(void(*)(void* target,UObject* InSourceNotify));
+
 using uapi_USkeletalMeshComponent_ClearAnimScriptInstanceFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_ClearCachedAnimPropertiesFn = void(*)(void(*)(void* target));
@@ -8715,6 +11809,10 @@ using uapi_USkeletalMeshComponent_CompleteParallelClothSimulationFn = void(*)(vo
 using uapi_USkeletalMeshComponent_ConditionallyDispatchQueuedAnimEventsFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_DeallocateTransformDataFn = void(*)(void(*)(void* target));
+
+using uapi_USkeletalMeshComponent_DebugDrawClothingFn = void(*)(void(*)(void* target,FPrimitiveDrawInterface* PDI));
+
+using uapi_USkeletalMeshComponent_DebugDrawClothingTextsFn = void(*)(void(*)(void* target,FCanvas* Canvas,FSceneView* SceneView));
 
 using uapi_USkeletalMeshComponent_FinalizeBoneTransformFn = void(*)(void(*)(void* target));
 
@@ -8790,6 +11888,8 @@ using uapi_USkeletalMeshComponent_HasValidAnimationInstanceFn = void(*)(bool(*)(
 
 using uapi_USkeletalMeshComponent_InitAnimFn = void(*)(void(*)(void* target,bool bForceReinit));
 
+using uapi_USkeletalMeshComponent_InitArticulatedFn = void(*)(void(*)(void* target,FPhysScene* PhysScene));
+
 using uapi_USkeletalMeshComponent_InitCollisionRelationshipsFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_InitializeAnimScriptInstanceFn = void(*)(bool(*)(void* target,bool bForceReinit,bool bInDeferRootNodeInitialization));
@@ -8824,13 +11924,19 @@ using uapi_USkeletalMeshComponent_IsRunningParallelEvaluationFn = void(*)(bool(*
 
 using uapi_USkeletalMeshComponent_IsWindEnabledFn = void(*)(bool(*)(void* target));
 
+using uapi_USkeletalMeshComponent_NotifySkelControlBeyondLimitFn = void(*)(void(*)(void* target,USkelControlLookAt* LookAt));
+
 using uapi_USkeletalMeshComponent_OnComponentCollisionSettingsChangedFn = void(*)(void(*)(void* target,bool bUpdateOverlaps));
 
 using uapi_USkeletalMeshComponent_OnPreEndOfFrameSyncFn = void(*)(void(*)(void* target));
 
+using uapi_USkeletalMeshComponent_OverrideAnimationDataFn = void(*)(void(*)(void* target,UAnimationAsset* InAnimToPlay,bool bIsLooping,bool bIsPlaying,float Position,float PlayRate));
+
 using uapi_USkeletalMeshComponent_ParallelAnimationEvaluationFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_PlayFn = void(*)(void(*)(void* target,bool bLooping));
+
+using uapi_USkeletalMeshComponent_PlayAnimationFn = void(*)(void(*)(void* target,UAnimationAsset* NewAnimToPlay,bool bLooping));
 
 using uapi_USkeletalMeshComponent_PoseTickedThisFrameFn = void(*)(bool(*)(void* target));
 
@@ -8853,6 +11959,10 @@ using uapi_USkeletalMeshComponent_RegisterEndPhysicsTickFn = void(*)(void(*)(voi
 using uapi_USkeletalMeshComponent_ReleaseAllClothingResourcesFn = void(*)(void(*)(void* target));
 
 using uapi_USkeletalMeshComponent_RemoveAllClothingActorsFn = void(*)(void(*)(void* target));
+
+using uapi_USkeletalMeshComponent_RemoveClothCollisionSourceFn = void(*)(void(*)(void* target,USkeletalMeshComponent* InSourceComponent));
+
+using uapi_USkeletalMeshComponent_RemoveClothCollisionSource2Fn = void(*)(void(*)(void* target,USkeletalMeshComponent* InSourceComponent,UPhysicsAsset* InSourcePhysicsAsset));
 
 using uapi_USkeletalMeshComponent_RequiresPreEndOfFrameSyncFn = void(*)(bool(*)(void* target));
 
@@ -8902,6 +12012,8 @@ using uapi_USkeletalMeshComponent_SetAllowRigidBodyAnimNodeFn = void(*)(void(*)(
 
 using uapi_USkeletalMeshComponent_SetAngularLimitsFn = void(*)(void(*)(void* target,UName InBoneName,float Swing1LimitAngle,float TwistLimitAngle,float Swing2LimitAngle));
 
+using uapi_USkeletalMeshComponent_SetAnimationFn = void(*)(void(*)(void* target,UAnimationAsset* NewAnimToPlay));
+
 using uapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollisionFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision,UName BoneName));
 
 using uapi_USkeletalMeshComponent_SetClothMaxDistanceScaleFn = void(*)(void(*)(void* target,float Scale));
@@ -8932,6 +12044,10 @@ using uapi_USkeletalMeshComponent_SetNotifyRigidBodyCollisionFn = void(*)(void(*
 
 using uapi_USkeletalMeshComponent_SetNotifyRigidBodyCollisionBelowFn = void(*)(void(*)(void* target,bool bNewNotifyRigidBodyCollision,UName BoneName,bool bIncludeSelf));
 
+using uapi_USkeletalMeshComponent_SetPhysMaterialOverrideFn = void(*)(void(*)(void* target,UPhysicalMaterial* NewPhysMaterial));
+
+using uapi_USkeletalMeshComponent_SetPhysicsAssetFn = void(*)(void(*)(void* target,UPhysicsAsset* NewPhysicsAsset,bool bForceReInit));
+
 using uapi_USkeletalMeshComponent_SetPhysicsBlendWeightFn = void(*)(void(*)(void* target,float PhysicsBlendWeight));
 
 using uapi_USkeletalMeshComponent_SetPlayRateFn = void(*)(void(*)(void* target,float Rate));
@@ -8943,6 +12059,10 @@ using uapi_USkeletalMeshComponent_SetPredictedLODLevelFn = void(*)(void(*)(void*
 using uapi_USkeletalMeshComponent_SetRootBodyIndexFn = void(*)(void(*)(void* target,int32 InBodyIndex));
 
 using uapi_USkeletalMeshComponent_SetSimulatePhysicsFn = void(*)(void(*)(void* target,bool bEnabled));
+
+using uapi_USkeletalMeshComponent_SetSkeletalMeshAssetFn = void(*)(void(*)(void* target,USkeletalMesh* NewMesh));
+
+using uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdateFn = void(*)(void(*)(void* target,USkinnedAsset* InSkinnedAsset,bool bReinitPose));
 
 using uapi_USkeletalMeshComponent_SetTeleportDistanceThresholdFn = void(*)(void(*)(void* target,float Threshold));
 
@@ -8965,6 +12085,8 @@ using uapi_USkeletalMeshComponent_ShouldTickPoseFn = void(*)(bool(*)(void* targe
 using uapi_USkeletalMeshComponent_ShouldUpdatePostProcessInstanceFn = void(*)(bool(*)(void* target));
 
 using uapi_USkeletalMeshComponent_ShouldUpdateTransformFn = void(*)(bool(*)(void* target,bool bLODHasChanged));
+
+using uapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinishedFn = void(*)(void(*)(void* target,UParticleSystemComponent* PSC));
 
 using uapi_USkeletalMeshComponent_StopFn = void(*)(void(*)(void* target));
 
@@ -9003,6 +12125,8 @@ using uapi_USkeletalMeshComponent_UpdateHasValidBodiesFn = void(*)(void(*)(void*
 using uapi_USkeletalMeshComponent_UpdateLODStatusFn = void(*)(bool(*)(void* target));
 
 using uapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraintsFn = void(*)(void(*)(void* target));
+
+using uapi_USkeletalMeshComponent_UpdateOverlapsImplFn = void(*)(bool(*)(void* target,TOverlapArrayView* PendingOverlaps,bool bDoNotifies,TOverlapArrayView* OverlapsAtEndLocation));
 
 using uapi_USkeletalMeshComponent_UpdatePhysicsToRBChannelsFn = void(*)(void(*)(void* target));
 
@@ -9056,6 +12180,14 @@ using uapi_UCapsuleComponent_SetCapsuleSizeFn = void(*)(void(*)(void* target,flo
 
 using uapi_UCapsuleComponent_UpdateBodySetupFn = void(*)(void(*)(void* target));
 
+using set_UCharacterMovementComponentGravityScale_get_handlerFn = void(*)(float(*)(void* target));
+
+using set_UCharacterMovementComponentGravityScale_set_handlerFn = void(*)(void(*)(void* target, float value));
+
+using set_UCharacterMovementComponentGroundFriction_get_handlerFn = void(*)(float(*)(void* target));
+
+using set_UCharacterMovementComponentGroundFriction_set_handlerFn = void(*)(void(*)(void* target, float value));
+
 using uapi_UCharacterMovementComponent_AddForceFn = void(*)(void(*)(void* target,Vector3 Force));
 
 using uapi_UCharacterMovementComponent_AddImpulseFn = void(*)(void(*)(void* target,Vector3 Impulse,bool bVelocityChange));
@@ -9094,6 +12226,12 @@ using uapi_UCharacterMovementComponent_ClientAckGoodMoveFn = void(*)(void(*)(voi
 
 using uapi_UCharacterMovementComponent_ClientAckGoodMove_ImplementationFn = void(*)(void(*)(void* target,float TimeStamp));
 
+using uapi_UCharacterMovementComponent_ClientAdjustPositionFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,Vector3 NewVel,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
+using uapi_UCharacterMovementComponent_ClientVeryShortAdjustPositionFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
+using uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_ImplementationFn = void(*)(void(*)(void* target,float TimeStamp,Vector3 NewLoc,UPrimitiveComponent* NewBase,UName NewBaseBoneName,bool bHasBase,bool bBaseRelativePosition,uint8 ServerMovementMode));
+
 using uapi_UCharacterMovementComponent_CrouchFn = void(*)(void(*)(void* target,bool bClientSimulation));
 
 using uapi_UCharacterMovementComponent_DeactivateFn = void(*)(void(*)(void* target));
@@ -9115,6 +12253,8 @@ using uapi_UCharacterMovementComponent_ForceReplicationUpdateFn = void(*)(void(*
 using uapi_UCharacterMovementComponent_GetAnalogInputModifierFn = void(*)(float(*)(void* target));
 
 using uapi_UCharacterMovementComponent_GetAvoidanceGroupMaskFn = void(*)(int32(*)(void* target));
+
+using uapi_UCharacterMovementComponent_GetBestDirectionOffActorFn = void(*)(Vector3(*)(void* target,AActor* BaseActor));
 
 using uapi_UCharacterMovementComponent_GetCharacterOwnerFn = void(*)(void*(*)(void* target));
 
@@ -9232,6 +12372,8 @@ using uapi_UCharacterMovementComponent_IsSwimmingFn = void(*)(bool(*)(void* targ
 
 using uapi_UCharacterMovementComponent_IsWalkingFn = void(*)(bool(*)(void* target));
 
+using uapi_UCharacterMovementComponent_JumpOffFn = void(*)(void(*)(void* target,AActor* MovementBaseActor));
+
 using uapi_UCharacterMovementComponent_JumpOutOfWaterFn = void(*)(void(*)(void* target,Vector3 WallNormal));
 
 using uapi_UCharacterMovementComponent_K2_GetWalkableFloorAngleFn = void(*)(float(*)(void* target));
@@ -9241,6 +12383,8 @@ using uapi_UCharacterMovementComponent_K2_GetWalkableFloorZFn = void(*)(float(*)
 using uapi_UCharacterMovementComponent_MaybeSaveBaseLocationFn = void(*)(void(*)(void* target));
 
 using uapi_UCharacterMovementComponent_MaybeUpdateBasedMovementFn = void(*)(void(*)(void* target,float DeltaSeconds));
+
+using uapi_UCharacterMovementComponent_NotifyBumpedPawnFn = void(*)(void(*)(void* target,APawn* BumpedPawn));
 
 using uapi_UCharacterMovementComponent_NotifyJumpApexFn = void(*)(void(*)(void* target));
 
@@ -9259,6 +12403,8 @@ using uapi_UCharacterMovementComponent_PerformAirControlForPathFollowingFn = voi
 using uapi_UCharacterMovementComponent_PhysFallingFn = void(*)(void(*)(void* target,float deltaTime,int32 Iterations));
 
 using uapi_UCharacterMovementComponent_PhysicsRotationFn = void(*)(void(*)(void* target,float DeltaTime));
+
+using uapi_UCharacterMovementComponent_PhysicsVolumeChangedFn = void(*)(void(*)(void* target,APhysicsVolume* NewVolume));
 
 using uapi_UCharacterMovementComponent_PostLoadFn = void(*)(void(*)(void* target));
 
@@ -9282,6 +12428,10 @@ using uapi_UCharacterMovementComponent_SetAvoidanceEnabledFn = void(*)(void(*)(v
 
 using uapi_UCharacterMovementComponent_SetAvoidanceGroupFn = void(*)(void(*)(void* target,int32 GroupFlags));
 
+using uapi_UCharacterMovementComponent_SetAvoidanceVelocityLockFn = void(*)(void(*)(void* target,UAvoidanceManager* Avoidance,float Duration));
+
+using uapi_UCharacterMovementComponent_SetBaseFn = void(*)(void(*)(void* target,UPrimitiveComponent* NewBase,UName BoneName,bool bNotifyActor));
+
 using uapi_UCharacterMovementComponent_SetCrouchedHalfHeightFn = void(*)(void(*)(void* target,float NewValue));
 
 using uapi_UCharacterMovementComponent_SetDefaultMovementModeFn = void(*)(void(*)(void* target));
@@ -9293,6 +12443,8 @@ using uapi_UCharacterMovementComponent_SetGroupsToIgnoreFn = void(*)(void(*)(voi
 using uapi_UCharacterMovementComponent_SetRVOAvoidanceUIDFn = void(*)(void(*)(void* target,int32 UID));
 
 using uapi_UCharacterMovementComponent_SetRVOAvoidanceWeightFn = void(*)(void(*)(void* target,float Weight));
+
+using uapi_UCharacterMovementComponent_SetUpdatedComponentFn = void(*)(void(*)(void* target,USceneComponent* NewUpdatedComponent));
 
 using uapi_UCharacterMovementComponent_SetWalkableFloorAngleFn = void(*)(void(*)(void* target,float InWalkableFloorAngle));
 
@@ -9339,9 +12491,34 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_AbortInsideMemberFunction(&uapi_UObject_AbortInsideMemberFunction);
     }
 
+    auto const apiuapi_UObject_AreNativePropertiesIdenticalTo = (uapi_UObject_AreNativePropertiesIdenticalToFn)plugin->GetDllExport(TEXT("set_UObject_AreNativePropertiesIdenticalTo_handler\0"));
+    if(apiuapi_UObject_AreNativePropertiesIdenticalTo){
+        apiuapi_UObject_AreNativePropertiesIdenticalTo(&uapi_UObject_AreNativePropertiesIdenticalTo);
+    }
+
+    auto const apiuapi_UObject_BeginCacheForCookedPlatformData = (uapi_UObject_BeginCacheForCookedPlatformDataFn)plugin->GetDllExport(TEXT("set_UObject_BeginCacheForCookedPlatformData_handler\0"));
+    if(apiuapi_UObject_BeginCacheForCookedPlatformData){
+        apiuapi_UObject_BeginCacheForCookedPlatformData(&uapi_UObject_BeginCacheForCookedPlatformData);
+    }
+
     auto const apiuapi_UObject_BeginDestroy = (uapi_UObject_BeginDestroyFn)plugin->GetDllExport(TEXT("set_UObject_BeginDestroy_handler\0"));
     if(apiuapi_UObject_BeginDestroy){
         apiuapi_UObject_BeginDestroy(&uapi_UObject_BeginDestroy);
+    }
+
+    auto const apiuapi_UObject_CallRemoteFunction = (uapi_UObject_CallRemoteFunctionFn)plugin->GetDllExport(TEXT("set_UObject_CallRemoteFunction_handler\0"));
+    if(apiuapi_UObject_CallRemoteFunction){
+        apiuapi_UObject_CallRemoteFunction(&uapi_UObject_CallRemoteFunction);
+    }
+
+    auto const apiuapi_UObject_CanCreateInCurrentContext = (uapi_UObject_CanCreateInCurrentContextFn)plugin->GetDllExport(TEXT("set_UObject_CanCreateInCurrentContext_handler\0"));
+    if(apiuapi_UObject_CanCreateInCurrentContext){
+        apiuapi_UObject_CanCreateInCurrentContext(&uapi_UObject_CanCreateInCurrentContext);
+    }
+
+    auto const apiuapi_UObject_CanEditChange = (uapi_UObject_CanEditChangeFn)plugin->GetDllExport(TEXT("set_UObject_CanEditChange_handler\0"));
+    if(apiuapi_UObject_CanEditChange){
+        apiuapi_UObject_CanEditChange(&uapi_UObject_CanEditChange);
     }
 
     auto const apiuapi_UObject_CanModify = (uapi_UObject_CanModifyFn)plugin->GetDllExport(TEXT("set_UObject_CanModify_handler\0"));
@@ -9359,6 +12536,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_ClearAllCachedCookedPlatformData(&uapi_UObject_ClearAllCachedCookedPlatformData);
     }
 
+    auto const apiuapi_UObject_ClearCachedCookedPlatformData = (uapi_UObject_ClearCachedCookedPlatformDataFn)plugin->GetDllExport(TEXT("set_UObject_ClearCachedCookedPlatformData_handler\0"));
+    if(apiuapi_UObject_ClearCachedCookedPlatformData){
+        apiuapi_UObject_ClearCachedCookedPlatformData(&uapi_UObject_ClearCachedCookedPlatformData);
+    }
+
     auto const apiuapi_UObject_ConditionalBeginDestroy = (uapi_UObject_ConditionalBeginDestroyFn)plugin->GetDllExport(TEXT("set_UObject_ConditionalBeginDestroy_handler\0"));
     if(apiuapi_UObject_ConditionalBeginDestroy){
         apiuapi_UObject_ConditionalBeginDestroy(&uapi_UObject_ConditionalBeginDestroy);
@@ -9372,6 +12554,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UObject_ConditionalPostLoad = (uapi_UObject_ConditionalPostLoadFn)plugin->GetDllExport(TEXT("set_UObject_ConditionalPostLoad_handler\0"));
     if(apiuapi_UObject_ConditionalPostLoad){
         apiuapi_UObject_ConditionalPostLoad(&uapi_UObject_ConditionalPostLoad);
+    }
+
+    auto const apiuapi_UObject_ConditionalPostLoadSubobjects = (uapi_UObject_ConditionalPostLoadSubobjectsFn)plugin->GetDllExport(TEXT("set_UObject_ConditionalPostLoadSubobjects_handler\0"));
+    if(apiuapi_UObject_ConditionalPostLoadSubobjects){
+        apiuapi_UObject_ConditionalPostLoadSubobjects(&uapi_UObject_ConditionalPostLoadSubobjects);
     }
 
     auto const apiuapi_UObject_DestroyNonNativeProperties = (uapi_UObject_DestroyNonNativePropertiesFn)plugin->GetDllExport(TEXT("set_UObject_DestroyNonNativeProperties_handler\0"));
@@ -9429,6 +12616,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_GetExporterName(&uapi_UObject_GetExporterName);
     }
 
+    auto const apiuapi_UObject_GetFunctionCallspace = (uapi_UObject_GetFunctionCallspaceFn)plugin->GetDllExport(TEXT("set_UObject_GetFunctionCallspace_handler\0"));
+    if(apiuapi_UObject_GetFunctionCallspace){
+        apiuapi_UObject_GetFunctionCallspace(&uapi_UObject_GetFunctionCallspace);
+    }
+
     auto const apiuapi_UObject_GetGlobalUserConfigFilename = (uapi_UObject_GetGlobalUserConfigFilenameFn)plugin->GetDllExport(TEXT("set_UObject_GetGlobalUserConfigFilename_handler\0"));
     if(apiuapi_UObject_GetGlobalUserConfigFilename){
         apiuapi_UObject_GetGlobalUserConfigFilename(&uapi_UObject_GetGlobalUserConfigFilename);
@@ -9469,9 +12661,29 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_ImplementsGetWorld(&uapi_UObject_ImplementsGetWorld);
     }
 
+    auto const apiuapi_UObject_ImportCustomProperties = (uapi_UObject_ImportCustomPropertiesFn)plugin->GetDllExport(TEXT("set_UObject_ImportCustomProperties_handler\0"));
+    if(apiuapi_UObject_ImportCustomProperties){
+        apiuapi_UObject_ImportCustomProperties(&uapi_UObject_ImportCustomProperties);
+    }
+
+    auto const apiuapi_UObject_InstanceSubobjectTemplates = (uapi_UObject_InstanceSubobjectTemplatesFn)plugin->GetDllExport(TEXT("set_UObject_InstanceSubobjectTemplates_handler\0"));
+    if(apiuapi_UObject_InstanceSubobjectTemplates){
+        apiuapi_UObject_InstanceSubobjectTemplates(&uapi_UObject_InstanceSubobjectTemplates);
+    }
+
     auto const apiuapi_UObject_IsAsset = (uapi_UObject_IsAssetFn)plugin->GetDllExport(TEXT("set_UObject_IsAsset_handler\0"));
     if(apiuapi_UObject_IsAsset){
         apiuapi_UObject_IsAsset(&uapi_UObject_IsAsset);
+    }
+
+    auto const apiuapi_UObject_IsBasedOnArchetype = (uapi_UObject_IsBasedOnArchetypeFn)plugin->GetDllExport(TEXT("set_UObject_IsBasedOnArchetype_handler\0"));
+    if(apiuapi_UObject_IsBasedOnArchetype){
+        apiuapi_UObject_IsBasedOnArchetype(&uapi_UObject_IsBasedOnArchetype);
+    }
+
+    auto const apiuapi_UObject_IsCachedCookedPlatformDataLoaded = (uapi_UObject_IsCachedCookedPlatformDataLoadedFn)plugin->GetDllExport(TEXT("set_UObject_IsCachedCookedPlatformDataLoaded_handler\0"));
+    if(apiuapi_UObject_IsCachedCookedPlatformDataLoaded){
+        apiuapi_UObject_IsCachedCookedPlatformDataLoaded(&uapi_UObject_IsCachedCookedPlatformDataLoaded);
     }
 
     auto const apiuapi_UObject_IsDestructionThreadSafe = (uapi_UObject_IsDestructionThreadSafeFn)plugin->GetDllExport(TEXT("set_UObject_IsDestructionThreadSafe_handler\0"));
@@ -9534,6 +12746,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_IsSupportedForNetworking(&uapi_UObject_IsSupportedForNetworking);
     }
 
+    auto const apiuapi_UObject_LoadConfig = (uapi_UObject_LoadConfigFn)plugin->GetDllExport(TEXT("set_UObject_LoadConfig_handler\0"));
+    if(apiuapi_UObject_LoadConfig){
+        apiuapi_UObject_LoadConfig(&uapi_UObject_LoadConfig);
+    }
+
     auto const apiuapi_UObject_MarkAsEditorOnlySubobject = (uapi_UObject_MarkAsEditorOnlySubobjectFn)plugin->GetDllExport(TEXT("set_UObject_MarkAsEditorOnlySubobject_handler\0"));
     if(apiuapi_UObject_MarkAsEditorOnlySubobject){
         apiuapi_UObject_MarkAsEditorOnlySubobject(&uapi_UObject_MarkAsEditorOnlySubobject);
@@ -9562,6 +12779,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UObject_NeedsLoadForServer = (uapi_UObject_NeedsLoadForServerFn)plugin->GetDllExport(TEXT("set_UObject_NeedsLoadForServer_handler\0"));
     if(apiuapi_UObject_NeedsLoadForServer){
         apiuapi_UObject_NeedsLoadForServer(&uapi_UObject_NeedsLoadForServer);
+    }
+
+    auto const apiuapi_UObject_NeedsLoadForTargetPlatform = (uapi_UObject_NeedsLoadForTargetPlatformFn)plugin->GetDllExport(TEXT("set_UObject_NeedsLoadForTargetPlatform_handler\0"));
+    if(apiuapi_UObject_NeedsLoadForTargetPlatform){
+        apiuapi_UObject_NeedsLoadForTargetPlatform(&uapi_UObject_NeedsLoadForTargetPlatform);
+    }
+
+    auto const apiuapi_UObject_ParseParms = (uapi_UObject_ParseParmsFn)plugin->GetDllExport(TEXT("set_UObject_ParseParms_handler\0"));
+    if(apiuapi_UObject_ParseParms){
+        apiuapi_UObject_ParseParms(&uapi_UObject_ParseParms);
     }
 
     auto const apiuapi_UObject_PostCDOContruct = (uapi_UObject_PostCDOContructFn)plugin->GetDllExport(TEXT("set_UObject_PostCDOContruct_handler\0"));
@@ -9594,6 +12821,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_PostInitProperties(&uapi_UObject_PostInitProperties);
     }
 
+    auto const apiuapi_UObject_PostInterpChange = (uapi_UObject_PostInterpChangeFn)plugin->GetDllExport(TEXT("set_UObject_PostInterpChange_handler\0"));
+    if(apiuapi_UObject_PostInterpChange){
+        apiuapi_UObject_PostInterpChange(&uapi_UObject_PostInterpChange);
+    }
+
     auto const apiuapi_UObject_PostLinkerChange = (uapi_UObject_PostLinkerChangeFn)plugin->GetDllExport(TEXT("set_UObject_PostLinkerChange_handler\0"));
     if(apiuapi_UObject_PostLinkerChange){
         apiuapi_UObject_PostLinkerChange(&uapi_UObject_PostLinkerChange);
@@ -9602,6 +12834,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UObject_PostLoad = (uapi_UObject_PostLoadFn)plugin->GetDllExport(TEXT("set_UObject_PostLoad_handler\0"));
     if(apiuapi_UObject_PostLoad){
         apiuapi_UObject_PostLoad(&uapi_UObject_PostLoad);
+    }
+
+    auto const apiuapi_UObject_PostLoadSubobjects = (uapi_UObject_PostLoadSubobjectsFn)plugin->GetDllExport(TEXT("set_UObject_PostLoadSubobjects_handler\0"));
+    if(apiuapi_UObject_PostLoadSubobjects){
+        apiuapi_UObject_PostLoadSubobjects(&uapi_UObject_PostLoadSubobjects);
     }
 
     auto const apiuapi_UObject_PostNetReceive = (uapi_UObject_PostNetReceiveFn)plugin->GetDllExport(TEXT("set_UObject_PostNetReceive_handler\0"));
@@ -9614,6 +12851,16 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_PostReinitProperties(&uapi_UObject_PostReinitProperties);
     }
 
+    auto const apiuapi_UObject_PostReloadConfig = (uapi_UObject_PostReloadConfigFn)plugin->GetDllExport(TEXT("set_UObject_PostReloadConfig_handler\0"));
+    if(apiuapi_UObject_PostReloadConfig){
+        apiuapi_UObject_PostReloadConfig(&uapi_UObject_PostReloadConfig);
+    }
+
+    auto const apiuapi_UObject_PostRename = (uapi_UObject_PostRenameFn)plugin->GetDllExport(TEXT("set_UObject_PostRename_handler\0"));
+    if(apiuapi_UObject_PostRename){
+        apiuapi_UObject_PostRename(&uapi_UObject_PostRename);
+    }
+
     auto const apiuapi_UObject_PostRepNotifies = (uapi_UObject_PostRepNotifiesFn)plugin->GetDllExport(TEXT("set_UObject_PostRepNotifies_handler\0"));
     if(apiuapi_UObject_PostRepNotifies){
         apiuapi_UObject_PostRepNotifies(&uapi_UObject_PostRepNotifies);
@@ -9624,6 +12871,11 @@ void register_all(Plugin* plugin){
         apiuapi_UObject_PreDestroyFromReplication(&uapi_UObject_PreDestroyFromReplication);
     }
 
+    auto const apiuapi_UObject_PreEditChange = (uapi_UObject_PreEditChangeFn)plugin->GetDllExport(TEXT("set_UObject_PreEditChange_handler\0"));
+    if(apiuapi_UObject_PreEditChange){
+        apiuapi_UObject_PreEditChange(&uapi_UObject_PreEditChange);
+    }
+
     auto const apiuapi_UObject_PreEditUndo = (uapi_UObject_PreEditUndoFn)plugin->GetDllExport(TEXT("set_UObject_PreEditUndo_handler\0"));
     if(apiuapi_UObject_PreEditUndo){
         apiuapi_UObject_PreEditUndo(&uapi_UObject_PreEditUndo);
@@ -9632,6 +12884,36 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UObject_PreNetReceive = (uapi_UObject_PreNetReceiveFn)plugin->GetDllExport(TEXT("set_UObject_PreNetReceive_handler\0"));
     if(apiuapi_UObject_PreNetReceive){
         apiuapi_UObject_PreNetReceive(&uapi_UObject_PreNetReceive);
+    }
+
+    auto const apiuapi_UObject_ProcessEvent = (uapi_UObject_ProcessEventFn)plugin->GetDllExport(TEXT("set_UObject_ProcessEvent_handler\0"));
+    if(apiuapi_UObject_ProcessEvent){
+        apiuapi_UObject_ProcessEvent(&uapi_UObject_ProcessEvent);
+    }
+
+    auto const apiuapi_UObject_RegenerateClass = (uapi_UObject_RegenerateClassFn)plugin->GetDllExport(TEXT("set_UObject_RegenerateClass_handler\0"));
+    if(apiuapi_UObject_RegenerateClass){
+        apiuapi_UObject_RegenerateClass(&uapi_UObject_RegenerateClass);
+    }
+
+    auto const apiuapi_UObject_ReinitializeProperties = (uapi_UObject_ReinitializePropertiesFn)plugin->GetDllExport(TEXT("set_UObject_ReinitializeProperties_handler\0"));
+    if(apiuapi_UObject_ReinitializeProperties){
+        apiuapi_UObject_ReinitializeProperties(&uapi_UObject_ReinitializeProperties);
+    }
+
+    auto const apiuapi_UObject_ReloadConfig = (uapi_UObject_ReloadConfigFn)plugin->GetDllExport(TEXT("set_UObject_ReloadConfig_handler\0"));
+    if(apiuapi_UObject_ReloadConfig){
+        apiuapi_UObject_ReloadConfig(&uapi_UObject_ReloadConfig);
+    }
+
+    auto const apiuapi_UObject_SaveConfig = (uapi_UObject_SaveConfigFn)plugin->GetDllExport(TEXT("set_UObject_SaveConfig_handler\0"));
+    if(apiuapi_UObject_SaveConfig){
+        apiuapi_UObject_SaveConfig(&uapi_UObject_SaveConfig);
+    }
+
+    auto const apiuapi_UObject_SetLinker = (uapi_UObject_SetLinkerFn)plugin->GetDllExport(TEXT("set_UObject_SetLinker_handler\0"));
+    if(apiuapi_UObject_SetLinker){
+        apiuapi_UObject_SetLinker(&uapi_UObject_SetLinker);
     }
 
     auto const apiuapi_UObject_ShutdownAfterError = (uapi_UObject_ShutdownAfterErrorFn)plugin->GetDllExport(TEXT("set_UObject_ShutdownAfterError_handler\0"));
@@ -9664,6 +12946,51 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_ActorToWorld(&uapi_AActor_ActorToWorld);
     }
 
+    auto const apiuapi_AActor_AddActorLocalOffset = (uapi_AActor_AddActorLocalOffsetFn)plugin->GetDllExport(TEXT("set_AActor_AddActorLocalOffset_handler\0"));
+    if(apiuapi_AActor_AddActorLocalOffset){
+        apiuapi_AActor_AddActorLocalOffset(&uapi_AActor_AddActorLocalOffset);
+    }
+
+    auto const apiuapi_AActor_AddActorLocalRotation = (uapi_AActor_AddActorLocalRotationFn)plugin->GetDllExport(TEXT("set_AActor_AddActorLocalRotation_handler\0"));
+    if(apiuapi_AActor_AddActorLocalRotation){
+        apiuapi_AActor_AddActorLocalRotation(&uapi_AActor_AddActorLocalRotation);
+    }
+
+    auto const apiuapi_AActor_AddActorWorldOffset = (uapi_AActor_AddActorWorldOffsetFn)plugin->GetDllExport(TEXT("set_AActor_AddActorWorldOffset_handler\0"));
+    if(apiuapi_AActor_AddActorWorldOffset){
+        apiuapi_AActor_AddActorWorldOffset(&uapi_AActor_AddActorWorldOffset);
+    }
+
+    auto const apiuapi_AActor_AddActorWorldRotation = (uapi_AActor_AddActorWorldRotationFn)plugin->GetDllExport(TEXT("set_AActor_AddActorWorldRotation_handler\0"));
+    if(apiuapi_AActor_AddActorWorldRotation){
+        apiuapi_AActor_AddActorWorldRotation(&uapi_AActor_AddActorWorldRotation);
+    }
+
+    auto const apiuapi_AActor_AddDataLayer = (uapi_AActor_AddDataLayerFn)plugin->GetDllExport(TEXT("set_AActor_AddDataLayer_handler\0"));
+    if(apiuapi_AActor_AddDataLayer){
+        apiuapi_AActor_AddDataLayer(&uapi_AActor_AddDataLayer);
+    }
+
+    auto const apiuapi_AActor_AddInstanceComponent = (uapi_AActor_AddInstanceComponentFn)plugin->GetDllExport(TEXT("set_AActor_AddInstanceComponent_handler\0"));
+    if(apiuapi_AActor_AddInstanceComponent){
+        apiuapi_AActor_AddInstanceComponent(&uapi_AActor_AddInstanceComponent);
+    }
+
+    auto const apiuapi_AActor_AddOwnedComponent = (uapi_AActor_AddOwnedComponentFn)plugin->GetDllExport(TEXT("set_AActor_AddOwnedComponent_handler\0"));
+    if(apiuapi_AActor_AddOwnedComponent){
+        apiuapi_AActor_AddOwnedComponent(&uapi_AActor_AddOwnedComponent);
+    }
+
+    auto const apiuapi_AActor_AddTickPrerequisiteActor = (uapi_AActor_AddTickPrerequisiteActorFn)plugin->GetDllExport(TEXT("set_AActor_AddTickPrerequisiteActor_handler\0"));
+    if(apiuapi_AActor_AddTickPrerequisiteActor){
+        apiuapi_AActor_AddTickPrerequisiteActor(&uapi_AActor_AddTickPrerequisiteActor);
+    }
+
+    auto const apiuapi_AActor_AddTickPrerequisiteComponent = (uapi_AActor_AddTickPrerequisiteComponentFn)plugin->GetDllExport(TEXT("set_AActor_AddTickPrerequisiteComponent_handler\0"));
+    if(apiuapi_AActor_AddTickPrerequisiteComponent){
+        apiuapi_AActor_AddTickPrerequisiteComponent(&uapi_AActor_AddTickPrerequisiteComponent);
+    }
+
     auto const apiuapi_AActor_AllowReceiveTickEventOnDedicatedServer = (uapi_AActor_AllowReceiveTickEventOnDedicatedServerFn)plugin->GetDllExport(TEXT("set_AActor_AllowReceiveTickEventOnDedicatedServer_handler\0"));
     if(apiuapi_AActor_AllowReceiveTickEventOnDedicatedServer){
         apiuapi_AActor_AllowReceiveTickEventOnDedicatedServer(&uapi_AActor_AllowReceiveTickEventOnDedicatedServer);
@@ -9672,6 +12999,26 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_AsyncPhysicsTickActor = (uapi_AActor_AsyncPhysicsTickActorFn)plugin->GetDllExport(TEXT("set_AActor_AsyncPhysicsTickActor_handler\0"));
     if(apiuapi_AActor_AsyncPhysicsTickActor){
         apiuapi_AActor_AsyncPhysicsTickActor(&uapi_AActor_AsyncPhysicsTickActor);
+    }
+
+    auto const apiuapi_AActor_BecomeViewTarget = (uapi_AActor_BecomeViewTargetFn)plugin->GetDllExport(TEXT("set_AActor_BecomeViewTarget_handler\0"));
+    if(apiuapi_AActor_BecomeViewTarget){
+        apiuapi_AActor_BecomeViewTarget(&uapi_AActor_BecomeViewTarget);
+    }
+
+    auto const apiuapi_AActor_CallPreReplication = (uapi_AActor_CallPreReplicationFn)plugin->GetDllExport(TEXT("set_AActor_CallPreReplication_handler\0"));
+    if(apiuapi_AActor_CallPreReplication){
+        apiuapi_AActor_CallPreReplication(&uapi_AActor_CallPreReplication);
+    }
+
+    auto const apiuapi_AActor_CallRemoteFunction = (uapi_AActor_CallRemoteFunctionFn)plugin->GetDllExport(TEXT("set_AActor_CallRemoteFunction_handler\0"));
+    if(apiuapi_AActor_CallRemoteFunction){
+        apiuapi_AActor_CallRemoteFunction(&uapi_AActor_CallRemoteFunction);
+    }
+
+    auto const apiuapi_AActor_CanBeBaseForCharacter = (uapi_AActor_CanBeBaseForCharacterFn)plugin->GetDllExport(TEXT("set_AActor_CanBeBaseForCharacter_handler\0"));
+    if(apiuapi_AActor_CanBeBaseForCharacter){
+        apiuapi_AActor_CanBeBaseForCharacter(&uapi_AActor_CanBeBaseForCharacter);
     }
 
     auto const apiuapi_AActor_CanBeDamaged = (uapi_AActor_CanBeDamagedFn)plugin->GetDllExport(TEXT("set_AActor_CanBeDamaged_handler\0"));
@@ -9687,6 +13034,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_CanChangeIsSpatiallyLoadedFlag = (uapi_AActor_CanChangeIsSpatiallyLoadedFlagFn)plugin->GetDllExport(TEXT("set_AActor_CanChangeIsSpatiallyLoadedFlag_handler\0"));
     if(apiuapi_AActor_CanChangeIsSpatiallyLoadedFlag){
         apiuapi_AActor_CanChangeIsSpatiallyLoadedFlag(&uapi_AActor_CanChangeIsSpatiallyLoadedFlag);
+    }
+
+    auto const apiuapi_AActor_CanEditChange = (uapi_AActor_CanEditChangeFn)plugin->GetDllExport(TEXT("set_AActor_CanEditChange_handler\0"));
+    if(apiuapi_AActor_CanEditChange){
+        apiuapi_AActor_CanEditChange(&uapi_AActor_CanEditChange);
+    }
+
+    auto const apiuapi_AActor_CanEditChangeComponent = (uapi_AActor_CanEditChangeComponentFn)plugin->GetDllExport(TEXT("set_AActor_CanEditChangeComponent_handler\0"));
+    if(apiuapi_AActor_CanEditChangeComponent){
+        apiuapi_AActor_CanEditChangeComponent(&uapi_AActor_CanEditChangeComponent);
     }
 
     auto const apiuapi_AActor_CanEverTick = (uapi_AActor_CanEverTickFn)plugin->GetDllExport(TEXT("set_AActor_CanEverTick_handler\0"));
@@ -9744,9 +13101,39 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_ClearInstanceComponents(&uapi_AActor_ClearInstanceComponents);
     }
 
+    auto const apiuapi_AActor_ContainsDataLayer = (uapi_AActor_ContainsDataLayerFn)plugin->GetDllExport(TEXT("set_AActor_ContainsDataLayer_handler\0"));
+    if(apiuapi_AActor_ContainsDataLayer){
+        apiuapi_AActor_ContainsDataLayer(&uapi_AActor_ContainsDataLayer);
+    }
+
+    auto const apiuapi_AActor_CopyRemoteRoleFrom = (uapi_AActor_CopyRemoteRoleFromFn)plugin->GetDllExport(TEXT("set_AActor_CopyRemoteRoleFrom_handler\0"));
+    if(apiuapi_AActor_CopyRemoteRoleFrom){
+        apiuapi_AActor_CopyRemoteRoleFrom(&uapi_AActor_CopyRemoteRoleFrom);
+    }
+
+    auto const apiuapi_AActor_CreateComponentFromTemplate = (uapi_AActor_CreateComponentFromTemplateFn)plugin->GetDllExport(TEXT("set_AActor_CreateComponentFromTemplate_handler\0"));
+    if(apiuapi_AActor_CreateComponentFromTemplate){
+        apiuapi_AActor_CreateComponentFromTemplate(&uapi_AActor_CreateComponentFromTemplate);
+    }
+
+    auto const apiuapi_AActor_CreateComponentFromTemplateData = (uapi_AActor_CreateComponentFromTemplateDataFn)plugin->GetDllExport(TEXT("set_AActor_CreateComponentFromTemplateData_handler\0"));
+    if(apiuapi_AActor_CreateComponentFromTemplateData){
+        apiuapi_AActor_CreateComponentFromTemplateData(&uapi_AActor_CreateComponentFromTemplateData);
+    }
+
     auto const apiuapi_AActor_CreateOrUpdateActorFolder = (uapi_AActor_CreateOrUpdateActorFolderFn)plugin->GetDllExport(TEXT("set_AActor_CreateOrUpdateActorFolder_handler\0"));
     if(apiuapi_AActor_CreateOrUpdateActorFolder){
         apiuapi_AActor_CreateOrUpdateActorFolder(&uapi_AActor_CreateOrUpdateActorFolder);
+    }
+
+    auto const apiuapi_AActor_DebugShowComponentHierarchy = (uapi_AActor_DebugShowComponentHierarchyFn)plugin->GetDllExport(TEXT("set_AActor_DebugShowComponentHierarchy_handler\0"));
+    if(apiuapi_AActor_DebugShowComponentHierarchy){
+        apiuapi_AActor_DebugShowComponentHierarchy(&uapi_AActor_DebugShowComponentHierarchy);
+    }
+
+    auto const apiuapi_AActor_DebugShowOneComponentHierarchy = (uapi_AActor_DebugShowOneComponentHierarchyFn)plugin->GetDllExport(TEXT("set_AActor_DebugShowOneComponentHierarchy_handler\0"));
+    if(apiuapi_AActor_DebugShowOneComponentHierarchy){
+        apiuapi_AActor_DebugShowOneComponentHierarchy(&uapi_AActor_DebugShowOneComponentHierarchy);
     }
 
     auto const apiuapi_AActor_Destroy = (uapi_AActor_DestroyFn)plugin->GetDllExport(TEXT("set_AActor_Destroy_handler\0"));
@@ -9774,14 +13161,44 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_DisableComponentsSimulatePhysics(&uapi_AActor_DisableComponentsSimulatePhysics);
     }
 
+    auto const apiuapi_AActor_DisableInput = (uapi_AActor_DisableInputFn)plugin->GetDllExport(TEXT("set_AActor_DisableInput_handler\0"));
+    if(apiuapi_AActor_DisableInput){
+        apiuapi_AActor_DisableInput(&uapi_AActor_DisableInput);
+    }
+
     auto const apiuapi_AActor_DispatchBeginPlay = (uapi_AActor_DispatchBeginPlayFn)plugin->GetDllExport(TEXT("set_AActor_DispatchBeginPlay_handler\0"));
     if(apiuapi_AActor_DispatchBeginPlay){
         apiuapi_AActor_DispatchBeginPlay(&uapi_AActor_DispatchBeginPlay);
     }
 
+    auto const apiuapi_AActor_EditorReplacedActor = (uapi_AActor_EditorReplacedActorFn)plugin->GetDllExport(TEXT("set_AActor_EditorReplacedActor_handler\0"));
+    if(apiuapi_AActor_EditorReplacedActor){
+        apiuapi_AActor_EditorReplacedActor(&uapi_AActor_EditorReplacedActor);
+    }
+
+    auto const apiuapi_AActor_EnableInput = (uapi_AActor_EnableInputFn)plugin->GetDllExport(TEXT("set_AActor_EnableInput_handler\0"));
+    if(apiuapi_AActor_EnableInput){
+        apiuapi_AActor_EnableInput(&uapi_AActor_EnableInput);
+    }
+
+    auto const apiuapi_AActor_EndViewTarget = (uapi_AActor_EndViewTargetFn)plugin->GetDllExport(TEXT("set_AActor_EndViewTarget_handler\0"));
+    if(apiuapi_AActor_EndViewTarget){
+        apiuapi_AActor_EndViewTarget(&uapi_AActor_EndViewTarget);
+    }
+
     auto const apiuapi_AActor_ExchangeNetRoles = (uapi_AActor_ExchangeNetRolesFn)plugin->GetDllExport(TEXT("set_AActor_ExchangeNetRoles_handler\0"));
     if(apiuapi_AActor_ExchangeNetRoles){
         apiuapi_AActor_ExchangeNetRoles(&uapi_AActor_ExchangeNetRoles);
+    }
+
+    auto const apiuapi_AActor_FindActorInPackage = (uapi_AActor_FindActorInPackageFn)plugin->GetDllExport(TEXT("set_AActor_FindActorInPackage_handler\0"));
+    if(apiuapi_AActor_FindActorInPackage){
+        apiuapi_AActor_FindActorInPackage(&uapi_AActor_FindActorInPackage);
+    }
+
+    auto const apiuapi_AActor_FinishAndRegisterComponent = (uapi_AActor_FinishAndRegisterComponentFn)plugin->GetDllExport(TEXT("set_AActor_FinishAndRegisterComponent_handler\0"));
+    if(apiuapi_AActor_FinishAndRegisterComponent){
+        apiuapi_AActor_FinishAndRegisterComponent(&uapi_AActor_FinishAndRegisterComponent);
     }
 
     auto const apiuapi_AActor_FixupActorFolder = (uapi_AActor_FixupActorFolderFn)plugin->GetDllExport(TEXT("set_AActor_FixupActorFolder_handler\0"));
@@ -9884,6 +13301,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_GetActorTimeDilation(&uapi_AActor_GetActorTimeDilation);
     }
 
+    auto const apiuapi_AActor_GetActorTimeDilation2 = (uapi_AActor_GetActorTimeDilation2Fn)plugin->GetDllExport(TEXT("set_AActor_GetActorTimeDilation2_handler\0"));
+    if(apiuapi_AActor_GetActorTimeDilation2){
+        apiuapi_AActor_GetActorTimeDilation2(&uapi_AActor_GetActorTimeDilation2);
+    }
+
     auto const apiuapi_AActor_GetActorTransform = (uapi_AActor_GetActorTransformFn)plugin->GetDllExport(TEXT("set_AActor_GetActorTransform_handler\0"));
     if(apiuapi_AActor_GetActorTransform){
         apiuapi_AActor_GetActorTransform(&uapi_AActor_GetActorTransform);
@@ -9944,6 +13366,16 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_GetDefaultAttachComponent(&uapi_AActor_GetDefaultAttachComponent);
     }
 
+    auto const apiuapi_AActor_GetDistanceTo = (uapi_AActor_GetDistanceToFn)plugin->GetDllExport(TEXT("set_AActor_GetDistanceTo_handler\0"));
+    if(apiuapi_AActor_GetDistanceTo){
+        apiuapi_AActor_GetDistanceTo(&uapi_AActor_GetDistanceTo);
+    }
+
+    auto const apiuapi_AActor_GetDotProductTo = (uapi_AActor_GetDotProductToFn)plugin->GetDllExport(TEXT("set_AActor_GetDotProductTo_handler\0"));
+    if(apiuapi_AActor_GetDotProductTo){
+        apiuapi_AActor_GetDotProductTo(&uapi_AActor_GetDotProductTo);
+    }
+
     auto const apiuapi_AActor_GetFolderGuid = (uapi_AActor_GetFolderGuidFn)plugin->GetDllExport(TEXT("set_AActor_GetFolderGuid_handler\0"));
     if(apiuapi_AActor_GetFolderGuid){
         apiuapi_AActor_GetFolderGuid(&uapi_AActor_GetFolderGuid);
@@ -9952,6 +13384,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_GetFolderPath = (uapi_AActor_GetFolderPathFn)plugin->GetDllExport(TEXT("set_AActor_GetFolderPath_handler\0"));
     if(apiuapi_AActor_GetFolderPath){
         apiuapi_AActor_GetFolderPath(&uapi_AActor_GetFolderPath);
+    }
+
+    auto const apiuapi_AActor_GetFunctionCallspace = (uapi_AActor_GetFunctionCallspaceFn)plugin->GetDllExport(TEXT("set_AActor_GetFunctionCallspace_handler\0"));
+    if(apiuapi_AActor_GetFunctionCallspace){
+        apiuapi_AActor_GetFunctionCallspace(&uapi_AActor_GetFunctionCallspace);
     }
 
     auto const apiuapi_AActor_GetGameInstance = (uapi_AActor_GetGameInstanceFn)plugin->GetDllExport(TEXT("set_AActor_GetGameInstance_handler\0"));
@@ -9977,6 +13414,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_GetHiddenPropertyName = (uapi_AActor_GetHiddenPropertyNameFn)plugin->GetDllExport(TEXT("set_AActor_GetHiddenPropertyName_handler\0"));
     if(apiuapi_AActor_GetHiddenPropertyName){
         apiuapi_AActor_GetHiddenPropertyName(&uapi_AActor_GetHiddenPropertyName);
+    }
+
+    auto const apiuapi_AActor_GetHorizontalDistanceTo = (uapi_AActor_GetHorizontalDistanceToFn)plugin->GetDllExport(TEXT("set_AActor_GetHorizontalDistanceTo_handler\0"));
+    if(apiuapi_AActor_GetHorizontalDistanceTo){
+        apiuapi_AActor_GetHorizontalDistanceTo(&uapi_AActor_GetHorizontalDistanceTo);
+    }
+
+    auto const apiuapi_AActor_GetHorizontalDotProductTo = (uapi_AActor_GetHorizontalDotProductToFn)plugin->GetDllExport(TEXT("set_AActor_GetHorizontalDotProductTo_handler\0"));
+    if(apiuapi_AActor_GetHorizontalDotProductTo){
+        apiuapi_AActor_GetHorizontalDotProductTo(&uapi_AActor_GetHorizontalDotProductTo);
     }
 
     auto const apiuapi_AActor_GetHumanReadableName = (uapi_AActor_GetHumanReadableNameFn)plugin->GetDllExport(TEXT("set_AActor_GetHumanReadableName_handler\0"));
@@ -10164,6 +13611,21 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_GetSimpleCollisionRadius(&uapi_AActor_GetSimpleCollisionRadius);
     }
 
+    auto const apiuapi_AActor_GetSquaredDistanceTo = (uapi_AActor_GetSquaredDistanceToFn)plugin->GetDllExport(TEXT("set_AActor_GetSquaredDistanceTo_handler\0"));
+    if(apiuapi_AActor_GetSquaredDistanceTo){
+        apiuapi_AActor_GetSquaredDistanceTo(&uapi_AActor_GetSquaredDistanceTo);
+    }
+
+    auto const apiuapi_AActor_GetSquaredHorizontalDistanceTo = (uapi_AActor_GetSquaredHorizontalDistanceToFn)plugin->GetDllExport(TEXT("set_AActor_GetSquaredHorizontalDistanceTo_handler\0"));
+    if(apiuapi_AActor_GetSquaredHorizontalDistanceTo){
+        apiuapi_AActor_GetSquaredHorizontalDistanceTo(&uapi_AActor_GetSquaredHorizontalDistanceTo);
+    }
+
+    auto const apiuapi_AActor_GetTargetLocation = (uapi_AActor_GetTargetLocationFn)plugin->GetDllExport(TEXT("set_AActor_GetTargetLocation_handler\0"));
+    if(apiuapi_AActor_GetTargetLocation){
+        apiuapi_AActor_GetTargetLocation(&uapi_AActor_GetTargetLocation);
+    }
+
     auto const apiuapi_AActor_GetTearOff = (uapi_AActor_GetTearOffFn)plugin->GetDllExport(TEXT("set_AActor_GetTearOff_handler\0"));
     if(apiuapi_AActor_GetTearOff){
         apiuapi_AActor_GetTearOff(&uapi_AActor_GetTearOff);
@@ -10184,6 +13646,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_GetVelocity(&uapi_AActor_GetVelocity);
     }
 
+    auto const apiuapi_AActor_GetVerticalDistanceTo = (uapi_AActor_GetVerticalDistanceToFn)plugin->GetDllExport(TEXT("set_AActor_GetVerticalDistanceTo_handler\0"));
+    if(apiuapi_AActor_GetVerticalDistanceTo){
+        apiuapi_AActor_GetVerticalDistanceTo(&uapi_AActor_GetVerticalDistanceTo);
+    }
+
     auto const apiuapi_AActor_GetWorld = (uapi_AActor_GetWorldFn)plugin->GetDllExport(TEXT("set_AActor_GetWorld_handler\0"));
     if(apiuapi_AActor_GetWorld){
         apiuapi_AActor_GetWorld(&uapi_AActor_GetWorld);
@@ -10192,6 +13659,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_GetWorldSettings = (uapi_AActor_GetWorldSettingsFn)plugin->GetDllExport(TEXT("set_AActor_GetWorldSettings_handler\0"));
     if(apiuapi_AActor_GetWorldSettings){
         apiuapi_AActor_GetWorldSettings(&uapi_AActor_GetWorldSettings);
+    }
+
+    auto const apiuapi_AActor_HandleRegisterComponentWithWorld = (uapi_AActor_HandleRegisterComponentWithWorldFn)plugin->GetDllExport(TEXT("set_AActor_HandleRegisterComponentWithWorld_handler\0"));
+    if(apiuapi_AActor_HandleRegisterComponentWithWorld){
+        apiuapi_AActor_HandleRegisterComponentWithWorld(&uapi_AActor_HandleRegisterComponentWithWorld);
     }
 
     auto const apiuapi_AActor_HasActiveCameraComponent = (uapi_AActor_HasActiveCameraComponentFn)plugin->GetDllExport(TEXT("set_AActor_HasActiveCameraComponent_handler\0"));
@@ -10249,6 +13721,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_HasValidRootComponent(&uapi_AActor_HasValidRootComponent);
     }
 
+    auto const apiuapi_AActor_IncrementalRegisterComponents = (uapi_AActor_IncrementalRegisterComponentsFn)plugin->GetDllExport(TEXT("set_AActor_IncrementalRegisterComponents_handler\0"));
+    if(apiuapi_AActor_IncrementalRegisterComponents){
+        apiuapi_AActor_IncrementalRegisterComponents(&uapi_AActor_IncrementalRegisterComponents);
+    }
+
     auto const apiuapi_AActor_InitializeComponents = (uapi_AActor_InitializeComponentsFn)plugin->GetDllExport(TEXT("set_AActor_InitializeComponents_handler\0"));
     if(apiuapi_AActor_InitializeComponents){
         apiuapi_AActor_InitializeComponents(&uapi_AActor_InitializeComponents);
@@ -10279,6 +13756,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_IsActorBeingDestroyed(&uapi_AActor_IsActorBeingDestroyed);
     }
 
+    auto const apiuapi_AActor_IsActorComponentReplicatedSubObjectRegistered = (uapi_AActor_IsActorComponentReplicatedSubObjectRegisteredFn)plugin->GetDllExport(TEXT("set_AActor_IsActorComponentReplicatedSubObjectRegistered_handler\0"));
+    if(apiuapi_AActor_IsActorComponentReplicatedSubObjectRegistered){
+        apiuapi_AActor_IsActorComponentReplicatedSubObjectRegistered(&uapi_AActor_IsActorComponentReplicatedSubObjectRegistered);
+    }
+
     auto const apiuapi_AActor_IsActorInitialized = (uapi_AActor_IsActorInitializedFn)plugin->GetDllExport(TEXT("set_AActor_IsActorInitialized_handler\0"));
     if(apiuapi_AActor_IsActorInitialized){
         apiuapi_AActor_IsActorInitialized(&uapi_AActor_IsActorInitialized);
@@ -10304,9 +13786,24 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_IsAsset(&uapi_AActor_IsAsset);
     }
 
+    auto const apiuapi_AActor_IsAttachedTo = (uapi_AActor_IsAttachedToFn)plugin->GetDllExport(TEXT("set_AActor_IsAttachedTo_handler\0"));
+    if(apiuapi_AActor_IsAttachedTo){
+        apiuapi_AActor_IsAttachedTo(&uapi_AActor_IsAttachedTo);
+    }
+
+    auto const apiuapi_AActor_IsBasedOnActor = (uapi_AActor_IsBasedOnActorFn)plugin->GetDllExport(TEXT("set_AActor_IsBasedOnActor_handler\0"));
+    if(apiuapi_AActor_IsBasedOnActor){
+        apiuapi_AActor_IsBasedOnActor(&uapi_AActor_IsBasedOnActor);
+    }
+
     auto const apiuapi_AActor_IsChildActor = (uapi_AActor_IsChildActorFn)plugin->GetDllExport(TEXT("set_AActor_IsChildActor_handler\0"));
     if(apiuapi_AActor_IsChildActor){
         apiuapi_AActor_IsChildActor(&uapi_AActor_IsChildActor);
+    }
+
+    auto const apiuapi_AActor_IsComponentRelevantForNavigation = (uapi_AActor_IsComponentRelevantForNavigationFn)plugin->GetDllExport(TEXT("set_AActor_IsComponentRelevantForNavigation_handler\0"));
+    if(apiuapi_AActor_IsComponentRelevantForNavigation){
+        apiuapi_AActor_IsComponentRelevantForNavigation(&uapi_AActor_IsComponentRelevantForNavigation);
     }
 
     auto const apiuapi_AActor_IsDefaultPreviewEnabled = (uapi_AActor_IsDefaultPreviewEnabledFn)plugin->GetDllExport(TEXT("set_AActor_IsDefaultPreviewEnabled_handler\0"));
@@ -10354,6 +13851,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_IsInEditingLevelInstance(&uapi_AActor_IsInEditingLevelInstance);
     }
 
+    auto const apiuapi_AActor_IsInLevel = (uapi_AActor_IsInLevelFn)plugin->GetDllExport(TEXT("set_AActor_IsInLevel_handler\0"));
+    if(apiuapi_AActor_IsInLevel){
+        apiuapi_AActor_IsInLevel(&uapi_AActor_IsInLevel);
+    }
+
     auto const apiuapi_AActor_IsInPersistentLevel = (uapi_AActor_IsInPersistentLevelFn)plugin->GetDllExport(TEXT("set_AActor_IsInPersistentLevel_handler\0"));
     if(apiuapi_AActor_IsInPersistentLevel){
         apiuapi_AActor_IsInPersistentLevel(&uapi_AActor_IsInPersistentLevel);
@@ -10389,6 +13891,16 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_IsNetStartupActor(&uapi_AActor_IsNetStartupActor);
     }
 
+    auto const apiuapi_AActor_IsOverlappingActor = (uapi_AActor_IsOverlappingActorFn)plugin->GetDllExport(TEXT("set_AActor_IsOverlappingActor_handler\0"));
+    if(apiuapi_AActor_IsOverlappingActor){
+        apiuapi_AActor_IsOverlappingActor(&uapi_AActor_IsOverlappingActor);
+    }
+
+    auto const apiuapi_AActor_IsOwnedBy = (uapi_AActor_IsOwnedByFn)plugin->GetDllExport(TEXT("set_AActor_IsOwnedBy_handler\0"));
+    if(apiuapi_AActor_IsOwnedBy){
+        apiuapi_AActor_IsOwnedBy(&uapi_AActor_IsOwnedBy);
+    }
+
     auto const apiuapi_AActor_IsPendingKillPending = (uapi_AActor_IsPendingKillPendingFn)plugin->GetDllExport(TEXT("set_AActor_IsPendingKillPending_handler\0"));
     if(apiuapi_AActor_IsPendingKillPending){
         apiuapi_AActor_IsPendingKillPending(&uapi_AActor_IsPendingKillPending);
@@ -10397,6 +13909,21 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_IsReadyForFinishDestroy = (uapi_AActor_IsReadyForFinishDestroyFn)plugin->GetDllExport(TEXT("set_AActor_IsReadyForFinishDestroy_handler\0"));
     if(apiuapi_AActor_IsReadyForFinishDestroy){
         apiuapi_AActor_IsReadyForFinishDestroy(&uapi_AActor_IsReadyForFinishDestroy);
+    }
+
+    auto const apiuapi_AActor_IsRelevancyOwnerFor = (uapi_AActor_IsRelevancyOwnerForFn)plugin->GetDllExport(TEXT("set_AActor_IsRelevancyOwnerFor_handler\0"));
+    if(apiuapi_AActor_IsRelevancyOwnerFor){
+        apiuapi_AActor_IsRelevancyOwnerFor(&uapi_AActor_IsRelevancyOwnerFor);
+    }
+
+    auto const apiuapi_AActor_IsReplicatedActorComponentRegistered = (uapi_AActor_IsReplicatedActorComponentRegisteredFn)plugin->GetDllExport(TEXT("set_AActor_IsReplicatedActorComponentRegistered_handler\0"));
+    if(apiuapi_AActor_IsReplicatedActorComponentRegistered){
+        apiuapi_AActor_IsReplicatedActorComponentRegistered(&uapi_AActor_IsReplicatedActorComponentRegistered);
+    }
+
+    auto const apiuapi_AActor_IsReplicatedSubObjectRegistered = (uapi_AActor_IsReplicatedSubObjectRegisteredFn)plugin->GetDllExport(TEXT("set_AActor_IsReplicatedSubObjectRegistered_handler\0"));
+    if(apiuapi_AActor_IsReplicatedSubObjectRegistered){
+        apiuapi_AActor_IsReplicatedSubObjectRegistered(&uapi_AActor_IsReplicatedSubObjectRegistered);
     }
 
     auto const apiuapi_AActor_IsReplicatingMovement = (uapi_AActor_IsReplicatingMovementFn)plugin->GetDllExport(TEXT("set_AActor_IsReplicatingMovement_handler\0"));
@@ -10494,6 +14021,16 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_K2_GetRootComponent(&uapi_AActor_K2_GetRootComponent);
     }
 
+    auto const apiuapi_AActor_K2_OnBecomeViewTarget = (uapi_AActor_K2_OnBecomeViewTargetFn)plugin->GetDllExport(TEXT("set_AActor_K2_OnBecomeViewTarget_handler\0"));
+    if(apiuapi_AActor_K2_OnBecomeViewTarget){
+        apiuapi_AActor_K2_OnBecomeViewTarget(&uapi_AActor_K2_OnBecomeViewTarget);
+    }
+
+    auto const apiuapi_AActor_K2_OnEndViewTarget = (uapi_AActor_K2_OnEndViewTargetFn)plugin->GetDllExport(TEXT("set_AActor_K2_OnEndViewTarget_handler\0"));
+    if(apiuapi_AActor_K2_OnEndViewTarget){
+        apiuapi_AActor_K2_OnEndViewTarget(&uapi_AActor_K2_OnEndViewTarget);
+    }
+
     auto const apiuapi_AActor_K2_OnReset = (uapi_AActor_K2_OnResetFn)plugin->GetDllExport(TEXT("set_AActor_K2_OnReset_handler\0"));
     if(apiuapi_AActor_K2_OnReset){
         apiuapi_AActor_K2_OnReset(&uapi_AActor_K2_OnReset);
@@ -10514,6 +14051,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_LifeSpanExpired(&uapi_AActor_LifeSpanExpired);
     }
 
+    auto const apiuapi_AActor_MakeNoise = (uapi_AActor_MakeNoiseFn)plugin->GetDllExport(TEXT("set_AActor_MakeNoise_handler\0"));
+    if(apiuapi_AActor_MakeNoise){
+        apiuapi_AActor_MakeNoise(&uapi_AActor_MakeNoise);
+    }
+
     auto const apiuapi_AActor_MarkComponentsAsPendingKill = (uapi_AActor_MarkComponentsAsPendingKillFn)plugin->GetDllExport(TEXT("set_AActor_MarkComponentsAsPendingKill_handler\0"));
     if(apiuapi_AActor_MarkComponentsAsPendingKill){
         apiuapi_AActor_MarkComponentsAsPendingKill(&uapi_AActor_MarkComponentsAsPendingKill);
@@ -10529,14 +14071,34 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_Modify(&uapi_AActor_Modify);
     }
 
+    auto const apiuapi_AActor_NeedsLoadForTargetPlatform = (uapi_AActor_NeedsLoadForTargetPlatformFn)plugin->GetDllExport(TEXT("set_AActor_NeedsLoadForTargetPlatform_handler\0"));
+    if(apiuapi_AActor_NeedsLoadForTargetPlatform){
+        apiuapi_AActor_NeedsLoadForTargetPlatform(&uapi_AActor_NeedsLoadForTargetPlatform);
+    }
+
     auto const apiuapi_AActor_NotifyActorBeginCursorOver = (uapi_AActor_NotifyActorBeginCursorOverFn)plugin->GetDllExport(TEXT("set_AActor_NotifyActorBeginCursorOver_handler\0"));
     if(apiuapi_AActor_NotifyActorBeginCursorOver){
         apiuapi_AActor_NotifyActorBeginCursorOver(&uapi_AActor_NotifyActorBeginCursorOver);
     }
 
+    auto const apiuapi_AActor_NotifyActorBeginOverlap = (uapi_AActor_NotifyActorBeginOverlapFn)plugin->GetDllExport(TEXT("set_AActor_NotifyActorBeginOverlap_handler\0"));
+    if(apiuapi_AActor_NotifyActorBeginOverlap){
+        apiuapi_AActor_NotifyActorBeginOverlap(&uapi_AActor_NotifyActorBeginOverlap);
+    }
+
     auto const apiuapi_AActor_NotifyActorEndCursorOver = (uapi_AActor_NotifyActorEndCursorOverFn)plugin->GetDllExport(TEXT("set_AActor_NotifyActorEndCursorOver_handler\0"));
     if(apiuapi_AActor_NotifyActorEndCursorOver){
         apiuapi_AActor_NotifyActorEndCursorOver(&uapi_AActor_NotifyActorEndCursorOver);
+    }
+
+    auto const apiuapi_AActor_NotifyActorEndOverlap = (uapi_AActor_NotifyActorEndOverlapFn)plugin->GetDllExport(TEXT("set_AActor_NotifyActorEndOverlap_handler\0"));
+    if(apiuapi_AActor_NotifyActorEndOverlap){
+        apiuapi_AActor_NotifyActorEndOverlap(&uapi_AActor_NotifyActorEndOverlap);
+    }
+
+    auto const apiuapi_AActor_OnNetCleanup = (uapi_AActor_OnNetCleanupFn)plugin->GetDllExport(TEXT("set_AActor_OnNetCleanup_handler\0"));
+    if(apiuapi_AActor_OnNetCleanup){
+        apiuapi_AActor_OnNetCleanup(&uapi_AActor_OnNetCleanup);
     }
 
     auto const apiuapi_AActor_OnPlayFromHere = (uapi_AActor_OnPlayFromHereFn)plugin->GetDllExport(TEXT("set_AActor_OnPlayFromHere_handler\0"));
@@ -10569,6 +14131,16 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_OnReplicationPausedChanged(&uapi_AActor_OnReplicationPausedChanged);
     }
 
+    auto const apiuapi_AActor_OnSubobjectCreatedFromReplication = (uapi_AActor_OnSubobjectCreatedFromReplicationFn)plugin->GetDllExport(TEXT("set_AActor_OnSubobjectCreatedFromReplication_handler\0"));
+    if(apiuapi_AActor_OnSubobjectCreatedFromReplication){
+        apiuapi_AActor_OnSubobjectCreatedFromReplication(&uapi_AActor_OnSubobjectCreatedFromReplication);
+    }
+
+    auto const apiuapi_AActor_OnSubobjectDestroyFromReplication = (uapi_AActor_OnSubobjectDestroyFromReplicationFn)plugin->GetDllExport(TEXT("set_AActor_OnSubobjectDestroyFromReplication_handler\0"));
+    if(apiuapi_AActor_OnSubobjectDestroyFromReplication){
+        apiuapi_AActor_OnSubobjectDestroyFromReplication(&uapi_AActor_OnSubobjectDestroyFromReplication);
+    }
+
     auto const apiuapi_AActor_OpenAssetEditor = (uapi_AActor_OpenAssetEditorFn)plugin->GetDllExport(TEXT("set_AActor_OpenAssetEditor_handler\0"));
     if(apiuapi_AActor_OpenAssetEditor){
         apiuapi_AActor_OpenAssetEditor(&uapi_AActor_OpenAssetEditor);
@@ -10577,6 +14149,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_OutsideWorldBounds = (uapi_AActor_OutsideWorldBoundsFn)plugin->GetDllExport(TEXT("set_AActor_OutsideWorldBounds_handler\0"));
     if(apiuapi_AActor_OutsideWorldBounds){
         apiuapi_AActor_OutsideWorldBounds(&uapi_AActor_OutsideWorldBounds);
+    }
+
+    auto const apiuapi_AActor_OwnsComponent = (uapi_AActor_OwnsComponentFn)plugin->GetDllExport(TEXT("set_AActor_OwnsComponent_handler\0"));
+    if(apiuapi_AActor_OwnsComponent){
+        apiuapi_AActor_OwnsComponent(&uapi_AActor_OwnsComponent);
     }
 
     auto const apiuapi_AActor_PostActorConstruction = (uapi_AActor_PostActorConstructionFn)plugin->GetDllExport(TEXT("set_AActor_PostActorConstruction_handler\0"));
@@ -10619,6 +14196,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_PostLoad(&uapi_AActor_PostLoad);
     }
 
+    auto const apiuapi_AActor_PostLoadSubobjects = (uapi_AActor_PostLoadSubobjectsFn)plugin->GetDllExport(TEXT("set_AActor_PostLoadSubobjects_handler\0"));
+    if(apiuapi_AActor_PostLoadSubobjects){
+        apiuapi_AActor_PostLoadSubobjects(&uapi_AActor_PostLoadSubobjects);
+    }
+
     auto const apiuapi_AActor_PostNetInit = (uapi_AActor_PostNetInitFn)plugin->GetDllExport(TEXT("set_AActor_PostNetInit_handler\0"));
     if(apiuapi_AActor_PostNetInit){
         apiuapi_AActor_PostNetInit(&uapi_AActor_PostNetInit);
@@ -10649,9 +14231,24 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_PostRegisterAllComponents(&uapi_AActor_PostRegisterAllComponents);
     }
 
+    auto const apiuapi_AActor_PostRename = (uapi_AActor_PostRenameFn)plugin->GetDllExport(TEXT("set_AActor_PostRename_handler\0"));
+    if(apiuapi_AActor_PostRename){
+        apiuapi_AActor_PostRename(&uapi_AActor_PostRename);
+    }
+
+    auto const apiuapi_AActor_PostRenderFor = (uapi_AActor_PostRenderForFn)plugin->GetDllExport(TEXT("set_AActor_PostRenderFor_handler\0"));
+    if(apiuapi_AActor_PostRenderFor){
+        apiuapi_AActor_PostRenderFor(&uapi_AActor_PostRenderFor);
+    }
+
     auto const apiuapi_AActor_PostUnregisterAllComponents = (uapi_AActor_PostUnregisterAllComponentsFn)plugin->GetDllExport(TEXT("set_AActor_PostUnregisterAllComponents_handler\0"));
     if(apiuapi_AActor_PostUnregisterAllComponents){
         apiuapi_AActor_PostUnregisterAllComponents(&uapi_AActor_PostUnregisterAllComponents);
+    }
+
+    auto const apiuapi_AActor_PreEditChange = (uapi_AActor_PreEditChangeFn)plugin->GetDllExport(TEXT("set_AActor_PreEditChange_handler\0"));
+    if(apiuapi_AActor_PreEditChange){
+        apiuapi_AActor_PreEditChange(&uapi_AActor_PreEditChange);
     }
 
     auto const apiuapi_AActor_PreEditUndo = (uapi_AActor_PreEditUndoFn)plugin->GetDllExport(TEXT("set_AActor_PreEditUndo_handler\0"));
@@ -10679,6 +14276,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_PrestreamTextures(&uapi_AActor_PrestreamTextures);
     }
 
+    auto const apiuapi_AActor_ProcessEvent = (uapi_AActor_ProcessEventFn)plugin->GetDllExport(TEXT("set_AActor_ProcessEvent_handler\0"));
+    if(apiuapi_AActor_ProcessEvent){
+        apiuapi_AActor_ProcessEvent(&uapi_AActor_ProcessEvent);
+    }
+
     auto const apiuapi_AActor_PushLevelInstanceEditingStateToProxies = (uapi_AActor_PushLevelInstanceEditingStateToProxiesFn)plugin->GetDllExport(TEXT("set_AActor_PushLevelInstanceEditingStateToProxies_handler\0"));
     if(apiuapi_AActor_PushLevelInstanceEditingStateToProxies){
         apiuapi_AActor_PushLevelInstanceEditingStateToProxies(&uapi_AActor_PushLevelInstanceEditingStateToProxies);
@@ -10694,9 +14296,24 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_ReceiveActorBeginCursorOver(&uapi_AActor_ReceiveActorBeginCursorOver);
     }
 
+    auto const apiuapi_AActor_ReceiveActorBeginOverlap = (uapi_AActor_ReceiveActorBeginOverlapFn)plugin->GetDllExport(TEXT("set_AActor_ReceiveActorBeginOverlap_handler\0"));
+    if(apiuapi_AActor_ReceiveActorBeginOverlap){
+        apiuapi_AActor_ReceiveActorBeginOverlap(&uapi_AActor_ReceiveActorBeginOverlap);
+    }
+
     auto const apiuapi_AActor_ReceiveActorEndCursorOver = (uapi_AActor_ReceiveActorEndCursorOverFn)plugin->GetDllExport(TEXT("set_AActor_ReceiveActorEndCursorOver_handler\0"));
     if(apiuapi_AActor_ReceiveActorEndCursorOver){
         apiuapi_AActor_ReceiveActorEndCursorOver(&uapi_AActor_ReceiveActorEndCursorOver);
+    }
+
+    auto const apiuapi_AActor_ReceiveActorEndOverlap = (uapi_AActor_ReceiveActorEndOverlapFn)plugin->GetDllExport(TEXT("set_AActor_ReceiveActorEndOverlap_handler\0"));
+    if(apiuapi_AActor_ReceiveActorEndOverlap){
+        apiuapi_AActor_ReceiveActorEndOverlap(&uapi_AActor_ReceiveActorEndOverlap);
+    }
+
+    auto const apiuapi_AActor_ReceiveAnyDamage = (uapi_AActor_ReceiveAnyDamageFn)plugin->GetDllExport(TEXT("set_AActor_ReceiveAnyDamage_handler\0"));
+    if(apiuapi_AActor_ReceiveAnyDamage){
+        apiuapi_AActor_ReceiveAnyDamage(&uapi_AActor_ReceiveAnyDamage);
     }
 
     auto const apiuapi_AActor_ReceiveAsyncPhysicsTick = (uapi_AActor_ReceiveAsyncPhysicsTickFn)plugin->GetDllExport(TEXT("set_AActor_ReceiveAsyncPhysicsTick_handler\0"));
@@ -10724,9 +14341,49 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_RegisterAllComponents(&uapi_AActor_RegisterAllComponents);
     }
 
+    auto const apiuapi_AActor_RemoveActorComponentReplicatedSubObject = (uapi_AActor_RemoveActorComponentReplicatedSubObjectFn)plugin->GetDllExport(TEXT("set_AActor_RemoveActorComponentReplicatedSubObject_handler\0"));
+    if(apiuapi_AActor_RemoveActorComponentReplicatedSubObject){
+        apiuapi_AActor_RemoveActorComponentReplicatedSubObject(&uapi_AActor_RemoveActorComponentReplicatedSubObject);
+    }
+
     auto const apiuapi_AActor_RemoveAllDataLayers = (uapi_AActor_RemoveAllDataLayersFn)plugin->GetDllExport(TEXT("set_AActor_RemoveAllDataLayers_handler\0"));
     if(apiuapi_AActor_RemoveAllDataLayers){
         apiuapi_AActor_RemoveAllDataLayers(&uapi_AActor_RemoveAllDataLayers);
+    }
+
+    auto const apiuapi_AActor_RemoveDataLayer = (uapi_AActor_RemoveDataLayerFn)plugin->GetDllExport(TEXT("set_AActor_RemoveDataLayer_handler\0"));
+    if(apiuapi_AActor_RemoveDataLayer){
+        apiuapi_AActor_RemoveDataLayer(&uapi_AActor_RemoveDataLayer);
+    }
+
+    auto const apiuapi_AActor_RemoveInstanceComponent = (uapi_AActor_RemoveInstanceComponentFn)plugin->GetDllExport(TEXT("set_AActor_RemoveInstanceComponent_handler\0"));
+    if(apiuapi_AActor_RemoveInstanceComponent){
+        apiuapi_AActor_RemoveInstanceComponent(&uapi_AActor_RemoveInstanceComponent);
+    }
+
+    auto const apiuapi_AActor_RemoveOwnedComponent = (uapi_AActor_RemoveOwnedComponentFn)plugin->GetDllExport(TEXT("set_AActor_RemoveOwnedComponent_handler\0"));
+    if(apiuapi_AActor_RemoveOwnedComponent){
+        apiuapi_AActor_RemoveOwnedComponent(&uapi_AActor_RemoveOwnedComponent);
+    }
+
+    auto const apiuapi_AActor_RemoveReplicatedSubObject = (uapi_AActor_RemoveReplicatedSubObjectFn)plugin->GetDllExport(TEXT("set_AActor_RemoveReplicatedSubObject_handler\0"));
+    if(apiuapi_AActor_RemoveReplicatedSubObject){
+        apiuapi_AActor_RemoveReplicatedSubObject(&uapi_AActor_RemoveReplicatedSubObject);
+    }
+
+    auto const apiuapi_AActor_RemoveTickPrerequisiteActor = (uapi_AActor_RemoveTickPrerequisiteActorFn)plugin->GetDllExport(TEXT("set_AActor_RemoveTickPrerequisiteActor_handler\0"));
+    if(apiuapi_AActor_RemoveTickPrerequisiteActor){
+        apiuapi_AActor_RemoveTickPrerequisiteActor(&uapi_AActor_RemoveTickPrerequisiteActor);
+    }
+
+    auto const apiuapi_AActor_RemoveTickPrerequisiteComponent = (uapi_AActor_RemoveTickPrerequisiteComponentFn)plugin->GetDllExport(TEXT("set_AActor_RemoveTickPrerequisiteComponent_handler\0"));
+    if(apiuapi_AActor_RemoveTickPrerequisiteComponent){
+        apiuapi_AActor_RemoveTickPrerequisiteComponent(&uapi_AActor_RemoveTickPrerequisiteComponent);
+    }
+
+    auto const apiuapi_AActor_ReplicateSubobjects = (uapi_AActor_ReplicateSubobjectsFn)plugin->GetDllExport(TEXT("set_AActor_ReplicateSubobjects_handler\0"));
+    if(apiuapi_AActor_ReplicateSubobjects){
+        apiuapi_AActor_ReplicateSubobjects(&uapi_AActor_ReplicateSubobjects);
     }
 
     auto const apiuapi_AActor_ReregisterAllComponents = (uapi_AActor_ReregisterAllComponentsFn)plugin->GetDllExport(TEXT("set_AActor_ReregisterAllComponents_handler\0"));
@@ -10777,6 +14434,21 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_SetActorHiddenInGame = (uapi_AActor_SetActorHiddenInGameFn)plugin->GetDllExport(TEXT("set_AActor_SetActorHiddenInGame_handler\0"));
     if(apiuapi_AActor_SetActorHiddenInGame){
         apiuapi_AActor_SetActorHiddenInGame(&uapi_AActor_SetActorHiddenInGame);
+    }
+
+    auto const apiuapi_AActor_SetActorLocationAndRotation = (uapi_AActor_SetActorLocationAndRotationFn)plugin->GetDllExport(TEXT("set_AActor_SetActorLocationAndRotation_handler\0"));
+    if(apiuapi_AActor_SetActorLocationAndRotation){
+        apiuapi_AActor_SetActorLocationAndRotation(&uapi_AActor_SetActorLocationAndRotation);
+    }
+
+    auto const apiuapi_AActor_SetActorRelativeLocation = (uapi_AActor_SetActorRelativeLocationFn)plugin->GetDllExport(TEXT("set_AActor_SetActorRelativeLocation_handler\0"));
+    if(apiuapi_AActor_SetActorRelativeLocation){
+        apiuapi_AActor_SetActorRelativeLocation(&uapi_AActor_SetActorRelativeLocation);
+    }
+
+    auto const apiuapi_AActor_SetActorRelativeRotation = (uapi_AActor_SetActorRelativeRotationFn)plugin->GetDllExport(TEXT("set_AActor_SetActorRelativeRotation_handler\0"));
+    if(apiuapi_AActor_SetActorRelativeRotation){
+        apiuapi_AActor_SetActorRelativeRotation(&uapi_AActor_SetActorRelativeRotation);
     }
 
     auto const apiuapi_AActor_SetActorRelativeScale3D = (uapi_AActor_SetActorRelativeScale3DFn)plugin->GetDllExport(TEXT("set_AActor_SetActorRelativeScale3D_handler\0"));
@@ -10834,6 +14506,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_SetForceExternalActorLevelReferenceForPIE(&uapi_AActor_SetForceExternalActorLevelReferenceForPIE);
     }
 
+    auto const apiuapi_AActor_SetHLODLayer = (uapi_AActor_SetHLODLayerFn)plugin->GetDllExport(TEXT("set_AActor_SetHLODLayer_handler\0"));
+    if(apiuapi_AActor_SetHLODLayer){
+        apiuapi_AActor_SetHLODLayer(&uapi_AActor_SetHLODLayer);
+    }
+
     auto const apiuapi_AActor_SetHasActorRegisteredAllComponents = (uapi_AActor_SetHasActorRegisteredAllComponentsFn)plugin->GetDllExport(TEXT("set_AActor_SetHasActorRegisteredAllComponents_handler\0"));
     if(apiuapi_AActor_SetHasActorRegisteredAllComponents){
         apiuapi_AActor_SetHasActorRegisteredAllComponents(&uapi_AActor_SetHasActorRegisteredAllComponents);
@@ -10842,6 +14519,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_SetHidden = (uapi_AActor_SetHiddenFn)plugin->GetDllExport(TEXT("set_AActor_SetHidden_handler\0"));
     if(apiuapi_AActor_SetHidden){
         apiuapi_AActor_SetHidden(&uapi_AActor_SetHidden);
+    }
+
+    auto const apiuapi_AActor_SetInstigator = (uapi_AActor_SetInstigatorFn)plugin->GetDllExport(TEXT("set_AActor_SetInstigator_handler\0"));
+    if(apiuapi_AActor_SetInstigator){
+        apiuapi_AActor_SetInstigator(&uapi_AActor_SetInstigator);
     }
 
     auto const apiuapi_AActor_SetIsHiddenEdLayer = (uapi_AActor_SetIsHiddenEdLayerFn)plugin->GetDllExport(TEXT("set_AActor_SetIsHiddenEdLayer_handler\0"));
@@ -10857,6 +14539,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_SetIsTemporarilyHiddenInEditor = (uapi_AActor_SetIsTemporarilyHiddenInEditorFn)plugin->GetDllExport(TEXT("set_AActor_SetIsTemporarilyHiddenInEditor_handler\0"));
     if(apiuapi_AActor_SetIsTemporarilyHiddenInEditor){
         apiuapi_AActor_SetIsTemporarilyHiddenInEditor(&uapi_AActor_SetIsTemporarilyHiddenInEditor);
+    }
+
+    auto const apiuapi_AActor_SetLODParent = (uapi_AActor_SetLODParentFn)plugin->GetDllExport(TEXT("set_AActor_SetLODParent_handler\0"));
+    if(apiuapi_AActor_SetLODParent){
+        apiuapi_AActor_SetLODParent(&uapi_AActor_SetLODParent);
     }
 
     auto const apiuapi_AActor_SetLifeSpan = (uapi_AActor_SetLifeSpanFn)plugin->GetDllExport(TEXT("set_AActor_SetLifeSpan_handler\0"));
@@ -10877,6 +14564,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_SetNetDriverName = (uapi_AActor_SetNetDriverNameFn)plugin->GetDllExport(TEXT("set_AActor_SetNetDriverName_handler\0"));
     if(apiuapi_AActor_SetNetDriverName){
         apiuapi_AActor_SetNetDriverName(&uapi_AActor_SetNetDriverName);
+    }
+
+    auto const apiuapi_AActor_SetOwner = (uapi_AActor_SetOwnerFn)plugin->GetDllExport(TEXT("set_AActor_SetOwner_handler\0"));
+    if(apiuapi_AActor_SetOwner){
+        apiuapi_AActor_SetOwner(&uapi_AActor_SetOwner);
     }
 
     auto const apiuapi_AActor_SetPackageExternal = (uapi_AActor_SetPackageExternalFn)plugin->GetDllExport(TEXT("set_AActor_SetPackageExternal_handler\0"));
@@ -10902,6 +14594,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AActor_SetReplicatingMovement = (uapi_AActor_SetReplicatingMovementFn)plugin->GetDllExport(TEXT("set_AActor_SetReplicatingMovement_handler\0"));
     if(apiuapi_AActor_SetReplicatingMovement){
         apiuapi_AActor_SetReplicatingMovement(&uapi_AActor_SetReplicatingMovement);
+    }
+
+    auto const apiuapi_AActor_SetRootComponent = (uapi_AActor_SetRootComponentFn)plugin->GetDllExport(TEXT("set_AActor_SetRootComponent_handler\0"));
+    if(apiuapi_AActor_SetRootComponent){
+        apiuapi_AActor_SetRootComponent(&uapi_AActor_SetRootComponent);
     }
 
     auto const apiuapi_AActor_SetRuntimeGrid = (uapi_AActor_SetRuntimeGridFn)plugin->GetDllExport(TEXT("set_AActor_SetRuntimeGrid_handler\0"));
@@ -11004,6 +14701,11 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_UpdateOverlaps(&uapi_AActor_UpdateOverlaps);
     }
 
+    auto const apiuapi_AActor_UpdateReplicatedComponent = (uapi_AActor_UpdateReplicatedComponentFn)plugin->GetDllExport(TEXT("set_AActor_UpdateReplicatedComponent_handler\0"));
+    if(apiuapi_AActor_UpdateReplicatedComponent){
+        apiuapi_AActor_UpdateReplicatedComponent(&uapi_AActor_UpdateReplicatedComponent);
+    }
+
     auto const apiuapi_AActor_UseShortConnectTimeout = (uapi_AActor_UseShortConnectTimeoutFn)plugin->GetDllExport(TEXT("set_AActor_UseShortConnectTimeout_handler\0"));
     if(apiuapi_AActor_UseShortConnectTimeout){
         apiuapi_AActor_UseShortConnectTimeout(&uapi_AActor_UseShortConnectTimeout);
@@ -11019,9 +14721,104 @@ void register_all(Plugin* plugin){
         apiuapi_AActor_WasRecentlyRendered(&uapi_AActor_WasRecentlyRendered);
     }
 
+    auto const apiuapi_APawn_AddControllerPitchInput = (uapi_APawn_AddControllerPitchInputFn)plugin->GetDllExport(TEXT("set_APawn_AddControllerPitchInput_handler\0"));
+    if(apiuapi_APawn_AddControllerPitchInput){
+        apiuapi_APawn_AddControllerPitchInput(&uapi_APawn_AddControllerPitchInput);
+    }
+
+    auto const apiuapi_APawn_AddControllerRollInput = (uapi_APawn_AddControllerRollInputFn)plugin->GetDllExport(TEXT("set_APawn_AddControllerRollInput_handler\0"));
+    if(apiuapi_APawn_AddControllerRollInput){
+        apiuapi_APawn_AddControllerRollInput(&uapi_APawn_AddControllerRollInput);
+    }
+
+    auto const apiuapi_APawn_AddControllerYawInput = (uapi_APawn_AddControllerYawInputFn)plugin->GetDllExport(TEXT("set_APawn_AddControllerYawInput_handler\0"));
+    if(apiuapi_APawn_AddControllerYawInput){
+        apiuapi_APawn_AddControllerYawInput(&uapi_APawn_AddControllerYawInput);
+    }
+
+    auto const apiuapi_APawn_AddMovementInput = (uapi_APawn_AddMovementInputFn)plugin->GetDllExport(TEXT("set_APawn_AddMovementInput_handler\0"));
+    if(apiuapi_APawn_AddMovementInput){
+        apiuapi_APawn_AddMovementInput(&uapi_APawn_AddMovementInput);
+    }
+
+    auto const apiuapi_APawn_BecomeViewTarget = (uapi_APawn_BecomeViewTargetFn)plugin->GetDllExport(TEXT("set_APawn_BecomeViewTarget_handler\0"));
+    if(apiuapi_APawn_BecomeViewTarget){
+        apiuapi_APawn_BecomeViewTarget(&uapi_APawn_BecomeViewTarget);
+    }
+
+    auto const apiuapi_APawn_ConsumeMovementInputVector = (uapi_APawn_ConsumeMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_ConsumeMovementInputVector_handler\0"));
+    if(apiuapi_APawn_ConsumeMovementInputVector){
+        apiuapi_APawn_ConsumeMovementInputVector(&uapi_APawn_ConsumeMovementInputVector);
+    }
+
+    auto const apiuapi_APawn_Destroyed = (uapi_APawn_DestroyedFn)plugin->GetDllExport(TEXT("set_APawn_Destroyed_handler\0"));
+    if(apiuapi_APawn_Destroyed){
+        apiuapi_APawn_Destroyed(&uapi_APawn_Destroyed);
+    }
+
+    auto const apiuapi_APawn_DetachFromControllerPendingDestroy = (uapi_APawn_DetachFromControllerPendingDestroyFn)plugin->GetDllExport(TEXT("set_APawn_DetachFromControllerPendingDestroy_handler\0"));
+    if(apiuapi_APawn_DetachFromControllerPendingDestroy){
+        apiuapi_APawn_DetachFromControllerPendingDestroy(&uapi_APawn_DetachFromControllerPendingDestroy);
+    }
+
+    auto const apiuapi_APawn_DisableInput = (uapi_APawn_DisableInputFn)plugin->GetDllExport(TEXT("set_APawn_DisableInput_handler\0"));
+    if(apiuapi_APawn_DisableInput){
+        apiuapi_APawn_DisableInput(&uapi_APawn_DisableInput);
+    }
+
+    auto const apiuapi_APawn_DispatchRestart = (uapi_APawn_DispatchRestartFn)plugin->GetDllExport(TEXT("set_APawn_DispatchRestart_handler\0"));
+    if(apiuapi_APawn_DispatchRestart){
+        apiuapi_APawn_DispatchRestart(&uapi_APawn_DispatchRestart);
+    }
+
+    auto const apiuapi_APawn_EnableInput = (uapi_APawn_EnableInputFn)plugin->GetDllExport(TEXT("set_APawn_EnableInput_handler\0"));
+    if(apiuapi_APawn_EnableInput){
+        apiuapi_APawn_EnableInput(&uapi_APawn_EnableInput);
+    }
+
+    auto const apiuapi_APawn_EndViewTarget = (uapi_APawn_EndViewTargetFn)plugin->GetDllExport(TEXT("set_APawn_EndViewTarget_handler\0"));
+    if(apiuapi_APawn_EndViewTarget){
+        apiuapi_APawn_EndViewTarget(&uapi_APawn_EndViewTarget);
+    }
+
+    auto const apiuapi_APawn_FaceRotation = (uapi_APawn_FaceRotationFn)plugin->GetDllExport(TEXT("set_APawn_FaceRotation_handler\0"));
+    if(apiuapi_APawn_FaceRotation){
+        apiuapi_APawn_FaceRotation(&uapi_APawn_FaceRotation);
+    }
+
+    auto const apiuapi_APawn_GetBaseAimRotation = (uapi_APawn_GetBaseAimRotationFn)plugin->GetDllExport(TEXT("set_APawn_GetBaseAimRotation_handler\0"));
+    if(apiuapi_APawn_GetBaseAimRotation){
+        apiuapi_APawn_GetBaseAimRotation(&uapi_APawn_GetBaseAimRotation);
+    }
+
+    auto const apiuapi_APawn_GetControlRotation = (uapi_APawn_GetControlRotationFn)plugin->GetDllExport(TEXT("set_APawn_GetControlRotation_handler\0"));
+    if(apiuapi_APawn_GetControlRotation){
+        apiuapi_APawn_GetControlRotation(&uapi_APawn_GetControlRotation);
+    }
+
     auto const apiuapi_APawn_GetController = (uapi_APawn_GetControllerFn)plugin->GetDllExport(TEXT("set_APawn_GetController_handler\0"));
     if(apiuapi_APawn_GetController){
         apiuapi_APawn_GetController(&uapi_APawn_GetController);
+    }
+
+    auto const apiuapi_APawn_GetDefaultHalfHeight = (uapi_APawn_GetDefaultHalfHeightFn)plugin->GetDllExport(TEXT("set_APawn_GetDefaultHalfHeight_handler\0"));
+    if(apiuapi_APawn_GetDefaultHalfHeight){
+        apiuapi_APawn_GetDefaultHalfHeight(&uapi_APawn_GetDefaultHalfHeight);
+    }
+
+    auto const apiuapi_APawn_GetGravityDirection = (uapi_APawn_GetGravityDirectionFn)plugin->GetDllExport(TEXT("set_APawn_GetGravityDirection_handler\0"));
+    if(apiuapi_APawn_GetGravityDirection){
+        apiuapi_APawn_GetGravityDirection(&uapi_APawn_GetGravityDirection);
+    }
+
+    auto const apiuapi_APawn_GetHumanReadableName = (uapi_APawn_GetHumanReadableNameFn)plugin->GetDllExport(TEXT("set_APawn_GetHumanReadableName_handler\0"));
+    if(apiuapi_APawn_GetHumanReadableName){
+        apiuapi_APawn_GetHumanReadableName(&uapi_APawn_GetHumanReadableName);
+    }
+
+    auto const apiuapi_APawn_GetLastMovementInputVector = (uapi_APawn_GetLastMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_GetLastMovementInputVector_handler\0"));
+    if(apiuapi_APawn_GetLastMovementInputVector){
+        apiuapi_APawn_GetLastMovementInputVector(&uapi_APawn_GetLastMovementInputVector);
     }
 
     auto const apiuapi_APawn_GetLocalViewingPlayerController = (uapi_APawn_GetLocalViewingPlayerControllerFn)plugin->GetDllExport(TEXT("set_APawn_GetLocalViewingPlayerController_handler\0"));
@@ -11034,9 +14831,34 @@ void register_all(Plugin* plugin){
         apiuapi_APawn_GetMovementBase(&uapi_APawn_GetMovementBase);
     }
 
+    auto const apiuapi_APawn_GetMovementBaseActor = (uapi_APawn_GetMovementBaseActorFn)plugin->GetDllExport(TEXT("set_APawn_GetMovementBaseActor_handler\0"));
+    if(apiuapi_APawn_GetMovementBaseActor){
+        apiuapi_APawn_GetMovementBaseActor(&uapi_APawn_GetMovementBaseActor);
+    }
+
     auto const apiuapi_APawn_GetMovementComponent = (uapi_APawn_GetMovementComponentFn)plugin->GetDllExport(TEXT("set_APawn_GetMovementComponent_handler\0"));
     if(apiuapi_APawn_GetMovementComponent){
         apiuapi_APawn_GetMovementComponent(&uapi_APawn_GetMovementComponent);
+    }
+
+    auto const apiuapi_APawn_GetNavAgentLocation = (uapi_APawn_GetNavAgentLocationFn)plugin->GetDllExport(TEXT("set_APawn_GetNavAgentLocation_handler\0"));
+    if(apiuapi_APawn_GetNavAgentLocation){
+        apiuapi_APawn_GetNavAgentLocation(&uapi_APawn_GetNavAgentLocation);
+    }
+
+    auto const apiuapi_APawn_GetNetConnection = (uapi_APawn_GetNetConnectionFn)plugin->GetDllExport(TEXT("set_APawn_GetNetConnection_handler\0"));
+    if(apiuapi_APawn_GetNetConnection){
+        apiuapi_APawn_GetNetConnection(&uapi_APawn_GetNetConnection);
+    }
+
+    auto const apiuapi_APawn_GetNetOwner = (uapi_APawn_GetNetOwnerFn)plugin->GetDllExport(TEXT("set_APawn_GetNetOwner_handler\0"));
+    if(apiuapi_APawn_GetNetOwner){
+        apiuapi_APawn_GetNetOwner(&uapi_APawn_GetNetOwner);
+    }
+
+    auto const apiuapi_APawn_GetNetOwningPlayer = (uapi_APawn_GetNetOwningPlayerFn)plugin->GetDllExport(TEXT("set_APawn_GetNetOwningPlayer_handler\0"));
+    if(apiuapi_APawn_GetNetOwningPlayer){
+        apiuapi_APawn_GetNetOwningPlayer(&uapi_APawn_GetNetOwningPlayer);
     }
 
     auto const apiuapi_APawn_GetPawnNoiseEmitterComponent = (uapi_APawn_GetPawnNoiseEmitterComponentFn)plugin->GetDllExport(TEXT("set_APawn_GetPawnNoiseEmitterComponent_handler\0"));
@@ -11044,9 +14866,74 @@ void register_all(Plugin* plugin){
         apiuapi_APawn_GetPawnNoiseEmitterComponent(&uapi_APawn_GetPawnNoiseEmitterComponent);
     }
 
+    auto const apiuapi_APawn_GetPawnViewLocation = (uapi_APawn_GetPawnViewLocationFn)plugin->GetDllExport(TEXT("set_APawn_GetPawnViewLocation_handler\0"));
+    if(apiuapi_APawn_GetPawnViewLocation){
+        apiuapi_APawn_GetPawnViewLocation(&uapi_APawn_GetPawnViewLocation);
+    }
+
+    auto const apiuapi_APawn_GetPendingMovementInputVector = (uapi_APawn_GetPendingMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_GetPendingMovementInputVector_handler\0"));
+    if(apiuapi_APawn_GetPendingMovementInputVector){
+        apiuapi_APawn_GetPendingMovementInputVector(&uapi_APawn_GetPendingMovementInputVector);
+    }
+
+    auto const apiuapi_APawn_GetPhysicsVolume = (uapi_APawn_GetPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_APawn_GetPhysicsVolume_handler\0"));
+    if(apiuapi_APawn_GetPhysicsVolume){
+        apiuapi_APawn_GetPhysicsVolume(&uapi_APawn_GetPhysicsVolume);
+    }
+
     auto const apiuapi_APawn_GetPlayerState = (uapi_APawn_GetPlayerStateFn)plugin->GetDllExport(TEXT("set_APawn_GetPlayerState_handler\0"));
     if(apiuapi_APawn_GetPlayerState){
         apiuapi_APawn_GetPlayerState(&uapi_APawn_GetPlayerState);
+    }
+
+    auto const apiuapi_APawn_GetVelocity = (uapi_APawn_GetVelocityFn)plugin->GetDllExport(TEXT("set_APawn_GetVelocity_handler\0"));
+    if(apiuapi_APawn_GetVelocity){
+        apiuapi_APawn_GetVelocity(&uapi_APawn_GetVelocity);
+    }
+
+    auto const apiuapi_APawn_GetViewRotation = (uapi_APawn_GetViewRotationFn)plugin->GetDllExport(TEXT("set_APawn_GetViewRotation_handler\0"));
+    if(apiuapi_APawn_GetViewRotation){
+        apiuapi_APawn_GetViewRotation(&uapi_APawn_GetViewRotation);
+    }
+
+    auto const apiuapi_APawn_InFreeCam = (uapi_APawn_InFreeCamFn)plugin->GetDllExport(TEXT("set_APawn_InFreeCam_handler\0"));
+    if(apiuapi_APawn_InFreeCam){
+        apiuapi_APawn_InFreeCam(&uapi_APawn_InFreeCam);
+    }
+
+    auto const apiuapi_APawn_InputEnabled = (uapi_APawn_InputEnabledFn)plugin->GetDllExport(TEXT("set_APawn_InputEnabled_handler\0"));
+    if(apiuapi_APawn_InputEnabled){
+        apiuapi_APawn_InputEnabled(&uapi_APawn_InputEnabled);
+    }
+
+    auto const apiuapi_APawn_Internal_AddMovementInput = (uapi_APawn_Internal_AddMovementInputFn)plugin->GetDllExport(TEXT("set_APawn_Internal_AddMovementInput_handler\0"));
+    if(apiuapi_APawn_Internal_AddMovementInput){
+        apiuapi_APawn_Internal_AddMovementInput(&uapi_APawn_Internal_AddMovementInput);
+    }
+
+    auto const apiuapi_APawn_Internal_ConsumeMovementInputVector = (uapi_APawn_Internal_ConsumeMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_Internal_ConsumeMovementInputVector_handler\0"));
+    if(apiuapi_APawn_Internal_ConsumeMovementInputVector){
+        apiuapi_APawn_Internal_ConsumeMovementInputVector(&uapi_APawn_Internal_ConsumeMovementInputVector);
+    }
+
+    auto const apiuapi_APawn_Internal_GetLastMovementInputVector = (uapi_APawn_Internal_GetLastMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_Internal_GetLastMovementInputVector_handler\0"));
+    if(apiuapi_APawn_Internal_GetLastMovementInputVector){
+        apiuapi_APawn_Internal_GetLastMovementInputVector(&uapi_APawn_Internal_GetLastMovementInputVector);
+    }
+
+    auto const apiuapi_APawn_Internal_GetPendingMovementInputVector = (uapi_APawn_Internal_GetPendingMovementInputVectorFn)plugin->GetDllExport(TEXT("set_APawn_Internal_GetPendingMovementInputVector_handler\0"));
+    if(apiuapi_APawn_Internal_GetPendingMovementInputVector){
+        apiuapi_APawn_Internal_GetPendingMovementInputVector(&uapi_APawn_Internal_GetPendingMovementInputVector);
+    }
+
+    auto const apiuapi_APawn_IsBasedOnActor = (uapi_APawn_IsBasedOnActorFn)plugin->GetDllExport(TEXT("set_APawn_IsBasedOnActor_handler\0"));
+    if(apiuapi_APawn_IsBasedOnActor){
+        apiuapi_APawn_IsBasedOnActor(&uapi_APawn_IsBasedOnActor);
+    }
+
+    auto const apiuapi_APawn_IsBotControlled = (uapi_APawn_IsBotControlledFn)plugin->GetDllExport(TEXT("set_APawn_IsBotControlled_handler\0"));
+    if(apiuapi_APawn_IsBotControlled){
+        apiuapi_APawn_IsBotControlled(&uapi_APawn_IsBotControlled);
     }
 
     auto const apiuapi_APawn_IsLocalPlayerControllerViewingAPawn = (uapi_APawn_IsLocalPlayerControllerViewingAPawnFn)plugin->GetDllExport(TEXT("set_APawn_IsLocalPlayerControllerViewingAPawn_handler\0"));
@@ -11054,9 +14941,204 @@ void register_all(Plugin* plugin){
         apiuapi_APawn_IsLocalPlayerControllerViewingAPawn(&uapi_APawn_IsLocalPlayerControllerViewingAPawn);
     }
 
+    auto const apiuapi_APawn_IsLocallyControlled = (uapi_APawn_IsLocallyControlledFn)plugin->GetDllExport(TEXT("set_APawn_IsLocallyControlled_handler\0"));
+    if(apiuapi_APawn_IsLocallyControlled){
+        apiuapi_APawn_IsLocallyControlled(&uapi_APawn_IsLocallyControlled);
+    }
+
     auto const apiuapi_APawn_IsLocallyViewed = (uapi_APawn_IsLocallyViewedFn)plugin->GetDllExport(TEXT("set_APawn_IsLocallyViewed_handler\0"));
     if(apiuapi_APawn_IsLocallyViewed){
         apiuapi_APawn_IsLocallyViewed(&uapi_APawn_IsLocallyViewed);
+    }
+
+    auto const apiuapi_APawn_IsMoveInputIgnored = (uapi_APawn_IsMoveInputIgnoredFn)plugin->GetDllExport(TEXT("set_APawn_IsMoveInputIgnored_handler\0"));
+    if(apiuapi_APawn_IsMoveInputIgnored){
+        apiuapi_APawn_IsMoveInputIgnored(&uapi_APawn_IsMoveInputIgnored);
+    }
+
+    auto const apiuapi_APawn_IsPawnControlled = (uapi_APawn_IsPawnControlledFn)plugin->GetDllExport(TEXT("set_APawn_IsPawnControlled_handler\0"));
+    if(apiuapi_APawn_IsPawnControlled){
+        apiuapi_APawn_IsPawnControlled(&uapi_APawn_IsPawnControlled);
+    }
+
+    auto const apiuapi_APawn_IsPlayerControlled = (uapi_APawn_IsPlayerControlledFn)plugin->GetDllExport(TEXT("set_APawn_IsPlayerControlled_handler\0"));
+    if(apiuapi_APawn_IsPlayerControlled){
+        apiuapi_APawn_IsPlayerControlled(&uapi_APawn_IsPlayerControlled);
+    }
+
+    auto const apiuapi_APawn_MoveIgnoreActorAdd = (uapi_APawn_MoveIgnoreActorAddFn)plugin->GetDllExport(TEXT("set_APawn_MoveIgnoreActorAdd_handler\0"));
+    if(apiuapi_APawn_MoveIgnoreActorAdd){
+        apiuapi_APawn_MoveIgnoreActorAdd(&uapi_APawn_MoveIgnoreActorAdd);
+    }
+
+    auto const apiuapi_APawn_MoveIgnoreActorRemove = (uapi_APawn_MoveIgnoreActorRemoveFn)plugin->GetDllExport(TEXT("set_APawn_MoveIgnoreActorRemove_handler\0"));
+    if(apiuapi_APawn_MoveIgnoreActorRemove){
+        apiuapi_APawn_MoveIgnoreActorRemove(&uapi_APawn_MoveIgnoreActorRemove);
+    }
+
+    auto const apiuapi_APawn_NotifyControllerChanged = (uapi_APawn_NotifyControllerChangedFn)plugin->GetDllExport(TEXT("set_APawn_NotifyControllerChanged_handler\0"));
+    if(apiuapi_APawn_NotifyControllerChanged){
+        apiuapi_APawn_NotifyControllerChanged(&uapi_APawn_NotifyControllerChanged);
+    }
+
+    auto const apiuapi_APawn_NotifyRestarted = (uapi_APawn_NotifyRestartedFn)plugin->GetDllExport(TEXT("set_APawn_NotifyRestarted_handler\0"));
+    if(apiuapi_APawn_NotifyRestarted){
+        apiuapi_APawn_NotifyRestarted(&uapi_APawn_NotifyRestarted);
+    }
+
+    auto const apiuapi_APawn_OnRep_Controller = (uapi_APawn_OnRep_ControllerFn)plugin->GetDllExport(TEXT("set_APawn_OnRep_Controller_handler\0"));
+    if(apiuapi_APawn_OnRep_Controller){
+        apiuapi_APawn_OnRep_Controller(&uapi_APawn_OnRep_Controller);
+    }
+
+    auto const apiuapi_APawn_OnRep_PlayerState = (uapi_APawn_OnRep_PlayerStateFn)plugin->GetDllExport(TEXT("set_APawn_OnRep_PlayerState_handler\0"));
+    if(apiuapi_APawn_OnRep_PlayerState){
+        apiuapi_APawn_OnRep_PlayerState(&uapi_APawn_OnRep_PlayerState);
+    }
+
+    auto const apiuapi_APawn_OutsideWorldBounds = (uapi_APawn_OutsideWorldBoundsFn)plugin->GetDllExport(TEXT("set_APawn_OutsideWorldBounds_handler\0"));
+    if(apiuapi_APawn_OutsideWorldBounds){
+        apiuapi_APawn_OutsideWorldBounds(&uapi_APawn_OutsideWorldBounds);
+    }
+
+    auto const apiuapi_APawn_PawnClientRestart = (uapi_APawn_PawnClientRestartFn)plugin->GetDllExport(TEXT("set_APawn_PawnClientRestart_handler\0"));
+    if(apiuapi_APawn_PawnClientRestart){
+        apiuapi_APawn_PawnClientRestart(&uapi_APawn_PawnClientRestart);
+    }
+
+    auto const apiuapi_APawn_PawnMakeNoise = (uapi_APawn_PawnMakeNoiseFn)plugin->GetDllExport(TEXT("set_APawn_PawnMakeNoise_handler\0"));
+    if(apiuapi_APawn_PawnMakeNoise){
+        apiuapi_APawn_PawnMakeNoise(&uapi_APawn_PawnMakeNoise);
+    }
+
+    auto const apiuapi_APawn_PawnStartFire = (uapi_APawn_PawnStartFireFn)plugin->GetDllExport(TEXT("set_APawn_PawnStartFire_handler\0"));
+    if(apiuapi_APawn_PawnStartFire){
+        apiuapi_APawn_PawnStartFire(&uapi_APawn_PawnStartFire);
+    }
+
+    auto const apiuapi_APawn_PossessedBy = (uapi_APawn_PossessedByFn)plugin->GetDllExport(TEXT("set_APawn_PossessedBy_handler\0"));
+    if(apiuapi_APawn_PossessedBy){
+        apiuapi_APawn_PossessedBy(&uapi_APawn_PossessedBy);
+    }
+
+    auto const apiuapi_APawn_PostInitializeComponents = (uapi_APawn_PostInitializeComponentsFn)plugin->GetDllExport(TEXT("set_APawn_PostInitializeComponents_handler\0"));
+    if(apiuapi_APawn_PostInitializeComponents){
+        apiuapi_APawn_PostInitializeComponents(&uapi_APawn_PostInitializeComponents);
+    }
+
+    auto const apiuapi_APawn_PostLoad = (uapi_APawn_PostLoadFn)plugin->GetDllExport(TEXT("set_APawn_PostLoad_handler\0"));
+    if(apiuapi_APawn_PostLoad){
+        apiuapi_APawn_PostLoad(&uapi_APawn_PostLoad);
+    }
+
+    auto const apiuapi_APawn_PostNetReceiveLocationAndRotation = (uapi_APawn_PostNetReceiveLocationAndRotationFn)plugin->GetDllExport(TEXT("set_APawn_PostNetReceiveLocationAndRotation_handler\0"));
+    if(apiuapi_APawn_PostNetReceiveLocationAndRotation){
+        apiuapi_APawn_PostNetReceiveLocationAndRotation(&uapi_APawn_PostNetReceiveLocationAndRotation);
+    }
+
+    auto const apiuapi_APawn_PostRegisterAllComponents = (uapi_APawn_PostRegisterAllComponentsFn)plugin->GetDllExport(TEXT("set_APawn_PostRegisterAllComponents_handler\0"));
+    if(apiuapi_APawn_PostRegisterAllComponents){
+        apiuapi_APawn_PostRegisterAllComponents(&uapi_APawn_PostRegisterAllComponents);
+    }
+
+    auto const apiuapi_APawn_PreInitializeComponents = (uapi_APawn_PreInitializeComponentsFn)plugin->GetDllExport(TEXT("set_APawn_PreInitializeComponents_handler\0"));
+    if(apiuapi_APawn_PreInitializeComponents){
+        apiuapi_APawn_PreInitializeComponents(&uapi_APawn_PreInitializeComponents);
+    }
+
+    auto const apiuapi_APawn_ReachedDesiredRotation = (uapi_APawn_ReachedDesiredRotationFn)plugin->GetDllExport(TEXT("set_APawn_ReachedDesiredRotation_handler\0"));
+    if(apiuapi_APawn_ReachedDesiredRotation){
+        apiuapi_APawn_ReachedDesiredRotation(&uapi_APawn_ReachedDesiredRotation);
+    }
+
+    auto const apiuapi_APawn_RecalculateBaseEyeHeight = (uapi_APawn_RecalculateBaseEyeHeightFn)plugin->GetDllExport(TEXT("set_APawn_RecalculateBaseEyeHeight_handler\0"));
+    if(apiuapi_APawn_RecalculateBaseEyeHeight){
+        apiuapi_APawn_RecalculateBaseEyeHeight(&uapi_APawn_RecalculateBaseEyeHeight);
+    }
+
+    auto const apiuapi_APawn_ReceiveControllerChanged = (uapi_APawn_ReceiveControllerChangedFn)plugin->GetDllExport(TEXT("set_APawn_ReceiveControllerChanged_handler\0"));
+    if(apiuapi_APawn_ReceiveControllerChanged){
+        apiuapi_APawn_ReceiveControllerChanged(&uapi_APawn_ReceiveControllerChanged);
+    }
+
+    auto const apiuapi_APawn_ReceivePossessed = (uapi_APawn_ReceivePossessedFn)plugin->GetDllExport(TEXT("set_APawn_ReceivePossessed_handler\0"));
+    if(apiuapi_APawn_ReceivePossessed){
+        apiuapi_APawn_ReceivePossessed(&uapi_APawn_ReceivePossessed);
+    }
+
+    auto const apiuapi_APawn_ReceiveRestarted = (uapi_APawn_ReceiveRestartedFn)plugin->GetDllExport(TEXT("set_APawn_ReceiveRestarted_handler\0"));
+    if(apiuapi_APawn_ReceiveRestarted){
+        apiuapi_APawn_ReceiveRestarted(&uapi_APawn_ReceiveRestarted);
+    }
+
+    auto const apiuapi_APawn_ReceiveUnpossessed = (uapi_APawn_ReceiveUnpossessedFn)plugin->GetDllExport(TEXT("set_APawn_ReceiveUnpossessed_handler\0"));
+    if(apiuapi_APawn_ReceiveUnpossessed){
+        apiuapi_APawn_ReceiveUnpossessed(&uapi_APawn_ReceiveUnpossessed);
+    }
+
+    auto const apiuapi_APawn_Reset = (uapi_APawn_ResetFn)plugin->GetDllExport(TEXT("set_APawn_Reset_handler\0"));
+    if(apiuapi_APawn_Reset){
+        apiuapi_APawn_Reset(&uapi_APawn_Reset);
+    }
+
+    auto const apiuapi_APawn_Restart = (uapi_APawn_RestartFn)plugin->GetDllExport(TEXT("set_APawn_Restart_handler\0"));
+    if(apiuapi_APawn_Restart){
+        apiuapi_APawn_Restart(&uapi_APawn_Restart);
+    }
+
+    auto const apiuapi_APawn_SetCanAffectNavigationGeneration = (uapi_APawn_SetCanAffectNavigationGenerationFn)plugin->GetDllExport(TEXT("set_APawn_SetCanAffectNavigationGeneration_handler\0"));
+    if(apiuapi_APawn_SetCanAffectNavigationGeneration){
+        apiuapi_APawn_SetCanAffectNavigationGeneration(&uapi_APawn_SetCanAffectNavigationGeneration);
+    }
+
+    auto const apiuapi_APawn_SetPlayerDefaults = (uapi_APawn_SetPlayerDefaultsFn)plugin->GetDllExport(TEXT("set_APawn_SetPlayerDefaults_handler\0"));
+    if(apiuapi_APawn_SetPlayerDefaults){
+        apiuapi_APawn_SetPlayerDefaults(&uapi_APawn_SetPlayerDefaults);
+    }
+
+    auto const apiuapi_APawn_SetPlayerState = (uapi_APawn_SetPlayerStateFn)plugin->GetDllExport(TEXT("set_APawn_SetPlayerState_handler\0"));
+    if(apiuapi_APawn_SetPlayerState){
+        apiuapi_APawn_SetPlayerState(&uapi_APawn_SetPlayerState);
+    }
+
+    auto const apiuapi_APawn_SetRemoteViewPitch = (uapi_APawn_SetRemoteViewPitchFn)plugin->GetDllExport(TEXT("set_APawn_SetRemoteViewPitch_handler\0"));
+    if(apiuapi_APawn_SetRemoteViewPitch){
+        apiuapi_APawn_SetRemoteViewPitch(&uapi_APawn_SetRemoteViewPitch);
+    }
+
+    auto const apiuapi_APawn_ShouldTickIfViewportsOnly = (uapi_APawn_ShouldTickIfViewportsOnlyFn)plugin->GetDllExport(TEXT("set_APawn_ShouldTickIfViewportsOnly_handler\0"));
+    if(apiuapi_APawn_ShouldTickIfViewportsOnly){
+        apiuapi_APawn_ShouldTickIfViewportsOnly(&uapi_APawn_ShouldTickIfViewportsOnly);
+    }
+
+    auto const apiuapi_APawn_SpawnDefaultController = (uapi_APawn_SpawnDefaultControllerFn)plugin->GetDllExport(TEXT("set_APawn_SpawnDefaultController_handler\0"));
+    if(apiuapi_APawn_SpawnDefaultController){
+        apiuapi_APawn_SpawnDefaultController(&uapi_APawn_SpawnDefaultController);
+    }
+
+    auto const apiuapi_APawn_TeleportSucceeded = (uapi_APawn_TeleportSucceededFn)plugin->GetDllExport(TEXT("set_APawn_TeleportSucceeded_handler\0"));
+    if(apiuapi_APawn_TeleportSucceeded){
+        apiuapi_APawn_TeleportSucceeded(&uapi_APawn_TeleportSucceeded);
+    }
+
+    auto const apiuapi_APawn_TurnOff = (uapi_APawn_TurnOffFn)plugin->GetDllExport(TEXT("set_APawn_TurnOff_handler\0"));
+    if(apiuapi_APawn_TurnOff){
+        apiuapi_APawn_TurnOff(&uapi_APawn_TurnOff);
+    }
+
+    auto const apiuapi_APawn_UnPossessed = (uapi_APawn_UnPossessedFn)plugin->GetDllExport(TEXT("set_APawn_UnPossessed_handler\0"));
+    if(apiuapi_APawn_UnPossessed){
+        apiuapi_APawn_UnPossessed(&uapi_APawn_UnPossessed);
+    }
+
+    auto const apiuapi_APawn_UpdateNavAgent = (uapi_APawn_UpdateNavAgentFn)plugin->GetDllExport(TEXT("set_APawn_UpdateNavAgent_handler\0"));
+    if(apiuapi_APawn_UpdateNavAgent){
+        apiuapi_APawn_UpdateNavAgent(&uapi_APawn_UpdateNavAgent);
+    }
+
+    auto const apiuapi_APawn_UpdateNavigationRelevance = (uapi_APawn_UpdateNavigationRelevanceFn)plugin->GetDllExport(TEXT("set_APawn_UpdateNavigationRelevance_handler\0"));
+    if(apiuapi_APawn_UpdateNavigationRelevance){
+        apiuapi_APawn_UpdateNavigationRelevance(&uapi_APawn_UpdateNavigationRelevance);
     }
 
     auto const apiuapi_AController_ChangeState = (uapi_AController_ChangeStateFn)plugin->GetDllExport(TEXT("set_AController_ChangeState_handler\0"));
@@ -11092,6 +15174,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AController_FailedToSpawnPawn = (uapi_AController_FailedToSpawnPawnFn)plugin->GetDllExport(TEXT("set_AController_FailedToSpawnPawn_handler\0"));
     if(apiuapi_AController_FailedToSpawnPawn){
         apiuapi_AController_FailedToSpawnPawn(&uapi_AController_FailedToSpawnPawn);
+    }
+
+    auto const apiuapi_AController_GameHasEnded = (uapi_AController_GameHasEndedFn)plugin->GetDllExport(TEXT("set_AController_GameHasEnded_handler\0"));
+    if(apiuapi_AController_GameHasEnded){
+        apiuapi_AController_GameHasEnded(&uapi_AController_GameHasEnded);
     }
 
     auto const apiuapi_AController_GetCharacter = (uapi_AController_GetCharacterFn)plugin->GetDllExport(TEXT("set_AController_GetCharacter_handler\0"));
@@ -11139,6 +15226,11 @@ void register_all(Plugin* plugin){
         apiuapi_AController_InitPlayerState(&uapi_AController_InitPlayerState);
     }
 
+    auto const apiuapi_AController_InstigatedAnyDamage = (uapi_AController_InstigatedAnyDamageFn)plugin->GetDllExport(TEXT("set_AController_InstigatedAnyDamage_handler\0"));
+    if(apiuapi_AController_InstigatedAnyDamage){
+        apiuapi_AController_InstigatedAnyDamage(&uapi_AController_InstigatedAnyDamage);
+    }
+
     auto const apiuapi_AController_IsFollowingAPath = (uapi_AController_IsFollowingAPathFn)plugin->GetDllExport(TEXT("set_AController_IsFollowingAPath_handler\0"));
     if(apiuapi_AController_IsFollowingAPath){
         apiuapi_AController_IsFollowingAPath(&uapi_AController_IsFollowingAPath);
@@ -11184,6 +15276,11 @@ void register_all(Plugin* plugin){
         apiuapi_AController_K2_GetPawn(&uapi_AController_K2_GetPawn);
     }
 
+    auto const apiuapi_AController_LineOfSightTo = (uapi_AController_LineOfSightToFn)plugin->GetDllExport(TEXT("set_AController_LineOfSightTo_handler\0"));
+    if(apiuapi_AController_LineOfSightTo){
+        apiuapi_AController_LineOfSightTo(&uapi_AController_LineOfSightTo);
+    }
+
     auto const apiuapi_AController_OnRep_Pawn = (uapi_AController_OnRep_PawnFn)plugin->GetDllExport(TEXT("set_AController_OnRep_Pawn_handler\0"));
     if(apiuapi_AController_OnRep_Pawn){
         apiuapi_AController_OnRep_Pawn(&uapi_AController_OnRep_Pawn);
@@ -11192,6 +15289,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AController_OnRep_PlayerState = (uapi_AController_OnRep_PlayerStateFn)plugin->GetDllExport(TEXT("set_AController_OnRep_PlayerState_handler\0"));
     if(apiuapi_AController_OnRep_PlayerState){
         apiuapi_AController_OnRep_PlayerState(&uapi_AController_OnRep_PlayerState);
+    }
+
+    auto const apiuapi_AController_PawnPendingDestroy = (uapi_AController_PawnPendingDestroyFn)plugin->GetDllExport(TEXT("set_AController_PawnPendingDestroy_handler\0"));
+    if(apiuapi_AController_PawnPendingDestroy){
+        apiuapi_AController_PawnPendingDestroy(&uapi_AController_PawnPendingDestroy);
+    }
+
+    auto const apiuapi_AController_Possess = (uapi_AController_PossessFn)plugin->GetDllExport(TEXT("set_AController_Possess_handler\0"));
+    if(apiuapi_AController_Possess){
+        apiuapi_AController_Possess(&uapi_AController_Possess);
     }
 
     auto const apiuapi_AController_PostInitializeComponents = (uapi_AController_PostInitializeComponentsFn)plugin->GetDllExport(TEXT("set_AController_PostInitializeComponents_handler\0"));
@@ -11229,6 +15336,16 @@ void register_all(Plugin* plugin){
         apiuapi_AController_SetIgnoreMoveInput(&uapi_AController_SetIgnoreMoveInput);
     }
 
+    auto const apiuapi_AController_SetPawn = (uapi_AController_SetPawnFn)plugin->GetDllExport(TEXT("set_AController_SetPawn_handler\0"));
+    if(apiuapi_AController_SetPawn){
+        apiuapi_AController_SetPawn(&uapi_AController_SetPawn);
+    }
+
+    auto const apiuapi_AController_SetPawnFromRep = (uapi_AController_SetPawnFromRepFn)plugin->GetDllExport(TEXT("set_AController_SetPawnFromRep_handler\0"));
+    if(apiuapi_AController_SetPawnFromRep){
+        apiuapi_AController_SetPawnFromRep(&uapi_AController_SetPawnFromRep);
+    }
+
     auto const apiuapi_AController_ShouldParticipateInSeamlessTravel = (uapi_AController_ShouldParticipateInSeamlessTravelFn)plugin->GetDllExport(TEXT("set_AController_ShouldParticipateInSeamlessTravel_handler\0"));
     if(apiuapi_AController_ShouldParticipateInSeamlessTravel){
         apiuapi_AController_ShouldParticipateInSeamlessTravel(&uapi_AController_ShouldParticipateInSeamlessTravel);
@@ -11249,6 +15366,16 @@ void register_all(Plugin* plugin){
         apiuapi_AController_UnPossess(&uapi_AController_UnPossess);
     }
 
+    auto const apiuapi_APlayerController_AcknowledgePossession = (uapi_APlayerController_AcknowledgePossessionFn)plugin->GetDllExport(TEXT("set_APlayerController_AcknowledgePossession_handler\0"));
+    if(apiuapi_APlayerController_AcknowledgePossession){
+        apiuapi_APlayerController_AcknowledgePossession(&uapi_APlayerController_AcknowledgePossession);
+    }
+
+    auto const apiuapi_APlayerController_ActivateTouchInterface = (uapi_APlayerController_ActivateTouchInterfaceFn)plugin->GetDllExport(TEXT("set_APlayerController_ActivateTouchInterface_handler\0"));
+    if(apiuapi_APlayerController_ActivateTouchInterface){
+        apiuapi_APlayerController_ActivateTouchInterface(&uapi_APlayerController_ActivateTouchInterface);
+    }
+
     auto const apiuapi_APlayerController_AddCheats = (uapi_APlayerController_AddCheatsFn)plugin->GetDllExport(TEXT("set_APlayerController_AddCheats_handler\0"));
     if(apiuapi_APlayerController_AddCheats){
         apiuapi_APlayerController_AddCheats(&uapi_APlayerController_AddCheats);
@@ -11267,6 +15394,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_AddYawInput = (uapi_APlayerController_AddYawInputFn)plugin->GetDllExport(TEXT("set_APlayerController_AddYawInput_handler\0"));
     if(apiuapi_APlayerController_AddYawInput){
         apiuapi_APlayerController_AddYawInput(&uapi_APlayerController_AddYawInput);
+    }
+
+    auto const apiuapi_APlayerController_AutoManageActiveCameraTarget = (uapi_APlayerController_AutoManageActiveCameraTargetFn)plugin->GetDllExport(TEXT("set_APlayerController_AutoManageActiveCameraTarget_handler\0"));
+    if(apiuapi_APlayerController_AutoManageActiveCameraTarget){
+        apiuapi_APlayerController_AutoManageActiveCameraTarget(&uapi_APlayerController_AutoManageActiveCameraTarget);
     }
 
     auto const apiuapi_APlayerController_BeginInactiveState = (uapi_APlayerController_BeginInactiveStateFn)plugin->GetDllExport(TEXT("set_APlayerController_BeginInactiveState_handler\0"));
@@ -11359,6 +15491,11 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ClientForceGarbageCollection(&uapi_APlayerController_ClientForceGarbageCollection);
     }
 
+    auto const apiuapi_APlayerController_ClientGameEnded = (uapi_APlayerController_ClientGameEndedFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientGameEnded_handler\0"));
+    if(apiuapi_APlayerController_ClientGameEnded){
+        apiuapi_APlayerController_ClientGameEnded(&uapi_APlayerController_ClientGameEnded);
+    }
+
     auto const apiuapi_APlayerController_ClientGotoState = (uapi_APlayerController_ClientGotoStateFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientGotoState_handler\0"));
     if(apiuapi_APlayerController_ClientGotoState){
         apiuapi_APlayerController_ClientGotoState(&uapi_APlayerController_ClientGotoState);
@@ -11374,9 +15511,24 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ClientIgnoreMoveInput(&uapi_APlayerController_ClientIgnoreMoveInput);
     }
 
+    auto const apiuapi_APlayerController_ClientPlaySound = (uapi_APlayerController_ClientPlaySoundFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientPlaySound_handler\0"));
+    if(apiuapi_APlayerController_ClientPlaySound){
+        apiuapi_APlayerController_ClientPlaySound(&uapi_APlayerController_ClientPlaySound);
+    }
+
+    auto const apiuapi_APlayerController_ClientPlaySoundAtLocation = (uapi_APlayerController_ClientPlaySoundAtLocationFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientPlaySoundAtLocation_handler\0"));
+    if(apiuapi_APlayerController_ClientPlaySoundAtLocation){
+        apiuapi_APlayerController_ClientPlaySoundAtLocation(&uapi_APlayerController_ClientPlaySoundAtLocation);
+    }
+
     auto const apiuapi_APlayerController_ClientPrepareMapChange = (uapi_APlayerController_ClientPrepareMapChangeFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientPrepareMapChange_handler\0"));
     if(apiuapi_APlayerController_ClientPrepareMapChange){
         apiuapi_APlayerController_ClientPrepareMapChange(&uapi_APlayerController_ClientPrepareMapChange);
+    }
+
+    auto const apiuapi_APlayerController_ClientPrestreamTextures = (uapi_APlayerController_ClientPrestreamTexturesFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientPrestreamTextures_handler\0"));
+    if(apiuapi_APlayerController_ClientPrestreamTextures){
+        apiuapi_APlayerController_ClientPrestreamTextures(&uapi_APlayerController_ClientPrestreamTextures);
     }
 
     auto const apiuapi_APlayerController_ClientRecvServerAckFrame = (uapi_APlayerController_ClientRecvServerAckFrameFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientRecvServerAckFrame_handler\0"));
@@ -11389,9 +15541,24 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ClientRecvServerAckFrameDebug(&uapi_APlayerController_ClientRecvServerAckFrameDebug);
     }
 
+    auto const apiuapi_APlayerController_ClientRepObjRef = (uapi_APlayerController_ClientRepObjRefFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientRepObjRef_handler\0"));
+    if(apiuapi_APlayerController_ClientRepObjRef){
+        apiuapi_APlayerController_ClientRepObjRef(&uapi_APlayerController_ClientRepObjRef);
+    }
+
     auto const apiuapi_APlayerController_ClientReset = (uapi_APlayerController_ClientResetFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientReset_handler\0"));
     if(apiuapi_APlayerController_ClientReset){
         apiuapi_APlayerController_ClientReset(&uapi_APlayerController_ClientReset);
+    }
+
+    auto const apiuapi_APlayerController_ClientRestart = (uapi_APlayerController_ClientRestartFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientRestart_handler\0"));
+    if(apiuapi_APlayerController_ClientRestart){
+        apiuapi_APlayerController_ClientRestart(&uapi_APlayerController_ClientRestart);
+    }
+
+    auto const apiuapi_APlayerController_ClientRetryClientRestart = (uapi_APlayerController_ClientRetryClientRestartFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientRetryClientRestart_handler\0"));
+    if(apiuapi_APlayerController_ClientRetryClientRestart){
+        apiuapi_APlayerController_ClientRetryClientRestart(&uapi_APlayerController_ClientRetryClientRestart);
     }
 
     auto const apiuapi_APlayerController_ClientSetBlockOnAsyncLoading = (uapi_APlayerController_ClientSetBlockOnAsyncLoadingFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientSetBlockOnAsyncLoading_handler\0"));
@@ -11414,6 +15581,11 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ClientSetCinematicMode(&uapi_APlayerController_ClientSetCinematicMode);
     }
 
+    auto const apiuapi_APlayerController_ClientSetForceMipLevelsToBeResident = (uapi_APlayerController_ClientSetForceMipLevelsToBeResidentFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientSetForceMipLevelsToBeResident_handler\0"));
+    if(apiuapi_APlayerController_ClientSetForceMipLevelsToBeResident){
+        apiuapi_APlayerController_ClientSetForceMipLevelsToBeResident(&uapi_APlayerController_ClientSetForceMipLevelsToBeResident);
+    }
+
     auto const apiuapi_APlayerController_ClientSetSpectatorWaiting = (uapi_APlayerController_ClientSetSpectatorWaitingFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientSetSpectatorWaiting_handler\0"));
     if(apiuapi_APlayerController_ClientSetSpectatorWaiting){
         apiuapi_APlayerController_ClientSetSpectatorWaiting(&uapi_APlayerController_ClientSetSpectatorWaiting);
@@ -11422,6 +15594,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_ClientStartOnlineSession = (uapi_APlayerController_ClientStartOnlineSessionFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientStartOnlineSession_handler\0"));
     if(apiuapi_APlayerController_ClientStartOnlineSession){
         apiuapi_APlayerController_ClientStartOnlineSession(&uapi_APlayerController_ClientStartOnlineSession);
+    }
+
+    auto const apiuapi_APlayerController_ClientStopCameraShakesFromSource = (uapi_APlayerController_ClientStopCameraShakesFromSourceFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientStopCameraShakesFromSource_handler\0"));
+    if(apiuapi_APlayerController_ClientStopCameraShakesFromSource){
+        apiuapi_APlayerController_ClientStopCameraShakesFromSource(&uapi_APlayerController_ClientStopCameraShakesFromSource);
+    }
+
+    auto const apiuapi_APlayerController_ClientStopForceFeedback = (uapi_APlayerController_ClientStopForceFeedbackFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientStopForceFeedback_handler\0"));
+    if(apiuapi_APlayerController_ClientStopForceFeedback){
+        apiuapi_APlayerController_ClientStopForceFeedback(&uapi_APlayerController_ClientStopForceFeedback);
     }
 
     auto const apiuapi_APlayerController_ClientUpdateLevelStreamingStatus = (uapi_APlayerController_ClientUpdateLevelStreamingStatusFn)plugin->GetDllExport(TEXT("set_APlayerController_ClientUpdateLevelStreamingStatus_handler\0"));
@@ -11459,9 +15641,19 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_Destroyed(&uapi_APlayerController_Destroyed);
     }
 
+    auto const apiuapi_APlayerController_DisableInput = (uapi_APlayerController_DisableInputFn)plugin->GetDllExport(TEXT("set_APlayerController_DisableInput_handler\0"));
+    if(apiuapi_APlayerController_DisableInput){
+        apiuapi_APlayerController_DisableInput(&uapi_APlayerController_DisableInput);
+    }
+
     auto const apiuapi_APlayerController_EnableCheats = (uapi_APlayerController_EnableCheatsFn)plugin->GetDllExport(TEXT("set_APlayerController_EnableCheats_handler\0"));
     if(apiuapi_APlayerController_EnableCheats){
         apiuapi_APlayerController_EnableCheats(&uapi_APlayerController_EnableCheats);
+    }
+
+    auto const apiuapi_APlayerController_EnableInput = (uapi_APlayerController_EnableInputFn)plugin->GetDllExport(TEXT("set_APlayerController_EnableInput_handler\0"));
+    if(apiuapi_APlayerController_EnableInput){
+        apiuapi_APlayerController_EnableInput(&uapi_APlayerController_EnableInput);
     }
 
     auto const apiuapi_APlayerController_EndInactiveState = (uapi_APlayerController_EndInactiveStateFn)plugin->GetDllExport(TEXT("set_APlayerController_EndInactiveState_handler\0"));
@@ -11482,6 +15674,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_FlushPressedKeys = (uapi_APlayerController_FlushPressedKeysFn)plugin->GetDllExport(TEXT("set_APlayerController_FlushPressedKeys_handler\0"));
     if(apiuapi_APlayerController_FlushPressedKeys){
         apiuapi_APlayerController_FlushPressedKeys(&uapi_APlayerController_FlushPressedKeys);
+    }
+
+    auto const apiuapi_APlayerController_ForceSingleNetUpdateFor = (uapi_APlayerController_ForceSingleNetUpdateForFn)plugin->GetDllExport(TEXT("set_APlayerController_ForceSingleNetUpdateFor_handler\0"));
+    if(apiuapi_APlayerController_ForceSingleNetUpdateFor){
+        apiuapi_APlayerController_ForceSingleNetUpdateFor(&uapi_APlayerController_ForceSingleNetUpdateFor);
+    }
+
+    auto const apiuapi_APlayerController_GameHasEnded = (uapi_APlayerController_GameHasEndedFn)plugin->GetDllExport(TEXT("set_APlayerController_GameHasEnded_handler\0"));
+    if(apiuapi_APlayerController_GameHasEnded){
+        apiuapi_APlayerController_GameHasEnded(&uapi_APlayerController_GameHasEnded);
     }
 
     auto const apiuapi_APlayerController_GameplayUnmuteAllPlayers = (uapi_APlayerController_GameplayUnmuteAllPlayersFn)plugin->GetDllExport(TEXT("set_APlayerController_GameplayUnmuteAllPlayers_handler\0"));
@@ -11609,6 +15811,11 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_IsFrozen(&uapi_APlayerController_IsFrozen);
     }
 
+    auto const apiuapi_APlayerController_IsInputComponentInStack = (uapi_APlayerController_IsInputComponentInStackFn)plugin->GetDllExport(TEXT("set_APlayerController_IsInputComponentInStack_handler\0"));
+    if(apiuapi_APlayerController_IsInputComponentInStack){
+        apiuapi_APlayerController_IsInputComponentInStack(&uapi_APlayerController_IsInputComponentInStack);
+    }
+
     auto const apiuapi_APlayerController_IsLocalController = (uapi_APlayerController_IsLocalControllerFn)plugin->GetDllExport(TEXT("set_APlayerController_IsLocalController_handler\0"));
     if(apiuapi_APlayerController_IsLocalController){
         apiuapi_APlayerController_IsLocalController(&uapi_APlayerController_IsLocalController);
@@ -11639,9 +15846,24 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_IsStreamingSourceEnabled(&uapi_APlayerController_IsStreamingSourceEnabled);
     }
 
+    auto const apiuapi_APlayerController_K2_ClientPlayForceFeedback = (uapi_APlayerController_K2_ClientPlayForceFeedbackFn)plugin->GetDllExport(TEXT("set_APlayerController_K2_ClientPlayForceFeedback_handler\0"));
+    if(apiuapi_APlayerController_K2_ClientPlayForceFeedback){
+        apiuapi_APlayerController_K2_ClientPlayForceFeedback(&uapi_APlayerController_K2_ClientPlayForceFeedback);
+    }
+
+    auto const apiuapi_APlayerController_LevelStreamingStatusChanged = (uapi_APlayerController_LevelStreamingStatusChangedFn)plugin->GetDllExport(TEXT("set_APlayerController_LevelStreamingStatusChanged_handler\0"));
+    if(apiuapi_APlayerController_LevelStreamingStatusChanged){
+        apiuapi_APlayerController_LevelStreamingStatusChanged(&uapi_APlayerController_LevelStreamingStatusChanged);
+    }
+
     auto const apiuapi_APlayerController_NetworkRemapPath = (uapi_APlayerController_NetworkRemapPathFn)plugin->GetDllExport(TEXT("set_APlayerController_NetworkRemapPath_handler\0"));
     if(apiuapi_APlayerController_NetworkRemapPath){
         apiuapi_APlayerController_NetworkRemapPath(&uapi_APlayerController_NetworkRemapPath);
+    }
+
+    auto const apiuapi_APlayerController_NotifyActorChannelFailure = (uapi_APlayerController_NotifyActorChannelFailureFn)plugin->GetDllExport(TEXT("set_APlayerController_NotifyActorChannelFailure_handler\0"));
+    if(apiuapi_APlayerController_NotifyActorChannelFailure){
+        apiuapi_APlayerController_NotifyActorChannelFailure(&uapi_APlayerController_NotifyActorChannelFailure);
     }
 
     auto const apiuapi_APlayerController_NotifyLoadedWorld = (uapi_APlayerController_NotifyLoadedWorldFn)plugin->GetDllExport(TEXT("set_APlayerController_NotifyLoadedWorld_handler\0"));
@@ -11649,9 +15871,19 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_NotifyLoadedWorld(&uapi_APlayerController_NotifyLoadedWorld);
     }
 
+    auto const apiuapi_APlayerController_NotifyServerReceivedClientData = (uapi_APlayerController_NotifyServerReceivedClientDataFn)plugin->GetDllExport(TEXT("set_APlayerController_NotifyServerReceivedClientData_handler\0"));
+    if(apiuapi_APlayerController_NotifyServerReceivedClientData){
+        apiuapi_APlayerController_NotifyServerReceivedClientData(&uapi_APlayerController_NotifyServerReceivedClientData);
+    }
+
     auto const apiuapi_APlayerController_OnAddedToPlayerControllerList = (uapi_APlayerController_OnAddedToPlayerControllerListFn)plugin->GetDllExport(TEXT("set_APlayerController_OnAddedToPlayerControllerList_handler\0"));
     if(apiuapi_APlayerController_OnAddedToPlayerControllerList){
         apiuapi_APlayerController_OnAddedToPlayerControllerList(&uapi_APlayerController_OnAddedToPlayerControllerList);
+    }
+
+    auto const apiuapi_APlayerController_OnNetCleanup = (uapi_APlayerController_OnNetCleanupFn)plugin->GetDllExport(TEXT("set_APlayerController_OnNetCleanup_handler\0"));
+    if(apiuapi_APlayerController_OnNetCleanup){
+        apiuapi_APlayerController_OnNetCleanup(&uapi_APlayerController_OnNetCleanup);
     }
 
     auto const apiuapi_APlayerController_OnRemovedFromPlayerControllerList = (uapi_APlayerController_OnRemovedFromPlayerControllerListFn)plugin->GetDllExport(TEXT("set_APlayerController_OnRemovedFromPlayerControllerList_handler\0"));
@@ -11679,6 +15911,11 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_PlayerTick(&uapi_APlayerController_PlayerTick);
     }
 
+    auto const apiuapi_APlayerController_PopInputComponent = (uapi_APlayerController_PopInputComponentFn)plugin->GetDllExport(TEXT("set_APlayerController_PopInputComponent_handler\0"));
+    if(apiuapi_APlayerController_PopInputComponent){
+        apiuapi_APlayerController_PopInputComponent(&uapi_APlayerController_PopInputComponent);
+    }
+
     auto const apiuapi_APlayerController_PostInitializeComponents = (uapi_APlayerController_PostInitializeComponentsFn)plugin->GetDllExport(TEXT("set_APlayerController_PostInitializeComponents_handler\0"));
     if(apiuapi_APlayerController_PostInitializeComponents){
         apiuapi_APlayerController_PostInitializeComponents(&uapi_APlayerController_PostInitializeComponents);
@@ -11702,6 +15939,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_PreProcessInput = (uapi_APlayerController_PreProcessInputFn)plugin->GetDllExport(TEXT("set_APlayerController_PreProcessInput_handler\0"));
     if(apiuapi_APlayerController_PreProcessInput){
         apiuapi_APlayerController_PreProcessInput(&uapi_APlayerController_PreProcessInput);
+    }
+
+    auto const apiuapi_APlayerController_PushInputComponent = (uapi_APlayerController_PushInputComponentFn)plugin->GetDllExport(TEXT("set_APlayerController_PushInputComponent_handler\0"));
+    if(apiuapi_APlayerController_PushInputComponent){
+        apiuapi_APlayerController_PushInputComponent(&uapi_APlayerController_PushInputComponent);
     }
 
     auto const apiuapi_APlayerController_ReceivedPlayer = (uapi_APlayerController_ReceivedPlayerFn)plugin->GetDllExport(TEXT("set_APlayerController_ReceivedPlayer_handler\0"));
@@ -11754,9 +15996,24 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_SafeServerUpdateSpectatorState(&uapi_APlayerController_SafeServerUpdateSpectatorState);
     }
 
+    auto const apiuapi_APlayerController_SeamlessTravelFrom = (uapi_APlayerController_SeamlessTravelFromFn)plugin->GetDllExport(TEXT("set_APlayerController_SeamlessTravelFrom_handler\0"));
+    if(apiuapi_APlayerController_SeamlessTravelFrom){
+        apiuapi_APlayerController_SeamlessTravelFrom(&uapi_APlayerController_SeamlessTravelFrom);
+    }
+
+    auto const apiuapi_APlayerController_SeamlessTravelTo = (uapi_APlayerController_SeamlessTravelToFn)plugin->GetDllExport(TEXT("set_APlayerController_SeamlessTravelTo_handler\0"));
+    if(apiuapi_APlayerController_SeamlessTravelTo){
+        apiuapi_APlayerController_SeamlessTravelTo(&uapi_APlayerController_SeamlessTravelTo);
+    }
+
     auto const apiuapi_APlayerController_SendClientAdjustment = (uapi_APlayerController_SendClientAdjustmentFn)plugin->GetDllExport(TEXT("set_APlayerController_SendClientAdjustment_handler\0"));
     if(apiuapi_APlayerController_SendClientAdjustment){
         apiuapi_APlayerController_SendClientAdjustment(&uapi_APlayerController_SendClientAdjustment);
+    }
+
+    auto const apiuapi_APlayerController_ServerAcknowledgePossession = (uapi_APlayerController_ServerAcknowledgePossessionFn)plugin->GetDllExport(TEXT("set_APlayerController_ServerAcknowledgePossession_handler\0"));
+    if(apiuapi_APlayerController_ServerAcknowledgePossession){
+        apiuapi_APlayerController_ServerAcknowledgePossession(&uapi_APlayerController_ServerAcknowledgePossession);
     }
 
     auto const apiuapi_APlayerController_ServerCamera = (uapi_APlayerController_ServerCameraFn)plugin->GetDllExport(TEXT("set_APlayerController_ServerCamera_handler\0"));
@@ -11829,6 +16086,16 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_SetAsLocalPlayerController(&uapi_APlayerController_SetAsLocalPlayerController);
     }
 
+    auto const apiuapi_APlayerController_SetAudioListenerAttenuationOverride = (uapi_APlayerController_SetAudioListenerAttenuationOverrideFn)plugin->GetDllExport(TEXT("set_APlayerController_SetAudioListenerAttenuationOverride_handler\0"));
+    if(apiuapi_APlayerController_SetAudioListenerAttenuationOverride){
+        apiuapi_APlayerController_SetAudioListenerAttenuationOverride(&uapi_APlayerController_SetAudioListenerAttenuationOverride);
+    }
+
+    auto const apiuapi_APlayerController_SetAudioListenerOverride = (uapi_APlayerController_SetAudioListenerOverrideFn)plugin->GetDllExport(TEXT("set_APlayerController_SetAudioListenerOverride_handler\0"));
+    if(apiuapi_APlayerController_SetAudioListenerOverride){
+        apiuapi_APlayerController_SetAudioListenerOverride(&uapi_APlayerController_SetAudioListenerOverride);
+    }
+
     auto const apiuapi_APlayerController_SetCameraMode = (uapi_APlayerController_SetCameraModeFn)plugin->GetDllExport(TEXT("set_APlayerController_SetCameraMode_handler\0"));
     if(apiuapi_APlayerController_SetCameraMode){
         apiuapi_APlayerController_SetCameraMode(&uapi_APlayerController_SetCameraMode);
@@ -11864,6 +16131,16 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_SetNetSpeed(&uapi_APlayerController_SetNetSpeed);
     }
 
+    auto const apiuapi_APlayerController_SetPawn = (uapi_APlayerController_SetPawnFn)plugin->GetDllExport(TEXT("set_APlayerController_SetPawn_handler\0"));
+    if(apiuapi_APlayerController_SetPawn){
+        apiuapi_APlayerController_SetPawn(&uapi_APlayerController_SetPawn);
+    }
+
+    auto const apiuapi_APlayerController_SetPlayer = (uapi_APlayerController_SetPlayerFn)plugin->GetDllExport(TEXT("set_APlayerController_SetPlayer_handler\0"));
+    if(apiuapi_APlayerController_SetPlayer){
+        apiuapi_APlayerController_SetPlayer(&uapi_APlayerController_SetPlayer);
+    }
+
     auto const apiuapi_APlayerController_SetShowMouseCursor = (uapi_APlayerController_SetShowMouseCursorFn)plugin->GetDllExport(TEXT("set_APlayerController_SetShowMouseCursor_handler\0"));
     if(apiuapi_APlayerController_SetShowMouseCursor){
         apiuapi_APlayerController_SetShowMouseCursor(&uapi_APlayerController_SetShowMouseCursor);
@@ -11892,6 +16169,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_APlayerController_ShouldShowMouseCursor = (uapi_APlayerController_ShouldShowMouseCursorFn)plugin->GetDllExport(TEXT("set_APlayerController_ShouldShowMouseCursor_handler\0"));
     if(apiuapi_APlayerController_ShouldShowMouseCursor){
         apiuapi_APlayerController_ShouldShowMouseCursor(&uapi_APlayerController_ShouldShowMouseCursor);
+    }
+
+    auto const apiuapi_APlayerController_SmoothTargetViewRotation = (uapi_APlayerController_SmoothTargetViewRotationFn)plugin->GetDllExport(TEXT("set_APlayerController_SmoothTargetViewRotation_handler\0"));
+    if(apiuapi_APlayerController_SmoothTargetViewRotation){
+        apiuapi_APlayerController_SmoothTargetViewRotation(&uapi_APlayerController_SmoothTargetViewRotation);
     }
 
     auto const apiuapi_APlayerController_SpawnDefaultHUD = (uapi_APlayerController_SpawnDefaultHUDFn)plugin->GetDllExport(TEXT("set_APlayerController_SpawnDefaultHUD_handler\0"));
@@ -11969,69 +16251,9 @@ void register_all(Plugin* plugin){
         apiuapi_APlayerController_ViewAPlayer(&uapi_APlayerController_ViewAPlayer);
     }
 
-    auto const apiuapi_FRandomStream_FRand = (uapi_FRandomStream_FRandFn)plugin->GetDllExport(TEXT("set_FRandomStream_FRand_handler\0"));
-    if(apiuapi_FRandomStream_FRand){
-        apiuapi_FRandomStream_FRand(&uapi_FRandomStream_FRand);
-    }
-
-    auto const apiuapi_FRandomStream_GenerateNewSeed = (uapi_FRandomStream_GenerateNewSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GenerateNewSeed_handler\0"));
-    if(apiuapi_FRandomStream_GenerateNewSeed){
-        apiuapi_FRandomStream_GenerateNewSeed(&uapi_FRandomStream_GenerateNewSeed);
-    }
-
-    auto const apiuapi_FRandomStream_GetCurrentSeed = (uapi_FRandomStream_GetCurrentSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetCurrentSeed_handler\0"));
-    if(apiuapi_FRandomStream_GetCurrentSeed){
-        apiuapi_FRandomStream_GetCurrentSeed(&uapi_FRandomStream_GetCurrentSeed);
-    }
-
-    auto const apiuapi_FRandomStream_GetFraction = (uapi_FRandomStream_GetFractionFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetFraction_handler\0"));
-    if(apiuapi_FRandomStream_GetFraction){
-        apiuapi_FRandomStream_GetFraction(&uapi_FRandomStream_GetFraction);
-    }
-
-    auto const apiuapi_FRandomStream_GetInitialSeed = (uapi_FRandomStream_GetInitialSeedFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetInitialSeed_handler\0"));
-    if(apiuapi_FRandomStream_GetInitialSeed){
-        apiuapi_FRandomStream_GetInitialSeed(&uapi_FRandomStream_GetInitialSeed);
-    }
-
-    auto const apiuapi_FRandomStream_GetUnitVector = (uapi_FRandomStream_GetUnitVectorFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetUnitVector_handler\0"));
-    if(apiuapi_FRandomStream_GetUnitVector){
-        apiuapi_FRandomStream_GetUnitVector(&uapi_FRandomStream_GetUnitVector);
-    }
-
-    auto const apiuapi_FRandomStream_GetUnsignedInt = (uapi_FRandomStream_GetUnsignedIntFn)plugin->GetDllExport(TEXT("set_FRandomStream_GetUnsignedInt_handler\0"));
-    if(apiuapi_FRandomStream_GetUnsignedInt){
-        apiuapi_FRandomStream_GetUnsignedInt(&uapi_FRandomStream_GetUnsignedInt);
-    }
-
-    auto const apiuapi_FRandomStream_Initialize = (uapi_FRandomStream_InitializeFn)plugin->GetDllExport(TEXT("set_FRandomStream_Initialize_handler\0"));
-    if(apiuapi_FRandomStream_Initialize){
-        apiuapi_FRandomStream_Initialize(&uapi_FRandomStream_Initialize);
-    }
-
-    auto const apiuapi_FRandomStream_RandHelper = (uapi_FRandomStream_RandHelperFn)plugin->GetDllExport(TEXT("set_FRandomStream_RandHelper_handler\0"));
-    if(apiuapi_FRandomStream_RandHelper){
-        apiuapi_FRandomStream_RandHelper(&uapi_FRandomStream_RandHelper);
-    }
-
-    auto const apiuapi_FRandomStream_RandRange = (uapi_FRandomStream_RandRangeFn)plugin->GetDllExport(TEXT("set_FRandomStream_RandRange_handler\0"));
-    if(apiuapi_FRandomStream_RandRange){
-        apiuapi_FRandomStream_RandRange(&uapi_FRandomStream_RandRange);
-    }
-
-    auto const apiuapi_FRandomStream_Reset = (uapi_FRandomStream_ResetFn)plugin->GetDllExport(TEXT("set_FRandomStream_Reset_handler\0"));
-    if(apiuapi_FRandomStream_Reset){
-        apiuapi_FRandomStream_Reset(&uapi_FRandomStream_Reset);
-    }
-
-    auto const apiuapi_FRandomStream_ToString = (uapi_FRandomStream_ToStringFn)plugin->GetDllExport(TEXT("set_FRandomStream_ToString_handler\0"));
-    if(apiuapi_FRandomStream_ToString){
-        apiuapi_FRandomStream_ToString(&uapi_FRandomStream_ToString);
-    }
-
-    auto const apiuapi_FRandomStream_VRand = (uapi_FRandomStream_VRandFn)plugin->GetDllExport(TEXT("set_FRandomStream_VRand_handler\0"));
-    if(apiuapi_FRandomStream_VRand){
-        apiuapi_FRandomStream_VRand(&uapi_FRandomStream_VRand);
+    auto const apiuapi_UGameplayStatics_ActivateReverbEffect = (uapi_UGameplayStatics_ActivateReverbEffectFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_ActivateReverbEffect_handler\0"));
+    if(apiuapi_UGameplayStatics_ActivateReverbEffect){
+        apiuapi_UGameplayStatics_ActivateReverbEffect(&uapi_UGameplayStatics_ActivateReverbEffect);
     }
 
     auto const apiuapi_UGameplayStatics_AreSubtitlesEnabled = (uapi_UGameplayStatics_AreSubtitlesEnabledFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_AreSubtitlesEnabled_handler\0"));
@@ -12044,9 +16266,39 @@ void register_all(Plugin* plugin){
         apiuapi_UGameplayStatics_CancelAsyncLoading(&uapi_UGameplayStatics_CancelAsyncLoading);
     }
 
+    auto const apiuapi_UGameplayStatics_ClearSoundMixClassOverride = (uapi_UGameplayStatics_ClearSoundMixClassOverrideFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_ClearSoundMixClassOverride_handler\0"));
+    if(apiuapi_UGameplayStatics_ClearSoundMixClassOverride){
+        apiuapi_UGameplayStatics_ClearSoundMixClassOverride(&uapi_UGameplayStatics_ClearSoundMixClassOverride);
+    }
+
+    auto const apiuapi_UGameplayStatics_ClearSoundMixModifiers = (uapi_UGameplayStatics_ClearSoundMixModifiersFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_ClearSoundMixModifiers_handler\0"));
+    if(apiuapi_UGameplayStatics_ClearSoundMixModifiers){
+        apiuapi_UGameplayStatics_ClearSoundMixModifiers(&uapi_UGameplayStatics_ClearSoundMixModifiers);
+    }
+
+    auto const apiuapi_UGameplayStatics_CreatePlayer = (uapi_UGameplayStatics_CreatePlayerFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_CreatePlayer_handler\0"));
+    if(apiuapi_UGameplayStatics_CreatePlayer){
+        apiuapi_UGameplayStatics_CreatePlayer(&uapi_UGameplayStatics_CreatePlayer);
+    }
+
+    auto const apiuapi_UGameplayStatics_CreateSound2D = (uapi_UGameplayStatics_CreateSound2DFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_CreateSound2D_handler\0"));
+    if(apiuapi_UGameplayStatics_CreateSound2D){
+        apiuapi_UGameplayStatics_CreateSound2D(&uapi_UGameplayStatics_CreateSound2D);
+    }
+
+    auto const apiuapi_UGameplayStatics_DeactivateReverbEffect = (uapi_UGameplayStatics_DeactivateReverbEffectFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_DeactivateReverbEffect_handler\0"));
+    if(apiuapi_UGameplayStatics_DeactivateReverbEffect){
+        apiuapi_UGameplayStatics_DeactivateReverbEffect(&uapi_UGameplayStatics_DeactivateReverbEffect);
+    }
+
     auto const apiuapi_UGameplayStatics_EnableLiveStreaming = (uapi_UGameplayStatics_EnableLiveStreamingFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_EnableLiveStreaming_handler\0"));
     if(apiuapi_UGameplayStatics_EnableLiveStreaming){
         apiuapi_UGameplayStatics_EnableLiveStreaming(&uapi_UGameplayStatics_EnableLiveStreaming);
+    }
+
+    auto const apiuapi_UGameplayStatics_FlushLevelStreaming = (uapi_UGameplayStatics_FlushLevelStreamingFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_FlushLevelStreaming_handler\0"));
+    if(apiuapi_UGameplayStatics_FlushLevelStreaming){
+        apiuapi_UGameplayStatics_FlushLevelStreaming(&uapi_UGameplayStatics_FlushLevelStreaming);
     }
 
     auto const apiuapi_UGameplayStatics_GetAccurateRealTime = (uapi_UGameplayStatics_GetAccurateRealTimeFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetAccurateRealTime_handler\0"));
@@ -12054,14 +16306,299 @@ void register_all(Plugin* plugin){
         apiuapi_UGameplayStatics_GetAccurateRealTime(&uapi_UGameplayStatics_GetAccurateRealTime);
     }
 
+    auto const apiuapi_UGameplayStatics_GetActiveSpatialPluginName = (uapi_UGameplayStatics_GetActiveSpatialPluginNameFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetActiveSpatialPluginName_handler\0"));
+    if(apiuapi_UGameplayStatics_GetActiveSpatialPluginName){
+        apiuapi_UGameplayStatics_GetActiveSpatialPluginName(&uapi_UGameplayStatics_GetActiveSpatialPluginName);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetAudioTimeSeconds = (uapi_UGameplayStatics_GetAudioTimeSecondsFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetAudioTimeSeconds_handler\0"));
+    if(apiuapi_UGameplayStatics_GetAudioTimeSeconds){
+        apiuapi_UGameplayStatics_GetAudioTimeSeconds(&uapi_UGameplayStatics_GetAudioTimeSeconds);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetCurrentLevelName = (uapi_UGameplayStatics_GetCurrentLevelNameFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetCurrentLevelName_handler\0"));
+    if(apiuapi_UGameplayStatics_GetCurrentLevelName){
+        apiuapi_UGameplayStatics_GetCurrentLevelName(&uapi_UGameplayStatics_GetCurrentLevelName);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetCurrentReverbEffect = (uapi_UGameplayStatics_GetCurrentReverbEffectFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetCurrentReverbEffect_handler\0"));
+    if(apiuapi_UGameplayStatics_GetCurrentReverbEffect){
+        apiuapi_UGameplayStatics_GetCurrentReverbEffect(&uapi_UGameplayStatics_GetCurrentReverbEffect);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetEnableWorldRendering = (uapi_UGameplayStatics_GetEnableWorldRenderingFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetEnableWorldRendering_handler\0"));
+    if(apiuapi_UGameplayStatics_GetEnableWorldRendering){
+        apiuapi_UGameplayStatics_GetEnableWorldRendering(&uapi_UGameplayStatics_GetEnableWorldRendering);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetGameInstance = (uapi_UGameplayStatics_GetGameInstanceFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetGameInstance_handler\0"));
+    if(apiuapi_UGameplayStatics_GetGameInstance){
+        apiuapi_UGameplayStatics_GetGameInstance(&uapi_UGameplayStatics_GetGameInstance);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetGameMode = (uapi_UGameplayStatics_GetGameModeFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetGameMode_handler\0"));
+    if(apiuapi_UGameplayStatics_GetGameMode){
+        apiuapi_UGameplayStatics_GetGameMode(&uapi_UGameplayStatics_GetGameMode);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetGameState = (uapi_UGameplayStatics_GetGameStateFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetGameState_handler\0"));
+    if(apiuapi_UGameplayStatics_GetGameState){
+        apiuapi_UGameplayStatics_GetGameState(&uapi_UGameplayStatics_GetGameState);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetGlobalTimeDilation = (uapi_UGameplayStatics_GetGlobalTimeDilationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetGlobalTimeDilation_handler\0"));
+    if(apiuapi_UGameplayStatics_GetGlobalTimeDilation){
+        apiuapi_UGameplayStatics_GetGlobalTimeDilation(&uapi_UGameplayStatics_GetGlobalTimeDilation);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetMaxAudioChannelCount = (uapi_UGameplayStatics_GetMaxAudioChannelCountFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetMaxAudioChannelCount_handler\0"));
+    if(apiuapi_UGameplayStatics_GetMaxAudioChannelCount){
+        apiuapi_UGameplayStatics_GetMaxAudioChannelCount(&uapi_UGameplayStatics_GetMaxAudioChannelCount);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetNumLocalPlayerControllers = (uapi_UGameplayStatics_GetNumLocalPlayerControllersFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetNumLocalPlayerControllers_handler\0"));
+    if(apiuapi_UGameplayStatics_GetNumLocalPlayerControllers){
+        apiuapi_UGameplayStatics_GetNumLocalPlayerControllers(&uapi_UGameplayStatics_GetNumLocalPlayerControllers);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetNumPlayerControllers = (uapi_UGameplayStatics_GetNumPlayerControllersFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetNumPlayerControllers_handler\0"));
+    if(apiuapi_UGameplayStatics_GetNumPlayerControllers){
+        apiuapi_UGameplayStatics_GetNumPlayerControllers(&uapi_UGameplayStatics_GetNumPlayerControllers);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetNumPlayerStates = (uapi_UGameplayStatics_GetNumPlayerStatesFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetNumPlayerStates_handler\0"));
+    if(apiuapi_UGameplayStatics_GetNumPlayerStates){
+        apiuapi_UGameplayStatics_GetNumPlayerStates(&uapi_UGameplayStatics_GetNumPlayerStates);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetObjectClass = (uapi_UGameplayStatics_GetObjectClassFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetObjectClass_handler\0"));
+    if(apiuapi_UGameplayStatics_GetObjectClass){
+        apiuapi_UGameplayStatics_GetObjectClass(&uapi_UGameplayStatics_GetObjectClass);
+    }
+
     auto const apiuapi_UGameplayStatics_GetPlatformName = (uapi_UGameplayStatics_GetPlatformNameFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlatformName_handler\0"));
     if(apiuapi_UGameplayStatics_GetPlatformName){
         apiuapi_UGameplayStatics_GetPlatformName(&uapi_UGameplayStatics_GetPlatformName);
     }
 
+    auto const apiuapi_UGameplayStatics_GetPlayerCameraManager = (uapi_UGameplayStatics_GetPlayerCameraManagerFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerCameraManager_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerCameraManager){
+        apiuapi_UGameplayStatics_GetPlayerCameraManager(&uapi_UGameplayStatics_GetPlayerCameraManager);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerCharacter = (uapi_UGameplayStatics_GetPlayerCharacterFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerCharacter_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerCharacter){
+        apiuapi_UGameplayStatics_GetPlayerCharacter(&uapi_UGameplayStatics_GetPlayerCharacter);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerController = (uapi_UGameplayStatics_GetPlayerControllerFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerController_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerController){
+        apiuapi_UGameplayStatics_GetPlayerController(&uapi_UGameplayStatics_GetPlayerController);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerControllerFromID = (uapi_UGameplayStatics_GetPlayerControllerFromIDFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerControllerFromID_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerControllerFromID){
+        apiuapi_UGameplayStatics_GetPlayerControllerFromID(&uapi_UGameplayStatics_GetPlayerControllerFromID);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerControllerID = (uapi_UGameplayStatics_GetPlayerControllerIDFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerControllerID_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerControllerID){
+        apiuapi_UGameplayStatics_GetPlayerControllerID(&uapi_UGameplayStatics_GetPlayerControllerID);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerPawn = (uapi_UGameplayStatics_GetPlayerPawnFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerPawn_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerPawn){
+        apiuapi_UGameplayStatics_GetPlayerPawn(&uapi_UGameplayStatics_GetPlayerPawn);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetPlayerState = (uapi_UGameplayStatics_GetPlayerStateFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetPlayerState_handler\0"));
+    if(apiuapi_UGameplayStatics_GetPlayerState){
+        apiuapi_UGameplayStatics_GetPlayerState(&uapi_UGameplayStatics_GetPlayerState);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetRealTimeSeconds = (uapi_UGameplayStatics_GetRealTimeSecondsFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetRealTimeSeconds_handler\0"));
+    if(apiuapi_UGameplayStatics_GetRealTimeSeconds){
+        apiuapi_UGameplayStatics_GetRealTimeSeconds(&uapi_UGameplayStatics_GetRealTimeSeconds);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetStreamingLevel = (uapi_UGameplayStatics_GetStreamingLevelFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetStreamingLevel_handler\0"));
+    if(apiuapi_UGameplayStatics_GetStreamingLevel){
+        apiuapi_UGameplayStatics_GetStreamingLevel(&uapi_UGameplayStatics_GetStreamingLevel);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetTimeSeconds = (uapi_UGameplayStatics_GetTimeSecondsFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetTimeSeconds_handler\0"));
+    if(apiuapi_UGameplayStatics_GetTimeSeconds){
+        apiuapi_UGameplayStatics_GetTimeSeconds(&uapi_UGameplayStatics_GetTimeSeconds);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetUnpausedTimeSeconds = (uapi_UGameplayStatics_GetUnpausedTimeSecondsFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetUnpausedTimeSeconds_handler\0"));
+    if(apiuapi_UGameplayStatics_GetUnpausedTimeSeconds){
+        apiuapi_UGameplayStatics_GetUnpausedTimeSeconds(&uapi_UGameplayStatics_GetUnpausedTimeSeconds);
+    }
+
+    auto const apiuapi_UGameplayStatics_GetWorldDeltaSeconds = (uapi_UGameplayStatics_GetWorldDeltaSecondsFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GetWorldDeltaSeconds_handler\0"));
+    if(apiuapi_UGameplayStatics_GetWorldDeltaSeconds){
+        apiuapi_UGameplayStatics_GetWorldDeltaSeconds(&uapi_UGameplayStatics_GetWorldDeltaSeconds);
+    }
+
+    auto const apiuapi_UGameplayStatics_GrassOverlappingSphereCount = (uapi_UGameplayStatics_GrassOverlappingSphereCountFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_GrassOverlappingSphereCount_handler\0"));
+    if(apiuapi_UGameplayStatics_GrassOverlappingSphereCount){
+        apiuapi_UGameplayStatics_GrassOverlappingSphereCount(&uapi_UGameplayStatics_GrassOverlappingSphereCount);
+    }
+
+    auto const apiuapi_UGameplayStatics_IsGamePaused = (uapi_UGameplayStatics_IsGamePausedFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_IsGamePaused_handler\0"));
+    if(apiuapi_UGameplayStatics_IsGamePaused){
+        apiuapi_UGameplayStatics_IsGamePaused(&uapi_UGameplayStatics_IsGamePaused);
+    }
+
+    auto const apiuapi_UGameplayStatics_IsSplitscreenForceDisabled = (uapi_UGameplayStatics_IsSplitscreenForceDisabledFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_IsSplitscreenForceDisabled_handler\0"));
+    if(apiuapi_UGameplayStatics_IsSplitscreenForceDisabled){
+        apiuapi_UGameplayStatics_IsSplitscreenForceDisabled(&uapi_UGameplayStatics_IsSplitscreenForceDisabled);
+    }
+
+    auto const apiuapi_UGameplayStatics_OpenLevel = (uapi_UGameplayStatics_OpenLevelFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_OpenLevel_handler\0"));
+    if(apiuapi_UGameplayStatics_OpenLevel){
+        apiuapi_UGameplayStatics_OpenLevel(&uapi_UGameplayStatics_OpenLevel);
+    }
+
+    auto const apiuapi_UGameplayStatics_PlaySound2D = (uapi_UGameplayStatics_PlaySound2DFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PlaySound2D_handler\0"));
+    if(apiuapi_UGameplayStatics_PlaySound2D){
+        apiuapi_UGameplayStatics_PlaySound2D(&uapi_UGameplayStatics_PlaySound2D);
+    }
+
+    auto const apiuapi_UGameplayStatics_PlaySoundAtLocation = (uapi_UGameplayStatics_PlaySoundAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PlaySoundAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_PlaySoundAtLocation){
+        apiuapi_UGameplayStatics_PlaySoundAtLocation(&uapi_UGameplayStatics_PlaySoundAtLocation);
+    }
+
+    auto const apiuapi_UGameplayStatics_PlaySoundAtLocation2 = (uapi_UGameplayStatics_PlaySoundAtLocation2Fn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PlaySoundAtLocation2_handler\0"));
+    if(apiuapi_UGameplayStatics_PlaySoundAtLocation2){
+        apiuapi_UGameplayStatics_PlaySoundAtLocation2(&uapi_UGameplayStatics_PlaySoundAtLocation2);
+    }
+
+    auto const apiuapi_UGameplayStatics_PopSoundMixModifier = (uapi_UGameplayStatics_PopSoundMixModifierFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PopSoundMixModifier_handler\0"));
+    if(apiuapi_UGameplayStatics_PopSoundMixModifier){
+        apiuapi_UGameplayStatics_PopSoundMixModifier(&uapi_UGameplayStatics_PopSoundMixModifier);
+    }
+
+    auto const apiuapi_UGameplayStatics_PrimeAllSoundsInSoundClass = (uapi_UGameplayStatics_PrimeAllSoundsInSoundClassFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PrimeAllSoundsInSoundClass_handler\0"));
+    if(apiuapi_UGameplayStatics_PrimeAllSoundsInSoundClass){
+        apiuapi_UGameplayStatics_PrimeAllSoundsInSoundClass(&uapi_UGameplayStatics_PrimeAllSoundsInSoundClass);
+    }
+
+    auto const apiuapi_UGameplayStatics_PrimeSound = (uapi_UGameplayStatics_PrimeSoundFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PrimeSound_handler\0"));
+    if(apiuapi_UGameplayStatics_PrimeSound){
+        apiuapi_UGameplayStatics_PrimeSound(&uapi_UGameplayStatics_PrimeSound);
+    }
+
+    auto const apiuapi_UGameplayStatics_PushSoundMixModifier = (uapi_UGameplayStatics_PushSoundMixModifierFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_PushSoundMixModifier_handler\0"));
+    if(apiuapi_UGameplayStatics_PushSoundMixModifier){
+        apiuapi_UGameplayStatics_PushSoundMixModifier(&uapi_UGameplayStatics_PushSoundMixModifier);
+    }
+
+    auto const apiuapi_UGameplayStatics_RebaseLocalOriginOntoZero = (uapi_UGameplayStatics_RebaseLocalOriginOntoZeroFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_RebaseLocalOriginOntoZero_handler\0"));
+    if(apiuapi_UGameplayStatics_RebaseLocalOriginOntoZero){
+        apiuapi_UGameplayStatics_RebaseLocalOriginOntoZero(&uapi_UGameplayStatics_RebaseLocalOriginOntoZero);
+    }
+
+    auto const apiuapi_UGameplayStatics_RebaseZeroOriginOntoLocal = (uapi_UGameplayStatics_RebaseZeroOriginOntoLocalFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_RebaseZeroOriginOntoLocal_handler\0"));
+    if(apiuapi_UGameplayStatics_RebaseZeroOriginOntoLocal){
+        apiuapi_UGameplayStatics_RebaseZeroOriginOntoLocal(&uapi_UGameplayStatics_RebaseZeroOriginOntoLocal);
+    }
+
+    auto const apiuapi_UGameplayStatics_RemovePlayer = (uapi_UGameplayStatics_RemovePlayerFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_RemovePlayer_handler\0"));
+    if(apiuapi_UGameplayStatics_RemovePlayer){
+        apiuapi_UGameplayStatics_RemovePlayer(&uapi_UGameplayStatics_RemovePlayer);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetActiveSpatialPluginByName = (uapi_UGameplayStatics_SetActiveSpatialPluginByNameFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetActiveSpatialPluginByName_handler\0"));
+    if(apiuapi_UGameplayStatics_SetActiveSpatialPluginByName){
+        apiuapi_UGameplayStatics_SetActiveSpatialPluginByName(&uapi_UGameplayStatics_SetActiveSpatialPluginByName);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetBaseSoundMix = (uapi_UGameplayStatics_SetBaseSoundMixFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetBaseSoundMix_handler\0"));
+    if(apiuapi_UGameplayStatics_SetBaseSoundMix){
+        apiuapi_UGameplayStatics_SetBaseSoundMix(&uapi_UGameplayStatics_SetBaseSoundMix);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetEnableWorldRendering = (uapi_UGameplayStatics_SetEnableWorldRenderingFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetEnableWorldRendering_handler\0"));
+    if(apiuapi_UGameplayStatics_SetEnableWorldRendering){
+        apiuapi_UGameplayStatics_SetEnableWorldRendering(&uapi_UGameplayStatics_SetEnableWorldRendering);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetForceDisableSplitscreen = (uapi_UGameplayStatics_SetForceDisableSplitscreenFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetForceDisableSplitscreen_handler\0"));
+    if(apiuapi_UGameplayStatics_SetForceDisableSplitscreen){
+        apiuapi_UGameplayStatics_SetForceDisableSplitscreen(&uapi_UGameplayStatics_SetForceDisableSplitscreen);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetGamePaused = (uapi_UGameplayStatics_SetGamePausedFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetGamePaused_handler\0"));
+    if(apiuapi_UGameplayStatics_SetGamePaused){
+        apiuapi_UGameplayStatics_SetGamePaused(&uapi_UGameplayStatics_SetGamePaused);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetGlobalListenerFocusParameters = (uapi_UGameplayStatics_SetGlobalListenerFocusParametersFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetGlobalListenerFocusParameters_handler\0"));
+    if(apiuapi_UGameplayStatics_SetGlobalListenerFocusParameters){
+        apiuapi_UGameplayStatics_SetGlobalListenerFocusParameters(&uapi_UGameplayStatics_SetGlobalListenerFocusParameters);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetGlobalPitchModulation = (uapi_UGameplayStatics_SetGlobalPitchModulationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetGlobalPitchModulation_handler\0"));
+    if(apiuapi_UGameplayStatics_SetGlobalPitchModulation){
+        apiuapi_UGameplayStatics_SetGlobalPitchModulation(&uapi_UGameplayStatics_SetGlobalPitchModulation);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetGlobalTimeDilation = (uapi_UGameplayStatics_SetGlobalTimeDilationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetGlobalTimeDilation_handler\0"));
+    if(apiuapi_UGameplayStatics_SetGlobalTimeDilation){
+        apiuapi_UGameplayStatics_SetGlobalTimeDilation(&uapi_UGameplayStatics_SetGlobalTimeDilation);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetMaxAudioChannelsScaled = (uapi_UGameplayStatics_SetMaxAudioChannelsScaledFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetMaxAudioChannelsScaled_handler\0"));
+    if(apiuapi_UGameplayStatics_SetMaxAudioChannelsScaled){
+        apiuapi_UGameplayStatics_SetMaxAudioChannelsScaled(&uapi_UGameplayStatics_SetMaxAudioChannelsScaled);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetPlayerControllerID = (uapi_UGameplayStatics_SetPlayerControllerIDFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetPlayerControllerID_handler\0"));
+    if(apiuapi_UGameplayStatics_SetPlayerControllerID){
+        apiuapi_UGameplayStatics_SetPlayerControllerID(&uapi_UGameplayStatics_SetPlayerControllerID);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetSoundClassDistanceScale = (uapi_UGameplayStatics_SetSoundClassDistanceScaleFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetSoundClassDistanceScale_handler\0"));
+    if(apiuapi_UGameplayStatics_SetSoundClassDistanceScale){
+        apiuapi_UGameplayStatics_SetSoundClassDistanceScale(&uapi_UGameplayStatics_SetSoundClassDistanceScale);
+    }
+
+    auto const apiuapi_UGameplayStatics_SetSoundMixClassOverride = (uapi_UGameplayStatics_SetSoundMixClassOverrideFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetSoundMixClassOverride_handler\0"));
+    if(apiuapi_UGameplayStatics_SetSoundMixClassOverride){
+        apiuapi_UGameplayStatics_SetSoundMixClassOverride(&uapi_UGameplayStatics_SetSoundMixClassOverride);
+    }
+
     auto const apiuapi_UGameplayStatics_SetSubtitlesEnabled = (uapi_UGameplayStatics_SetSubtitlesEnabledFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SetSubtitlesEnabled_handler\0"));
     if(apiuapi_UGameplayStatics_SetSubtitlesEnabled){
         apiuapi_UGameplayStatics_SetSubtitlesEnabled(&uapi_UGameplayStatics_SetSubtitlesEnabled);
+    }
+
+    auto const apiuapi_UGameplayStatics_SpawnDecalAtLocation = (uapi_UGameplayStatics_SpawnDecalAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnDecalAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnDecalAtLocation){
+        apiuapi_UGameplayStatics_SpawnDecalAtLocation(&uapi_UGameplayStatics_SpawnDecalAtLocation);
+    }
+
+    auto const apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation = (uapi_UGameplayStatics_SpawnForceFeedbackAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnForceFeedbackAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation){
+        apiuapi_UGameplayStatics_SpawnForceFeedbackAtLocation(&uapi_UGameplayStatics_SpawnForceFeedbackAtLocation);
+    }
+
+    auto const apiuapi_UGameplayStatics_SpawnSound2D = (uapi_UGameplayStatics_SpawnSound2DFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnSound2D_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnSound2D){
+        apiuapi_UGameplayStatics_SpawnSound2D(&uapi_UGameplayStatics_SpawnSound2D);
+    }
+
+    auto const apiuapi_UGameplayStatics_SpawnSoundAtLocation = (uapi_UGameplayStatics_SpawnSoundAtLocationFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_SpawnSoundAtLocation_handler\0"));
+    if(apiuapi_UGameplayStatics_SpawnSoundAtLocation){
+        apiuapi_UGameplayStatics_SpawnSoundAtLocation(&uapi_UGameplayStatics_SpawnSoundAtLocation);
+    }
+
+    auto const apiuapi_UGameplayStatics_UnRetainAllSoundsInSoundClass = (uapi_UGameplayStatics_UnRetainAllSoundsInSoundClassFn)plugin->GetDllExport(TEXT("set_UGameplayStatics_UnRetainAllSoundsInSoundClass_handler\0"));
+    if(apiuapi_UGameplayStatics_UnRetainAllSoundsInSoundClass){
+        apiuapi_UGameplayStatics_UnRetainAllSoundsInSoundClass(&uapi_UGameplayStatics_UnRetainAllSoundsInSoundClass);
     }
 
     auto const apiuapi_ACharacter_BeginPlay = (uapi_ACharacter_BeginPlayFn)plugin->GetDllExport(TEXT("set_ACharacter_BeginPlay_handler\0"));
@@ -12109,6 +16646,16 @@ void register_all(Plugin* plugin){
         apiuapi_ACharacter_ClientAckGoodMove_Implementation(&uapi_ACharacter_ClientAckGoodMove_Implementation);
     }
 
+    auto const apiuapi_ACharacter_ClientAdjustPosition = (uapi_ACharacter_ClientAdjustPositionFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientAdjustPosition_handler\0"));
+    if(apiuapi_ACharacter_ClientAdjustPosition){
+        apiuapi_ACharacter_ClientAdjustPosition(&uapi_ACharacter_ClientAdjustPosition);
+    }
+
+    auto const apiuapi_ACharacter_ClientAdjustPosition_Implementation = (uapi_ACharacter_ClientAdjustPosition_ImplementationFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientAdjustPosition_Implementation_handler\0"));
+    if(apiuapi_ACharacter_ClientAdjustPosition_Implementation){
+        apiuapi_ACharacter_ClientAdjustPosition_Implementation(&uapi_ACharacter_ClientAdjustPosition_Implementation);
+    }
+
     auto const apiuapi_ACharacter_ClientCheatFly = (uapi_ACharacter_ClientCheatFlyFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientCheatFly_handler\0"));
     if(apiuapi_ACharacter_ClientCheatFly){
         apiuapi_ACharacter_ClientCheatFly(&uapi_ACharacter_ClientCheatFly);
@@ -12137,6 +16684,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_ACharacter_ClientCheatWalk_Implementation = (uapi_ACharacter_ClientCheatWalk_ImplementationFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientCheatWalk_Implementation_handler\0"));
     if(apiuapi_ACharacter_ClientCheatWalk_Implementation){
         apiuapi_ACharacter_ClientCheatWalk_Implementation(&uapi_ACharacter_ClientCheatWalk_Implementation);
+    }
+
+    auto const apiuapi_ACharacter_ClientVeryShortAdjustPosition = (uapi_ACharacter_ClientVeryShortAdjustPositionFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientVeryShortAdjustPosition_handler\0"));
+    if(apiuapi_ACharacter_ClientVeryShortAdjustPosition){
+        apiuapi_ACharacter_ClientVeryShortAdjustPosition(&uapi_ACharacter_ClientVeryShortAdjustPosition);
+    }
+
+    auto const apiuapi_ACharacter_ClientVeryShortAdjustPosition_Implementation = (uapi_ACharacter_ClientVeryShortAdjustPosition_ImplementationFn)plugin->GetDllExport(TEXT("set_ACharacter_ClientVeryShortAdjustPosition_Implementation_handler\0"));
+    if(apiuapi_ACharacter_ClientVeryShortAdjustPosition_Implementation){
+        apiuapi_ACharacter_ClientVeryShortAdjustPosition_Implementation(&uapi_ACharacter_ClientVeryShortAdjustPosition_Implementation);
     }
 
     auto const apiuapi_ACharacter_Crouch = (uapi_ACharacter_CrouchFn)plugin->GetDllExport(TEXT("set_ACharacter_Crouch_handler\0"));
@@ -12284,6 +16841,16 @@ void register_all(Plugin* plugin){
         apiuapi_ACharacter_LaunchCharacter(&uapi_ACharacter_LaunchCharacter);
     }
 
+    auto const apiuapi_ACharacter_NotifyActorBeginOverlap = (uapi_ACharacter_NotifyActorBeginOverlapFn)plugin->GetDllExport(TEXT("set_ACharacter_NotifyActorBeginOverlap_handler\0"));
+    if(apiuapi_ACharacter_NotifyActorBeginOverlap){
+        apiuapi_ACharacter_NotifyActorBeginOverlap(&uapi_ACharacter_NotifyActorBeginOverlap);
+    }
+
+    auto const apiuapi_ACharacter_NotifyActorEndOverlap = (uapi_ACharacter_NotifyActorEndOverlapFn)plugin->GetDllExport(TEXT("set_ACharacter_NotifyActorEndOverlap_handler\0"));
+    if(apiuapi_ACharacter_NotifyActorEndOverlap){
+        apiuapi_ACharacter_NotifyActorEndOverlap(&uapi_ACharacter_NotifyActorEndOverlap);
+    }
+
     auto const apiuapi_ACharacter_NotifyJumpApex = (uapi_ACharacter_NotifyJumpApexFn)plugin->GetDllExport(TEXT("set_ACharacter_NotifyJumpApex_handler\0"));
     if(apiuapi_ACharacter_NotifyJumpApex){
         apiuapi_ACharacter_NotifyJumpApex(&uapi_ACharacter_NotifyJumpApex);
@@ -12344,6 +16911,16 @@ void register_all(Plugin* plugin){
         apiuapi_ACharacter_PawnClientRestart(&uapi_ACharacter_PawnClientRestart);
     }
 
+    auto const apiuapi_ACharacter_PlayAnimMontage = (uapi_ACharacter_PlayAnimMontageFn)plugin->GetDllExport(TEXT("set_ACharacter_PlayAnimMontage_handler\0"));
+    if(apiuapi_ACharacter_PlayAnimMontage){
+        apiuapi_ACharacter_PlayAnimMontage(&uapi_ACharacter_PlayAnimMontage);
+    }
+
+    auto const apiuapi_ACharacter_PossessedBy = (uapi_ACharacter_PossessedByFn)plugin->GetDllExport(TEXT("set_ACharacter_PossessedBy_handler\0"));
+    if(apiuapi_ACharacter_PossessedBy){
+        apiuapi_ACharacter_PossessedBy(&uapi_ACharacter_PossessedBy);
+    }
+
     auto const apiuapi_ACharacter_PostInitializeComponents = (uapi_ACharacter_PostInitializeComponentsFn)plugin->GetDllExport(TEXT("set_ACharacter_PostInitializeComponents_handler\0"));
     if(apiuapi_ACharacter_PostInitializeComponents){
         apiuapi_ACharacter_PostInitializeComponents(&uapi_ACharacter_PostInitializeComponents);
@@ -12394,14 +16971,29 @@ void register_all(Plugin* plugin){
         apiuapi_ACharacter_SetAnimRootMotionTranslationScale(&uapi_ACharacter_SetAnimRootMotionTranslationScale);
     }
 
+    auto const apiuapi_ACharacter_SetBase = (uapi_ACharacter_SetBaseFn)plugin->GetDllExport(TEXT("set_ACharacter_SetBase_handler\0"));
+    if(apiuapi_ACharacter_SetBase){
+        apiuapi_ACharacter_SetBase(&uapi_ACharacter_SetBase);
+    }
+
     auto const apiuapi_ACharacter_SetReplicateMovement = (uapi_ACharacter_SetReplicateMovementFn)plugin->GetDllExport(TEXT("set_ACharacter_SetReplicateMovement_handler\0"));
     if(apiuapi_ACharacter_SetReplicateMovement){
         apiuapi_ACharacter_SetReplicateMovement(&uapi_ACharacter_SetReplicateMovement);
     }
 
+    auto const apiuapi_ACharacter_SetupPlayerInputComponent = (uapi_ACharacter_SetupPlayerInputComponentFn)plugin->GetDllExport(TEXT("set_ACharacter_SetupPlayerInputComponent_handler\0"));
+    if(apiuapi_ACharacter_SetupPlayerInputComponent){
+        apiuapi_ACharacter_SetupPlayerInputComponent(&uapi_ACharacter_SetupPlayerInputComponent);
+    }
+
     auto const apiuapi_ACharacter_SimulatedRootMotionPositionFixup = (uapi_ACharacter_SimulatedRootMotionPositionFixupFn)plugin->GetDllExport(TEXT("set_ACharacter_SimulatedRootMotionPositionFixup_handler\0"));
     if(apiuapi_ACharacter_SimulatedRootMotionPositionFixup){
         apiuapi_ACharacter_SimulatedRootMotionPositionFixup(&uapi_ACharacter_SimulatedRootMotionPositionFixup);
+    }
+
+    auto const apiuapi_ACharacter_StopAnimMontage = (uapi_ACharacter_StopAnimMontageFn)plugin->GetDllExport(TEXT("set_ACharacter_StopAnimMontage_handler\0"));
+    if(apiuapi_ACharacter_StopAnimMontage){
+        apiuapi_ACharacter_StopAnimMontage(&uapi_ACharacter_StopAnimMontage);
     }
 
     auto const apiuapi_ACharacter_StopJumping = (uapi_ACharacter_StopJumpingFn)plugin->GetDllExport(TEXT("set_ACharacter_StopJumping_handler\0"));
@@ -12434,9 +17026,39 @@ void register_all(Plugin* plugin){
         apiuapi_ACharacter_UpdateNavigationRelevance(&uapi_ACharacter_UpdateNavigationRelevance);
     }
 
+    auto const apiuapi_AGameModeBase_AllowCheats = (uapi_AGameModeBase_AllowCheatsFn)plugin->GetDllExport(TEXT("set_AGameModeBase_AllowCheats_handler\0"));
+    if(apiuapi_AGameModeBase_AllowCheats){
+        apiuapi_AGameModeBase_AllowCheats(&uapi_AGameModeBase_AllowCheats);
+    }
+
+    auto const apiuapi_AGameModeBase_AllowPausing = (uapi_AGameModeBase_AllowPausingFn)plugin->GetDllExport(TEXT("set_AGameModeBase_AllowPausing_handler\0"));
+    if(apiuapi_AGameModeBase_AllowPausing){
+        apiuapi_AGameModeBase_AllowPausing(&uapi_AGameModeBase_AllowPausing);
+    }
+
+    auto const apiuapi_AGameModeBase_CanSpectate = (uapi_AGameModeBase_CanSpectateFn)plugin->GetDllExport(TEXT("set_AGameModeBase_CanSpectate_handler\0"));
+    if(apiuapi_AGameModeBase_CanSpectate){
+        apiuapi_AGameModeBase_CanSpectate(&uapi_AGameModeBase_CanSpectate);
+    }
+
+    auto const apiuapi_AGameModeBase_ChoosePlayerStart = (uapi_AGameModeBase_ChoosePlayerStartFn)plugin->GetDllExport(TEXT("set_AGameModeBase_ChoosePlayerStart_handler\0"));
+    if(apiuapi_AGameModeBase_ChoosePlayerStart){
+        apiuapi_AGameModeBase_ChoosePlayerStart(&uapi_AGameModeBase_ChoosePlayerStart);
+    }
+
     auto const apiuapi_AGameModeBase_ClearPause = (uapi_AGameModeBase_ClearPauseFn)plugin->GetDllExport(TEXT("set_AGameModeBase_ClearPause_handler\0"));
     if(apiuapi_AGameModeBase_ClearPause){
         apiuapi_AGameModeBase_ClearPause(&uapi_AGameModeBase_ClearPause);
+    }
+
+    auto const apiuapi_AGameModeBase_DispatchPostLogin = (uapi_AGameModeBase_DispatchPostLoginFn)plugin->GetDllExport(TEXT("set_AGameModeBase_DispatchPostLogin_handler\0"));
+    if(apiuapi_AGameModeBase_DispatchPostLogin){
+        apiuapi_AGameModeBase_DispatchPostLogin(&uapi_AGameModeBase_DispatchPostLogin);
+    }
+
+    auto const apiuapi_AGameModeBase_ForceClearUnpauseDelegates = (uapi_AGameModeBase_ForceClearUnpauseDelegatesFn)plugin->GetDllExport(TEXT("set_AGameModeBase_ForceClearUnpauseDelegates_handler\0"));
+    if(apiuapi_AGameModeBase_ForceClearUnpauseDelegates){
+        apiuapi_AGameModeBase_ForceClearUnpauseDelegates(&uapi_AGameModeBase_ForceClearUnpauseDelegates);
     }
 
     auto const apiuapi_AGameModeBase_GetNumPlayers = (uapi_AGameModeBase_GetNumPlayersFn)plugin->GetDllExport(TEXT("set_AGameModeBase_GetNumPlayers_handler\0"));
@@ -12447,6 +17069,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AGameModeBase_GetNumSpectators = (uapi_AGameModeBase_GetNumSpectatorsFn)plugin->GetDllExport(TEXT("set_AGameModeBase_GetNumSpectators_handler\0"));
     if(apiuapi_AGameModeBase_GetNumSpectators){
         apiuapi_AGameModeBase_GetNumSpectators(&uapi_AGameModeBase_GetNumSpectators);
+    }
+
+    auto const apiuapi_AGameModeBase_HandleStartingNewPlayer = (uapi_AGameModeBase_HandleStartingNewPlayerFn)plugin->GetDllExport(TEXT("set_AGameModeBase_HandleStartingNewPlayer_handler\0"));
+    if(apiuapi_AGameModeBase_HandleStartingNewPlayer){
+        apiuapi_AGameModeBase_HandleStartingNewPlayer(&uapi_AGameModeBase_HandleStartingNewPlayer);
     }
 
     auto const apiuapi_AGameModeBase_HasMatchEnded = (uapi_AGameModeBase_HasMatchEndedFn)plugin->GetDllExport(TEXT("set_AGameModeBase_HasMatchEnded_handler\0"));
@@ -12464,6 +17091,11 @@ void register_all(Plugin* plugin){
         apiuapi_AGameModeBase_InitGameState(&uapi_AGameModeBase_InitGameState);
     }
 
+    auto const apiuapi_AGameModeBase_InitStartSpot = (uapi_AGameModeBase_InitStartSpotFn)plugin->GetDllExport(TEXT("set_AGameModeBase_InitStartSpot_handler\0"));
+    if(apiuapi_AGameModeBase_InitStartSpot){
+        apiuapi_AGameModeBase_InitStartSpot(&uapi_AGameModeBase_InitStartSpot);
+    }
+
     auto const apiuapi_AGameModeBase_IsHandlingReplays = (uapi_AGameModeBase_IsHandlingReplaysFn)plugin->GetDllExport(TEXT("set_AGameModeBase_IsHandlingReplays_handler\0"));
     if(apiuapi_AGameModeBase_IsHandlingReplays){
         apiuapi_AGameModeBase_IsHandlingReplays(&uapi_AGameModeBase_IsHandlingReplays);
@@ -12472,6 +17104,41 @@ void register_all(Plugin* plugin){
     auto const apiuapi_AGameModeBase_IsPaused = (uapi_AGameModeBase_IsPausedFn)plugin->GetDllExport(TEXT("set_AGameModeBase_IsPaused_handler\0"));
     if(apiuapi_AGameModeBase_IsPaused){
         apiuapi_AGameModeBase_IsPaused(&uapi_AGameModeBase_IsPaused);
+    }
+
+    auto const apiuapi_AGameModeBase_K2_OnLogout = (uapi_AGameModeBase_K2_OnLogoutFn)plugin->GetDllExport(TEXT("set_AGameModeBase_K2_OnLogout_handler\0"));
+    if(apiuapi_AGameModeBase_K2_OnLogout){
+        apiuapi_AGameModeBase_K2_OnLogout(&uapi_AGameModeBase_K2_OnLogout);
+    }
+
+    auto const apiuapi_AGameModeBase_K2_OnRestartPlayer = (uapi_AGameModeBase_K2_OnRestartPlayerFn)plugin->GetDllExport(TEXT("set_AGameModeBase_K2_OnRestartPlayer_handler\0"));
+    if(apiuapi_AGameModeBase_K2_OnRestartPlayer){
+        apiuapi_AGameModeBase_K2_OnRestartPlayer(&uapi_AGameModeBase_K2_OnRestartPlayer);
+    }
+
+    auto const apiuapi_AGameModeBase_K2_PostLogin = (uapi_AGameModeBase_K2_PostLoginFn)plugin->GetDllExport(TEXT("set_AGameModeBase_K2_PostLogin_handler\0"));
+    if(apiuapi_AGameModeBase_K2_PostLogin){
+        apiuapi_AGameModeBase_K2_PostLogin(&uapi_AGameModeBase_K2_PostLogin);
+    }
+
+    auto const apiuapi_AGameModeBase_Logout = (uapi_AGameModeBase_LogoutFn)plugin->GetDllExport(TEXT("set_AGameModeBase_Logout_handler\0"));
+    if(apiuapi_AGameModeBase_Logout){
+        apiuapi_AGameModeBase_Logout(&uapi_AGameModeBase_Logout);
+    }
+
+    auto const apiuapi_AGameModeBase_MustSpectate = (uapi_AGameModeBase_MustSpectateFn)plugin->GetDllExport(TEXT("set_AGameModeBase_MustSpectate_handler\0"));
+    if(apiuapi_AGameModeBase_MustSpectate){
+        apiuapi_AGameModeBase_MustSpectate(&uapi_AGameModeBase_MustSpectate);
+    }
+
+    auto const apiuapi_AGameModeBase_PlayerCanRestart = (uapi_AGameModeBase_PlayerCanRestartFn)plugin->GetDllExport(TEXT("set_AGameModeBase_PlayerCanRestart_handler\0"));
+    if(apiuapi_AGameModeBase_PlayerCanRestart){
+        apiuapi_AGameModeBase_PlayerCanRestart(&uapi_AGameModeBase_PlayerCanRestart);
+    }
+
+    auto const apiuapi_AGameModeBase_PostLogin = (uapi_AGameModeBase_PostLoginFn)plugin->GetDllExport(TEXT("set_AGameModeBase_PostLogin_handler\0"));
+    if(apiuapi_AGameModeBase_PostLogin){
+        apiuapi_AGameModeBase_PostLogin(&uapi_AGameModeBase_PostLogin);
     }
 
     auto const apiuapi_AGameModeBase_PostSeamlessTravel = (uapi_AGameModeBase_PostSeamlessTravelFn)plugin->GetDllExport(TEXT("set_AGameModeBase_PostSeamlessTravel_handler\0"));
@@ -12494,9 +17161,34 @@ void register_all(Plugin* plugin){
         apiuapi_AGameModeBase_ResetLevel(&uapi_AGameModeBase_ResetLevel);
     }
 
+    auto const apiuapi_AGameModeBase_RestartPlayer = (uapi_AGameModeBase_RestartPlayerFn)plugin->GetDllExport(TEXT("set_AGameModeBase_RestartPlayer_handler\0"));
+    if(apiuapi_AGameModeBase_RestartPlayer){
+        apiuapi_AGameModeBase_RestartPlayer(&uapi_AGameModeBase_RestartPlayer);
+    }
+
+    auto const apiuapi_AGameModeBase_RestartPlayerAtPlayerStart = (uapi_AGameModeBase_RestartPlayerAtPlayerStartFn)plugin->GetDllExport(TEXT("set_AGameModeBase_RestartPlayerAtPlayerStart_handler\0"));
+    if(apiuapi_AGameModeBase_RestartPlayerAtPlayerStart){
+        apiuapi_AGameModeBase_RestartPlayerAtPlayerStart(&uapi_AGameModeBase_RestartPlayerAtPlayerStart);
+    }
+
     auto const apiuapi_AGameModeBase_ReturnToMainMenuHost = (uapi_AGameModeBase_ReturnToMainMenuHostFn)plugin->GetDllExport(TEXT("set_AGameModeBase_ReturnToMainMenuHost_handler\0"));
     if(apiuapi_AGameModeBase_ReturnToMainMenuHost){
         apiuapi_AGameModeBase_ReturnToMainMenuHost(&uapi_AGameModeBase_ReturnToMainMenuHost);
+    }
+
+    auto const apiuapi_AGameModeBase_SetPlayerDefaults = (uapi_AGameModeBase_SetPlayerDefaultsFn)plugin->GetDllExport(TEXT("set_AGameModeBase_SetPlayerDefaults_handler\0"));
+    if(apiuapi_AGameModeBase_SetPlayerDefaults){
+        apiuapi_AGameModeBase_SetPlayerDefaults(&uapi_AGameModeBase_SetPlayerDefaults);
+    }
+
+    auto const apiuapi_AGameModeBase_ShouldReset = (uapi_AGameModeBase_ShouldResetFn)plugin->GetDllExport(TEXT("set_AGameModeBase_ShouldReset_handler\0"));
+    if(apiuapi_AGameModeBase_ShouldReset){
+        apiuapi_AGameModeBase_ShouldReset(&uapi_AGameModeBase_ShouldReset);
+    }
+
+    auto const apiuapi_AGameModeBase_SpawnDefaultPawnFor = (uapi_AGameModeBase_SpawnDefaultPawnForFn)plugin->GetDllExport(TEXT("set_AGameModeBase_SpawnDefaultPawnFor_handler\0"));
+    if(apiuapi_AGameModeBase_SpawnDefaultPawnFor){
+        apiuapi_AGameModeBase_SpawnDefaultPawnFor(&uapi_AGameModeBase_SpawnDefaultPawnFor);
     }
 
     auto const apiuapi_AGameModeBase_StartPlay = (uapi_AGameModeBase_StartPlayFn)plugin->GetDllExport(TEXT("set_AGameModeBase_StartPlay_handler\0"));
@@ -12509,6 +17201,41 @@ void register_all(Plugin* plugin){
         apiuapi_AGameModeBase_StartToLeaveMap(&uapi_AGameModeBase_StartToLeaveMap);
     }
 
+    auto const apiuapi_AGameModeBase_SwapPlayerControllers = (uapi_AGameModeBase_SwapPlayerControllersFn)plugin->GetDllExport(TEXT("set_AGameModeBase_SwapPlayerControllers_handler\0"));
+    if(apiuapi_AGameModeBase_SwapPlayerControllers){
+        apiuapi_AGameModeBase_SwapPlayerControllers(&uapi_AGameModeBase_SwapPlayerControllers);
+    }
+
+    auto const apiuapi_USceneComponent_AddLocalOffset = (uapi_USceneComponent_AddLocalOffsetFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddLocalOffset_handler\0"));
+    if(apiuapi_USceneComponent_AddLocalOffset){
+        apiuapi_USceneComponent_AddLocalOffset(&uapi_USceneComponent_AddLocalOffset);
+    }
+
+    auto const apiuapi_USceneComponent_AddLocalRotation = (uapi_USceneComponent_AddLocalRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddLocalRotation_handler\0"));
+    if(apiuapi_USceneComponent_AddLocalRotation){
+        apiuapi_USceneComponent_AddLocalRotation(&uapi_USceneComponent_AddLocalRotation);
+    }
+
+    auto const apiuapi_USceneComponent_AddRelativeLocation = (uapi_USceneComponent_AddRelativeLocationFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddRelativeLocation_handler\0"));
+    if(apiuapi_USceneComponent_AddRelativeLocation){
+        apiuapi_USceneComponent_AddRelativeLocation(&uapi_USceneComponent_AddRelativeLocation);
+    }
+
+    auto const apiuapi_USceneComponent_AddRelativeRotation = (uapi_USceneComponent_AddRelativeRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddRelativeRotation_handler\0"));
+    if(apiuapi_USceneComponent_AddRelativeRotation){
+        apiuapi_USceneComponent_AddRelativeRotation(&uapi_USceneComponent_AddRelativeRotation);
+    }
+
+    auto const apiuapi_USceneComponent_AddWorldOffset = (uapi_USceneComponent_AddWorldOffsetFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddWorldOffset_handler\0"));
+    if(apiuapi_USceneComponent_AddWorldOffset){
+        apiuapi_USceneComponent_AddWorldOffset(&uapi_USceneComponent_AddWorldOffset);
+    }
+
+    auto const apiuapi_USceneComponent_AddWorldRotation = (uapi_USceneComponent_AddWorldRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_AddWorldRotation_handler\0"));
+    if(apiuapi_USceneComponent_AddWorldRotation){
+        apiuapi_USceneComponent_AddWorldRotation(&uapi_USceneComponent_AddWorldRotation);
+    }
+
     auto const apiuapi_USceneComponent_BeginDestroy = (uapi_USceneComponent_BeginDestroyFn)plugin->GetDllExport(TEXT("set_USceneComponent_BeginDestroy_handler\0"));
     if(apiuapi_USceneComponent_BeginDestroy){
         apiuapi_USceneComponent_BeginDestroy(&uapi_USceneComponent_BeginDestroy);
@@ -12517,6 +17244,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USceneComponent_CalcBoundingCylinder = (uapi_USceneComponent_CalcBoundingCylinderFn)plugin->GetDllExport(TEXT("set_USceneComponent_CalcBoundingCylinder_handler\0"));
     if(apiuapi_USceneComponent_CalcBoundingCylinder){
         apiuapi_USceneComponent_CalcBoundingCylinder(&uapi_USceneComponent_CalcBoundingCylinder);
+    }
+
+    auto const apiuapi_USceneComponent_CanAttachAsChild = (uapi_USceneComponent_CanAttachAsChildFn)plugin->GetDllExport(TEXT("set_USceneComponent_CanAttachAsChild_handler\0"));
+    if(apiuapi_USceneComponent_CanAttachAsChild){
+        apiuapi_USceneComponent_CanAttachAsChild(&uapi_USceneComponent_CanAttachAsChild);
+    }
+
+    auto const apiuapi_USceneComponent_CanEditChange = (uapi_USceneComponent_CanEditChangeFn)plugin->GetDllExport(TEXT("set_USceneComponent_CanEditChange_handler\0"));
+    if(apiuapi_USceneComponent_CanEditChange){
+        apiuapi_USceneComponent_CanEditChange(&uapi_USceneComponent_CanEditChange);
     }
 
     auto const apiuapi_USceneComponent_CanEverRender = (uapi_USceneComponent_CanEverRenderFn)plugin->GetDllExport(TEXT("set_USceneComponent_CanEverRender_handler\0"));
@@ -12774,6 +17511,11 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_IsAnySimulatingPhysics(&uapi_USceneComponent_IsAnySimulatingPhysics);
     }
 
+    auto const apiuapi_USceneComponent_IsAttachedTo = (uapi_USceneComponent_IsAttachedToFn)plugin->GetDllExport(TEXT("set_USceneComponent_IsAttachedTo_handler\0"));
+    if(apiuapi_USceneComponent_IsAttachedTo){
+        apiuapi_USceneComponent_IsAttachedTo(&uapi_USceneComponent_IsAttachedTo);
+    }
+
     auto const apiuapi_USceneComponent_IsCollisionEnabled = (uapi_USceneComponent_IsCollisionEnabledFn)plugin->GetDllExport(TEXT("set_USceneComponent_IsCollisionEnabled_handler\0"));
     if(apiuapi_USceneComponent_IsCollisionEnabled){
         apiuapi_USceneComponent_IsCollisionEnabled(&uapi_USceneComponent_IsCollisionEnabled);
@@ -12859,6 +17601,11 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_K2_GetComponentToWorld(&uapi_USceneComponent_K2_GetComponentToWorld);
     }
 
+    auto const apiuapi_USceneComponent_NeedsLoadForTargetPlatform = (uapi_USceneComponent_NeedsLoadForTargetPlatformFn)plugin->GetDllExport(TEXT("set_USceneComponent_NeedsLoadForTargetPlatform_handler\0"));
+    if(apiuapi_USceneComponent_NeedsLoadForTargetPlatform){
+        apiuapi_USceneComponent_NeedsLoadForTargetPlatform(&uapi_USceneComponent_NeedsLoadForTargetPlatform);
+    }
+
     auto const apiuapi_USceneComponent_OnAttachmentChanged = (uapi_USceneComponent_OnAttachmentChangedFn)plugin->GetDllExport(TEXT("set_USceneComponent_OnAttachmentChanged_handler\0"));
     if(apiuapi_USceneComponent_OnAttachmentChanged){
         apiuapi_USceneComponent_OnAttachmentChanged(&uapi_USceneComponent_OnAttachmentChanged);
@@ -12882,6 +17629,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USceneComponent_PostEditComponentMove = (uapi_USceneComponent_PostEditComponentMoveFn)plugin->GetDllExport(TEXT("set_USceneComponent_PostEditComponentMove_handler\0"));
     if(apiuapi_USceneComponent_PostEditComponentMove){
         apiuapi_USceneComponent_PostEditComponentMove(&uapi_USceneComponent_PostEditComponentMove);
+    }
+
+    auto const apiuapi_USceneComponent_PostInterpChange = (uapi_USceneComponent_PostInterpChangeFn)plugin->GetDllExport(TEXT("set_USceneComponent_PostInterpChange_handler\0"));
+    if(apiuapi_USceneComponent_PostInterpChange){
+        apiuapi_USceneComponent_PostInterpChange(&uapi_USceneComponent_PostInterpChange);
     }
 
     auto const apiuapi_USceneComponent_PostLoad = (uapi_USceneComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_USceneComponent_PostLoad_handler\0"));
@@ -12924,9 +17676,34 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_SetHiddenInGame(&uapi_USceneComponent_SetHiddenInGame);
     }
 
+    auto const apiuapi_USceneComponent_SetPhysicsVolume = (uapi_USceneComponent_SetPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetPhysicsVolume_handler\0"));
+    if(apiuapi_USceneComponent_SetPhysicsVolume){
+        apiuapi_USceneComponent_SetPhysicsVolume(&uapi_USceneComponent_SetPhysicsVolume);
+    }
+
+    auto const apiuapi_USceneComponent_SetRelativeLocation = (uapi_USceneComponent_SetRelativeLocationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeLocation_handler\0"));
+    if(apiuapi_USceneComponent_SetRelativeLocation){
+        apiuapi_USceneComponent_SetRelativeLocation(&uapi_USceneComponent_SetRelativeLocation);
+    }
+
+    auto const apiuapi_USceneComponent_SetRelativeLocationAndRotation = (uapi_USceneComponent_SetRelativeLocationAndRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeLocationAndRotation_handler\0"));
+    if(apiuapi_USceneComponent_SetRelativeLocationAndRotation){
+        apiuapi_USceneComponent_SetRelativeLocationAndRotation(&uapi_USceneComponent_SetRelativeLocationAndRotation);
+    }
+
     auto const apiuapi_USceneComponent_SetRelativeLocation_Direct = (uapi_USceneComponent_SetRelativeLocation_DirectFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeLocation_Direct_handler\0"));
     if(apiuapi_USceneComponent_SetRelativeLocation_Direct){
         apiuapi_USceneComponent_SetRelativeLocation_Direct(&uapi_USceneComponent_SetRelativeLocation_Direct);
+    }
+
+    auto const apiuapi_USceneComponent_SetRelativeRotation = (uapi_USceneComponent_SetRelativeRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeRotation_handler\0"));
+    if(apiuapi_USceneComponent_SetRelativeRotation){
+        apiuapi_USceneComponent_SetRelativeRotation(&uapi_USceneComponent_SetRelativeRotation);
+    }
+
+    auto const apiuapi_USceneComponent_SetRelativeRotationExact = (uapi_USceneComponent_SetRelativeRotationExactFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeRotationExact_handler\0"));
+    if(apiuapi_USceneComponent_SetRelativeRotationExact){
+        apiuapi_USceneComponent_SetRelativeRotationExact(&uapi_USceneComponent_SetRelativeRotationExact);
     }
 
     auto const apiuapi_USceneComponent_SetRelativeRotation_Direct = (uapi_USceneComponent_SetRelativeRotation_DirectFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetRelativeRotation_Direct_handler\0"));
@@ -12974,9 +17751,29 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_SetVisibleFlag(&uapi_USceneComponent_SetVisibleFlag);
     }
 
+    auto const apiuapi_USceneComponent_SetWorldLocation = (uapi_USceneComponent_SetWorldLocationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetWorldLocation_handler\0"));
+    if(apiuapi_USceneComponent_SetWorldLocation){
+        apiuapi_USceneComponent_SetWorldLocation(&uapi_USceneComponent_SetWorldLocation);
+    }
+
+    auto const apiuapi_USceneComponent_SetWorldLocationAndRotation = (uapi_USceneComponent_SetWorldLocationAndRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetWorldLocationAndRotation_handler\0"));
+    if(apiuapi_USceneComponent_SetWorldLocationAndRotation){
+        apiuapi_USceneComponent_SetWorldLocationAndRotation(&uapi_USceneComponent_SetWorldLocationAndRotation);
+    }
+
+    auto const apiuapi_USceneComponent_SetWorldRotation = (uapi_USceneComponent_SetWorldRotationFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetWorldRotation_handler\0"));
+    if(apiuapi_USceneComponent_SetWorldRotation){
+        apiuapi_USceneComponent_SetWorldRotation(&uapi_USceneComponent_SetWorldRotation);
+    }
+
     auto const apiuapi_USceneComponent_SetWorldScale3D = (uapi_USceneComponent_SetWorldScale3DFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetWorldScale3D_handler\0"));
     if(apiuapi_USceneComponent_SetWorldScale3D){
         apiuapi_USceneComponent_SetWorldScale3D(&uapi_USceneComponent_SetWorldScale3D);
+    }
+
+    auto const apiuapi_USceneComponent_SetupAttachment = (uapi_USceneComponent_SetupAttachmentFn)plugin->GetDllExport(TEXT("set_USceneComponent_SetupAttachment_handler\0"));
+    if(apiuapi_USceneComponent_SetupAttachment){
+        apiuapi_USceneComponent_SetupAttachment(&uapi_USceneComponent_SetupAttachment);
     }
 
     auto const apiuapi_USceneComponent_ShouldCollideWhenPlacing = (uapi_USceneComponent_ShouldCollideWhenPlacingFn)plugin->GetDllExport(TEXT("set_USceneComponent_ShouldCollideWhenPlacing_handler\0"));
@@ -13014,6 +17811,11 @@ void register_all(Plugin* plugin){
         apiuapi_USceneComponent_UpdateBounds(&uapi_USceneComponent_UpdateBounds);
     }
 
+    auto const apiuapi_USceneComponent_UpdateOverlaps = (uapi_USceneComponent_UpdateOverlapsFn)plugin->GetDllExport(TEXT("set_USceneComponent_UpdateOverlaps_handler\0"));
+    if(apiuapi_USceneComponent_UpdateOverlaps){
+        apiuapi_USceneComponent_UpdateOverlaps(&uapi_USceneComponent_UpdateOverlaps);
+    }
+
     auto const apiuapi_USceneComponent_UpdatePhysicsVolume = (uapi_USceneComponent_UpdatePhysicsVolumeFn)plugin->GetDllExport(TEXT("set_USceneComponent_UpdatePhysicsVolume_handler\0"));
     if(apiuapi_USceneComponent_UpdatePhysicsVolume){
         apiuapi_USceneComponent_UpdatePhysicsVolume(&uapi_USceneComponent_UpdatePhysicsVolume);
@@ -13027,6 +17829,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_AddAssetUserData = (uapi_UActorComponent_AddAssetUserDataFn)plugin->GetDllExport(TEXT("set_UActorComponent_AddAssetUserData_handler\0"));
     if(apiuapi_UActorComponent_AddAssetUserData){
         apiuapi_UActorComponent_AddAssetUserData(&uapi_UActorComponent_AddAssetUserData);
+    }
+
+    auto const apiuapi_UActorComponent_AddTickPrerequisiteActor = (uapi_UActorComponent_AddTickPrerequisiteActorFn)plugin->GetDllExport(TEXT("set_UActorComponent_AddTickPrerequisiteActor_handler\0"));
+    if(apiuapi_UActorComponent_AddTickPrerequisiteActor){
+        apiuapi_UActorComponent_AddTickPrerequisiteActor(&uapi_UActorComponent_AddTickPrerequisiteActor);
+    }
+
+    auto const apiuapi_UActorComponent_AddTickPrerequisiteComponent = (uapi_UActorComponent_AddTickPrerequisiteComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_AddTickPrerequisiteComponent_handler\0"));
+    if(apiuapi_UActorComponent_AddTickPrerequisiteComponent){
+        apiuapi_UActorComponent_AddTickPrerequisiteComponent(&uapi_UActorComponent_AddTickPrerequisiteComponent);
     }
 
     auto const apiuapi_UActorComponent_AdditionalStatObject = (uapi_UActorComponent_AdditionalStatObjectFn)plugin->GetDllExport(TEXT("set_UActorComponent_AdditionalStatObject_handler\0"));
@@ -13054,6 +17866,16 @@ void register_all(Plugin* plugin){
         apiuapi_UActorComponent_BeginPlay(&uapi_UActorComponent_BeginPlay);
     }
 
+    auto const apiuapi_UActorComponent_CallRemoteFunction = (uapi_UActorComponent_CallRemoteFunctionFn)plugin->GetDllExport(TEXT("set_UActorComponent_CallRemoteFunction_handler\0"));
+    if(apiuapi_UActorComponent_CallRemoteFunction){
+        apiuapi_UActorComponent_CallRemoteFunction(&uapi_UActorComponent_CallRemoteFunction);
+    }
+
+    auto const apiuapi_UActorComponent_CanEditChange = (uapi_UActorComponent_CanEditChangeFn)plugin->GetDllExport(TEXT("set_UActorComponent_CanEditChange_handler\0"));
+    if(apiuapi_UActorComponent_CanEditChange){
+        apiuapi_UActorComponent_CanEditChange(&uapi_UActorComponent_CanEditChange);
+    }
+
     auto const apiuapi_UActorComponent_CanEverAffectNavigation = (uapi_UActorComponent_CanEverAffectNavigationFn)plugin->GetDllExport(TEXT("set_UActorComponent_CanEverAffectNavigation_handler\0"));
     if(apiuapi_UActorComponent_CanEverAffectNavigation){
         apiuapi_UActorComponent_CanEverAffectNavigation(&uapi_UActorComponent_CanEverAffectNavigation);
@@ -13077,6 +17899,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_ComponentHasTag = (uapi_UActorComponent_ComponentHasTagFn)plugin->GetDllExport(TEXT("set_UActorComponent_ComponentHasTag_handler\0"));
     if(apiuapi_UActorComponent_ComponentHasTag){
         apiuapi_UActorComponent_ComponentHasTag(&uapi_UActorComponent_ComponentHasTag);
+    }
+
+    auto const apiuapi_UActorComponent_ComponentIsInLevel = (uapi_UActorComponent_ComponentIsInLevelFn)plugin->GetDllExport(TEXT("set_UActorComponent_ComponentIsInLevel_handler\0"));
+    if(apiuapi_UActorComponent_ComponentIsInLevel){
+        apiuapi_UActorComponent_ComponentIsInLevel(&uapi_UActorComponent_ComponentIsInLevel);
     }
 
     auto const apiuapi_UActorComponent_ComponentIsInPersistentLevel = (uapi_UActorComponent_ComponentIsInPersistentLevelFn)plugin->GetDllExport(TEXT("set_UActorComponent_ComponentIsInPersistentLevel_handler\0"));
@@ -13127,6 +17954,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_GetComponentTickInterval = (uapi_UActorComponent_GetComponentTickIntervalFn)plugin->GetDllExport(TEXT("set_UActorComponent_GetComponentTickInterval_handler\0"));
     if(apiuapi_UActorComponent_GetComponentTickInterval){
         apiuapi_UActorComponent_GetComponentTickInterval(&uapi_UActorComponent_GetComponentTickInterval);
+    }
+
+    auto const apiuapi_UActorComponent_GetFunctionCallspace = (uapi_UActorComponent_GetFunctionCallspaceFn)plugin->GetDllExport(TEXT("set_UActorComponent_GetFunctionCallspace_handler\0"));
+    if(apiuapi_UActorComponent_GetFunctionCallspace){
+        apiuapi_UActorComponent_GetFunctionCallspace(&uapi_UActorComponent_GetFunctionCallspace);
     }
 
     auto const apiuapi_UActorComponent_GetIsReplicated = (uapi_UActorComponent_GetIsReplicatedFn)plugin->GetDllExport(TEXT("set_UActorComponent_GetIsReplicated_handler\0"));
@@ -13304,6 +18136,11 @@ void register_all(Plugin* plugin){
         apiuapi_UActorComponent_IsRenderTransformDirty(&uapi_UActorComponent_IsRenderTransformDirty);
     }
 
+    auto const apiuapi_UActorComponent_IsReplicatedSubObjectRegistered = (uapi_UActorComponent_IsReplicatedSubObjectRegisteredFn)plugin->GetDllExport(TEXT("set_UActorComponent_IsReplicatedSubObjectRegistered_handler\0"));
+    if(apiuapi_UActorComponent_IsReplicatedSubObjectRegistered){
+        apiuapi_UActorComponent_IsReplicatedSubObjectRegistered(&uapi_UActorComponent_IsReplicatedSubObjectRegistered);
+    }
+
     auto const apiuapi_UActorComponent_IsSelectedInEditor = (uapi_UActorComponent_IsSelectedInEditorFn)plugin->GetDllExport(TEXT("set_UActorComponent_IsSelectedInEditor_handler\0"));
     if(apiuapi_UActorComponent_IsSelectedInEditor){
         apiuapi_UActorComponent_IsSelectedInEditor(&uapi_UActorComponent_IsSelectedInEditor);
@@ -13322,6 +18159,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_IsVisualizationComponent = (uapi_UActorComponent_IsVisualizationComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_IsVisualizationComponent_handler\0"));
     if(apiuapi_UActorComponent_IsVisualizationComponent){
         apiuapi_UActorComponent_IsVisualizationComponent(&uapi_UActorComponent_IsVisualizationComponent);
+    }
+
+    auto const apiuapi_UActorComponent_K2_DestroyComponent = (uapi_UActorComponent_K2_DestroyComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_K2_DestroyComponent_handler\0"));
+    if(apiuapi_UActorComponent_K2_DestroyComponent){
+        apiuapi_UActorComponent_K2_DestroyComponent(&uapi_UActorComponent_K2_DestroyComponent);
     }
 
     auto const apiuapi_UActorComponent_MarkAsEditorOnlySubobject = (uapi_UActorComponent_MarkAsEditorOnlySubobjectFn)plugin->GetDllExport(TEXT("set_UActorComponent_MarkAsEditorOnlySubobject_handler\0"));
@@ -13439,6 +18281,16 @@ void register_all(Plugin* plugin){
         apiuapi_UActorComponent_PostLoad(&uapi_UActorComponent_PostLoad);
     }
 
+    auto const apiuapi_UActorComponent_PostRename = (uapi_UActorComponent_PostRenameFn)plugin->GetDllExport(TEXT("set_UActorComponent_PostRename_handler\0"));
+    if(apiuapi_UActorComponent_PostRename){
+        apiuapi_UActorComponent_PostRename(&uapi_UActorComponent_PostRename);
+    }
+
+    auto const apiuapi_UActorComponent_PreEditChange = (uapi_UActorComponent_PreEditChangeFn)plugin->GetDllExport(TEXT("set_UActorComponent_PreEditChange_handler\0"));
+    if(apiuapi_UActorComponent_PreEditChange){
+        apiuapi_UActorComponent_PreEditChange(&uapi_UActorComponent_PreEditChange);
+    }
+
     auto const apiuapi_UActorComponent_PreEditUndo = (uapi_UActorComponent_PreEditUndoFn)plugin->GetDllExport(TEXT("set_UActorComponent_PreEditUndo_handler\0"));
     if(apiuapi_UActorComponent_PreEditUndo){
         apiuapi_UActorComponent_PreEditUndo(&uapi_UActorComponent_PreEditUndo);
@@ -13482,6 +18334,31 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_RegisterComponent = (uapi_UActorComponent_RegisterComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_RegisterComponent_handler\0"));
     if(apiuapi_UActorComponent_RegisterComponent){
         apiuapi_UActorComponent_RegisterComponent(&uapi_UActorComponent_RegisterComponent);
+    }
+
+    auto const apiuapi_UActorComponent_RegisterComponentWithWorld = (uapi_UActorComponent_RegisterComponentWithWorldFn)plugin->GetDllExport(TEXT("set_UActorComponent_RegisterComponentWithWorld_handler\0"));
+    if(apiuapi_UActorComponent_RegisterComponentWithWorld){
+        apiuapi_UActorComponent_RegisterComponentWithWorld(&uapi_UActorComponent_RegisterComponentWithWorld);
+    }
+
+    auto const apiuapi_UActorComponent_RemoveReplicatedSubObject = (uapi_UActorComponent_RemoveReplicatedSubObjectFn)plugin->GetDllExport(TEXT("set_UActorComponent_RemoveReplicatedSubObject_handler\0"));
+    if(apiuapi_UActorComponent_RemoveReplicatedSubObject){
+        apiuapi_UActorComponent_RemoveReplicatedSubObject(&uapi_UActorComponent_RemoveReplicatedSubObject);
+    }
+
+    auto const apiuapi_UActorComponent_RemoveTickPrerequisiteActor = (uapi_UActorComponent_RemoveTickPrerequisiteActorFn)plugin->GetDllExport(TEXT("set_UActorComponent_RemoveTickPrerequisiteActor_handler\0"));
+    if(apiuapi_UActorComponent_RemoveTickPrerequisiteActor){
+        apiuapi_UActorComponent_RemoveTickPrerequisiteActor(&uapi_UActorComponent_RemoveTickPrerequisiteActor);
+    }
+
+    auto const apiuapi_UActorComponent_RemoveTickPrerequisiteComponent = (uapi_UActorComponent_RemoveTickPrerequisiteComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_RemoveTickPrerequisiteComponent_handler\0"));
+    if(apiuapi_UActorComponent_RemoveTickPrerequisiteComponent){
+        apiuapi_UActorComponent_RemoveTickPrerequisiteComponent(&uapi_UActorComponent_RemoveTickPrerequisiteComponent);
+    }
+
+    auto const apiuapi_UActorComponent_ReplicateSubobjects = (uapi_UActorComponent_ReplicateSubobjectsFn)plugin->GetDllExport(TEXT("set_UActorComponent_ReplicateSubobjects_handler\0"));
+    if(apiuapi_UActorComponent_ReplicateSubobjects){
+        apiuapi_UActorComponent_ReplicateSubobjects(&uapi_UActorComponent_ReplicateSubobjects);
     }
 
     auto const apiuapi_UActorComponent_RequiresGameThreadEndOfFrameRecreate = (uapi_UActorComponent_RequiresGameThreadEndOfFrameRecreateFn)plugin->GetDllExport(TEXT("set_UActorComponent_RequiresGameThreadEndOfFrameRecreate_handler\0"));
@@ -13574,6 +18451,11 @@ void register_all(Plugin* plugin){
         apiuapi_UActorComponent_SetTickableWhenPaused(&uapi_UActorComponent_SetTickableWhenPaused);
     }
 
+    auto const apiuapi_UActorComponent_SetupActorComponentTickFunction = (uapi_UActorComponent_SetupActorComponentTickFunctionFn)plugin->GetDllExport(TEXT("set_UActorComponent_SetupActorComponentTickFunction_handler\0"));
+    if(apiuapi_UActorComponent_SetupActorComponentTickFunction){
+        apiuapi_UActorComponent_SetupActorComponentTickFunction(&uapi_UActorComponent_SetupActorComponentTickFunction);
+    }
+
     auto const apiuapi_UActorComponent_ToggleActive = (uapi_UActorComponent_ToggleActiveFn)plugin->GetDllExport(TEXT("set_UActorComponent_ToggleActive_handler\0"));
     if(apiuapi_UActorComponent_ToggleActive){
         apiuapi_UActorComponent_ToggleActive(&uapi_UActorComponent_ToggleActive);
@@ -13587,6 +18469,195 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UActorComponent_UnregisterComponent = (uapi_UActorComponent_UnregisterComponentFn)plugin->GetDllExport(TEXT("set_UActorComponent_UnregisterComponent_handler\0"));
     if(apiuapi_UActorComponent_UnregisterComponent){
         apiuapi_UActorComponent_UnregisterComponent(&uapi_UActorComponent_UnregisterComponent);
+    }
+
+    auto const apiset_UMovementComponentVelocity_get_handler = (set_UMovementComponentVelocity_get_handlerFn)plugin->GetDllExport(TEXT("set_UMovementComponentVelocity_get_handler\0"));
+    if(apiset_UMovementComponentVelocity_get_handler){
+        apiset_UMovementComponentVelocity_get_handler(&get_UMovementComponent_Velocity);
+    }
+    auto const apiset_UMovementComponentVelocity_set_handler = (set_UMovementComponentVelocity_set_handlerFn)plugin->GetDllExport(TEXT("set_UMovementComponentVelocity_set_handler\0"));
+    if(apiset_UMovementComponentVelocity_set_handler){
+        apiset_UMovementComponentVelocity_set_handler(&set_UMovementComponent_Velocity);
+    }
+
+    auto const apiuapi_UMovementComponent_ConstrainDirectionToPlane = (uapi_UMovementComponent_ConstrainDirectionToPlaneFn)plugin->GetDllExport(TEXT("set_UMovementComponent_ConstrainDirectionToPlane_handler\0"));
+    if(apiuapi_UMovementComponent_ConstrainDirectionToPlane){
+        apiuapi_UMovementComponent_ConstrainDirectionToPlane(&uapi_UMovementComponent_ConstrainDirectionToPlane);
+    }
+
+    auto const apiuapi_UMovementComponent_ConstrainLocationToPlane = (uapi_UMovementComponent_ConstrainLocationToPlaneFn)plugin->GetDllExport(TEXT("set_UMovementComponent_ConstrainLocationToPlane_handler\0"));
+    if(apiuapi_UMovementComponent_ConstrainLocationToPlane){
+        apiuapi_UMovementComponent_ConstrainLocationToPlane(&uapi_UMovementComponent_ConstrainLocationToPlane);
+    }
+
+    auto const apiuapi_UMovementComponent_ConstrainNormalToPlane = (uapi_UMovementComponent_ConstrainNormalToPlaneFn)plugin->GetDllExport(TEXT("set_UMovementComponent_ConstrainNormalToPlane_handler\0"));
+    if(apiuapi_UMovementComponent_ConstrainNormalToPlane){
+        apiuapi_UMovementComponent_ConstrainNormalToPlane(&uapi_UMovementComponent_ConstrainNormalToPlane);
+    }
+
+    auto const apiuapi_UMovementComponent_Deactivate = (uapi_UMovementComponent_DeactivateFn)plugin->GetDllExport(TEXT("set_UMovementComponent_Deactivate_handler\0"));
+    if(apiuapi_UMovementComponent_Deactivate){
+        apiuapi_UMovementComponent_Deactivate(&uapi_UMovementComponent_Deactivate);
+    }
+
+    auto const apiuapi_UMovementComponent_GetGravityZ = (uapi_UMovementComponent_GetGravityZFn)plugin->GetDllExport(TEXT("set_UMovementComponent_GetGravityZ_handler\0"));
+    if(apiuapi_UMovementComponent_GetGravityZ){
+        apiuapi_UMovementComponent_GetGravityZ(&uapi_UMovementComponent_GetGravityZ);
+    }
+
+    auto const apiuapi_UMovementComponent_GetMaxSpeed = (uapi_UMovementComponent_GetMaxSpeedFn)plugin->GetDllExport(TEXT("set_UMovementComponent_GetMaxSpeed_handler\0"));
+    if(apiuapi_UMovementComponent_GetMaxSpeed){
+        apiuapi_UMovementComponent_GetMaxSpeed(&uapi_UMovementComponent_GetMaxSpeed);
+    }
+
+    auto const apiuapi_UMovementComponent_GetPhysicsVolume = (uapi_UMovementComponent_GetPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UMovementComponent_GetPhysicsVolume_handler\0"));
+    if(apiuapi_UMovementComponent_GetPhysicsVolume){
+        apiuapi_UMovementComponent_GetPhysicsVolume(&uapi_UMovementComponent_GetPhysicsVolume);
+    }
+
+    auto const apiuapi_UMovementComponent_GetPlaneConstraintNormal = (uapi_UMovementComponent_GetPlaneConstraintNormalFn)plugin->GetDllExport(TEXT("set_UMovementComponent_GetPlaneConstraintNormal_handler\0"));
+    if(apiuapi_UMovementComponent_GetPlaneConstraintNormal){
+        apiuapi_UMovementComponent_GetPlaneConstraintNormal(&uapi_UMovementComponent_GetPlaneConstraintNormal);
+    }
+
+    auto const apiuapi_UMovementComponent_GetPlaneConstraintOrigin = (uapi_UMovementComponent_GetPlaneConstraintOriginFn)plugin->GetDllExport(TEXT("set_UMovementComponent_GetPlaneConstraintOrigin_handler\0"));
+    if(apiuapi_UMovementComponent_GetPlaneConstraintOrigin){
+        apiuapi_UMovementComponent_GetPlaneConstraintOrigin(&uapi_UMovementComponent_GetPlaneConstraintOrigin);
+    }
+
+    auto const apiuapi_UMovementComponent_InitializeComponent = (uapi_UMovementComponent_InitializeComponentFn)plugin->GetDllExport(TEXT("set_UMovementComponent_InitializeComponent_handler\0"));
+    if(apiuapi_UMovementComponent_InitializeComponent){
+        apiuapi_UMovementComponent_InitializeComponent(&uapi_UMovementComponent_InitializeComponent);
+    }
+
+    auto const apiuapi_UMovementComponent_IsExceedingMaxSpeed = (uapi_UMovementComponent_IsExceedingMaxSpeedFn)plugin->GetDllExport(TEXT("set_UMovementComponent_IsExceedingMaxSpeed_handler\0"));
+    if(apiuapi_UMovementComponent_IsExceedingMaxSpeed){
+        apiuapi_UMovementComponent_IsExceedingMaxSpeed(&uapi_UMovementComponent_IsExceedingMaxSpeed);
+    }
+
+    auto const apiuapi_UMovementComponent_IsInWater = (uapi_UMovementComponent_IsInWaterFn)plugin->GetDllExport(TEXT("set_UMovementComponent_IsInWater_handler\0"));
+    if(apiuapi_UMovementComponent_IsInWater){
+        apiuapi_UMovementComponent_IsInWater(&uapi_UMovementComponent_IsInWater);
+    }
+
+    auto const apiuapi_UMovementComponent_OnRegister = (uapi_UMovementComponent_OnRegisterFn)plugin->GetDllExport(TEXT("set_UMovementComponent_OnRegister_handler\0"));
+    if(apiuapi_UMovementComponent_OnRegister){
+        apiuapi_UMovementComponent_OnRegister(&uapi_UMovementComponent_OnRegister);
+    }
+
+    auto const apiuapi_UMovementComponent_OnTeleported = (uapi_UMovementComponent_OnTeleportedFn)plugin->GetDllExport(TEXT("set_UMovementComponent_OnTeleported_handler\0"));
+    if(apiuapi_UMovementComponent_OnTeleported){
+        apiuapi_UMovementComponent_OnTeleported(&uapi_UMovementComponent_OnTeleported);
+    }
+
+    auto const apiuapi_UMovementComponent_PhysicsLockedAxisSettingChanged = (uapi_UMovementComponent_PhysicsLockedAxisSettingChangedFn)plugin->GetDllExport(TEXT("set_UMovementComponent_PhysicsLockedAxisSettingChanged_handler\0"));
+    if(apiuapi_UMovementComponent_PhysicsLockedAxisSettingChanged){
+        apiuapi_UMovementComponent_PhysicsLockedAxisSettingChanged(&uapi_UMovementComponent_PhysicsLockedAxisSettingChanged);
+    }
+
+    auto const apiuapi_UMovementComponent_PhysicsVolumeChanged = (uapi_UMovementComponent_PhysicsVolumeChangedFn)plugin->GetDllExport(TEXT("set_UMovementComponent_PhysicsVolumeChanged_handler\0"));
+    if(apiuapi_UMovementComponent_PhysicsVolumeChanged){
+        apiuapi_UMovementComponent_PhysicsVolumeChanged(&uapi_UMovementComponent_PhysicsVolumeChanged);
+    }
+
+    auto const apiuapi_UMovementComponent_PostLoad = (uapi_UMovementComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_UMovementComponent_PostLoad_handler\0"));
+    if(apiuapi_UMovementComponent_PostLoad){
+        apiuapi_UMovementComponent_PostLoad(&uapi_UMovementComponent_PostLoad);
+    }
+
+    auto const apiuapi_UMovementComponent_RegisterComponentTickFunctions = (uapi_UMovementComponent_RegisterComponentTickFunctionsFn)plugin->GetDllExport(TEXT("set_UMovementComponent_RegisterComponentTickFunctions_handler\0"));
+    if(apiuapi_UMovementComponent_RegisterComponentTickFunctions){
+        apiuapi_UMovementComponent_RegisterComponentTickFunctions(&uapi_UMovementComponent_RegisterComponentTickFunctions);
+    }
+
+    auto const apiuapi_UMovementComponent_SetPlaneConstraintEnabled = (uapi_UMovementComponent_SetPlaneConstraintEnabledFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SetPlaneConstraintEnabled_handler\0"));
+    if(apiuapi_UMovementComponent_SetPlaneConstraintEnabled){
+        apiuapi_UMovementComponent_SetPlaneConstraintEnabled(&uapi_UMovementComponent_SetPlaneConstraintEnabled);
+    }
+
+    auto const apiuapi_UMovementComponent_SetPlaneConstraintFromVectors = (uapi_UMovementComponent_SetPlaneConstraintFromVectorsFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SetPlaneConstraintFromVectors_handler\0"));
+    if(apiuapi_UMovementComponent_SetPlaneConstraintFromVectors){
+        apiuapi_UMovementComponent_SetPlaneConstraintFromVectors(&uapi_UMovementComponent_SetPlaneConstraintFromVectors);
+    }
+
+    auto const apiuapi_UMovementComponent_SetPlaneConstraintNormal = (uapi_UMovementComponent_SetPlaneConstraintNormalFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SetPlaneConstraintNormal_handler\0"));
+    if(apiuapi_UMovementComponent_SetPlaneConstraintNormal){
+        apiuapi_UMovementComponent_SetPlaneConstraintNormal(&uapi_UMovementComponent_SetPlaneConstraintNormal);
+    }
+
+    auto const apiuapi_UMovementComponent_SetPlaneConstraintOrigin = (uapi_UMovementComponent_SetPlaneConstraintOriginFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SetPlaneConstraintOrigin_handler\0"));
+    if(apiuapi_UMovementComponent_SetPlaneConstraintOrigin){
+        apiuapi_UMovementComponent_SetPlaneConstraintOrigin(&uapi_UMovementComponent_SetPlaneConstraintOrigin);
+    }
+
+    auto const apiuapi_UMovementComponent_SetUpdatedComponent = (uapi_UMovementComponent_SetUpdatedComponentFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SetUpdatedComponent_handler\0"));
+    if(apiuapi_UMovementComponent_SetUpdatedComponent){
+        apiuapi_UMovementComponent_SetUpdatedComponent(&uapi_UMovementComponent_SetUpdatedComponent);
+    }
+
+    auto const apiuapi_UMovementComponent_ShouldSkipUpdate = (uapi_UMovementComponent_ShouldSkipUpdateFn)plugin->GetDllExport(TEXT("set_UMovementComponent_ShouldSkipUpdate_handler\0"));
+    if(apiuapi_UMovementComponent_ShouldSkipUpdate){
+        apiuapi_UMovementComponent_ShouldSkipUpdate(&uapi_UMovementComponent_ShouldSkipUpdate);
+    }
+
+    auto const apiuapi_UMovementComponent_SnapUpdatedComponentToPlane = (uapi_UMovementComponent_SnapUpdatedComponentToPlaneFn)plugin->GetDllExport(TEXT("set_UMovementComponent_SnapUpdatedComponentToPlane_handler\0"));
+    if(apiuapi_UMovementComponent_SnapUpdatedComponentToPlane){
+        apiuapi_UMovementComponent_SnapUpdatedComponentToPlane(&uapi_UMovementComponent_SnapUpdatedComponentToPlane);
+    }
+
+    auto const apiuapi_UMovementComponent_StopMovementImmediately = (uapi_UMovementComponent_StopMovementImmediatelyFn)plugin->GetDllExport(TEXT("set_UMovementComponent_StopMovementImmediately_handler\0"));
+    if(apiuapi_UMovementComponent_StopMovementImmediately){
+        apiuapi_UMovementComponent_StopMovementImmediately(&uapi_UMovementComponent_StopMovementImmediately);
+    }
+
+    auto const apiuapi_UMovementComponent_UpdateComponentVelocity = (uapi_UMovementComponent_UpdateComponentVelocityFn)plugin->GetDllExport(TEXT("set_UMovementComponent_UpdateComponentVelocity_handler\0"));
+    if(apiuapi_UMovementComponent_UpdateComponentVelocity){
+        apiuapi_UMovementComponent_UpdateComponentVelocity(&uapi_UMovementComponent_UpdateComponentVelocity);
+    }
+
+    auto const apiuapi_UMovementComponent_UpdateTickRegistration = (uapi_UMovementComponent_UpdateTickRegistrationFn)plugin->GetDllExport(TEXT("set_UMovementComponent_UpdateTickRegistration_handler\0"));
+    if(apiuapi_UMovementComponent_UpdateTickRegistration){
+        apiuapi_UMovementComponent_UpdateTickRegistration(&uapi_UMovementComponent_UpdateTickRegistration);
+    }
+
+    auto const apiuapi_UWorld_AddController = (uapi_UWorld_AddControllerFn)plugin->GetDllExport(TEXT("set_UWorld_AddController_handler\0"));
+    if(apiuapi_UWorld_AddController){
+        apiuapi_UWorld_AddController(&uapi_UWorld_AddController);
+    }
+
+    auto const apiuapi_UWorld_AddLevel = (uapi_UWorld_AddLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddLevel_handler\0"));
+    if(apiuapi_UWorld_AddLevel){
+        apiuapi_UWorld_AddLevel(&uapi_UWorld_AddLevel);
+    }
+
+    auto const apiuapi_UWorld_AddNetworkActor = (uapi_UWorld_AddNetworkActorFn)plugin->GetDllExport(TEXT("set_UWorld_AddNetworkActor_handler\0"));
+    if(apiuapi_UWorld_AddNetworkActor){
+        apiuapi_UWorld_AddNetworkActor(&uapi_UWorld_AddNetworkActor);
+    }
+
+    auto const apiuapi_UWorld_AddParameterCollectionInstance = (uapi_UWorld_AddParameterCollectionInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_AddParameterCollectionInstance_handler\0"));
+    if(apiuapi_UWorld_AddParameterCollectionInstance){
+        apiuapi_UWorld_AddParameterCollectionInstance(&uapi_UWorld_AddParameterCollectionInstance);
+    }
+
+    auto const apiuapi_UWorld_AddPhysicsVolume = (uapi_UWorld_AddPhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_AddPhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_AddPhysicsVolume){
+        apiuapi_UWorld_AddPhysicsVolume(&uapi_UWorld_AddPhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_AddPostProcessingSettings = (uapi_UWorld_AddPostProcessingSettingsFn)plugin->GetDllExport(TEXT("set_UWorld_AddPostProcessingSettings_handler\0"));
+    if(apiuapi_UWorld_AddPostProcessingSettings){
+        apiuapi_UWorld_AddPostProcessingSettings(&uapi_UWorld_AddPostProcessingSettings);
+    }
+
+    auto const apiuapi_UWorld_AddStreamingLevel = (uapi_UWorld_AddStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_AddStreamingLevel){
+        apiuapi_UWorld_AddStreamingLevel(&uapi_UWorld_AddStreamingLevel);
+    }
+
+    auto const apiuapi_UWorld_AddUniqueStreamingLevel = (uapi_UWorld_AddUniqueStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_AddUniqueStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_AddUniqueStreamingLevel){
+        apiuapi_UWorld_AddUniqueStreamingLevel(&uapi_UWorld_AddUniqueStreamingLevel);
     }
 
     auto const apiuapi_UWorld_AllowAudioPlayback = (uapi_UWorld_AllowAudioPlaybackFn)plugin->GetDllExport(TEXT("set_UWorld_AllowAudioPlayback_handler\0"));
@@ -13654,9 +18725,24 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_CleanupActors(&uapi_UWorld_CleanupActors);
     }
 
+    auto const apiuapi_UWorld_CleanupWorld = (uapi_UWorld_CleanupWorldFn)plugin->GetDllExport(TEXT("set_UWorld_CleanupWorld_handler\0"));
+    if(apiuapi_UWorld_CleanupWorld){
+        apiuapi_UWorld_CleanupWorld(&uapi_UWorld_CleanupWorld);
+    }
+
+    auto const apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate = (uapi_UWorld_ClearActorComponentEndOfFrameUpdateFn)plugin->GetDllExport(TEXT("set_UWorld_ClearActorComponentEndOfFrameUpdate_handler\0"));
+    if(apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate){
+        apiuapi_UWorld_ClearActorComponentEndOfFrameUpdate(&uapi_UWorld_ClearActorComponentEndOfFrameUpdate);
+    }
+
     auto const apiuapi_UWorld_ClearDemoNetDriver = (uapi_UWorld_ClearDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_ClearDemoNetDriver_handler\0"));
     if(apiuapi_UWorld_ClearDemoNetDriver){
         apiuapi_UWorld_ClearDemoNetDriver(&uapi_UWorld_ClearDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_ClearNetDriver = (uapi_UWorld_ClearNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_ClearNetDriver_handler\0"));
+    if(apiuapi_UWorld_ClearNetDriver){
+        apiuapi_UWorld_ClearNetDriver(&uapi_UWorld_ClearNetDriver);
     }
 
     auto const apiuapi_UWorld_ClearStreamingLevels = (uapi_UWorld_ClearStreamingLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_ClearStreamingLevels_handler\0"));
@@ -13684,6 +18770,21 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_ConditionallyBuildStreamingData(&uapi_UWorld_ConditionallyBuildStreamingData);
     }
 
+    auto const apiuapi_UWorld_ContainsActor = (uapi_UWorld_ContainsActorFn)plugin->GetDllExport(TEXT("set_UWorld_ContainsActor_handler\0"));
+    if(apiuapi_UWorld_ContainsActor){
+        apiuapi_UWorld_ContainsActor(&uapi_UWorld_ContainsActor);
+    }
+
+    auto const apiuapi_UWorld_ContainsLevel = (uapi_UWorld_ContainsLevelFn)plugin->GetDllExport(TEXT("set_UWorld_ContainsLevel_handler\0"));
+    if(apiuapi_UWorld_ContainsLevel){
+        apiuapi_UWorld_ContainsLevel(&uapi_UWorld_ContainsLevel);
+    }
+
+    auto const apiuapi_UWorld_CopyGameState = (uapi_UWorld_CopyGameStateFn)plugin->GetDllExport(TEXT("set_UWorld_CopyGameState_handler\0"));
+    if(apiuapi_UWorld_CopyGameState){
+        apiuapi_UWorld_CopyGameState(&uapi_UWorld_CopyGameState);
+    }
+
     auto const apiuapi_UWorld_CreateAISystem = (uapi_UWorld_CreateAISystemFn)plugin->GetDllExport(TEXT("set_UWorld_CreateAISystem_handler\0"));
     if(apiuapi_UWorld_CreateAISystem){
         apiuapi_UWorld_CreateAISystem(&uapi_UWorld_CreateAISystem);
@@ -13694,9 +18795,24 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_CreateFXSystem(&uapi_UWorld_CreateFXSystem);
     }
 
+    auto const apiuapi_UWorld_CreatePhysicsScene = (uapi_UWorld_CreatePhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_CreatePhysicsScene_handler\0"));
+    if(apiuapi_UWorld_CreatePhysicsScene){
+        apiuapi_UWorld_CreatePhysicsScene(&uapi_UWorld_CreatePhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_DeSelectLevel = (uapi_UWorld_DeSelectLevelFn)plugin->GetDllExport(TEXT("set_UWorld_DeSelectLevel_handler\0"));
+    if(apiuapi_UWorld_DeSelectLevel){
+        apiuapi_UWorld_DeSelectLevel(&uapi_UWorld_DeSelectLevel);
+    }
+
     auto const apiuapi_UWorld_DelayStreamingVolumeUpdates = (uapi_UWorld_DelayStreamingVolumeUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_DelayStreamingVolumeUpdates_handler\0"));
     if(apiuapi_UWorld_DelayStreamingVolumeUpdates){
         apiuapi_UWorld_DelayStreamingVolumeUpdates(&uapi_UWorld_DelayStreamingVolumeUpdates);
+    }
+
+    auto const apiuapi_UWorld_DestroyActor = (uapi_UWorld_DestroyActorFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyActor_handler\0"));
+    if(apiuapi_UWorld_DestroyActor){
+        apiuapi_UWorld_DestroyActor(&uapi_UWorld_DestroyActor);
     }
 
     auto const apiuapi_UWorld_DestroyDemoNetDriver = (uapi_UWorld_DestroyDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyDemoNetDriver_handler\0"));
@@ -13704,14 +18820,34 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_DestroyDemoNetDriver(&uapi_UWorld_DestroyDemoNetDriver);
     }
 
+    auto const apiuapi_UWorld_DestroySwappedPC = (uapi_UWorld_DestroySwappedPCFn)plugin->GetDllExport(TEXT("set_UWorld_DestroySwappedPC_handler\0"));
+    if(apiuapi_UWorld_DestroySwappedPC){
+        apiuapi_UWorld_DestroySwappedPC(&uapi_UWorld_DestroySwappedPC);
+    }
+
+    auto const apiuapi_UWorld_DestroyWorld = (uapi_UWorld_DestroyWorldFn)plugin->GetDllExport(TEXT("set_UWorld_DestroyWorld_handler\0"));
+    if(apiuapi_UWorld_DestroyWorld){
+        apiuapi_UWorld_DestroyWorld(&uapi_UWorld_DestroyWorld);
+    }
+
     auto const apiuapi_UWorld_DuplicateRequestedLevels = (uapi_UWorld_DuplicateRequestedLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_DuplicateRequestedLevels_handler\0"));
     if(apiuapi_UWorld_DuplicateRequestedLevels){
         apiuapi_UWorld_DuplicateRequestedLevels(&uapi_UWorld_DuplicateRequestedLevels);
     }
 
+    auto const apiuapi_UWorld_EditorDestroyActor = (uapi_UWorld_EditorDestroyActorFn)plugin->GetDllExport(TEXT("set_UWorld_EditorDestroyActor_handler\0"));
+    if(apiuapi_UWorld_EditorDestroyActor){
+        apiuapi_UWorld_EditorDestroyActor(&uapi_UWorld_EditorDestroyActor);
+    }
+
     auto const apiuapi_UWorld_EnsureCollisionTreeIsBuilt = (uapi_UWorld_EnsureCollisionTreeIsBuiltFn)plugin->GetDllExport(TEXT("set_UWorld_EnsureCollisionTreeIsBuilt_handler\0"));
     if(apiuapi_UWorld_EnsureCollisionTreeIsBuilt){
         apiuapi_UWorld_EnsureCollisionTreeIsBuilt(&uapi_UWorld_EnsureCollisionTreeIsBuilt);
+    }
+
+    auto const apiuapi_UWorld_FindWorldInPackage = (uapi_UWorld_FindWorldInPackageFn)plugin->GetDllExport(TEXT("set_UWorld_FindWorldInPackage_handler\0"));
+    if(apiuapi_UWorld_FindWorldInPackage){
+        apiuapi_UWorld_FindWorldInPackage(&uapi_UWorld_FindWorldInPackage);
     }
 
     auto const apiuapi_UWorld_FinishDestroy = (uapi_UWorld_FinishDestroyFn)plugin->GetDllExport(TEXT("set_UWorld_FinishDestroy_handler\0"));
@@ -13772,6 +18908,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UWorld_GetAudioTimeSeconds = (uapi_UWorld_GetAudioTimeSecondsFn)plugin->GetDllExport(TEXT("set_UWorld_GetAudioTimeSeconds_handler\0"));
     if(apiuapi_UWorld_GetAudioTimeSeconds){
         apiuapi_UWorld_GetAudioTimeSeconds(&uapi_UWorld_GetAudioTimeSeconds);
+    }
+
+    auto const apiuapi_UWorld_GetAuthGameMode = (uapi_UWorld_GetAuthGameModeFn)plugin->GetDllExport(TEXT("set_UWorld_GetAuthGameMode_handler\0"));
+    if(apiuapi_UWorld_GetAuthGameMode){
+        apiuapi_UWorld_GetAuthGameMode(&uapi_UWorld_GetAuthGameMode);
     }
 
     auto const apiuapi_UWorld_GetAvoidanceManager = (uapi_UWorld_GetAvoidanceManagerFn)plugin->GetDllExport(TEXT("set_UWorld_GetAvoidanceManager_handler\0"));
@@ -13844,6 +18985,11 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_GetDetailMode(&uapi_UWorld_GetDetailMode);
     }
 
+    auto const apiuapi_UWorld_GetDuplicatedWorldForPIE = (uapi_UWorld_GetDuplicatedWorldForPIEFn)plugin->GetDllExport(TEXT("set_UWorld_GetDuplicatedWorldForPIE_handler\0"));
+    if(apiuapi_UWorld_GetDuplicatedWorldForPIE){
+        apiuapi_UWorld_GetDuplicatedWorldForPIE(&uapi_UWorld_GetDuplicatedWorldForPIE);
+    }
+
     auto const apiuapi_UWorld_GetFirstLocalPlayerFromController = (uapi_UWorld_GetFirstLocalPlayerFromControllerFn)plugin->GetDllExport(TEXT("set_UWorld_GetFirstLocalPlayerFromController_handler\0"));
     if(apiuapi_UWorld_GetFirstLocalPlayerFromController){
         apiuapi_UWorld_GetFirstLocalPlayerFromController(&uapi_UWorld_GetFirstLocalPlayerFromController);
@@ -13882,6 +19028,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UWorld_GetLevel = (uapi_UWorld_GetLevelFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevel_handler\0"));
     if(apiuapi_UWorld_GetLevel){
         apiuapi_UWorld_GetLevel(&uapi_UWorld_GetLevel);
+    }
+
+    auto const apiuapi_UWorld_GetLevelScriptActor = (uapi_UWorld_GetLevelScriptActorFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevelScriptActor_handler\0"));
+    if(apiuapi_UWorld_GetLevelScriptActor){
+        apiuapi_UWorld_GetLevelScriptActor(&uapi_UWorld_GetLevelScriptActor);
     }
 
     auto const apiuapi_UWorld_GetLevelStreamingForPackageName = (uapi_UWorld_GetLevelStreamingForPackageNameFn)plugin->GetDllExport(TEXT("set_UWorld_GetLevelStreamingForPackageName_handler\0"));
@@ -13927,6 +19078,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UWorld_GetNumSelectedLevels = (uapi_UWorld_GetNumSelectedLevelsFn)plugin->GetDllExport(TEXT("set_UWorld_GetNumSelectedLevels_handler\0"));
     if(apiuapi_UWorld_GetNumSelectedLevels){
         apiuapi_UWorld_GetNumSelectedLevels(&uapi_UWorld_GetNumSelectedLevels);
+    }
+
+    auto const apiuapi_UWorld_GetParameterCollectionInstance = (uapi_UWorld_GetParameterCollectionInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_GetParameterCollectionInstance_handler\0"));
+    if(apiuapi_UWorld_GetParameterCollectionInstance){
+        apiuapi_UWorld_GetParameterCollectionInstance(&uapi_UWorld_GetParameterCollectionInstance);
     }
 
     auto const apiuapi_UWorld_GetPhysicsScene = (uapi_UWorld_GetPhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_GetPhysicsScene_handler\0"));
@@ -13979,6 +19135,11 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_GetWorld(&uapi_UWorld_GetWorld);
     }
 
+    auto const apiuapi_UWorld_GetWorldDataLayers = (uapi_UWorld_GetWorldDataLayersFn)plugin->GetDllExport(TEXT("set_UWorld_GetWorldDataLayers_handler\0"));
+    if(apiuapi_UWorld_GetWorldDataLayers){
+        apiuapi_UWorld_GetWorldDataLayers(&uapi_UWorld_GetWorldDataLayers);
+    }
+
     auto const apiuapi_UWorld_GetWorldPartition = (uapi_UWorld_GetWorldPartitionFn)plugin->GetDllExport(TEXT("set_UWorld_GetWorldPartition_handler\0"));
     if(apiuapi_UWorld_GetWorldPartition){
         apiuapi_UWorld_GetWorldPartition(&uapi_UWorld_GetWorldPartition);
@@ -14029,9 +19190,19 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_InitializeSubsystems(&uapi_UWorld_InitializeSubsystems);
     }
 
+    auto const apiuapi_UWorld_InsertPostProcessVolume = (uapi_UWorld_InsertPostProcessVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_InsertPostProcessVolume_handler\0"));
+    if(apiuapi_UWorld_InsertPostProcessVolume){
+        apiuapi_UWorld_InsertPostProcessVolume(&uapi_UWorld_InsertPostProcessVolume);
+    }
+
     auto const apiuapi_UWorld_InvalidateAllSkyCaptures = (uapi_UWorld_InvalidateAllSkyCapturesFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateAllSkyCaptures_handler\0"));
     if(apiuapi_UWorld_InvalidateAllSkyCaptures){
         apiuapi_UWorld_InvalidateAllSkyCaptures(&uapi_UWorld_InvalidateAllSkyCaptures);
+    }
+
+    auto const apiuapi_UWorld_InvalidateModelGeometry = (uapi_UWorld_InvalidateModelGeometryFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateModelGeometry_handler\0"));
+    if(apiuapi_UWorld_InvalidateModelGeometry){
+        apiuapi_UWorld_InvalidateModelGeometry(&uapi_UWorld_InvalidateModelGeometry);
     }
 
     auto const apiuapi_UWorld_InvalidateModelSurface = (uapi_UWorld_InvalidateModelSurfaceFn)plugin->GetDllExport(TEXT("set_UWorld_InvalidateModelSurface_handler\0"));
@@ -14069,6 +19240,11 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_IsInstanced(&uapi_UWorld_IsInstanced);
     }
 
+    auto const apiuapi_UWorld_IsLevelSelected = (uapi_UWorld_IsLevelSelectedFn)plugin->GetDllExport(TEXT("set_UWorld_IsLevelSelected_handler\0"));
+    if(apiuapi_UWorld_IsLevelSelected){
+        apiuapi_UWorld_IsLevelSelected(&uapi_UWorld_IsLevelSelected);
+    }
+
     auto const apiuapi_UWorld_IsMapChangeReady = (uapi_UWorld_IsMapChangeReadyFn)plugin->GetDllExport(TEXT("set_UWorld_IsMapChangeReady_handler\0"));
     if(apiuapi_UWorld_IsMapChangeReady){
         apiuapi_UWorld_IsMapChangeReady(&uapi_UWorld_IsMapChangeReady);
@@ -14092,6 +19268,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UWorld_IsPartitionedWorld = (uapi_UWorld_IsPartitionedWorldFn)plugin->GetDllExport(TEXT("set_UWorld_IsPartitionedWorld_handler\0"));
     if(apiuapi_UWorld_IsPartitionedWorld){
         apiuapi_UWorld_IsPartitionedWorld(&uapi_UWorld_IsPartitionedWorld);
+    }
+
+    auto const apiuapi_UWorld_IsPartitionedWorld2 = (uapi_UWorld_IsPartitionedWorld2Fn)plugin->GetDllExport(TEXT("set_UWorld_IsPartitionedWorld2_handler\0"));
+    if(apiuapi_UWorld_IsPartitionedWorld2){
+        apiuapi_UWorld_IsPartitionedWorld2(&uapi_UWorld_IsPartitionedWorld2);
     }
 
     auto const apiuapi_UWorld_IsPaused = (uapi_UWorld_IsPausedFn)plugin->GetDllExport(TEXT("set_UWorld_IsPaused_handler\0"));
@@ -14159,9 +19340,19 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_IsRefreshingStreamingLevels(&uapi_UWorld_IsRefreshingStreamingLevels);
     }
 
+    auto const apiuapi_UWorld_IsStreamingLevelBeingConsidered = (uapi_UWorld_IsStreamingLevelBeingConsideredFn)plugin->GetDllExport(TEXT("set_UWorld_IsStreamingLevelBeingConsidered_handler\0"));
+    if(apiuapi_UWorld_IsStreamingLevelBeingConsidered){
+        apiuapi_UWorld_IsStreamingLevelBeingConsidered(&uapi_UWorld_IsStreamingLevelBeingConsidered);
+    }
+
     auto const apiuapi_UWorld_IsVisibilityRequestPending = (uapi_UWorld_IsVisibilityRequestPendingFn)plugin->GetDllExport(TEXT("set_UWorld_IsVisibilityRequestPending_handler\0"));
     if(apiuapi_UWorld_IsVisibilityRequestPending){
         apiuapi_UWorld_IsVisibilityRequestPending(&uapi_UWorld_IsVisibilityRequestPending);
+    }
+
+    auto const apiuapi_UWorld_IsWorldOrExternalActorPackage = (uapi_UWorld_IsWorldOrExternalActorPackageFn)plugin->GetDllExport(TEXT("set_UWorld_IsWorldOrExternalActorPackage_handler\0"));
+    if(apiuapi_UWorld_IsWorldOrExternalActorPackage){
+        apiuapi_UWorld_IsWorldOrExternalActorPackage(&uapi_UWorld_IsWorldOrExternalActorPackage);
     }
 
     auto const apiuapi_UWorld_IssueEditorLoadWarnings = (uapi_UWorld_IssueEditorLoadWarningsFn)plugin->GetDllExport(TEXT("set_UWorld_IssueEditorLoadWarnings_handler\0"));
@@ -14174,9 +19365,34 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_K2_GetWorldSettings(&uapi_UWorld_K2_GetWorldSettings);
     }
 
+    auto const apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate = (uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdateFn)plugin->GetDllExport(TEXT("set_UWorld_MarkActorComponentForNeededEndOfFrameUpdate_handler\0"));
+    if(apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate){
+        apiuapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate(&uapi_UWorld_MarkActorComponentForNeededEndOfFrameUpdate);
+    }
+
     auto const apiuapi_UWorld_MarkObjectsPendingKill = (uapi_UWorld_MarkObjectsPendingKillFn)plugin->GetDllExport(TEXT("set_UWorld_MarkObjectsPendingKill_handler\0"));
     if(apiuapi_UWorld_MarkObjectsPendingKill){
         apiuapi_UWorld_MarkObjectsPendingKill(&uapi_UWorld_MarkObjectsPendingKill);
+    }
+
+    auto const apiuapi_UWorld_ModifyLevel = (uapi_UWorld_ModifyLevelFn)plugin->GetDllExport(TEXT("set_UWorld_ModifyLevel_handler\0"));
+    if(apiuapi_UWorld_ModifyLevel){
+        apiuapi_UWorld_ModifyLevel(&uapi_UWorld_ModifyLevel);
+    }
+
+    auto const apiuapi_UWorld_NotifyAcceptedConnection = (uapi_UWorld_NotifyAcceptedConnectionFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyAcceptedConnection_handler\0"));
+    if(apiuapi_UWorld_NotifyAcceptedConnection){
+        apiuapi_UWorld_NotifyAcceptedConnection(&uapi_UWorld_NotifyAcceptedConnection);
+    }
+
+    auto const apiuapi_UWorld_NotifyAcceptingChannel = (uapi_UWorld_NotifyAcceptingChannelFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyAcceptingChannel_handler\0"));
+    if(apiuapi_UWorld_NotifyAcceptingChannel){
+        apiuapi_UWorld_NotifyAcceptingChannel(&uapi_UWorld_NotifyAcceptingChannel);
+    }
+
+    auto const apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation = (uapi_UWorld_NotifyOfBlueprintDebuggingAssociationFn)plugin->GetDllExport(TEXT("set_UWorld_NotifyOfBlueprintDebuggingAssociation_handler\0"));
+    if(apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation){
+        apiuapi_UWorld_NotifyOfBlueprintDebuggingAssociation(&uapi_UWorld_NotifyOfBlueprintDebuggingAssociation);
     }
 
     auto const apiuapi_UWorld_PopulateStreamingLevelsToConsider = (uapi_UWorld_PopulateStreamingLevelsToConsiderFn)plugin->GetDllExport(TEXT("set_UWorld_PopulateStreamingLevelsToConsider_handler\0"));
@@ -14209,9 +19425,49 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_RefreshStreamingLevels(&uapi_UWorld_RefreshStreamingLevels);
     }
 
+    auto const apiuapi_UWorld_RegisterAutoActivateCamera = (uapi_UWorld_RegisterAutoActivateCameraFn)plugin->GetDllExport(TEXT("set_UWorld_RegisterAutoActivateCamera_handler\0"));
+    if(apiuapi_UWorld_RegisterAutoActivateCamera){
+        apiuapi_UWorld_RegisterAutoActivateCamera(&uapi_UWorld_RegisterAutoActivateCamera);
+    }
+
     auto const apiuapi_UWorld_ReleasePhysicsScene = (uapi_UWorld_ReleasePhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_ReleasePhysicsScene_handler\0"));
     if(apiuapi_UWorld_ReleasePhysicsScene){
         apiuapi_UWorld_ReleasePhysicsScene(&uapi_UWorld_ReleasePhysicsScene);
+    }
+
+    auto const apiuapi_UWorld_RemoveActor = (uapi_UWorld_RemoveActorFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveActor_handler\0"));
+    if(apiuapi_UWorld_RemoveActor){
+        apiuapi_UWorld_RemoveActor(&uapi_UWorld_RemoveActor);
+    }
+
+    auto const apiuapi_UWorld_RemoveController = (uapi_UWorld_RemoveControllerFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveController_handler\0"));
+    if(apiuapi_UWorld_RemoveController){
+        apiuapi_UWorld_RemoveController(&uapi_UWorld_RemoveController);
+    }
+
+    auto const apiuapi_UWorld_RemoveLevel = (uapi_UWorld_RemoveLevelFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveLevel_handler\0"));
+    if(apiuapi_UWorld_RemoveLevel){
+        apiuapi_UWorld_RemoveLevel(&uapi_UWorld_RemoveLevel);
+    }
+
+    auto const apiuapi_UWorld_RemoveNetworkActor = (uapi_UWorld_RemoveNetworkActorFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveNetworkActor_handler\0"));
+    if(apiuapi_UWorld_RemoveNetworkActor){
+        apiuapi_UWorld_RemoveNetworkActor(&uapi_UWorld_RemoveNetworkActor);
+    }
+
+    auto const apiuapi_UWorld_RemovePhysicsVolume = (uapi_UWorld_RemovePhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_RemovePhysicsVolume_handler\0"));
+    if(apiuapi_UWorld_RemovePhysicsVolume){
+        apiuapi_UWorld_RemovePhysicsVolume(&uapi_UWorld_RemovePhysicsVolume);
+    }
+
+    auto const apiuapi_UWorld_RemovePostProcessVolume = (uapi_UWorld_RemovePostProcessVolumeFn)plugin->GetDllExport(TEXT("set_UWorld_RemovePostProcessVolume_handler\0"));
+    if(apiuapi_UWorld_RemovePostProcessVolume){
+        apiuapi_UWorld_RemovePostProcessVolume(&uapi_UWorld_RemovePostProcessVolume);
+    }
+
+    auto const apiuapi_UWorld_RemoveStreamingLevel = (uapi_UWorld_RemoveStreamingLevelFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveStreamingLevel_handler\0"));
+    if(apiuapi_UWorld_RemoveStreamingLevel){
+        apiuapi_UWorld_RemoveStreamingLevel(&uapi_UWorld_RemoveStreamingLevel);
     }
 
     auto const apiuapi_UWorld_RemoveStreamingLevelAt = (uapi_UWorld_RemoveStreamingLevelAtFn)plugin->GetDllExport(TEXT("set_UWorld_RemoveStreamingLevelAt_handler\0"));
@@ -14229,6 +19485,11 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_RequiresHitProxies(&uapi_UWorld_RequiresHitProxies);
     }
 
+    auto const apiuapi_UWorld_SelectLevel = (uapi_UWorld_SelectLevelFn)plugin->GetDllExport(TEXT("set_UWorld_SelectLevel_handler\0"));
+    if(apiuapi_UWorld_SelectLevel){
+        apiuapi_UWorld_SelectLevel(&uapi_UWorld_SelectLevel);
+    }
+
     auto const apiuapi_UWorld_SendAllEndOfFrameUpdates = (uapi_UWorld_SendAllEndOfFrameUpdatesFn)plugin->GetDllExport(TEXT("set_UWorld_SendAllEndOfFrameUpdates_handler\0"));
     if(apiuapi_UWorld_SendAllEndOfFrameUpdates){
         apiuapi_UWorld_SendAllEndOfFrameUpdates(&uapi_UWorld_SendAllEndOfFrameUpdates);
@@ -14244,6 +19505,26 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_SetAllowDeferredPhysicsStateCreation(&uapi_UWorld_SetAllowDeferredPhysicsStateCreation);
     }
 
+    auto const apiuapi_UWorld_SetCurrentLevel = (uapi_UWorld_SetCurrentLevelFn)plugin->GetDllExport(TEXT("set_UWorld_SetCurrentLevel_handler\0"));
+    if(apiuapi_UWorld_SetCurrentLevel){
+        apiuapi_UWorld_SetCurrentLevel(&uapi_UWorld_SetCurrentLevel);
+    }
+
+    auto const apiuapi_UWorld_SetDemoNetDriver = (uapi_UWorld_SetDemoNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_SetDemoNetDriver_handler\0"));
+    if(apiuapi_UWorld_SetDemoNetDriver){
+        apiuapi_UWorld_SetDemoNetDriver(&uapi_UWorld_SetDemoNetDriver);
+    }
+
+    auto const apiuapi_UWorld_SetGameInstance = (uapi_UWorld_SetGameInstanceFn)plugin->GetDllExport(TEXT("set_UWorld_SetGameInstance_handler\0"));
+    if(apiuapi_UWorld_SetGameInstance){
+        apiuapi_UWorld_SetGameInstance(&uapi_UWorld_SetGameInstance);
+    }
+
+    auto const apiuapi_UWorld_SetGameState = (uapi_UWorld_SetGameStateFn)plugin->GetDllExport(TEXT("set_UWorld_SetGameState_handler\0"));
+    if(apiuapi_UWorld_SetGameState){
+        apiuapi_UWorld_SetGameState(&uapi_UWorld_SetGameState);
+    }
+
     auto const apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt = (uapi_UWorld_SetMapNeedsLightingFullyRebuiltFn)plugin->GetDllExport(TEXT("set_UWorld_SetMapNeedsLightingFullyRebuilt_handler\0"));
     if(apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt){
         apiuapi_UWorld_SetMapNeedsLightingFullyRebuilt(&uapi_UWorld_SetMapNeedsLightingFullyRebuilt);
@@ -14257,6 +19538,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UWorld_SetNavigationSystem = (uapi_UWorld_SetNavigationSystemFn)plugin->GetDllExport(TEXT("set_UWorld_SetNavigationSystem_handler\0"));
     if(apiuapi_UWorld_SetNavigationSystem){
         apiuapi_UWorld_SetNavigationSystem(&uapi_UWorld_SetNavigationSystem);
+    }
+
+    auto const apiuapi_UWorld_SetNetDriver = (uapi_UWorld_SetNetDriverFn)plugin->GetDllExport(TEXT("set_UWorld_SetNetDriver_handler\0"));
+    if(apiuapi_UWorld_SetNetDriver){
+        apiuapi_UWorld_SetNetDriver(&uapi_UWorld_SetNetDriver);
+    }
+
+    auto const apiuapi_UWorld_SetPhysicsScene = (uapi_UWorld_SetPhysicsSceneFn)plugin->GetDllExport(TEXT("set_UWorld_SetPhysicsScene_handler\0"));
+    if(apiuapi_UWorld_SetPhysicsScene){
+        apiuapi_UWorld_SetPhysicsScene(&uapi_UWorld_SetPhysicsScene);
     }
 
     auto const apiuapi_UWorld_SetSeamlessTravelMidpointPause = (uapi_UWorld_SetSeamlessTravelMidpointPauseFn)plugin->GetDllExport(TEXT("set_UWorld_SetSeamlessTravelMidpointPause_handler\0"));
@@ -14334,9 +19625,19 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_TimeSince(&uapi_UWorld_TimeSince);
     }
 
+    auto const apiuapi_UWorld_TransferBlueprintDebugReferences = (uapi_UWorld_TransferBlueprintDebugReferencesFn)plugin->GetDllExport(TEXT("set_UWorld_TransferBlueprintDebugReferences_handler\0"));
+    if(apiuapi_UWorld_TransferBlueprintDebugReferences){
+        apiuapi_UWorld_TransferBlueprintDebugReferences(&uapi_UWorld_TransferBlueprintDebugReferences);
+    }
+
     auto const apiuapi_UWorld_TriggerStreamingDataRebuild = (uapi_UWorld_TriggerStreamingDataRebuildFn)plugin->GetDllExport(TEXT("set_UWorld_TriggerStreamingDataRebuild_handler\0"));
     if(apiuapi_UWorld_TriggerStreamingDataRebuild){
         apiuapi_UWorld_TriggerStreamingDataRebuild(&uapi_UWorld_TriggerStreamingDataRebuild);
+    }
+
+    auto const apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState = (uapi_UWorld_UpdateActorComponentEndOfFrameUpdateStateFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateActorComponentEndOfFrameUpdateState_handler\0"));
+    if(apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState){
+        apiuapi_UWorld_UpdateActorComponentEndOfFrameUpdateState(&uapi_UWorld_UpdateActorComponentEndOfFrameUpdateState);
     }
 
     auto const apiuapi_UWorld_UpdateAllSkyCaptures = (uapi_UWorld_UpdateAllSkyCapturesFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateAllSkyCaptures_handler\0"));
@@ -14349,6 +19650,11 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_UpdateConstraintActors(&uapi_UWorld_UpdateConstraintActors);
     }
 
+    auto const apiuapi_UWorld_UpdateCullDistanceVolumes = (uapi_UWorld_UpdateCullDistanceVolumesFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateCullDistanceVolumes_handler\0"));
+    if(apiuapi_UWorld_UpdateCullDistanceVolumes){
+        apiuapi_UWorld_UpdateCullDistanceVolumes(&uapi_UWorld_UpdateCullDistanceVolumes);
+    }
+
     auto const apiuapi_UWorld_UpdateLevelStreaming = (uapi_UWorld_UpdateLevelStreamingFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateLevelStreaming_handler\0"));
     if(apiuapi_UWorld_UpdateLevelStreaming){
         apiuapi_UWorld_UpdateLevelStreaming(&uapi_UWorld_UpdateLevelStreaming);
@@ -14359,9 +19665,29 @@ void register_all(Plugin* plugin){
         apiuapi_UWorld_UpdateParameterCollectionInstances(&uapi_UWorld_UpdateParameterCollectionInstances);
     }
 
+    auto const apiuapi_UWorld_UpdateStreamingLevelPriority = (uapi_UWorld_UpdateStreamingLevelPriorityFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateStreamingLevelPriority_handler\0"));
+    if(apiuapi_UWorld_UpdateStreamingLevelPriority){
+        apiuapi_UWorld_UpdateStreamingLevelPriority(&uapi_UWorld_UpdateStreamingLevelPriority);
+    }
+
+    auto const apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered = (uapi_UWorld_UpdateStreamingLevelShouldBeConsideredFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateStreamingLevelShouldBeConsidered_handler\0"));
+    if(apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered){
+        apiuapi_UWorld_UpdateStreamingLevelShouldBeConsidered(&uapi_UWorld_UpdateStreamingLevelShouldBeConsidered);
+    }
+
+    auto const apiuapi_UWorld_UpdateWorldComponents = (uapi_UWorld_UpdateWorldComponentsFn)plugin->GetDllExport(TEXT("set_UWorld_UpdateWorldComponents_handler\0"));
+    if(apiuapi_UWorld_UpdateWorldComponents){
+        apiuapi_UWorld_UpdateWorldComponents(&uapi_UWorld_UpdateWorldComponents);
+    }
+
     auto const apiuapi_UWorld_UsesGameHiddenFlags = (uapi_UWorld_UsesGameHiddenFlagsFn)plugin->GetDllExport(TEXT("set_UWorld_UsesGameHiddenFlags_handler\0"));
     if(apiuapi_UWorld_UsesGameHiddenFlags){
         apiuapi_UWorld_UsesGameHiddenFlags(&uapi_UWorld_UsesGameHiddenFlags);
+    }
+
+    auto const apiuapi_UWorld_WelcomePlayer = (uapi_UWorld_WelcomePlayerFn)plugin->GetDllExport(TEXT("set_UWorld_WelcomePlayer_handler\0"));
+    if(apiuapi_UWorld_WelcomePlayer){
+        apiuapi_UWorld_WelcomePlayer(&uapi_UWorld_WelcomePlayer);
     }
 
     auto const apiuapi_UPrimitiveComponent_AddAngularImpulseInDegrees = (uapi_UPrimitiveComponent_AddAngularImpulseInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_AddAngularImpulseInDegrees_handler\0"));
@@ -14429,6 +19755,16 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_CalculateMass(&uapi_UPrimitiveComponent_CalculateMass);
     }
 
+    auto const apiuapi_UPrimitiveComponent_CanCharacterStepUp = (uapi_UPrimitiveComponent_CanCharacterStepUpFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanCharacterStepUp_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanCharacterStepUp){
+        apiuapi_UPrimitiveComponent_CanCharacterStepUp(&uapi_UPrimitiveComponent_CanCharacterStepUp);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_CanEditChange = (uapi_UPrimitiveComponent_CanEditChangeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanEditChange_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CanEditChange){
+        apiuapi_UPrimitiveComponent_CanEditChange(&uapi_UPrimitiveComponent_CanEditChange);
+    }
+
     auto const apiuapi_UPrimitiveComponent_CanEditSimulatePhysics = (uapi_UPrimitiveComponent_CanEditSimulatePhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CanEditSimulatePhysics_handler\0"));
     if(apiuapi_UPrimitiveComponent_CanEditSimulatePhysics){
         apiuapi_UPrimitiveComponent_CanEditSimulatePhysics(&uapi_UPrimitiveComponent_CanEditSimulatePhysics);
@@ -14459,6 +19795,11 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData(&uapi_UPrimitiveComponent_ComputeHashTextureStreamingBuiltData);
     }
 
+    auto const apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent = (uapi_UPrimitiveComponent_CreateRenderState_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CreateRenderState_Concurrent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent){
+        apiuapi_UPrimitiveComponent_CreateRenderState_Concurrent(&uapi_UPrimitiveComponent_CreateRenderState_Concurrent);
+    }
+
     auto const apiuapi_UPrimitiveComponent_CreateSceneProxy = (uapi_UPrimitiveComponent_CreateSceneProxyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_CreateSceneProxy_handler\0"));
     if(apiuapi_UPrimitiveComponent_CreateSceneProxy){
         apiuapi_UPrimitiveComponent_CreateSceneProxy(&uapi_UPrimitiveComponent_CreateSceneProxy);
@@ -14467,6 +19808,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent = (uapi_UPrimitiveComponent_DestroyRenderState_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_DestroyRenderState_Concurrent_handler\0"));
     if(apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent){
         apiuapi_UPrimitiveComponent_DestroyRenderState_Concurrent(&uapi_UPrimitiveComponent_DestroyRenderState_Concurrent);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_DispatchMouseOverEvents = (uapi_UPrimitiveComponent_DispatchMouseOverEventsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_DispatchMouseOverEvents_handler\0"));
+    if(apiuapi_UPrimitiveComponent_DispatchMouseOverEvents){
+        apiuapi_UPrimitiveComponent_DispatchMouseOverEvents(&uapi_UPrimitiveComponent_DispatchMouseOverEvents);
     }
 
     auto const apiuapi_UPrimitiveComponent_FinishDestroy = (uapi_UPrimitiveComponent_FinishDestroyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_FinishDestroy_handler\0"));
@@ -14512,6 +19858,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_GetCollisionShape = (uapi_UPrimitiveComponent_GetCollisionShapeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetCollisionShape_handler\0"));
     if(apiuapi_UPrimitiveComponent_GetCollisionShape){
         apiuapi_UPrimitiveComponent_GetCollisionShape(&uapi_UPrimitiveComponent_GetCollisionShape);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance = (uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstanceFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetComponentTransformFromBodyInstance_handler\0"));
+    if(apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance){
+        apiuapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance(&uapi_UPrimitiveComponent_GetComponentTransformFromBodyInstance);
     }
 
     auto const apiuapi_UPrimitiveComponent_GetComponentVelocity = (uapi_UPrimitiveComponent_GetComponentVelocityFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_GetComponentVelocity_handler\0"));
@@ -14689,9 +20040,19 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_HasValidSettingsForStaticLighting(&uapi_UPrimitiveComponent_HasValidSettingsForStaticLighting);
     }
 
+    auto const apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving = (uapi_UPrimitiveComponent_IgnoreActorWhenMovingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreActorWhenMoving_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving){
+        apiuapi_UPrimitiveComponent_IgnoreActorWhenMoving(&uapi_UPrimitiveComponent_IgnoreActorWhenMoving);
+    }
+
     auto const apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus = (uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocusFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreBoundsForEditorFocus_handler\0"));
     if(apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus){
         apiuapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus(&uapi_UPrimitiveComponent_IgnoreBoundsForEditorFocus);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IgnoreComponentWhenMoving = (uapi_UPrimitiveComponent_IgnoreComponentWhenMovingFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IgnoreComponentWhenMoving_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IgnoreComponentWhenMoving){
+        apiuapi_UPrimitiveComponent_IgnoreComponentWhenMoving(&uapi_UPrimitiveComponent_IgnoreComponentWhenMoving);
     }
 
     auto const apiuapi_UPrimitiveComponent_InvalidateLightingCacheDetailed = (uapi_UPrimitiveComponent_InvalidateLightingCacheDetailedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_InvalidateLightingCacheDetailed_handler\0"));
@@ -14737,6 +20098,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_IsNavigationRelevant = (uapi_UPrimitiveComponent_IsNavigationRelevantFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsNavigationRelevant_handler\0"));
     if(apiuapi_UPrimitiveComponent_IsNavigationRelevant){
         apiuapi_UPrimitiveComponent_IsNavigationRelevant(&uapi_UPrimitiveComponent_IsNavigationRelevant);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsOverlappingActor = (uapi_UPrimitiveComponent_IsOverlappingActorFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsOverlappingActor_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsOverlappingActor){
+        apiuapi_UPrimitiveComponent_IsOverlappingActor(&uapi_UPrimitiveComponent_IsOverlappingActor);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_IsOverlappingComponent = (uapi_UPrimitiveComponent_IsOverlappingComponentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsOverlappingComponent_handler\0"));
+    if(apiuapi_UPrimitiveComponent_IsOverlappingComponent){
+        apiuapi_UPrimitiveComponent_IsOverlappingComponent(&uapi_UPrimitiveComponent_IsOverlappingComponent);
     }
 
     auto const apiuapi_UPrimitiveComponent_IsReadyForFinishDestroy = (uapi_UPrimitiveComponent_IsReadyForFinishDestroyFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_IsReadyForFinishDestroy_handler\0"));
@@ -14874,6 +20245,11 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_PutRigidBodyToSleep(&uapi_UPrimitiveComponent_PutRigidBodyToSleep);
     }
 
+    auto const apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel = (uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevelFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel_handler\0"));
+    if(apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel){
+        apiuapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel(&uapi_UPrimitiveComponent_RemapActorTextureStreamingBuiltDataToLevel);
+    }
+
     auto const apiuapi_UPrimitiveComponent_RigidBodyIsAwake = (uapi_UPrimitiveComponent_RigidBodyIsAwakeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_RigidBodyIsAwake_handler\0"));
     if(apiuapi_UPrimitiveComponent_RigidBodyIsAwake){
         apiuapi_UPrimitiveComponent_RigidBodyIsAwake(&uapi_UPrimitiveComponent_RigidBodyIsAwake);
@@ -14882,6 +20258,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia = (uapi_UPrimitiveComponent_ScaleByMomentOfInertiaFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_ScaleByMomentOfInertia_handler\0"));
     if(apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia){
         apiuapi_UPrimitiveComponent_ScaleByMomentOfInertia(&uapi_UPrimitiveComponent_ScaleByMomentOfInertia);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SendRenderDebugPhysics = (uapi_UPrimitiveComponent_SendRenderDebugPhysicsFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SendRenderDebugPhysics_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SendRenderDebugPhysics){
+        apiuapi_UPrimitiveComponent_SendRenderDebugPhysics(&uapi_UPrimitiveComponent_SendRenderDebugPhysics);
     }
 
     auto const apiuapi_UPrimitiveComponent_SendRenderTransform_Concurrent = (uapi_UPrimitiveComponent_SendRenderTransform_ConcurrentFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SendRenderTransform_Concurrent_handler\0"));
@@ -15039,6 +20420,11 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_SetIsBeingMovedByEditor(&uapi_UPrimitiveComponent_SetIsBeingMovedByEditor);
     }
 
+    auto const apiuapi_UPrimitiveComponent_SetLODParentPrimitive = (uapi_UPrimitiveComponent_SetLODParentPrimitiveFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetLODParentPrimitive_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetLODParentPrimitive){
+        apiuapi_UPrimitiveComponent_SetLODParentPrimitive(&uapi_UPrimitiveComponent_SetLODParentPrimitive);
+    }
+
     auto const apiuapi_UPrimitiveComponent_SetLastRenderTime = (uapi_UPrimitiveComponent_SetLastRenderTimeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetLastRenderTime_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetLastRenderTime){
         apiuapi_UPrimitiveComponent_SetLastRenderTime(&uapi_UPrimitiveComponent_SetLastRenderTime);
@@ -15064,6 +20450,16 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_SetMassScale(&uapi_UPrimitiveComponent_SetMassScale);
     }
 
+    auto const apiuapi_UPrimitiveComponent_SetMaterial = (uapi_UPrimitiveComponent_SetMaterialFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMaterial_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMaterial){
+        apiuapi_UPrimitiveComponent_SetMaterial(&uapi_UPrimitiveComponent_SetMaterial);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetMaterialByName = (uapi_UPrimitiveComponent_SetMaterialByNameFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetMaterialByName_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetMaterialByName){
+        apiuapi_UPrimitiveComponent_SetMaterialByName(&uapi_UPrimitiveComponent_SetMaterialByName);
+    }
+
     auto const apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision = (uapi_UPrimitiveComponent_SetNotifyRigidBodyCollisionFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetNotifyRigidBodyCollision_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision){
         apiuapi_UPrimitiveComponent_SetNotifyRigidBodyCollision(&uapi_UPrimitiveComponent_SetNotifyRigidBodyCollision);
@@ -15077,6 +20473,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_SetOwnerNoSee = (uapi_UPrimitiveComponent_SetOwnerNoSeeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetOwnerNoSee_handler\0"));
     if(apiuapi_UPrimitiveComponent_SetOwnerNoSee){
         apiuapi_UPrimitiveComponent_SetOwnerNoSee(&uapi_UPrimitiveComponent_SetOwnerNoSee);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_SetPhysMaterialOverride = (uapi_UPrimitiveComponent_SetPhysMaterialOverrideFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysMaterialOverride_handler\0"));
+    if(apiuapi_UPrimitiveComponent_SetPhysMaterialOverride){
+        apiuapi_UPrimitiveComponent_SetPhysMaterialOverride(&uapi_UPrimitiveComponent_SetPhysMaterialOverride);
     }
 
     auto const apiuapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees = (uapi_UPrimitiveComponent_SetPhysicsAngularVelocityInDegreesFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_SetPhysicsAngularVelocityInDegrees_handler\0"));
@@ -15239,6 +20640,11 @@ void register_all(Plugin* plugin){
         apiuapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack(&uapi_UPrimitiveComponent_UpdateOcclusionBoundsSlack);
     }
 
+    auto const apiuapi_UPrimitiveComponent_UpdateOverlapsImpl = (uapi_UPrimitiveComponent_UpdateOverlapsImplFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdateOverlapsImpl_handler\0"));
+    if(apiuapi_UPrimitiveComponent_UpdateOverlapsImpl){
+        apiuapi_UPrimitiveComponent_UpdateOverlapsImpl(&uapi_UPrimitiveComponent_UpdateOverlapsImpl);
+    }
+
     auto const apiuapi_UPrimitiveComponent_UpdatePhysicsVolume = (uapi_UPrimitiveComponent_UpdatePhysicsVolumeFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_UpdatePhysicsVolume_handler\0"));
     if(apiuapi_UPrimitiveComponent_UpdatePhysicsVolume){
         apiuapi_UPrimitiveComponent_UpdatePhysicsVolume(&uapi_UPrimitiveComponent_UpdatePhysicsVolume);
@@ -15262,6 +20668,21 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UPrimitiveComponent_WasRecentlyRendered = (uapi_UPrimitiveComponent_WasRecentlyRenderedFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WasRecentlyRendered_handler\0"));
     if(apiuapi_UPrimitiveComponent_WasRecentlyRendered){
         apiuapi_UPrimitiveComponent_WasRecentlyRendered(&uapi_UPrimitiveComponent_WasRecentlyRendered);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WeldTo = (uapi_UPrimitiveComponent_WeldToFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WeldTo_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WeldTo){
+        apiuapi_UPrimitiveComponent_WeldTo(&uapi_UPrimitiveComponent_WeldTo);
+    }
+
+    auto const apiuapi_UPrimitiveComponent_WeldToImplementation = (uapi_UPrimitiveComponent_WeldToImplementationFn)plugin->GetDllExport(TEXT("set_UPrimitiveComponent_WeldToImplementation_handler\0"));
+    if(apiuapi_UPrimitiveComponent_WeldToImplementation){
+        apiuapi_UPrimitiveComponent_WeldToImplementation(&uapi_UPrimitiveComponent_WeldToImplementation);
+    }
+
+    auto const apiuapi_UAnimInstance_AddExternalNotifyHandler = (uapi_UAnimInstance_AddExternalNotifyHandlerFn)plugin->GetDllExport(TEXT("set_UAnimInstance_AddExternalNotifyHandler_handler\0"));
+    if(apiuapi_UAnimInstance_AddExternalNotifyHandler){
+        apiuapi_UAnimInstance_AddExternalNotifyHandler(&uapi_UAnimInstance_AddExternalNotifyHandler);
     }
 
     auto const apiuapi_UAnimInstance_BeginDestroy = (uapi_UAnimInstance_BeginDestroyFn)plugin->GetDllExport(TEXT("set_UAnimInstance_BeginDestroy_handler\0"));
@@ -15324,6 +20745,11 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_ClearTransitionEvents(&uapi_UAnimInstance_ClearTransitionEvents);
     }
 
+    auto const apiuapi_UAnimInstance_CopyCurveValues = (uapi_UAnimInstance_CopyCurveValuesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_CopyCurveValues_handler\0"));
+    if(apiuapi_UAnimInstance_CopyCurveValues){
+        apiuapi_UAnimInstance_CopyCurveValues(&uapi_UAnimInstance_CopyCurveValues);
+    }
+
     auto const apiuapi_UAnimInstance_DispatchQueuedAnimEvents = (uapi_UAnimInstance_DispatchQueuedAnimEventsFn)plugin->GetDllExport(TEXT("set_UAnimInstance_DispatchQueuedAnimEvents_handler\0"));
     if(apiuapi_UAnimInstance_DispatchQueuedAnimEvents){
         apiuapi_UAnimInstance_DispatchQueuedAnimEvents(&uapi_UAnimInstance_DispatchQueuedAnimEvents);
@@ -15332,6 +20758,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_EndNotifyStates = (uapi_UAnimInstance_EndNotifyStatesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_EndNotifyStates_handler\0"));
     if(apiuapi_UAnimInstance_EndNotifyStates){
         apiuapi_UAnimInstance_EndNotifyStates(&uapi_UAnimInstance_EndNotifyStates);
+    }
+
+    auto const apiuapi_UAnimInstance_GetActiveInstanceForMontage = (uapi_UAnimInstance_GetActiveInstanceForMontageFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetActiveInstanceForMontage_handler\0"));
+    if(apiuapi_UAnimInstance_GetActiveInstanceForMontage){
+        apiuapi_UAnimInstance_GetActiveInstanceForMontage(&uapi_UAnimInstance_GetActiveInstanceForMontage);
     }
 
     auto const apiuapi_UAnimInstance_GetActiveMontageInstance = (uapi_UAnimInstance_GetActiveMontageInstanceFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetActiveMontageInstance_handler\0"));
@@ -15447,6 +20878,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_GetLinkedInputPoseNode = (uapi_UAnimInstance_GetLinkedInputPoseNodeFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetLinkedInputPoseNode_handler\0"));
     if(apiuapi_UAnimInstance_GetLinkedInputPoseNode){
         apiuapi_UAnimInstance_GetLinkedInputPoseNode(&uapi_UAnimInstance_GetLinkedInputPoseNode);
+    }
+
+    auto const apiuapi_UAnimInstance_GetMachineDescription = (uapi_UAnimInstance_GetMachineDescriptionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetMachineDescription_handler\0"));
+    if(apiuapi_UAnimInstance_GetMachineDescription){
+        apiuapi_UAnimInstance_GetMachineDescription(&uapi_UAnimInstance_GetMachineDescription);
     }
 
     auto const apiuapi_UAnimInstance_GetMontageInstanceForID = (uapi_UAnimInstance_GetMontageInstanceForIDFn)plugin->GetDllExport(TEXT("set_UAnimInstance_GetMontageInstanceForID_handler\0"));
@@ -15584,6 +21020,11 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_IsBeingDebugged(&uapi_UAnimInstance_IsBeingDebugged);
     }
 
+    auto const apiuapi_UAnimInstance_IsPlayingSlotAnimation = (uapi_UAnimInstance_IsPlayingSlotAnimationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_IsPlayingSlotAnimation_handler\0"));
+    if(apiuapi_UAnimInstance_IsPlayingSlotAnimation){
+        apiuapi_UAnimInstance_IsPlayingSlotAnimation(&uapi_UAnimInstance_IsPlayingSlotAnimation);
+    }
+
     auto const apiuapi_UAnimInstance_IsPostUpdatingAnimation = (uapi_UAnimInstance_IsPostUpdatingAnimationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_IsPostUpdatingAnimation_handler\0"));
     if(apiuapi_UAnimInstance_IsPostUpdatingAnimation){
         apiuapi_UAnimInstance_IsPostUpdatingAnimation(&uapi_UAnimInstance_IsPostUpdatingAnimation);
@@ -15612,6 +21053,101 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_LockAIResources = (uapi_UAnimInstance_LockAIResourcesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_LockAIResources_handler\0"));
     if(apiuapi_UAnimInstance_LockAIResources){
         apiuapi_UAnimInstance_LockAIResources(&uapi_UAnimInstance_LockAIResources);
+    }
+
+    auto const apiuapi_UAnimInstance_MontageSync_Follow = (uapi_UAnimInstance_MontageSync_FollowFn)plugin->GetDllExport(TEXT("set_UAnimInstance_MontageSync_Follow_handler\0"));
+    if(apiuapi_UAnimInstance_MontageSync_Follow){
+        apiuapi_UAnimInstance_MontageSync_Follow(&uapi_UAnimInstance_MontageSync_Follow);
+    }
+
+    auto const apiuapi_UAnimInstance_MontageSync_StopFollowing = (uapi_UAnimInstance_MontageSync_StopFollowingFn)plugin->GetDllExport(TEXT("set_UAnimInstance_MontageSync_StopFollowing_handler\0"));
+    if(apiuapi_UAnimInstance_MontageSync_StopFollowing){
+        apiuapi_UAnimInstance_MontageSync_StopFollowing(&uapi_UAnimInstance_MontageSync_StopFollowing);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetBlendTime = (uapi_UAnimInstance_Montage_GetBlendTimeFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetBlendTime_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetBlendTime){
+        apiuapi_UAnimInstance_Montage_GetBlendTime(&uapi_UAnimInstance_Montage_GetBlendTime);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetBlendingOutDelegate = (uapi_UAnimInstance_Montage_GetBlendingOutDelegateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetBlendingOutDelegate_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetBlendingOutDelegate){
+        apiuapi_UAnimInstance_Montage_GetBlendingOutDelegate(&uapi_UAnimInstance_Montage_GetBlendingOutDelegate);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetCurrentSection = (uapi_UAnimInstance_Montage_GetCurrentSectionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetCurrentSection_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetCurrentSection){
+        apiuapi_UAnimInstance_Montage_GetCurrentSection(&uapi_UAnimInstance_Montage_GetCurrentSection);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetIsStopped = (uapi_UAnimInstance_Montage_GetIsStoppedFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetIsStopped_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetIsStopped){
+        apiuapi_UAnimInstance_Montage_GetIsStopped(&uapi_UAnimInstance_Montage_GetIsStopped);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetPlayRate = (uapi_UAnimInstance_Montage_GetPlayRateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetPlayRate_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetPlayRate){
+        apiuapi_UAnimInstance_Montage_GetPlayRate(&uapi_UAnimInstance_Montage_GetPlayRate);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_GetPosition = (uapi_UAnimInstance_Montage_GetPositionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_GetPosition_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_GetPosition){
+        apiuapi_UAnimInstance_Montage_GetPosition(&uapi_UAnimInstance_Montage_GetPosition);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_IsActive = (uapi_UAnimInstance_Montage_IsActiveFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_IsActive_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_IsActive){
+        apiuapi_UAnimInstance_Montage_IsActive(&uapi_UAnimInstance_Montage_IsActive);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_IsPlaying = (uapi_UAnimInstance_Montage_IsPlayingFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_IsPlaying_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_IsPlaying){
+        apiuapi_UAnimInstance_Montage_IsPlaying(&uapi_UAnimInstance_Montage_IsPlaying);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_JumpToSection = (uapi_UAnimInstance_Montage_JumpToSectionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_JumpToSection_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_JumpToSection){
+        apiuapi_UAnimInstance_Montage_JumpToSection(&uapi_UAnimInstance_Montage_JumpToSection);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_JumpToSectionsEnd = (uapi_UAnimInstance_Montage_JumpToSectionsEndFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_JumpToSectionsEnd_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_JumpToSectionsEnd){
+        apiuapi_UAnimInstance_Montage_JumpToSectionsEnd(&uapi_UAnimInstance_Montage_JumpToSectionsEnd);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_Pause = (uapi_UAnimInstance_Montage_PauseFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Pause_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_Pause){
+        apiuapi_UAnimInstance_Montage_Pause(&uapi_UAnimInstance_Montage_Pause);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_Play = (uapi_UAnimInstance_Montage_PlayFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Play_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_Play){
+        apiuapi_UAnimInstance_Montage_Play(&uapi_UAnimInstance_Montage_Play);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_Resume = (uapi_UAnimInstance_Montage_ResumeFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Resume_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_Resume){
+        apiuapi_UAnimInstance_Montage_Resume(&uapi_UAnimInstance_Montage_Resume);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_SetNextSection = (uapi_UAnimInstance_Montage_SetNextSectionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_SetNextSection_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_SetNextSection){
+        apiuapi_UAnimInstance_Montage_SetNextSection(&uapi_UAnimInstance_Montage_SetNextSection);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_SetPlayRate = (uapi_UAnimInstance_Montage_SetPlayRateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_SetPlayRate_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_SetPlayRate){
+        apiuapi_UAnimInstance_Montage_SetPlayRate(&uapi_UAnimInstance_Montage_SetPlayRate);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_SetPosition = (uapi_UAnimInstance_Montage_SetPositionFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_SetPosition_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_SetPosition){
+        apiuapi_UAnimInstance_Montage_SetPosition(&uapi_UAnimInstance_Montage_SetPosition);
+    }
+
+    auto const apiuapi_UAnimInstance_Montage_Stop = (uapi_UAnimInstance_Montage_StopFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_Stop_handler\0"));
+    if(apiuapi_UAnimInstance_Montage_Stop){
+        apiuapi_UAnimInstance_Montage_Stop(&uapi_UAnimInstance_Montage_Stop);
     }
 
     auto const apiuapi_UAnimInstance_Montage_StopGroupByName = (uapi_UAnimInstance_Montage_StopGroupByNameFn)plugin->GetDllExport(TEXT("set_UAnimInstance_Montage_StopGroupByName_handler\0"));
@@ -15669,9 +21205,19 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_PCV_ShouldWarnAboutNodesNotUsingFastPath(&uapi_UAnimInstance_PCV_ShouldWarnAboutNodesNotUsingFastPath);
     }
 
+    auto const apiuapi_UAnimInstance_ParallelCanEvaluate = (uapi_UAnimInstance_ParallelCanEvaluateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_ParallelCanEvaluate_handler\0"));
+    if(apiuapi_UAnimInstance_ParallelCanEvaluate){
+        apiuapi_UAnimInstance_ParallelCanEvaluate(&uapi_UAnimInstance_ParallelCanEvaluate);
+    }
+
     auto const apiuapi_UAnimInstance_ParallelUpdateAnimation = (uapi_UAnimInstance_ParallelUpdateAnimationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_ParallelUpdateAnimation_handler\0"));
     if(apiuapi_UAnimInstance_ParallelUpdateAnimation){
         apiuapi_UAnimInstance_ParallelUpdateAnimation(&uapi_UAnimInstance_ParallelUpdateAnimation);
+    }
+
+    auto const apiuapi_UAnimInstance_PlaySlotAnimationAsDynamicMontage = (uapi_UAnimInstance_PlaySlotAnimationAsDynamicMontageFn)plugin->GetDllExport(TEXT("set_UAnimInstance_PlaySlotAnimationAsDynamicMontage_handler\0"));
+    if(apiuapi_UAnimInstance_PlaySlotAnimationAsDynamicMontage){
+        apiuapi_UAnimInstance_PlaySlotAnimationAsDynamicMontage(&uapi_UAnimInstance_PlaySlotAnimationAsDynamicMontage);
     }
 
     auto const apiuapi_UAnimInstance_PostEvaluateAnimation = (uapi_UAnimInstance_PostEvaluateAnimationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_PostEvaluateAnimation_handler\0"));
@@ -15724,9 +21270,29 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_RecordStateWeight(&uapi_UAnimInstance_RecordStateWeight);
     }
 
+    auto const apiuapi_UAnimInstance_RefreshCurves = (uapi_UAnimInstance_RefreshCurvesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RefreshCurves_handler\0"));
+    if(apiuapi_UAnimInstance_RefreshCurves){
+        apiuapi_UAnimInstance_RefreshCurves(&uapi_UAnimInstance_RefreshCurves);
+    }
+
+    auto const apiuapi_UAnimInstance_RemoveExternalNotifyHandler = (uapi_UAnimInstance_RemoveExternalNotifyHandlerFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RemoveExternalNotifyHandler_handler\0"));
+    if(apiuapi_UAnimInstance_RemoveExternalNotifyHandler){
+        apiuapi_UAnimInstance_RemoveExternalNotifyHandler(&uapi_UAnimInstance_RemoveExternalNotifyHandler);
+    }
+
     auto const apiuapi_UAnimInstance_RemovePoseSnapshot = (uapi_UAnimInstance_RemovePoseSnapshotFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RemovePoseSnapshot_handler\0"));
     if(apiuapi_UAnimInstance_RemovePoseSnapshot){
         apiuapi_UAnimInstance_RemovePoseSnapshot(&uapi_UAnimInstance_RemovePoseSnapshot);
+    }
+
+    auto const apiuapi_UAnimInstance_RequestMontageInertialization = (uapi_UAnimInstance_RequestMontageInertializationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RequestMontageInertialization_handler\0"));
+    if(apiuapi_UAnimInstance_RequestMontageInertialization){
+        apiuapi_UAnimInstance_RequestMontageInertialization(&uapi_UAnimInstance_RequestMontageInertialization);
+    }
+
+    auto const apiuapi_UAnimInstance_RequestSlotGroupInertialization = (uapi_UAnimInstance_RequestSlotGroupInertializationFn)plugin->GetDllExport(TEXT("set_UAnimInstance_RequestSlotGroupInertialization_handler\0"));
+    if(apiuapi_UAnimInstance_RequestSlotGroupInertialization){
+        apiuapi_UAnimInstance_RequestSlotGroupInertialization(&uapi_UAnimInstance_RequestSlotGroupInertialization);
     }
 
     auto const apiuapi_UAnimInstance_ResetDynamics = (uapi_UAnimInstance_ResetDynamicsFn)plugin->GetDllExport(TEXT("set_UAnimInstance_ResetDynamics_handler\0"));
@@ -15764,6 +21330,11 @@ void register_all(Plugin* plugin){
         apiuapi_UAnimInstance_ShouldExtractRootMotion(&uapi_UAnimInstance_ShouldExtractRootMotion);
     }
 
+    auto const apiuapi_UAnimInstance_ShouldTriggerAnimNotifyState = (uapi_UAnimInstance_ShouldTriggerAnimNotifyStateFn)plugin->GetDllExport(TEXT("set_UAnimInstance_ShouldTriggerAnimNotifyState_handler\0"));
+    if(apiuapi_UAnimInstance_ShouldTriggerAnimNotifyState){
+        apiuapi_UAnimInstance_ShouldTriggerAnimNotifyState(&uapi_UAnimInstance_ShouldTriggerAnimNotifyState);
+    }
+
     auto const apiuapi_UAnimInstance_StopAllMontages = (uapi_UAnimInstance_StopAllMontagesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_StopAllMontages_handler\0"));
     if(apiuapi_UAnimInstance_StopAllMontages){
         apiuapi_UAnimInstance_StopAllMontages(&uapi_UAnimInstance_StopAllMontages);
@@ -15777,6 +21348,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UAnimInstance_TriggerAnimNotifies = (uapi_UAnimInstance_TriggerAnimNotifiesFn)plugin->GetDllExport(TEXT("set_UAnimInstance_TriggerAnimNotifies_handler\0"));
     if(apiuapi_UAnimInstance_TriggerAnimNotifies){
         apiuapi_UAnimInstance_TriggerAnimNotifies(&uapi_UAnimInstance_TriggerAnimNotifies);
+    }
+
+    auto const apiuapi_UAnimInstance_TriggerSingleAnimNotify = (uapi_UAnimInstance_TriggerSingleAnimNotifyFn)plugin->GetDllExport(TEXT("set_UAnimInstance_TriggerSingleAnimNotify_handler\0"));
+    if(apiuapi_UAnimInstance_TriggerSingleAnimNotify){
+        apiuapi_UAnimInstance_TriggerSingleAnimNotify(&uapi_UAnimInstance_TriggerSingleAnimNotify);
     }
 
     auto const apiuapi_UAnimInstance_TryGetPawnOwner = (uapi_UAnimInstance_TryGetPawnOwnerFn)plugin->GetDllExport(TEXT("set_UAnimInstance_TryGetPawnOwner_handler\0"));
@@ -15829,14 +21405,44 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_ControlScreensaver(&uapi_UKismetSystemLibrary_ControlScreensaver);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_CreateCopyForUndoBuffer = (uapi_UKismetSystemLibrary_CreateCopyForUndoBufferFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_CreateCopyForUndoBuffer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_CreateCopyForUndoBuffer){
+        apiuapi_UKismetSystemLibrary_CreateCopyForUndoBuffer(&uapi_UKismetSystemLibrary_CreateCopyForUndoBuffer);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_DrawDebugCoordinateSystem = (uapi_UKismetSystemLibrary_DrawDebugCoordinateSystemFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_DrawDebugCoordinateSystem_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_DrawDebugCoordinateSystem){
+        apiuapi_UKismetSystemLibrary_DrawDebugCoordinateSystem(&uapi_UKismetSystemLibrary_DrawDebugCoordinateSystem);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_EndTransaction = (uapi_UKismetSystemLibrary_EndTransactionFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_EndTransaction_handler\0"));
     if(apiuapi_UKismetSystemLibrary_EndTransaction){
         apiuapi_UKismetSystemLibrary_EndTransaction(&uapi_UKismetSystemLibrary_EndTransaction);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_FlushDebugStrings = (uapi_UKismetSystemLibrary_FlushDebugStringsFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_FlushDebugStrings_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_FlushDebugStrings){
+        apiuapi_UKismetSystemLibrary_FlushDebugStrings(&uapi_UKismetSystemLibrary_FlushDebugStrings);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_FlushPersistentDebugLines = (uapi_UKismetSystemLibrary_FlushPersistentDebugLinesFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_FlushPersistentDebugLines_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_FlushPersistentDebugLines){
+        apiuapi_UKismetSystemLibrary_FlushPersistentDebugLines(&uapi_UKismetSystemLibrary_FlushPersistentDebugLines);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_ForceCloseAdBanner = (uapi_UKismetSystemLibrary_ForceCloseAdBannerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_ForceCloseAdBanner_handler\0"));
     if(apiuapi_UKismetSystemLibrary_ForceCloseAdBanner){
         apiuapi_UKismetSystemLibrary_ForceCloseAdBanner(&uapi_UKismetSystemLibrary_ForceCloseAdBanner);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_Generic_GetEditorProperty = (uapi_UKismetSystemLibrary_Generic_GetEditorPropertyFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_Generic_GetEditorProperty_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_Generic_GetEditorProperty){
+        apiuapi_UKismetSystemLibrary_Generic_GetEditorProperty(&uapi_UKismetSystemLibrary_Generic_GetEditorProperty);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_Generic_SetStructurePropertyByName = (uapi_UKismetSystemLibrary_Generic_SetStructurePropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_Generic_SetStructurePropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_Generic_SetStructurePropertyByName){
+        apiuapi_UKismetSystemLibrary_Generic_SetStructurePropertyByName(&uapi_UKismetSystemLibrary_Generic_SetStructurePropertyByName);
     }
 
     auto const apiuapi_UKismetSystemLibrary_GetAdIDCount = (uapi_UKismetSystemLibrary_GetAdIDCountFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetAdIDCount_handler\0"));
@@ -15852,6 +21458,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_GetBuildVersion = (uapi_UKismetSystemLibrary_GetBuildVersionFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetBuildVersion_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetBuildVersion){
         apiuapi_UKismetSystemLibrary_GetBuildVersion(&uapi_UKismetSystemLibrary_GetBuildVersion);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetClassDisplayName = (uapi_UKismetSystemLibrary_GetClassDisplayNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetClassDisplayName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetClassDisplayName){
+        apiuapi_UKismetSystemLibrary_GetClassDisplayName(&uapi_UKismetSystemLibrary_GetClassDisplayName);
     }
 
     auto const apiuapi_UKismetSystemLibrary_GetCommandLine = (uapi_UKismetSystemLibrary_GetCommandLineFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetCommandLine_handler\0"));
@@ -15874,6 +21485,16 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_GetDeviceId(&uapi_UKismetSystemLibrary_GetDeviceId);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_GetDisplayName = (uapi_UKismetSystemLibrary_GetDisplayNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetDisplayName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetDisplayName){
+        apiuapi_UKismetSystemLibrary_GetDisplayName(&uapi_UKismetSystemLibrary_GetDisplayName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetEditorProperty = (uapi_UKismetSystemLibrary_GetEditorPropertyFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetEditorProperty_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetEditorProperty){
+        apiuapi_UKismetSystemLibrary_GetEditorProperty(&uapi_UKismetSystemLibrary_GetEditorProperty);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_GetEngineVersion = (uapi_UKismetSystemLibrary_GetEngineVersionFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetEngineVersion_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetEngineVersion){
         apiuapi_UKismetSystemLibrary_GetEngineVersion(&uapi_UKismetSystemLibrary_GetEngineVersion);
@@ -15892,6 +21513,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_GetGameName = (uapi_UKismetSystemLibrary_GetGameNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetGameName_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetGameName){
         apiuapi_UKismetSystemLibrary_GetGameName(&uapi_UKismetSystemLibrary_GetGameName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetGameTimeInSeconds = (uapi_UKismetSystemLibrary_GetGameTimeInSecondsFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetGameTimeInSeconds_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetGameTimeInSeconds){
+        apiuapi_UKismetSystemLibrary_GetGameTimeInSeconds(&uapi_UKismetSystemLibrary_GetGameTimeInSeconds);
     }
 
     auto const apiuapi_UKismetSystemLibrary_GetGamepadControllerName = (uapi_UKismetSystemLibrary_GetGamepadControllerNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetGamepadControllerName_handler\0"));
@@ -15917,6 +21543,21 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_GetMinYResolutionForUI = (uapi_UKismetSystemLibrary_GetMinYResolutionForUIFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetMinYResolutionForUI_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetMinYResolutionForUI){
         apiuapi_UKismetSystemLibrary_GetMinYResolutionForUI(&uapi_UKismetSystemLibrary_GetMinYResolutionForUI);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetObjectName = (uapi_UKismetSystemLibrary_GetObjectNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetObjectName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetObjectName){
+        apiuapi_UKismetSystemLibrary_GetObjectName(&uapi_UKismetSystemLibrary_GetObjectName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetOuterObject = (uapi_UKismetSystemLibrary_GetOuterObjectFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetOuterObject_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetOuterObject){
+        apiuapi_UKismetSystemLibrary_GetOuterObject(&uapi_UKismetSystemLibrary_GetOuterObject);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_GetPathName = (uapi_UKismetSystemLibrary_GetPathNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetPathName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetPathName){
+        apiuapi_UKismetSystemLibrary_GetPathName(&uapi_UKismetSystemLibrary_GetPathName);
     }
 
     auto const apiuapi_UKismetSystemLibrary_GetPlatformUserDir = (uapi_UKismetSystemLibrary_GetPlatformUserDirFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetPlatformUserDir_handler\0"));
@@ -15954,6 +21595,11 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_GetRenderingMaterialQualityLevel(&uapi_UKismetSystemLibrary_GetRenderingMaterialQualityLevel);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_GetSystemPath = (uapi_UKismetSystemLibrary_GetSystemPathFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetSystemPath_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_GetSystemPath){
+        apiuapi_UKismetSystemLibrary_GetSystemPath(&uapi_UKismetSystemLibrary_GetSystemPath);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_GetUniqueDeviceId = (uapi_UKismetSystemLibrary_GetUniqueDeviceIdFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetUniqueDeviceId_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetUniqueDeviceId){
         apiuapi_UKismetSystemLibrary_GetUniqueDeviceId(&uapi_UKismetSystemLibrary_GetUniqueDeviceId);
@@ -15962,6 +21608,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystem = (uapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystemFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_GetVolumeButtonsHandledBySystem_handler\0"));
     if(apiuapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystem){
         apiuapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystem(&uapi_UKismetSystemLibrary_GetVolumeButtonsHandledBySystem);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_HasMultipleLocalPlayers = (uapi_UKismetSystemLibrary_HasMultipleLocalPlayersFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_HasMultipleLocalPlayers_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_HasMultipleLocalPlayers){
+        apiuapi_UKismetSystemLibrary_HasMultipleLocalPlayers(&uapi_UKismetSystemLibrary_HasMultipleLocalPlayers);
     }
 
     auto const apiuapi_UKismetSystemLibrary_HideAdBanner = (uapi_UKismetSystemLibrary_HideAdBannerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_HideAdBanner_handler\0"));
@@ -15974,6 +21625,11 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_IsControllerAssignedToGamepad(&uapi_UKismetSystemLibrary_IsControllerAssignedToGamepad);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_IsDedicatedServer = (uapi_UKismetSystemLibrary_IsDedicatedServerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsDedicatedServer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_IsDedicatedServer){
+        apiuapi_UKismetSystemLibrary_IsDedicatedServer(&uapi_UKismetSystemLibrary_IsDedicatedServer);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_IsInterstitialAdAvailable = (uapi_UKismetSystemLibrary_IsInterstitialAdAvailableFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsInterstitialAdAvailable_handler\0"));
     if(apiuapi_UKismetSystemLibrary_IsInterstitialAdAvailable){
         apiuapi_UKismetSystemLibrary_IsInterstitialAdAvailable(&uapi_UKismetSystemLibrary_IsInterstitialAdAvailable);
@@ -15982,6 +21638,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UKismetSystemLibrary_IsInterstitialAdRequested = (uapi_UKismetSystemLibrary_IsInterstitialAdRequestedFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsInterstitialAdRequested_handler\0"));
     if(apiuapi_UKismetSystemLibrary_IsInterstitialAdRequested){
         apiuapi_UKismetSystemLibrary_IsInterstitialAdRequested(&uapi_UKismetSystemLibrary_IsInterstitialAdRequested);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_IsLoggedIn = (uapi_UKismetSystemLibrary_IsLoggedInFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsLoggedIn_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_IsLoggedIn){
+        apiuapi_UKismetSystemLibrary_IsLoggedIn(&uapi_UKismetSystemLibrary_IsLoggedIn);
     }
 
     auto const apiuapi_UKismetSystemLibrary_IsPackagedForDistribution = (uapi_UKismetSystemLibrary_IsPackagedForDistributionFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsPackagedForDistribution_handler\0"));
@@ -15994,9 +21655,59 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_IsScreensaverEnabled(&uapi_UKismetSystemLibrary_IsScreensaverEnabled);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_IsServer = (uapi_UKismetSystemLibrary_IsServerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsServer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_IsServer){
+        apiuapi_UKismetSystemLibrary_IsServer(&uapi_UKismetSystemLibrary_IsServer);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_IsStandalone = (uapi_UKismetSystemLibrary_IsStandaloneFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsStandalone_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_IsStandalone){
+        apiuapi_UKismetSystemLibrary_IsStandalone(&uapi_UKismetSystemLibrary_IsStandalone);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_IsUnattended = (uapi_UKismetSystemLibrary_IsUnattendedFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_IsUnattended_handler\0"));
     if(apiuapi_UKismetSystemLibrary_IsUnattended){
         apiuapi_UKismetSystemLibrary_IsUnattended(&uapi_UKismetSystemLibrary_IsUnattended);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_ClearTimer = (uapi_UKismetSystemLibrary_K2_ClearTimerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_ClearTimer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_ClearTimer){
+        apiuapi_UKismetSystemLibrary_K2_ClearTimer(&uapi_UKismetSystemLibrary_K2_ClearTimer);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_GetTimerElapsedTime = (uapi_UKismetSystemLibrary_K2_GetTimerElapsedTimeFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_GetTimerElapsedTime_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_GetTimerElapsedTime){
+        apiuapi_UKismetSystemLibrary_K2_GetTimerElapsedTime(&uapi_UKismetSystemLibrary_K2_GetTimerElapsedTime);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_GetTimerRemainingTime = (uapi_UKismetSystemLibrary_K2_GetTimerRemainingTimeFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_GetTimerRemainingTime_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_GetTimerRemainingTime){
+        apiuapi_UKismetSystemLibrary_K2_GetTimerRemainingTime(&uapi_UKismetSystemLibrary_K2_GetTimerRemainingTime);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_IsTimerActive = (uapi_UKismetSystemLibrary_K2_IsTimerActiveFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_IsTimerActive_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_IsTimerActive){
+        apiuapi_UKismetSystemLibrary_K2_IsTimerActive(&uapi_UKismetSystemLibrary_K2_IsTimerActive);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_IsTimerPaused = (uapi_UKismetSystemLibrary_K2_IsTimerPausedFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_IsTimerPaused_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_IsTimerPaused){
+        apiuapi_UKismetSystemLibrary_K2_IsTimerPaused(&uapi_UKismetSystemLibrary_K2_IsTimerPaused);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_PauseTimer = (uapi_UKismetSystemLibrary_K2_PauseTimerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_PauseTimer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_PauseTimer){
+        apiuapi_UKismetSystemLibrary_K2_PauseTimer(&uapi_UKismetSystemLibrary_K2_PauseTimer);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_TimerExists = (uapi_UKismetSystemLibrary_K2_TimerExistsFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_TimerExists_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_TimerExists){
+        apiuapi_UKismetSystemLibrary_K2_TimerExists(&uapi_UKismetSystemLibrary_K2_TimerExists);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_K2_UnPauseTimer = (uapi_UKismetSystemLibrary_K2_UnPauseTimerFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_K2_UnPauseTimer_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_K2_UnPauseTimer){
+        apiuapi_UKismetSystemLibrary_K2_UnPauseTimer(&uapi_UKismetSystemLibrary_K2_UnPauseTimer);
     }
 
     auto const apiuapi_UKismetSystemLibrary_LoadInterstitialAd = (uapi_UKismetSystemLibrary_LoadInterstitialAdFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_LoadInterstitialAd_handler\0"));
@@ -16064,9 +21775,44 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_ResetGamepadAssignments(&uapi_UKismetSystemLibrary_ResetGamepadAssignments);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_SetBoolPropertyByName = (uapi_UKismetSystemLibrary_SetBoolPropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetBoolPropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetBoolPropertyByName){
+        apiuapi_UKismetSystemLibrary_SetBoolPropertyByName(&uapi_UKismetSystemLibrary_SetBoolPropertyByName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetBytePropertyByName = (uapi_UKismetSystemLibrary_SetBytePropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetBytePropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetBytePropertyByName){
+        apiuapi_UKismetSystemLibrary_SetBytePropertyByName(&uapi_UKismetSystemLibrary_SetBytePropertyByName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetDoublePropertyByName = (uapi_UKismetSystemLibrary_SetDoublePropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetDoublePropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetDoublePropertyByName){
+        apiuapi_UKismetSystemLibrary_SetDoublePropertyByName(&uapi_UKismetSystemLibrary_SetDoublePropertyByName);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback = (uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedbackFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback_handler\0"));
     if(apiuapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback){
         apiuapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback(&uapi_UKismetSystemLibrary_SetGamepadsBlockDeviceFeedback);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetInt64PropertyByName = (uapi_UKismetSystemLibrary_SetInt64PropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetInt64PropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetInt64PropertyByName){
+        apiuapi_UKismetSystemLibrary_SetInt64PropertyByName(&uapi_UKismetSystemLibrary_SetInt64PropertyByName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetIntPropertyByName = (uapi_UKismetSystemLibrary_SetIntPropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetIntPropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetIntPropertyByName){
+        apiuapi_UKismetSystemLibrary_SetIntPropertyByName(&uapi_UKismetSystemLibrary_SetIntPropertyByName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetObjectPropertyByName = (uapi_UKismetSystemLibrary_SetObjectPropertyByNameFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetObjectPropertyByName_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetObjectPropertyByName){
+        apiuapi_UKismetSystemLibrary_SetObjectPropertyByName(&uapi_UKismetSystemLibrary_SetObjectPropertyByName);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessage = (uapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessageFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetSuppressViewportTransitionMessage_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessage){
+        apiuapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessage(&uapi_UKismetSystemLibrary_SetSuppressViewportTransitionMessage);
     }
 
     auto const apiuapi_UKismetSystemLibrary_SetVolumeButtonsHandledBySystem = (uapi_UKismetSystemLibrary_SetVolumeButtonsHandledBySystemFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SetVolumeButtonsHandledBySystem_handler\0"));
@@ -16084,9 +21830,184 @@ void register_all(Plugin* plugin){
         apiuapi_UKismetSystemLibrary_ShowInterstitialAd(&uapi_UKismetSystemLibrary_ShowInterstitialAd);
     }
 
+    auto const apiuapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen = (uapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreenFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen){
+        apiuapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen(&uapi_UKismetSystemLibrary_ShowPlatformSpecificAchievementsScreen);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_SnapshotObject = (uapi_UKismetSystemLibrary_SnapshotObjectFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_SnapshotObject_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_SnapshotObject){
+        apiuapi_UKismetSystemLibrary_SnapshotObject(&uapi_UKismetSystemLibrary_SnapshotObject);
+    }
+
+    auto const apiuapi_UKismetSystemLibrary_TransactObject = (uapi_UKismetSystemLibrary_TransactObjectFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_TransactObject_handler\0"));
+    if(apiuapi_UKismetSystemLibrary_TransactObject){
+        apiuapi_UKismetSystemLibrary_TransactObject(&uapi_UKismetSystemLibrary_TransactObject);
+    }
+
     auto const apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications = (uapi_UKismetSystemLibrary_UnregisterForRemoteNotificationsFn)plugin->GetDllExport(TEXT("set_UKismetSystemLibrary_UnregisterForRemoteNotifications_handler\0"));
     if(apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications){
         apiuapi_UKismetSystemLibrary_UnregisterForRemoteNotifications(&uapi_UKismetSystemLibrary_UnregisterForRemoteNotifications);
+    }
+
+    auto const apiuapi_UAnimMontage_AddAnimCompositeSection = (uapi_UAnimMontage_AddAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_AddAnimCompositeSection_handler\0"));
+    if(apiuapi_UAnimMontage_AddAnimCompositeSection){
+        apiuapi_UAnimMontage_AddAnimCompositeSection(&uapi_UAnimMontage_AddAnimCompositeSection);
+    }
+
+    auto const apiuapi_UAnimMontage_CalculateSequenceLength = (uapi_UAnimMontage_CalculateSequenceLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CalculateSequenceLength_handler\0"));
+    if(apiuapi_UAnimMontage_CalculateSequenceLength){
+        apiuapi_UAnimMontage_CalculateSequenceLength(&uapi_UAnimMontage_CalculateSequenceLength);
+    }
+
+    auto const apiuapi_UAnimMontage_CanBeUsedInComposition = (uapi_UAnimMontage_CanBeUsedInCompositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanBeUsedInComposition_handler\0"));
+    if(apiuapi_UAnimMontage_CanBeUsedInComposition){
+        apiuapi_UAnimMontage_CanBeUsedInComposition(&uapi_UAnimMontage_CanBeUsedInComposition);
+    }
+
+    auto const apiuapi_UAnimMontage_CanUseMarkerSync = (uapi_UAnimMontage_CanUseMarkerSyncFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CanUseMarkerSync_handler\0"));
+    if(apiuapi_UAnimMontage_CanUseMarkerSync){
+        apiuapi_UAnimMontage_CanUseMarkerSync(&uapi_UAnimMontage_CanUseMarkerSync);
+    }
+
+    auto const apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage = (uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontageFn)plugin->GetDllExport(TEXT("set_UAnimMontage_CreateSlotAnimationAsDynamicMontage_handler\0"));
+    if(apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage){
+        apiuapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage(&uapi_UAnimMontage_CreateSlotAnimationAsDynamicMontage);
+    }
+
+    auto const apiuapi_UAnimMontage_DeleteAnimCompositeSection = (uapi_UAnimMontage_DeleteAnimCompositeSectionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_DeleteAnimCompositeSection_handler\0"));
+    if(apiuapi_UAnimMontage_DeleteAnimCompositeSection){
+        apiuapi_UAnimMontage_DeleteAnimCompositeSection(&uapi_UAnimMontage_DeleteAnimCompositeSection);
+    }
+
+    auto const apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange = (uapi_UAnimMontage_ExtractRootMotionFromTrackRangeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_ExtractRootMotionFromTrackRange_handler\0"));
+    if(apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange){
+        apiuapi_UAnimMontage_ExtractRootMotionFromTrackRange(&uapi_UAnimMontage_ExtractRootMotionFromTrackRange);
+    }
+
+    auto const apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos = (uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimCompositeSectionIndexFromPos_handler\0"));
+    if(apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos){
+        apiuapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos(&uapi_UAnimMontage_GetAnimCompositeSectionIndexFromPos);
+    }
+
+    auto const apiuapi_UAnimMontage_GetAnimationData = (uapi_UAnimMontage_GetAnimationDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetAnimationData_handler\0"));
+    if(apiuapi_UAnimMontage_GetAnimationData){
+        apiuapi_UAnimMontage_GetAnimationData(&uapi_UAnimMontage_GetAnimationData);
+    }
+
+    auto const apiuapi_UAnimMontage_GetDefaultBlendInTime = (uapi_UAnimMontage_GetDefaultBlendInTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendInTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetDefaultBlendInTime){
+        apiuapi_UAnimMontage_GetDefaultBlendInTime(&uapi_UAnimMontage_GetDefaultBlendInTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetDefaultBlendOutTime = (uapi_UAnimMontage_GetDefaultBlendOutTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetDefaultBlendOutTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetDefaultBlendOutTime){
+        apiuapi_UAnimMontage_GetDefaultBlendOutTime(&uapi_UAnimMontage_GetDefaultBlendOutTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetGroupName = (uapi_UAnimMontage_GetGroupNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetGroupName_handler\0"));
+    if(apiuapi_UAnimMontage_GetGroupName){
+        apiuapi_UAnimMontage_GetGroupName(&uapi_UAnimMontage_GetGroupName);
+    }
+
+    auto const apiuapi_UAnimMontage_GetNumSections = (uapi_UAnimMontage_GetNumSectionsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetNumSections_handler\0"));
+    if(apiuapi_UAnimMontage_GetNumSections){
+        apiuapi_UAnimMontage_GetNumSections(&uapi_UAnimMontage_GetNumSections);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionIndex = (uapi_UAnimMontage_GetSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndex_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionIndex){
+        apiuapi_UAnimMontage_GetSectionIndex(&uapi_UAnimMontage_GetSectionIndex);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionIndexFromPosition = (uapi_UAnimMontage_GetSectionIndexFromPositionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionIndexFromPosition_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionIndexFromPosition){
+        apiuapi_UAnimMontage_GetSectionIndexFromPosition(&uapi_UAnimMontage_GetSectionIndexFromPosition);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionLength = (uapi_UAnimMontage_GetSectionLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionLength_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionLength){
+        apiuapi_UAnimMontage_GetSectionLength(&uapi_UAnimMontage_GetSectionLength);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionName = (uapi_UAnimMontage_GetSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionName_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionName){
+        apiuapi_UAnimMontage_GetSectionName(&uapi_UAnimMontage_GetSectionName);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionStartAndEndTime = (uapi_UAnimMontage_GetSectionStartAndEndTimeFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionStartAndEndTime_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionStartAndEndTime){
+        apiuapi_UAnimMontage_GetSectionStartAndEndTime(&uapi_UAnimMontage_GetSectionStartAndEndTime);
+    }
+
+    auto const apiuapi_UAnimMontage_GetSectionTimeLeftFromPos = (uapi_UAnimMontage_GetSectionTimeLeftFromPosFn)plugin->GetDllExport(TEXT("set_UAnimMontage_GetSectionTimeLeftFromPos_handler\0"));
+    if(apiuapi_UAnimMontage_GetSectionTimeLeftFromPos){
+        apiuapi_UAnimMontage_GetSectionTimeLeftFromPos(&uapi_UAnimMontage_GetSectionTimeLeftFromPos);
+    }
+
+    auto const apiuapi_UAnimMontage_HasRootMotion = (uapi_UAnimMontage_HasRootMotionFn)plugin->GetDllExport(TEXT("set_UAnimMontage_HasRootMotion_handler\0"));
+    if(apiuapi_UAnimMontage_HasRootMotion){
+        apiuapi_UAnimMontage_HasRootMotion(&uapi_UAnimMontage_HasRootMotion);
+    }
+
+    auto const apiuapi_UAnimMontage_InvalidateRecursiveAsset = (uapi_UAnimMontage_InvalidateRecursiveAssetFn)plugin->GetDllExport(TEXT("set_UAnimMontage_InvalidateRecursiveAsset_handler\0"));
+    if(apiuapi_UAnimMontage_InvalidateRecursiveAsset){
+        apiuapi_UAnimMontage_InvalidateRecursiveAsset(&uapi_UAnimMontage_InvalidateRecursiveAsset);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidAdditive = (uapi_UAnimMontage_IsValidAdditiveFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidAdditive_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidAdditive){
+        apiuapi_UAnimMontage_IsValidAdditive(&uapi_UAnimMontage_IsValidAdditive);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidSectionIndex = (uapi_UAnimMontage_IsValidSectionIndexFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionIndex_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidSectionIndex){
+        apiuapi_UAnimMontage_IsValidSectionIndex(&uapi_UAnimMontage_IsValidSectionIndex);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidSectionName = (uapi_UAnimMontage_IsValidSectionNameFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSectionName_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidSectionName){
+        apiuapi_UAnimMontage_IsValidSectionName(&uapi_UAnimMontage_IsValidSectionName);
+    }
+
+    auto const apiuapi_UAnimMontage_IsValidSlot = (uapi_UAnimMontage_IsValidSlotFn)plugin->GetDllExport(TEXT("set_UAnimMontage_IsValidSlot_handler\0"));
+    if(apiuapi_UAnimMontage_IsValidSlot){
+        apiuapi_UAnimMontage_IsValidSlot(&uapi_UAnimMontage_IsValidSlot);
+    }
+
+    auto const apiuapi_UAnimMontage_PostLoad = (uapi_UAnimMontage_PostLoadFn)plugin->GetDllExport(TEXT("set_UAnimMontage_PostLoad_handler\0"));
+    if(apiuapi_UAnimMontage_PostLoad){
+        apiuapi_UAnimMontage_PostLoad(&uapi_UAnimMontage_PostLoad);
+    }
+
+    auto const apiuapi_UAnimMontage_RefreshCacheData = (uapi_UAnimMontage_RefreshCacheDataFn)plugin->GetDllExport(TEXT("set_UAnimMontage_RefreshCacheData_handler\0"));
+    if(apiuapi_UAnimMontage_RefreshCacheData){
+        apiuapi_UAnimMontage_RefreshCacheData(&uapi_UAnimMontage_RefreshCacheData);
+    }
+
+    auto const apiuapi_UAnimMontage_SetCompositeLength = (uapi_UAnimMontage_SetCompositeLengthFn)plugin->GetDllExport(TEXT("set_UAnimMontage_SetCompositeLength_handler\0"));
+    if(apiuapi_UAnimMontage_SetCompositeLength){
+        apiuapi_UAnimMontage_SetCompositeLength(&uapi_UAnimMontage_SetCompositeLength);
+    }
+
+    auto const apiuapi_UAnimMontage_UnregisterOnMontageChanged = (uapi_UAnimMontage_UnregisterOnMontageChangedFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UnregisterOnMontageChanged_handler\0"));
+    if(apiuapi_UAnimMontage_UnregisterOnMontageChanged){
+        apiuapi_UAnimMontage_UnregisterOnMontageChanged(&uapi_UAnimMontage_UnregisterOnMontageChanged);
+    }
+
+    auto const apiuapi_UAnimMontage_UpdateLinkableElements = (uapi_UAnimMontage_UpdateLinkableElementsFn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements_handler\0"));
+    if(apiuapi_UAnimMontage_UpdateLinkableElements){
+        apiuapi_UAnimMontage_UpdateLinkableElements(&uapi_UAnimMontage_UpdateLinkableElements);
+    }
+
+    auto const apiuapi_UAnimMontage_UpdateLinkableElements2 = (uapi_UAnimMontage_UpdateLinkableElements2Fn)plugin->GetDllExport(TEXT("set_UAnimMontage_UpdateLinkableElements2_handler\0"));
+    if(apiuapi_UAnimMontage_UpdateLinkableElements2){
+        apiuapi_UAnimMontage_UpdateLinkableElements2(&uapi_UAnimMontage_UpdateLinkableElements2);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_AddClothCollisionSource = (uapi_USkeletalMeshComponent_AddClothCollisionSourceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_AddClothCollisionSource_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_AddClothCollisionSource){
+        apiuapi_USkeletalMeshComponent_AddClothCollisionSource(&uapi_USkeletalMeshComponent_AddClothCollisionSource);
     }
 
     auto const apiuapi_USkeletalMeshComponent_AddForceToAllBodiesBelow = (uapi_USkeletalMeshComponent_AddForceToAllBodiesBelowFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_AddForceToAllBodiesBelow_handler\0"));
@@ -16154,6 +22075,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_CheckClothTeleport(&uapi_USkeletalMeshComponent_CheckClothTeleport);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_ClearAnimNotifyErrors = (uapi_USkeletalMeshComponent_ClearAnimNotifyErrorsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_ClearAnimNotifyErrors_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_ClearAnimNotifyErrors){
+        apiuapi_USkeletalMeshComponent_ClearAnimNotifyErrors(&uapi_USkeletalMeshComponent_ClearAnimNotifyErrors);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_ClearAnimScriptInstance = (uapi_USkeletalMeshComponent_ClearAnimScriptInstanceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_ClearAnimScriptInstance_handler\0"));
     if(apiuapi_USkeletalMeshComponent_ClearAnimScriptInstance){
         apiuapi_USkeletalMeshComponent_ClearAnimScriptInstance(&uapi_USkeletalMeshComponent_ClearAnimScriptInstance);
@@ -16192,6 +22118,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_DeallocateTransformData = (uapi_USkeletalMeshComponent_DeallocateTransformDataFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_DeallocateTransformData_handler\0"));
     if(apiuapi_USkeletalMeshComponent_DeallocateTransformData){
         apiuapi_USkeletalMeshComponent_DeallocateTransformData(&uapi_USkeletalMeshComponent_DeallocateTransformData);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_DebugDrawClothing = (uapi_USkeletalMeshComponent_DebugDrawClothingFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_DebugDrawClothing_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_DebugDrawClothing){
+        apiuapi_USkeletalMeshComponent_DebugDrawClothing(&uapi_USkeletalMeshComponent_DebugDrawClothing);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_DebugDrawClothingTexts = (uapi_USkeletalMeshComponent_DebugDrawClothingTextsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_DebugDrawClothingTexts_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_DebugDrawClothingTexts){
+        apiuapi_USkeletalMeshComponent_DebugDrawClothingTexts(&uapi_USkeletalMeshComponent_DebugDrawClothingTexts);
     }
 
     auto const apiuapi_USkeletalMeshComponent_FinalizeBoneTransform = (uapi_USkeletalMeshComponent_FinalizeBoneTransformFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_FinalizeBoneTransform_handler\0"));
@@ -16379,6 +22315,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_InitAnim(&uapi_USkeletalMeshComponent_InitAnim);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_InitArticulated = (uapi_USkeletalMeshComponent_InitArticulatedFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_InitArticulated_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_InitArticulated){
+        apiuapi_USkeletalMeshComponent_InitArticulated(&uapi_USkeletalMeshComponent_InitArticulated);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_InitCollisionRelationships = (uapi_USkeletalMeshComponent_InitCollisionRelationshipsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_InitCollisionRelationships_handler\0"));
     if(apiuapi_USkeletalMeshComponent_InitCollisionRelationships){
         apiuapi_USkeletalMeshComponent_InitCollisionRelationships(&uapi_USkeletalMeshComponent_InitCollisionRelationships);
@@ -16464,6 +22405,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_IsWindEnabled(&uapi_USkeletalMeshComponent_IsWindEnabled);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_NotifySkelControlBeyondLimit = (uapi_USkeletalMeshComponent_NotifySkelControlBeyondLimitFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_NotifySkelControlBeyondLimit_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_NotifySkelControlBeyondLimit){
+        apiuapi_USkeletalMeshComponent_NotifySkelControlBeyondLimit(&uapi_USkeletalMeshComponent_NotifySkelControlBeyondLimit);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_OnComponentCollisionSettingsChanged = (uapi_USkeletalMeshComponent_OnComponentCollisionSettingsChangedFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_OnComponentCollisionSettingsChanged_handler\0"));
     if(apiuapi_USkeletalMeshComponent_OnComponentCollisionSettingsChanged){
         apiuapi_USkeletalMeshComponent_OnComponentCollisionSettingsChanged(&uapi_USkeletalMeshComponent_OnComponentCollisionSettingsChanged);
@@ -16474,6 +22420,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_OnPreEndOfFrameSync(&uapi_USkeletalMeshComponent_OnPreEndOfFrameSync);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_OverrideAnimationData = (uapi_USkeletalMeshComponent_OverrideAnimationDataFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_OverrideAnimationData_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_OverrideAnimationData){
+        apiuapi_USkeletalMeshComponent_OverrideAnimationData(&uapi_USkeletalMeshComponent_OverrideAnimationData);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_ParallelAnimationEvaluation = (uapi_USkeletalMeshComponent_ParallelAnimationEvaluationFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_ParallelAnimationEvaluation_handler\0"));
     if(apiuapi_USkeletalMeshComponent_ParallelAnimationEvaluation){
         apiuapi_USkeletalMeshComponent_ParallelAnimationEvaluation(&uapi_USkeletalMeshComponent_ParallelAnimationEvaluation);
@@ -16482,6 +22433,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_Play = (uapi_USkeletalMeshComponent_PlayFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_Play_handler\0"));
     if(apiuapi_USkeletalMeshComponent_Play){
         apiuapi_USkeletalMeshComponent_Play(&uapi_USkeletalMeshComponent_Play);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_PlayAnimation = (uapi_USkeletalMeshComponent_PlayAnimationFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_PlayAnimation_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_PlayAnimation){
+        apiuapi_USkeletalMeshComponent_PlayAnimation(&uapi_USkeletalMeshComponent_PlayAnimation);
     }
 
     auto const apiuapi_USkeletalMeshComponent_PoseTickedThisFrame = (uapi_USkeletalMeshComponent_PoseTickedThisFrameFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_PoseTickedThisFrame_handler\0"));
@@ -16537,6 +22493,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_RemoveAllClothingActors = (uapi_USkeletalMeshComponent_RemoveAllClothingActorsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_RemoveAllClothingActors_handler\0"));
     if(apiuapi_USkeletalMeshComponent_RemoveAllClothingActors){
         apiuapi_USkeletalMeshComponent_RemoveAllClothingActors(&uapi_USkeletalMeshComponent_RemoveAllClothingActors);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource = (uapi_USkeletalMeshComponent_RemoveClothCollisionSourceFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_RemoveClothCollisionSource_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource){
+        apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource(&uapi_USkeletalMeshComponent_RemoveClothCollisionSource);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource2 = (uapi_USkeletalMeshComponent_RemoveClothCollisionSource2Fn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_RemoveClothCollisionSource2_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource2){
+        apiuapi_USkeletalMeshComponent_RemoveClothCollisionSource2(&uapi_USkeletalMeshComponent_RemoveClothCollisionSource2);
     }
 
     auto const apiuapi_USkeletalMeshComponent_RequiresPreEndOfFrameSync = (uapi_USkeletalMeshComponent_RequiresPreEndOfFrameSyncFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_RequiresPreEndOfFrameSync_handler\0"));
@@ -16659,6 +22625,11 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_SetAngularLimits(&uapi_USkeletalMeshComponent_SetAngularLimits);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_SetAnimation = (uapi_USkeletalMeshComponent_SetAnimationFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetAnimation_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetAnimation){
+        apiuapi_USkeletalMeshComponent_SetAnimation(&uapi_USkeletalMeshComponent_SetAnimation);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision = (uapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollisionFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision){
         apiuapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision(&uapi_USkeletalMeshComponent_SetBodyNotifyRigidBodyCollision);
@@ -16734,6 +22705,16 @@ void register_all(Plugin* plugin){
         apiuapi_USkeletalMeshComponent_SetNotifyRigidBodyCollisionBelow(&uapi_USkeletalMeshComponent_SetNotifyRigidBodyCollisionBelow);
     }
 
+    auto const apiuapi_USkeletalMeshComponent_SetPhysMaterialOverride = (uapi_USkeletalMeshComponent_SetPhysMaterialOverrideFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetPhysMaterialOverride_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetPhysMaterialOverride){
+        apiuapi_USkeletalMeshComponent_SetPhysMaterialOverride(&uapi_USkeletalMeshComponent_SetPhysMaterialOverride);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_SetPhysicsAsset = (uapi_USkeletalMeshComponent_SetPhysicsAssetFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetPhysicsAsset_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetPhysicsAsset){
+        apiuapi_USkeletalMeshComponent_SetPhysicsAsset(&uapi_USkeletalMeshComponent_SetPhysicsAsset);
+    }
+
     auto const apiuapi_USkeletalMeshComponent_SetPhysicsBlendWeight = (uapi_USkeletalMeshComponent_SetPhysicsBlendWeightFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetPhysicsBlendWeight_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetPhysicsBlendWeight){
         apiuapi_USkeletalMeshComponent_SetPhysicsBlendWeight(&uapi_USkeletalMeshComponent_SetPhysicsBlendWeight);
@@ -16762,6 +22743,16 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_SetSimulatePhysics = (uapi_USkeletalMeshComponent_SetSimulatePhysicsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSimulatePhysics_handler\0"));
     if(apiuapi_USkeletalMeshComponent_SetSimulatePhysics){
         apiuapi_USkeletalMeshComponent_SetSimulatePhysics(&uapi_USkeletalMeshComponent_SetSimulatePhysics);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset = (uapi_USkeletalMeshComponent_SetSkeletalMeshAssetFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSkeletalMeshAsset_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset){
+        apiuapi_USkeletalMeshComponent_SetSkeletalMeshAsset(&uapi_USkeletalMeshComponent_SetSkeletalMeshAsset);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate = (uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdateFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetSkinnedAssetAndUpdate_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate){
+        apiuapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate(&uapi_USkeletalMeshComponent_SetSkinnedAssetAndUpdate);
     }
 
     auto const apiuapi_USkeletalMeshComponent_SetTeleportDistanceThreshold = (uapi_USkeletalMeshComponent_SetTeleportDistanceThresholdFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SetTeleportDistanceThreshold_handler\0"));
@@ -16817,6 +22808,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_ShouldUpdateTransform = (uapi_USkeletalMeshComponent_ShouldUpdateTransformFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_ShouldUpdateTransform_handler\0"));
     if(apiuapi_USkeletalMeshComponent_ShouldUpdateTransform){
         apiuapi_USkeletalMeshComponent_ShouldUpdateTransform(&uapi_USkeletalMeshComponent_ShouldUpdateTransform);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished = (uapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinishedFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished){
+        apiuapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished(&uapi_USkeletalMeshComponent_SkelMeshCompOnParticleSystemFinished);
     }
 
     auto const apiuapi_USkeletalMeshComponent_Stop = (uapi_USkeletalMeshComponent_StopFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_Stop_handler\0"));
@@ -16912,6 +22908,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraints = (uapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraintsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateMeshForBrokenConstraints_handler\0"));
     if(apiuapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraints){
         apiuapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraints(&uapi_USkeletalMeshComponent_UpdateMeshForBrokenConstraints);
+    }
+
+    auto const apiuapi_USkeletalMeshComponent_UpdateOverlapsImpl = (uapi_USkeletalMeshComponent_UpdateOverlapsImplFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdateOverlapsImpl_handler\0"));
+    if(apiuapi_USkeletalMeshComponent_UpdateOverlapsImpl){
+        apiuapi_USkeletalMeshComponent_UpdateOverlapsImpl(&uapi_USkeletalMeshComponent_UpdateOverlapsImpl);
     }
 
     auto const apiuapi_USkeletalMeshComponent_UpdatePhysicsToRBChannels = (uapi_USkeletalMeshComponent_UpdatePhysicsToRBChannelsFn)plugin->GetDllExport(TEXT("set_USkeletalMeshComponent_UpdatePhysicsToRBChannels_handler\0"));
@@ -17044,6 +23045,24 @@ void register_all(Plugin* plugin){
         apiuapi_UCapsuleComponent_UpdateBodySetup(&uapi_UCapsuleComponent_UpdateBodySetup);
     }
 
+    auto const apiset_UCharacterMovementComponentGravityScale_get_handler = (set_UCharacterMovementComponentGravityScale_get_handlerFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponentGravityScale_get_handler\0"));
+    if(apiset_UCharacterMovementComponentGravityScale_get_handler){
+        apiset_UCharacterMovementComponentGravityScale_get_handler(&get_UCharacterMovementComponent_GravityScale);
+    }
+    auto const apiset_UCharacterMovementComponentGravityScale_set_handler = (set_UCharacterMovementComponentGravityScale_set_handlerFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponentGravityScale_set_handler\0"));
+    if(apiset_UCharacterMovementComponentGravityScale_set_handler){
+        apiset_UCharacterMovementComponentGravityScale_set_handler(&set_UCharacterMovementComponent_GravityScale);
+    }
+
+    auto const apiset_UCharacterMovementComponentGroundFriction_get_handler = (set_UCharacterMovementComponentGroundFriction_get_handlerFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponentGroundFriction_get_handler\0"));
+    if(apiset_UCharacterMovementComponentGroundFriction_get_handler){
+        apiset_UCharacterMovementComponentGroundFriction_get_handler(&get_UCharacterMovementComponent_GroundFriction);
+    }
+    auto const apiset_UCharacterMovementComponentGroundFriction_set_handler = (set_UCharacterMovementComponentGroundFriction_set_handlerFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponentGroundFriction_set_handler\0"));
+    if(apiset_UCharacterMovementComponentGroundFriction_set_handler){
+        apiset_UCharacterMovementComponentGroundFriction_set_handler(&set_UCharacterMovementComponent_GroundFriction);
+    }
+
     auto const apiuapi_UCharacterMovementComponent_AddForce = (uapi_UCharacterMovementComponent_AddForceFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_AddForce_handler\0"));
     if(apiuapi_UCharacterMovementComponent_AddForce){
         apiuapi_UCharacterMovementComponent_AddForce(&uapi_UCharacterMovementComponent_AddForce);
@@ -17139,6 +23158,21 @@ void register_all(Plugin* plugin){
         apiuapi_UCharacterMovementComponent_ClientAckGoodMove_Implementation(&uapi_UCharacterMovementComponent_ClientAckGoodMove_Implementation);
     }
 
+    auto const apiuapi_UCharacterMovementComponent_ClientAdjustPosition = (uapi_UCharacterMovementComponent_ClientAdjustPositionFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_ClientAdjustPosition_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_ClientAdjustPosition){
+        apiuapi_UCharacterMovementComponent_ClientAdjustPosition(&uapi_UCharacterMovementComponent_ClientAdjustPosition);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition = (uapi_UCharacterMovementComponent_ClientVeryShortAdjustPositionFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_ClientVeryShortAdjustPosition_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition){
+        apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition(&uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation = (uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_ImplementationFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation){
+        apiuapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation(&uapi_UCharacterMovementComponent_ClientVeryShortAdjustPosition_Implementation);
+    }
+
     auto const apiuapi_UCharacterMovementComponent_Crouch = (uapi_UCharacterMovementComponent_CrouchFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_Crouch_handler\0"));
     if(apiuapi_UCharacterMovementComponent_Crouch){
         apiuapi_UCharacterMovementComponent_Crouch(&uapi_UCharacterMovementComponent_Crouch);
@@ -17192,6 +23226,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UCharacterMovementComponent_GetAvoidanceGroupMask = (uapi_UCharacterMovementComponent_GetAvoidanceGroupMaskFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_GetAvoidanceGroupMask_handler\0"));
     if(apiuapi_UCharacterMovementComponent_GetAvoidanceGroupMask){
         apiuapi_UCharacterMovementComponent_GetAvoidanceGroupMask(&uapi_UCharacterMovementComponent_GetAvoidanceGroupMask);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_GetBestDirectionOffActor = (uapi_UCharacterMovementComponent_GetBestDirectionOffActorFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_GetBestDirectionOffActor_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_GetBestDirectionOffActor){
+        apiuapi_UCharacterMovementComponent_GetBestDirectionOffActor(&uapi_UCharacterMovementComponent_GetBestDirectionOffActor);
     }
 
     auto const apiuapi_UCharacterMovementComponent_GetCharacterOwner = (uapi_UCharacterMovementComponent_GetCharacterOwnerFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_GetCharacterOwner_handler\0"));
@@ -17484,6 +23523,11 @@ void register_all(Plugin* plugin){
         apiuapi_UCharacterMovementComponent_IsWalking(&uapi_UCharacterMovementComponent_IsWalking);
     }
 
+    auto const apiuapi_UCharacterMovementComponent_JumpOff = (uapi_UCharacterMovementComponent_JumpOffFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_JumpOff_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_JumpOff){
+        apiuapi_UCharacterMovementComponent_JumpOff(&uapi_UCharacterMovementComponent_JumpOff);
+    }
+
     auto const apiuapi_UCharacterMovementComponent_JumpOutOfWater = (uapi_UCharacterMovementComponent_JumpOutOfWaterFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_JumpOutOfWater_handler\0"));
     if(apiuapi_UCharacterMovementComponent_JumpOutOfWater){
         apiuapi_UCharacterMovementComponent_JumpOutOfWater(&uapi_UCharacterMovementComponent_JumpOutOfWater);
@@ -17507,6 +23551,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UCharacterMovementComponent_MaybeUpdateBasedMovement = (uapi_UCharacterMovementComponent_MaybeUpdateBasedMovementFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_MaybeUpdateBasedMovement_handler\0"));
     if(apiuapi_UCharacterMovementComponent_MaybeUpdateBasedMovement){
         apiuapi_UCharacterMovementComponent_MaybeUpdateBasedMovement(&uapi_UCharacterMovementComponent_MaybeUpdateBasedMovement);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_NotifyBumpedPawn = (uapi_UCharacterMovementComponent_NotifyBumpedPawnFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_NotifyBumpedPawn_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_NotifyBumpedPawn){
+        apiuapi_UCharacterMovementComponent_NotifyBumpedPawn(&uapi_UCharacterMovementComponent_NotifyBumpedPawn);
     }
 
     auto const apiuapi_UCharacterMovementComponent_NotifyJumpApex = (uapi_UCharacterMovementComponent_NotifyJumpApexFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_NotifyJumpApex_handler\0"));
@@ -17552,6 +23601,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UCharacterMovementComponent_PhysicsRotation = (uapi_UCharacterMovementComponent_PhysicsRotationFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_PhysicsRotation_handler\0"));
     if(apiuapi_UCharacterMovementComponent_PhysicsRotation){
         apiuapi_UCharacterMovementComponent_PhysicsRotation(&uapi_UCharacterMovementComponent_PhysicsRotation);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_PhysicsVolumeChanged = (uapi_UCharacterMovementComponent_PhysicsVolumeChangedFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_PhysicsVolumeChanged_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_PhysicsVolumeChanged){
+        apiuapi_UCharacterMovementComponent_PhysicsVolumeChanged(&uapi_UCharacterMovementComponent_PhysicsVolumeChanged);
     }
 
     auto const apiuapi_UCharacterMovementComponent_PostLoad = (uapi_UCharacterMovementComponent_PostLoadFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_PostLoad_handler\0"));
@@ -17609,6 +23663,16 @@ void register_all(Plugin* plugin){
         apiuapi_UCharacterMovementComponent_SetAvoidanceGroup(&uapi_UCharacterMovementComponent_SetAvoidanceGroup);
     }
 
+    auto const apiuapi_UCharacterMovementComponent_SetAvoidanceVelocityLock = (uapi_UCharacterMovementComponent_SetAvoidanceVelocityLockFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetAvoidanceVelocityLock_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_SetAvoidanceVelocityLock){
+        apiuapi_UCharacterMovementComponent_SetAvoidanceVelocityLock(&uapi_UCharacterMovementComponent_SetAvoidanceVelocityLock);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_SetBase = (uapi_UCharacterMovementComponent_SetBaseFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetBase_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_SetBase){
+        apiuapi_UCharacterMovementComponent_SetBase(&uapi_UCharacterMovementComponent_SetBase);
+    }
+
     auto const apiuapi_UCharacterMovementComponent_SetCrouchedHalfHeight = (uapi_UCharacterMovementComponent_SetCrouchedHalfHeightFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetCrouchedHalfHeight_handler\0"));
     if(apiuapi_UCharacterMovementComponent_SetCrouchedHalfHeight){
         apiuapi_UCharacterMovementComponent_SetCrouchedHalfHeight(&uapi_UCharacterMovementComponent_SetCrouchedHalfHeight);
@@ -17637,6 +23701,11 @@ void register_all(Plugin* plugin){
     auto const apiuapi_UCharacterMovementComponent_SetRVOAvoidanceWeight = (uapi_UCharacterMovementComponent_SetRVOAvoidanceWeightFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetRVOAvoidanceWeight_handler\0"));
     if(apiuapi_UCharacterMovementComponent_SetRVOAvoidanceWeight){
         apiuapi_UCharacterMovementComponent_SetRVOAvoidanceWeight(&uapi_UCharacterMovementComponent_SetRVOAvoidanceWeight);
+    }
+
+    auto const apiuapi_UCharacterMovementComponent_SetUpdatedComponent = (uapi_UCharacterMovementComponent_SetUpdatedComponentFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetUpdatedComponent_handler\0"));
+    if(apiuapi_UCharacterMovementComponent_SetUpdatedComponent){
+        apiuapi_UCharacterMovementComponent_SetUpdatedComponent(&uapi_UCharacterMovementComponent_SetUpdatedComponent);
     }
 
     auto const apiuapi_UCharacterMovementComponent_SetWalkableFloorAngle = (uapi_UCharacterMovementComponent_SetWalkableFloorAngleFn)plugin->GetDllExport(TEXT("set_UCharacterMovementComponent_SetWalkableFloorAngle_handler\0"));

@@ -453,6 +453,9 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         if black_api(api, settings){
             continue;
         }
+        if api.name == "GetCharacterMovement"{
+            println!("pause");
+        }
         //not in white list
         if class_to_export.functions.len() > 0 && class_to_export.functions.iter().find(|f| f.as_str() == api.name.as_str()).is_none(){
             continue;
@@ -466,8 +469,13 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
         }
         let parameters = api.parameters.clone();
         //api with opaque(and not exported) none ptr parameter  will not export
+        //TODO fix me by optimize class_parser template parser
         for param in &api.parameters {
-            if param.is_generic || param.type_str.contains("<"){
+            if param.is_generic || 
+            param.type_str.contains("<") ||
+            param.type_str == "T" ||
+            param.type_str == "T*"
+            {
                 continue 'api;
             }
             if is_string_type(&param.type_str) && !param.ref_param && !param.ptr_param{
@@ -478,7 +486,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
             else{
                 //opaque ref and ref 
-                if is_opaque(&param.type_str, engine, settings){//} && !(param.ptr_param || param.ref_param){
+                if is_opaque(&param.type_str, engine, settings) && !(param.ptr_param || param.ref_param){
                     continue 'api;
                 }
                 let wrapper_type = is_wrapper_type(&param.type_str, settings);

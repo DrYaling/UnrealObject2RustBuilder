@@ -182,6 +182,9 @@ fn remove_comment_and_mic(lines: &mut Vec<String>){
     }
     while read_line < lines.len() {
         let line = lines[read_line].trim().to_string();
+        if line.contains("GetLastUpdateVelocity"){
+            println!("pause");
+        }
         match state {
             ReadState::Normal => {
                 if line.is_empty() || 
@@ -265,53 +268,75 @@ fn remove_comment_and_mic(lines: &mut Vec<String>){
 fn remove_templates(lines: &mut Vec<String>){    
     let mut read_line = 0usize;
     'main: while read_line < lines.len() {
-        let line = lines[read_line].trim().to_owned();
-        if line.contains("template"){
-            let mut brace_count = 0;
-            //remove first brace
-            while read_line < lines.len() {
-                let rl = read_line;
-                let line = lines.remove(rl);
-                if line.contains("{"){
-                    brace_count = 1;
-                    //template brace end
-                    if line.contains("}"){
-                        continue 'main;
-                    }
-                }
-                //no function block
-                if !line.contains("("){
-                    continue;
-                }
-                //no brace this line
-                break;
-            }
-            //check next line or more got brace
-            while read_line < lines.len() {
-                let line = lines[read_line].trim().to_string();
-                let mut remove = false;
-                for c in line.chars() {
-                    if c == '{'{
-                        brace_count += 1;
-                        remove = true;
-                    }
-                    else if c == '}'{
-                        brace_count -= 1;
-                        remove = true;
-                    }
-                }
-                //no brace block left
-                if brace_count <= 0{
-                    if remove{
-                        lines.remove(read_line);
-                    }
-                    break;
-                }
-                else{
+        let mut line = lines[read_line].trim().to_owned();
+        if let Some(index) = line.find("template"){
+            //remove template <>
+            if let Some(brace_end) = line.rfind(">"){
+                line.replace_range(index..=brace_end, "");
+                if line.trim().len() == 0{
                     lines.remove(read_line);
+                    continue 'main;
                 }
             }
-            continue;
+            else{
+                lines.remove(read_line);
+                while read_line < lines.len() {
+                    line = lines[read_line].trim().to_owned();
+                    if let Some(brace_end) = line.find(">"){
+                        line.replace_range(0..=brace_end, "");
+                        if line.trim().len() == 0{
+                            lines.remove(read_line);
+                        }
+                        break;
+                    }
+                    read_line += 1;
+                }
+            }
+            // let mut brace_count = 0;
+            // //remove first brace
+            // while read_line < lines.len() {
+            //     let rl = read_line;
+            //     let line = lines.remove(rl);
+            //     if line.contains("{"){
+            //         brace_count = 1;
+            //         //template brace end
+            //         if line.contains("}"){
+            //             continue 'main;
+            //         }
+            //     }
+            //     //no function block
+            //     if !line.contains("("){
+            //         continue;
+            //     }
+            //     //no brace this line
+            //     break;
+            // }
+            // //check next line or more got brace
+            // while read_line < lines.len() {
+            //     let line = lines[read_line].trim().to_string();
+            //     let mut remove = false;
+            //     for c in line.chars() {
+            //         if c == '{'{
+            //             brace_count += 1;
+            //             remove = true;
+            //         }
+            //         else if c == '}'{
+            //             brace_count -= 1;
+            //             remove = true;
+            //         }
+            //     }
+            //     //no brace block left
+            //     if brace_count <= 0{
+            //         if remove{
+            //             lines.remove(read_line);
+            //         }
+            //         break;
+            //     }
+            //     else{
+            //         lines.remove(read_line);
+            //     }
+            // }
+            // continue;
         }
         read_line += 1;
     }
@@ -321,6 +346,9 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
     let mut read_line = 0usize;
     while read_line < lines.len() {
         let line = lines[read_line].trim().to_owned();
+        if line.contains("GetLastUpdateVelocity"){
+            println!("pause");
+        }
         if line.starts_with("#define"){
             read_line += 1;
             continue;
@@ -333,6 +361,7 @@ fn remove_unreal_tags(lines: &mut Vec<String>){
         }
         if line.contains("UENUM") ||
             line.contains("meta") ||
+            line.contains("static_assert") ||
             line.contains("AutoCreateRefTerm") ||
             line.contains("UCLASS") ||
             line.contains("UPROPERTY") ||
@@ -850,7 +879,9 @@ fn remove_fn_block(lines: &mut Vec<String>, read_line: &mut usize) -> Option<Str
         }
         contents.push(content);
     }
-    *read_line -= 1;
+    if *read_line > 0{
+        *read_line -= 1;
+    }
     if contents.is_empty(){
         None
     }

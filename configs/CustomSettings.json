@@ -10,7 +10,8 @@
                 "PreSave",
                 "PreSaveRoot",
                 "UpdateDefaultConfigFile",
-                "AssetVersePathTagName"
+                "AssetVersePathTagName",
+                "Implements"
             ],
             "fields": ["Ignore"]
         },
@@ -36,7 +37,10 @@
         },
         {
             "class_name": "APawn",
-            "fields": ["Ignore"]
+            "fields": ["Ignore"],
+            "ignore_functions":[
+                "CanBeBaseForCharacter"
+            ]
         },
         {
             "class_name": "AController",
@@ -97,7 +101,9 @@
                 "StoreIrisAndClearReferences",
                 "ProcessLevelStreamingVolumes",
                 "FollowWorldRedirectorInPackage",
-                "EncroachingBlockingGeometry"
+                "EncroachingBlockingGeometry",
+                "HasSubsystem",
+                "GetSubsystem"
             ]
         },
         {
@@ -114,7 +120,8 @@
             ],
             "ignore_functions":[
                 "GetStateMachineIndexAndDescription",
-                "GetRelevantAssetPlayerInterfaceFromState"
+                "GetRelevantAssetPlayerInterfaceFromState",
+                "FindSubsystem"
             ],
             "fields": ["Ignore"]
         },

@@ -251,6 +251,9 @@ fn parse_enum(node: &Node, _state: &mut ParseState, name_override: Option<String
         enum_class: node.kind.scopedEnumTag.as_ref().map(|tag| tag == "class").unwrap_or_default(),
         ..Default::default()
     };
+    if cenum.name == "ETeleportType"{
+        println!("pause");
+    }
     let mut value: i32 = 0;
     let namespace_enum = format!("{}::Type", cenum.name);
     for node in &node.inner {
@@ -380,9 +383,6 @@ fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{
         is_construstor: kind.kind == clang_ast::Kind::CXXConstructorDecl,
         ..Default::default()
     };
-    // if api.name == "DeprojectScreenToWorld"{
-    //     println!("pause");
-    // }
     parse_parm_decl(&node.inner, &mut api, state)?;
     if let Some(sc)= &kind.storageClass{
         if sc == "static"{
@@ -447,6 +447,9 @@ fn parse_api(node: &Node, state: &ParseState) -> anyhow::Result<Option<CppApi>>{
     }
     let (r_s, vt) = super::parse_c_type(&api.rc_type);
     api.r_type = r_s;
+    if api.r_type == "T" || api.rc_type == "T"{
+        return Ok(None);
+    }
     api.return_type = vt as i32;
     if api.invalid{
         Ok(None)
@@ -527,6 +530,7 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                     continue;
                 }
                 param.type_str = state.content[start.offset..end.offset].trim().to_string();
+                
                 //remove =
                 if param.name.contains("="){
                     param.name = param.name[0..param.name.find("=").unwrap()].trim().to_string();
@@ -604,6 +608,10 @@ fn parse_parm_decl(inner: &Vec<Node>, api: &mut CppApi, state: &ParseState) -> a
                 }
                 let (r_s, vt) = super::parse_c_type(&param.type_str);
                 param.r_type = r_s;
+                if param.type_str == "T" || param.r_type == "T"{
+                    api.invalid = true;
+                    return Ok(());
+                }
                 param.param_type = vt as i32;
                 if param.name.is_empty(){
                     param.name = format!("arg{}", arg_count);

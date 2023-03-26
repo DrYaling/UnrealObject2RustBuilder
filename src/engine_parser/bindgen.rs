@@ -12,10 +12,18 @@ use super::{
     }
 };
 fn is_rs_primary(rs_type: &str, settings: &CustomSettings) -> bool{
-    crate::is_rs_primary(rs_type) || settings.ExportEnums.iter().find(|e| e.as_str() == rs_type).is_some()
+    crate::is_rs_primary(rs_type) || 
+    settings.ExportEnums.iter().find(|e| {
+        e.as_str() == rs_type ||
+        e.as_str() == rs_type.replace("::Type", "") //enum NameSpace::Type
+    }).is_some()
 }
 fn is_primary(type_str: &str, settings: &CustomSettings) -> bool{
-    crate::is_primary(type_str) || settings.ExportEnums.iter().find(|e| e.as_str() == type_str).is_some()
+    crate::is_primary(type_str) || 
+    settings.ExportEnums.iter().find(|e| {
+        e.as_str() == type_str ||
+        e.as_str() == type_str.replace("::Type", "") //enum NameSpace::Type
+    }).is_some()
 }
 static EXPORTED: Mutex<Vec<TypeImpl>> = Mutex::new(Vec::new());
 #[derive(Clone, Debug, Default)]
@@ -48,6 +56,14 @@ impl CodeGenerator{
             };
         }
         if type_str == "String" || is_rs_primary(type_str, settings){
+            //check namespace enum
+            if engine.enums.iter().find(|e| e.namespace_enum && e.equal(type_str)).is_some(){           
+                return  TypeImpl{
+                    name: type_str[0..type_str.len() -6].to_string(),
+                    alis: type_str[0..type_str.len() -6].to_string(),
+                    ..Default::default()
+                };
+            }            
             return  TypeImpl{
                 name: type_str.to_string(),
                 alis: type_str.to_string(),
@@ -168,7 +184,7 @@ pub fn should_export_property(engine: &Engine, property: &CppProperty) -> bool{
         crate::is_primary(&property.type_str) ||
         is_string_type(&property.type_str) ||
         engine.classes.iter().find(|class| class.name == property.type_str).is_some() ||
-        engine.enums.iter().find(|eu| eu.name == property.type_str).is_some()
+        engine.enums.iter().find(|eu| eu.equal(&property.type_str)).is_some()
     )
 }
 #[allow(unused)]
@@ -184,7 +200,7 @@ pub fn should_export_api(engine: &Engine, api: &CppApi) -> bool{
         for tsr in &types {
             if !crate::is_primary(tsr) && !is_string_type(tsr) {
                 if engine.classes.iter().find(|class| class.name.as_str() == *tsr).is_none() &&
-                    engine.enums.iter().find(|eu| eu.name.as_str() == *tsr).is_none(){
+                    engine.enums.iter().find(|eu| eu.equal(&tsr)).is_none(){
                     return false
                 }
             }
@@ -210,7 +226,7 @@ pub fn generate(engine: &Engine, settings: &CustomSettings) -> anyhow::Result<()
         }
     }
     for enum_def in &settings.ExportEnums{
-        if let Some(uenum) = engine.enums.iter().find(|e| e.name.as_str() == enum_def.as_str()){
+        if let Some(uenum) = engine.enums.iter().find(|e| e.equal(&enum_def)){
             export_enums(&mut generator, uenum)?;
         }
         else{
@@ -257,8 +273,9 @@ pub use opaque_types::*;
     Ok(())
 }
 fn export_enums(generator: &mut CodeGenerator, uenum: &CppEnum) -> anyhow::Result<()>{
+    let repc = if uenum.namespace_enum{"#[repr(C)]"}else{"#[repr(u8)]"};
     let mut enum_content = vec![
-        "#[repr(u8)]".to_string(),
+        repc.to_string(),
         "#[derive(Debug, Copy, Clone, PartialEq, Eq)]".to_string(),
         format!("pub enum {}{{", uenum.name)
     ];
@@ -461,7 +478,7 @@ fn parse_functions(engine: &Engine, class: &UnrealClass, generator: &mut CodeGen
             }
             else{
                 //opaque ref and ref 
-                if is_opaque(&param.type_str, engine, settings) && !(param.ptr_param || param.ref_param){
+                if is_opaque(&param.type_str, engine, settings){//} && !(param.ptr_param || param.ref_param){
                     continue 'api;
                 }
                 let wrapper_type = is_wrapper_type(&param.type_str, settings);

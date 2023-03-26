@@ -113,7 +113,8 @@
                 "PostCompileValidationClassName"
             ],
             "ignore_functions":[
-                "GetStateMachineIndexAndDescription"
+                "GetStateMachineIndexAndDescription",
+                "GetRelevantAssetPlayerInterfaceFromState"
             ],
             "fields": ["Ignore"]
         },
@@ -189,7 +190,8 @@
     "ExportEnums":[
         "EMontagePlayReturnType",
         "ECollisionChannel",
-        "ECollisionEnabled"
+        "ECollisionEnabled",
+        "ETeleportType"
     ],
     "ExportConsts":[
 

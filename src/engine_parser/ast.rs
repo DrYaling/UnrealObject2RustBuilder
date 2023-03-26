@@ -211,8 +211,16 @@ fn parse_node(ast: &Node, engine: &mut Engine, state: &mut ParseState) -> anyhow
                 }
             }
         },
+        clang_ast::Kind::NamespaceDecl if {
+            ast.inner.iter().next()
+            .map(|node| node.kind.kind == clang_ast::Kind::EnumDecl).unwrap_or_default()
+        }=> {
+            if let Some(eu) = parse_enum(&ast.inner[0], state, Some(ast.kind.name.clone()))?{
+                engine.enums.push(eu);
+            }
+        },
         clang_ast::Kind::EnumDecl => {
-            if let Some(eu) = parse_enum(ast, state)?{
+            if let Some(eu) = parse_enum(ast, state, None)?{
                 engine.enums.push(eu);
             }
         },
@@ -236,19 +244,21 @@ fn parse_node(ast: &Node, engine: &mut Engine, state: &mut ParseState) -> anyhow
 }
 ///parse enum
 /// int enum only
-fn parse_enum(node: &Node, _state: &mut ParseState) -> anyhow::Result<Option<CppEnum>>{
+fn parse_enum(node: &Node, _state: &mut ParseState, name_override: Option<String>) -> anyhow::Result<Option<CppEnum>>{
     let mut cenum= CppEnum{
-        name: node.kind.name.clone(),
+        namespace_enum: name_override.is_some(),
+        name: name_override.unwrap_or(node.kind.name.clone()),
         enum_class: node.kind.scopedEnumTag.as_ref().map(|tag| tag == "class").unwrap_or_default(),
         ..Default::default()
     };
     let mut value: i32 = 0;
+    let namespace_enum = format!("{}::Type", cenum.name);
     for node in &node.inner {
         if let clang_ast::Kind::EnumConstantDecl= node.kind.kind{
             //int value not ref
             let mut valid = false;
             if let Some(QualType { qualType: Some(qt) }) = &node.kind.r#type {
-                if qt == &cenum.name{
+                if qt == &cenum.name || qt == &namespace_enum{
                     valid = true;
                 }
             }

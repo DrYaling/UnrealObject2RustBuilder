@@ -10,7 +10,7 @@ set EngineRoot to ue5 soruce root
 run  project and see outputs in Binders/cpp/Binder.* and Binders/rs/binder.rs
 
 for more examples: https://github.com/DrYaling/unreal-rust.git  
-and [unreal-rust-demo](https://github.com/DrYaling/unreal-with-rust.git)  
+and [unreal-rust-demo](https://github.com/DrYaling/bulket.git)  
 # dependency
  
     rustup >= 1.65.0
